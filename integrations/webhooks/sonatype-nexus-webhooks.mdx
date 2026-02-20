@@ -4,25 +4,31 @@ sidebarTitle: Sonatype Nexus
 description: Develop and test Sonatype Nexus webhooks from localhost.
 ---
 
-
 import InspectingRequests from "/snippets/integrations/_inspecting-requests.mdx";
 import ReplayingRequests from "/snippets/integrations/_replaying-requests.mdx";
 
-This guide covers how to use ngrok to integrate your localhost app with Sonatype Nexus by using Webhooks.
-Sonatype Nexus webhooks can be used to notify an external application whenever specific events occur in your Sonatype Nexus account.
+This guide walks you through using ngrok to receive Sonatype Nexus webhooks on your localhost app.
 
 By integrating ngrok with Sonatype Nexus, you can:
 
-- **Develop and test Sonatype Nexus webhooks locally**, eliminating the time in deploying your development code to a public environment and setting it up in HTTPS.
-- **Inspect and troubleshoot requests from Sonatype Nexus** in real-time via the inspection UI and API.
-- **Modify and Replay Sonatype Nexus Webhook requests** with a single click and without spending time reproducing events manually in your Sonatype Nexus account.
-- **Secure your app with Sonatype Nexus validation provided by ngrok**. Invalid requests are blocked by ngrok before reaching your app.
+- Develop and test Sonatype Nexus webhooks locally without deploying to a public environment or setting up HTTPS.
+- Inspect and troubleshoot requests from Sonatype Nexus in real time via the inspection UI and API.
+- Modify and replay Sonatype Nexus webhook requests with a single click instead of reproducing events manually in your Sonatype Nexus account.
+- Secure your app with Sonatype Nexus webhook validation provided by ngrok.
+  Invalid requests are blocked by ngrok before reaching your app.
+
+## What you'll need
+
+- An [ngrok account](https://ngrok.com/signup) and your [authtoken](https://dashboard.ngrok.com/get-started/your-authtoken).
+- The [ngrok agent](https://ngrok.com/download) installed.
+- [Node.js](https://nodejs.org/) installed (for the sample app, or use your own app).
+- A Sonatype Nexus Repository Manager instance.
 
 ## 1. Start your app
 
-For this tutorial, you can use the [sample Node.js app available on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
 
-To install this sample, run the following commands in a terminal:
+To install the sample, run the following in a terminal:
 
 ```bash
 git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
@@ -30,105 +36,93 @@ cd ngrok-webhook-nodejs-sample
 npm install
 ```
 
-This will get the project installed locally.
-
-Now you can launch the app by running the following command:
+Then start the app:
 
 ```bash
 npm start
 ```
 
-The app runs by default on port 3000.
+The app runs on port 3000 by default.
 
-You can validate that the app is up and running by visiting http://localhost:3000.
-The application logs request headers and body in the terminal and responds with a message in the browser.
+You can confirm it's running by visiting `http://localhost:3000`.
+The app logs request headers and body in the terminal and shows a message in the browser.
 
-## 2. Launch ngrok
+## 2. Expose your app with ngrok
 
 Once your app is running locally, you're ready to put it online securely using ngrok.
 
-1. If you're not an ngrok user yet, just [sign up for ngrok for free](https://ngrok.com/signup).
+- Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
 
-1. [Download the ngrok agent](https://download.ngrok.com).
+<Tip>
+  The ngrok agent uses your authtoken to authenticate when you start a tunnel.
+</Tip>
 
-1. Go to the [ngrok dashboard](https://dashboard.ngrok.com) and copy your Authtoken. <br />
-   **Tip:** The ngrok agent uses the auth token to log into your account when you start a tunnel.
-1. Start ngrok by running the following command:
+- Start ngrok:
 
-   ```bash
-   ngrok http 3000
-   ```
+  ```bash
+  ngrok http 3000
+  ```
 
-1. ngrok will display a URL where your localhost application is exposed to the internet (copy this URL for use with Sonatype Nexus).
-   ![ngrok agent running](../img/twilio/launch_ngrok_tunnel.png)
+- Copy the URL ngrok displays.
+  Your app is now exposed at that URL for use with Sonatype Nexus.
 
-## 3. Integrate Sonatype Nexus
+## 3. Configure Sonatype Nexus to send webhooks
 
-To register a webhook on your Sonatype Nexus repository follow the instructions below:
+Sonatype Nexus can send webhook requests to your app when events occur in your repository.
+To register for those events:
 
-1. Access your **Sonatype Nexus Repository Manager** user interface and sign in using your administration account.
-   **Tip**: The user interface URL depends on where you deployed your repository manager.
-
-1. On the left menu, click **System**, click **Capabilities**, and then click **Create capability** on the **Capabilities** page.
-
-1. On the **Select Capability Type** click either **Webhook: Global** or **Webhook: Repository** depending on which type of event you associate with your webhook. In this example, click **Webhook: Global**.
-
-1. On the **Create Webhook** page, enter the URL provided by the ngrok agent to expose your application to the internet in the **URL** field (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
-   ![Sonatype Nexus URL](../img/sonatype-nexus/ngrok_url_configuration_sonatype.png)
-
-1. In the **Available** list, click **repository** and then click the greater-than button to move the **repository** value to the **Selected** list.
+- Sign in to your **Sonatype Nexus Repository Manager** (the URL depends on where you deployed it).
+- In the left menu, click **System**, **Capabilities**, and **Create capability** on the **Capabilities** page.
+- Under **Select Capability Type**, choose **Webhook: Global** or **Webhook: Repository** (for this example, **Webhook: Global**).
+- On **Create Webhook**, enter your ngrok URL in **URL** (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
+- In **Available**, click **repository** and use the greater-than button to move it to **Selected**.
 
 ### Run webhooks with Sonatype Nexus and ngrok
 
-Sonatype Nexus sends different request body contents depending on the event that is being triggered.
-You can trigger new calls from Sonatype Nexus to your application by following the instructions below.
+Sonatype Nexus sends different request body contents depending on the event.
+To trigger a call to your app:
 
-1. On the **Sonatype Nexus Repository Manager** user interface, click **Repository** on the left menu and then click **Repositories**. In this example, click **apt (hosted)**.
+- In the Sonatype Nexus UI, click **Repository** and **Repositories**, then (for example) **apt (hosted)**.
+- Click **Create Repository**, choose a **Recipe**, enter **Name**, **Distribution**, and **Signing Key**, and click **Create repository**.
 
-1. On the **Repositories** page, click **Create Repository**, click one of the **Recipes** from the list, enter any value in the **Name**, **Distribution**, and **Signing Key**, and then click **Create repository**.
-
-   Confirm your localhost app receives an event notification and logs both headers and body in the terminal.
+Confirm your localhost app receives an event notification and logs both headers and body in the terminal.
 
 <InspectingRequests />
 
 <ReplayingRequests />
+
 ## Secure webhook requests
 
-The ngrok signature webhook verification feature allows ngrok to assert that requests from your Sonatype Nexus webhook are the only traffic allowed to make calls to your localhost app.
+ngrok can verify that incoming requests are from your Sonatype Nexus webhook so only that traffic reaches your app.
 
-**Note:** This ngrok feature is limited to 500 validations per month on free ngrok accounts.
-For unlimited, upgrade to Pro or Enterprise.
+<Note>
+  Webhook verification is limited to 500 validations per month on free accounts.
+  If you need more, you can upgrade to Hobbyist or Pay-as-you-go.
+  See [TPU Pricing](/pricing-limits/traffic-policy-unit-pricing/) for details.
+</Note>
 
-This is a quick step to add extra protection to your application.
+To add verification:
 
-1. Access your **Sonatype Nexus Repository Manager** user interface and sign in using your administration account.
-   **Tip**: Your **Sonatype Nexus Repository Manager** URL depends on where you deployed your repository manager.
+- In your **Sonatype Nexus Repository Manager**, go to **System**, **Capabilities**, and the webhook capability you created (**Webhook: Global** or **Webhook: Repository**).
+- On the **Webhook** page, open the **Settings** tab and enter a value in **Secret Key** (for example, `12345`).
+- Create a Traffic Policy file named `sonatype_nexus_policy.yml`.
+  Replace `{your webhook secret}` with the **Secret Key** value:
 
-1. On the left menu, click **System**, click **Capabilities**, and then click **Webhook: Global** or **Webhook: Repository** depending on which type of capability you created before.
+  ```yaml
+  on_http_request:
+    - actions:
+        - type: verify-webhook
+          config:
+            provider: sonatype_nexus
+            secret: "{your webhook secret}"
+  ```
 
-1. On the **Webhook** page, click the **Settings** tab, and then enter `12345` in the **Secret Key** field.
+- Restart ngrok with the policy file:
 
-1. Create a Traffic Policy file named `sonatype_nexus_policy.yml`, replacing `{your webhook secret}` with the value of the **Secret Key** field:
+  ```bash
+  ngrok http 3000 --traffic-policy-file sonatype_nexus_policy.yml
+  ```
 
-   ```yaml
-   on_http_request:
-     - actions:
-         - type: verify-webhook
-           config:
-             provider: sonatype_nexus
-             secret: "{your webhook secret}"
-   ```
+- Trigger an event (for example, create a repository as above) to send a request.
 
-1. Restart your ngrok agent by running the command:
-
-   ```bash
-   ngrok http 3000 --traffic-policy-file sonatype_nexus_policy.yml
-   ```
-
-1. On the **Sonatype Nexus Repository Manager** user interface, click **Repository** on the left menu and then click **Repositories**. In this example, click **apt (hosted)**.
-
-1. On the **Repositories** page, click **Create Repository**, click one of the **Recipes** from the list, enter any value in the **Name**, **Distribution**, and **Signing Key**, and then click **Create repository**.
-
-   Confirm your localhost app receives an event notification and logs both headers and body in the terminal.
-
-Verify that your local application receives the request and logs information to the terminal.
+Your app should receive the request and log it in the terminal.

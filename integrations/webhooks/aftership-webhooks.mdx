@@ -4,25 +4,31 @@ sidebarTitle: AfterShip
 description: Develop and test AfterShip webhooks from localhost.
 ---
 
-
 import InspectingRequests from "/snippets/integrations/_inspecting-requests.mdx";
 import ReplayingRequests from "/snippets/integrations/_replaying-requests.mdx";
 
-This guide covers how to use ngrok to integrate your localhost app with AfterShip by using Webhooks.
-AfterShip webhooks can be used to notify an external application whenever specific events occur in your AfterShip account.
+This guide explains how to use ngrok to receive AfterShip webhooks on your localhost app.
 
 By integrating ngrok with AfterShip, you can:
 
-- **Develop and test AfterShip webhooks locally**, eliminating the time in deploying your development code to a public environment and setting it up in HTTPS.
-- **Inspect and troubleshoot requests from AfterShip** in real-time via the inspection UI and API.
-- **Modify and Replay AfterShip Webhook requests** with a single click and without spending time reproducing events manually in your AfterShip account.
-- **Secure your app with AfterShip validation provided by ngrok**. Invalid requests are blocked by ngrok before reaching your app.
+- Develop and test AfterShip webhooks locally without deploying to a public environment or setting up HTTPS.
+- Inspect and troubleshoot requests from AfterShip in real time via the inspection UI and API.
+- Modify and replay AfterShip webhook requests with a single click instead of reproducing events manually in your AfterShip account.
+- Secure your app with AfterShip webhook validation provided by ngrok.
+  Invalid requests are blocked by ngrok before reaching your app.
+
+## What you'll need
+
+- An [ngrok account](https://ngrok.com/signup) and your [authtoken](https://dashboard.ngrok.com/get-started/your-authtoken).
+- The [ngrok agent](https://ngrok.com/download) installed.
+- [Node.js](https://nodejs.org/) installed (for the sample app, or use your own app).
+- An AfterShip account.
 
 ## 1. Start your app
 
-For this tutorial, you can use the [sample Node.js app available on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
 
-To install this sample, run the following commands in a terminal:
+To install the sample, run the following in a terminal:
 
 ```bash
 git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
@@ -30,101 +36,93 @@ cd ngrok-webhook-nodejs-sample
 npm install
 ```
 
-This will get the project installed locally.
-
-Now you can launch the app by running the following command:
+Then start the app:
 
 ```bash
 npm start
 ```
 
-The app runs by default on port 3000.
+The app runs on port 3000 by default.
 
-You can validate that the app is up and running by visiting http://localhost:3000.
-The application logs request headers and body in the terminal and responds with a message in the browser.
+You can confirm it's running by visiting `http://localhost:3000`.
+The app logs request headers and body in the terminal and shows a message in the browser.
 
-## 2. Launch ngrok
+## 2. Expose your app with ngrok
 
 Once your app is running locally, you're ready to put it online securely using ngrok.
 
-1. If you're not an ngrok user yet, just [sign up for ngrok for free](https://ngrok.com/signup).
+- Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
 
-1. [Download the ngrok agent](https://download.ngrok.com).
+<Tip>
+  The ngrok agent uses your authtoken to authenticate when you start a tunnel.
+</Tip>
 
-1. Go to the [ngrok dashboard](https://dashboard.ngrok.com) and copy your Authtoken. <br />
-   **Tip:** The ngrok agent uses the auth token to log into your account when you start a tunnel.
-1. Start ngrok by running the following command:
+- Start ngrok:
 
-   ```bash
-   ngrok http 3000
-   ```
+  ```bash
+  ngrok http 3000
+  ```
 
-1. ngrok will display a URL where your localhost application is exposed to the internet (copy this URL for use with AfterShip).
-   ![ngrok agent running](../img/twilio/launch_ngrok_tunnel.png)
+- Copy the URL ngrok displays.
+  Your app is now exposed at that URL for use with AfterShip.
 
-## 3. Integrate AfterShip
+## 3. Configure AfterShip to send webhooks
 
-To register a webhook on your AfterShip account follow the instructions below:
+AfterShip can send webhook requests to your app when events occur in your account.
+To register for those events:
 
-1. Access [AfterShip](https://www.aftership.com/) and sign in using your AfterShip account.
+- Sign in to [AfterShip](https://www.aftership.com/).
+- In the left menu, go to **Notifications** and select **Webhooks**.
+- On the **Webhooks** page, click **Add webhook URL**.
+- In the **Add webhook URL** popup, paste the ngrok URL in the **Webhook URL** field (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
+- Click **Save**.
 
-1. On the left menu, click **Notifications** and then click **Webhooks**.
-
-1. On the **Webhooks** page, click **Add webhook URL**.
-
-1. On the **Add webhook URL** popup, enter the URL provided by the ngrok agent to expose your application to the internet in the **Webhook URL** field (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
-   ![aftership URL to Publish](../img/aftership/ngrok_url_configuration_aftership.png)
-
-1. Click **Save**.
-
-   Confirm your localhost app receives a notification and logs both headers and body in the terminal.
+Confirm your localhost app receives a notification and logs both headers and body in the terminal.
 
 ### Run webhooks with AfterShip and ngrok
 
-AfterShip sends different request body contents depending on the status of the shipments created in your account.
-You can trigger new calls from AfterShip to your application by following the instructions below.
+AfterShip sends different request body contents depending on the status of shipments in your account.
+To trigger new calls from AfterShip to your app:
 
-1. On the [AfterShip console](https://admin.aftership.com/), click **Shipments** on the left menu and then click **Add shipment**.
+- On the [AfterShip console](https://admin.aftership.com/), go to **Shipments** and click **Add shipment**.
+- On the **Add new shipment** page, enter a tracking number in the **Tracking no.** field and click **Save shipment** (you can optionally fill in other fields).
 
-1. On the **Add new shipment** page, enter a tracking number in the **Tracking no.** field and then click **Save shipment**. Optionally, you can fill in all fields on this page.
-
-   Confirm your localhost app receives an event notification and logs both headers and body in the terminal.
+Confirm your localhost app receives an event notification and logs both headers and body in the terminal.
 
 <InspectingRequests />
 
 <ReplayingRequests />
+
 ## Secure webhook requests
 
-The ngrok signature webhook verification feature allows ngrok to assert that requests from your AfterShip webhook are the only traffic allowed to make calls to your localhost app.
+ngrok can verify that incoming requests are from your AfterShip webhook so only that traffic reaches your app.
 
-**Note:** This ngrok feature is limited to 500 validations per month on free ngrok accounts.
-For unlimited, upgrade to Pro or Enterprise.
+<Note>
+  Webhook verification is limited to 500 validations per month on free accounts.
+  If you need more, you can upgrade to Hobbyist or Pay-as-you-go.
+  See [TPU Pricing](/pricing-limits/traffic-policy-unit-pricing/) for details.
+</Note>
 
-This is a quick step to add extra protection to your application.
+To add verification:
 
-1. Access [AfterShip](https://www.aftership.com/) and sign in using your AfterShip account.
+- Create a Traffic Policy file named `aftership_policy.yml`.
+  Replace `{your secret}` with the **Webhook secret** from your AfterShip webhook:
 
-1. On the left menu, click **Notifications** and then click **Webhooks**.
+  ```yaml
+  on_http_request:
+    - actions:
+        - type: verify-webhook
+          config:
+            provider: aftership
+            secret: "{your secret}"
+  ```
 
-1. On the **Webhooks** page, copy the value of the **Webhook secret**.
+- Restart ngrok with the policy file:
 
-1. Create a Traffic Policy file named `aftership_policy.yml`, replacing `{your webhook secret}` with the value you have copied before (See [Integrate ngrok and AfterShip.](#setup-webhook)):
+  ```bash
+  ngrok http 3000 --traffic-policy-file aftership_policy.yml
+  ```
 
-   ```yaml
-   on_http_request:
-     - actions:
-         - type: verify-webhook
-           config:
-             provider: aftership
-             secret: "{your webhook secret}"
-   ```
+- Create a new shipment in your AfterShip account to trigger a delivery.
 
-1. Restart your ngrok agent by running the command:
-
-   ```bash
-   ngrok http 3000 --traffic-policy-file aftership_policy.yml
-   ```
-
-1. Access [AfterShip](https://www.aftership.com/) and create a new shipment.
-
-Verify that your local application receives the request and logs information to the terminal.
+Your app should receive the request and log it in the terminal.

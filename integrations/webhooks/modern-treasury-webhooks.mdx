@@ -4,25 +4,31 @@ sidebarTitle: Modern Treasury
 description: Develop and test Modern Treasury webhooks from localhost.
 ---
 
-
 import InspectingRequests from "/snippets/integrations/_inspecting-requests.mdx";
 import ReplayingRequests from "/snippets/integrations/_replaying-requests.mdx";
 
-This guide covers how to use ngrok to integrate your localhost app with Modern Treasury by using Webhooks.
-Modern Treasury webhooks can be used to notify an external application whenever specific events occur in your Modern Treasury account.
+This guide explains how to use ngrok to receive Modern Treasury webhooks on your localhost app.
 
 By integrating ngrok with Modern Treasury, you can:
 
-- **Develop and test Modern Treasury webhooks locally**, eliminating the time in deploying your development code to a public environment and setting it up in HTTPS.
-- **Inspect and troubleshoot requests from Modern Treasury** in real-time via the inspection UI and API.
-- **Modify and Replay Modern Treasury Webhook requests** with a single click and without spending time reproducing events manually in your Modern Treasury account.
-- **Secure your app with Modern Treasury validation provided by ngrok**. Invalid requests are blocked by ngrok before reaching your app.
+- Develop and test Modern Treasury webhooks locally without deploying to a public environment or setting up HTTPS.
+- Inspect and troubleshoot requests from Modern Treasury in real time via the inspection UI and API.
+- Modify and replay Modern Treasury webhook requests with a single click instead of reproducing events manually in your Modern Treasury account.
+- Secure your app with Modern Treasury webhook validation provided by ngrok.
+  Invalid requests are blocked by ngrok before reaching your app.
+
+## What you'll need
+
+- An [ngrok account](https://ngrok.com/signup) and your [authtoken](https://dashboard.ngrok.com/get-started/your-authtoken).
+- The [ngrok agent](https://ngrok.com/download) installed.
+- [Node.js](https://nodejs.org/) installed (for the sample app, or use your own app).
+- A Modern Treasury account.
 
 ## 1. Start your app
 
-For this tutorial, you can use the [sample Node.js app available on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
 
-To install this sample, run the following commands in a terminal:
+To install the sample, run the following in a terminal:
 
 ```bash
 git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
@@ -30,116 +36,102 @@ cd ngrok-webhook-nodejs-sample
 npm install
 ```
 
-This will get the project installed locally.
-
-Now you can launch the app by running the following command:
+Then start the app:
 
 ```bash
 npm start
 ```
 
-The app runs by default on port 3000.
+The app runs on port 3000 by default.
 
-You can validate that the app is up and running by visiting http://localhost:3000.
-The application logs request headers and body in the terminal and responds with a message in the browser.
+You can confirm it's running by visiting `http://localhost:3000`.
+The app logs request headers and body in the terminal and shows a message in the browser.
 
-## 2. Launch ngrok
+## 2. Expose your app with ngrok
 
 Once your app is running locally, you're ready to put it online securely using ngrok.
 
-1. If you're not an ngrok user yet, just [sign up for ngrok for free](https://ngrok.com/signup).
+- Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
 
-1. [Download the ngrok agent](https://download.ngrok.com).
+<Tip>
+  The ngrok agent uses your authtoken to authenticate when you start a tunnel.
+</Tip>
 
-1. Go to the [ngrok dashboard](https://dashboard.ngrok.com) and copy your Authtoken. <br />
-   **Tip:** The ngrok agent uses the auth token to log into your account when you start a tunnel.
-1. Start ngrok by running the following command:
+- Start ngrok:
 
-   ```bash
-   ngrok http 3000
-   ```
+  ```bash
+  ngrok http 3000
+  ```
 
-1. ngrok will display a URL where your localhost application is exposed to the internet (copy this URL for use with Modern Treasury).
-   ![ngrok agent running](../img/twilio/launch_ngrok_tunnel.png)
+- Copy the URL ngrok displays.
+  Your app is now exposed at that URL for use with Modern Treasury.
 
-## 3. Integrate Modern Treasury
+## 3. Configure Modern Treasury to send webhooks
 
-To register a webhook on your Modern Treasury account follow the instructions below:
+Modern Treasury can send webhook requests to your app when events occur in your account.
+To register for those events:
 
-1. Access the [Modern Treasury site](https://app.moderntreasury.com/) and sign in using your Modern Treasury account.
+- Sign in to the [Modern Treasury site](https://app.moderntreasury.com/).
+- Click **View Sandbox** to switch to Sandbox mode if you want to use example accounts.
 
-1. On the left menu, click **View Sandbox** to switch to Sandbox mode.
-   **Note**: The Sandbox view provides you with example accounts that allow you to test Modern Treasury functions. If you have an active Modern Treasury account you can follow these steps without switching to Sandbox mode.
+<Note>
+  If you have an active Modern Treasury account, you can skip switching to Sandbox.
+</Note>
 
-1. On the left menu, click **Developers**, click the **Webhooks** tab, and then click **Create New Webhook Endpoint**.
-
-1. On the **New webhook** page, enter the URL provided by the ngrok agent to expose your application to the internet in the **Webhook URL** field (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
-   ![Webhook URL](../img/modern-treasury/ngrok_url_configuration_moderntreasury.png)
-
-1. Make sure **Receive all events** is selected as the **Events to send** option and then click **Save**.
+- Click **Developers**, the **Webhooks** tab, and then **Create New Webhook Endpoint**.
+- On **New webhook**, enter your ngrok URL in **Webhook URL** (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
+- Ensure **Receive all events** is selected for **Events to send** and click **Save**.
 
 ### Run webhooks with Modern Treasury and ngrok
 
-Modern Treasury sends different request body contents depending on the event that is being triggered.
-You can trigger new calls from Modern Treasury to your application by following the instructions below.
+Modern Treasury sends different request body contents depending on the event.
+To trigger new calls from Modern Treasury to your app:
 
-1. Access the [Modern Treasury site](https://app.moderntreasury.com/) and sign in using your Modern Treasury account.
+- On the [Modern Treasury site](https://app.moderntreasury.com/), switch to Sandbox if needed.
+- Click **Payments** and **Payments Overview**.
+- Click **Create New** and **Payment Order**.
+- On **Create Payment Order**, click **Pay**, select a revenue account in **From**, a counterparty in **To**, **ACH** as **Payment Method**, enter an amount (for example, **$10.00**), and click **Create Payment Order**.
 
-1. On the left menu, click **View Sandbox** to switch to Sandbox.
-   **Note**: The Sandbox view provides you with example accounts that allow you to test Modern Treasury functions. If you have an active Modern Treasury account you can follow these steps without switching to Sandbox view.
+Confirm your localhost app receives event notifications as the payment updates and logs both headers and body in the terminal.
 
-1. On the left menu, click **Payments** and then click **Payments Overview**.
-
-1. On the **Payments Overview** page, click **Create New** and then click **Payment Order**.
-
-1. On the **Create Payment Order** page, click **Pay**, select one of the revenue accounts in the **From** field, select one of the counterparties accounts in the **To** field, select **ACH** as the **Payment Method**, enter **$10.00** as the **Amount**, and then click **Create Payment Order**.
-
-   Confirm your localhost app receives event notifications every time the payment gets updated and logs both headers and body in the terminal.
-
-Optionally, you can verify the log of the webhook call in Modern Treasury:
-
-1. On the left menu, click **Developers**, click the **Events** tab, and then click the corresponding event received by the localhost application.
-   ![Events](../img/modern-treasury/ngrok_logs_moderntreasury.png)
+You can verify events in Modern Treasury under **Developers**, **Events** tab.
 
 <InspectingRequests />
 
 <ReplayingRequests />
+
 ## Secure webhook requests
 
-The ngrok signature webhook verification feature allows ngrok to assert that requests from your Modern Treasury webhook are the only traffic allowed to make calls to your localhost app.
+ngrok can verify that incoming requests are from your Modern Treasury webhook so only that traffic reaches your app.
 
-**Note:** This ngrok feature is limited to 500 validations per month on free ngrok accounts.
-For unlimited, upgrade to Pro or Enterprise.
+<Note>
+  Webhook verification is limited to 500 validations per month on free accounts.
+  If you need more, you can upgrade to Hobbyist or Pay-as-you-go.
+  See [TPU Pricing](/pricing-limits/traffic-policy-unit-pricing/) for details.
+</Note>
 
-This is a quick step to add extra protection to your application.
+To add verification:
 
-1. Access the [Modern Treasury site](https://app.moderntreasury.com/) and sign in using your Modern Treasury account.
+- In [Modern Treasury](https://app.moderntreasury.com/), go to **Developers**, **Webhooks** tab, and click your webhook URL.
+- On the webhook page, copy the **Webhook Key** value.
+- Create a Traffic Policy file named `modern_treasury_policy.yml`.
+  Replace `{your webhook key}` with the value you copied:
 
-1. On the left menu, click **View Sandbox** to switch to Sandbox mode.
-   **Note**: The Sandbox view provides you with example accounts that allow you to test Modern Treasury functions. If you have an active Modern Treasury account you can follow these steps without switching to Sandbox mode.
+  ```yaml
+  on_http_request:
+    - actions:
+        - type: verify-webhook
+          config:
+            provider: modern_treasury
+            secret: "{your webhook key}"
+  ```
 
-1. On the left menu, click **Developers**, click the **Webhooks** tab, and then click the URL of your webhook.
+- Restart ngrok with the policy file:
 
-1. On your webhook page, copy the value of the **Webhook Key** field.
+  ```bash
+  ngrok http 3000 --traffic-policy-file modern_treasury_policy.yml
+  ```
 
-1. Create a Traffic Policy file named `modern_treasury_policy.yml`, replacing `{your webhook key}` with the value you have copied before (See [Integrate ngrok and Modern Treasury.](#setup-webhook)):
+- Create a new payment order in Modern Treasury to trigger the webhook.
 
-   ```yaml
-   on_http_request:
-     - name: "Verify Modern Treasury requests"
-       actions:
-         - type: verify-webhook
-           config:
-             provider: modern_treasury
-             secret: "{your webhook key}"
-   ```
-
-1. Restart your ngrok agent by running the command:
-
-   ```bash
-   ngrok http 3000 --traffic-policy-file modern_treasury_policy.yml
-   ```
-
-1. Access the [Modern Treasury site](https://app.moderntreasury.com/) and create a new payment order.
-
-Verify that your local application receives the request and logs information to the terminal.
+Your app should receive the request and log it in the terminal.

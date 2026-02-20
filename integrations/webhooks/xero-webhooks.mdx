@@ -4,25 +4,31 @@ sidebarTitle: Xero
 description: Develop and test Xero webhooks from localhost.
 ---
 
-
 import InspectingRequests from "/snippets/integrations/_inspecting-requests.mdx";
 import ReplayingRequests from "/snippets/integrations/_replaying-requests.mdx";
 
-This guide covers how to use ngrok to integrate your localhost app with Xero by using Webhooks.
-Xero webhooks can be used to notify an external application whenever specific events occur in your Xero account.
+This guide walks you through using ngrok to receive Xero webhooks on your localhost app.
 
 By integrating ngrok with Xero, you can:
 
-- **Develop and test Xero webhooks locally**, eliminating the time in deploying your development code to a public environment and setting it up in HTTPS.
-- **Inspect and troubleshoot requests from Xero** in real-time via the inspection UI and API.
-- **Modify and Replay Xero Webhook requests** with a single click and without spending time reproducing events manually in your Xero account.
-- **Secure your app with Xero validation provided by ngrok**. Invalid requests are blocked by ngrok before reaching your app.
+- Develop and test Xero webhooks locally without deploying to a public environment or setting up HTTPS.
+- Inspect and troubleshoot requests from Xero in real time via the inspection UI and API.
+- Modify and replay Xero webhook requests with a single click instead of reproducing events manually in your Xero account.
+- Secure your app with Xero webhook validation provided by ngrok.
+  Invalid requests are blocked by ngrok before reaching your app.
+
+## What you'll need
+
+- An [ngrok account](https://ngrok.com/signup) and your [authtoken](https://dashboard.ngrok.com/get-started/your-authtoken).
+- The [ngrok agent](https://ngrok.com/download) installed.
+- [Node.js](https://nodejs.org/) installed (for the sample app, or use your own app).
+- A Xero account.
 
 ## 1. Start your app
 
-For this tutorial, you can use the [sample Node.js app available on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
 
-To install this sample, run the following commands in a terminal:
+To install the sample, run the following in a terminal:
 
 ```bash
 git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
@@ -30,125 +36,94 @@ cd ngrok-webhook-nodejs-sample
 npm install
 ```
 
-This will get the project installed locally.
-
-Now you can launch the app by running the following command:
+Then start the app:
 
 ```bash
 npm start
 ```
 
-The app runs by default on port 3000.
+The app runs on port 3000 by default.
 
-You can validate that the app is up and running by visiting http://localhost:3000.
-The application logs request headers and body in the terminal and responds with a message in the browser.
+You can confirm it's running by visiting `http://localhost:3000`.
+The app logs request headers and body in the terminal and shows a message in the browser.
 
-## 2. Launch ngrok
+## 2. Expose your app with ngrok
 
 Once your app is running locally, you're ready to put it online securely using ngrok.
 
-1. If you're not an ngrok user yet, just [sign up for ngrok for free](https://ngrok.com/signup).
+- Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
 
-1. [Download the ngrok agent](https://download.ngrok.com).
+<Tip>
+  The ngrok agent uses your authtoken to authenticate when you start a tunnel.
+</Tip>
 
-1. Go to the [ngrok dashboard](https://dashboard.ngrok.com) and copy your Authtoken. <br />
-   **Tip:** The ngrok agent uses the auth token to log into your account when you start a tunnel.
-1. Start ngrok by running the following command:
+- Start ngrok:
 
-   ```bash
-   ngrok http 3000
-   ```
+  ```bash
+  ngrok http 3000
+  ```
 
-1. ngrok will display a URL where your localhost application is exposed to the internet (copy this URL for use with Xero).
-   ![ngrok agent running](../img/twilio/launch_ngrok_tunnel.png)
+- Copy the URL ngrok displays.
+  Your app is now exposed at that URL for use with Xero.
 
-## 3. Integrate Xero
+## 3. Configure Xero to send webhooks
 
-To register a webhook on your Xero account follow the instructions below:
+Xero can send webhook requests to your app when events occur in your organization.
+To register for those events:
 
-1. Access the [Xero Developer](https://developer.xero.com/app/manage/) site and sign in using your Xero account.
-
-1. Click one of the apps listed on the **Apps** page. If you don't have an app, create one by clicking **New app**.
-
-1. On the app page, click **Webhooks** on the left menu.
-
-1. On the **Webhooks** page, click the checkbox for **Billing subscriptions**, **Contacts** and **Invoices**, and then enter the URL provided by the ngrok agent to expose your application to the internet in the **Delivery URL** field (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
-   ![xero URL to Publish](../img/xero/ngrok_url_configuration_xero.png)
-
-1. Click **Send 'Intent to Receive'**.
-
-   Confirm your localhost app receives notification and logs both headers and body in the terminal.
-
-1. Click **Save**.
-
-1. Access the [Xero dashboard](https://go.xero.com/) site, sign in using your Xero account, and then select your organization in the drop-down menu.
-
-1. Click your organization **Dashboard** page, click **Settings**, click **Connected Apps**, and then confirm your app appears in the list of **Connected apps**.
-
-If your app isn't connected to your organization execute the following steps:
-
-1. In a new browser tab, open the following URL:
-
-   ```
-   https://login.xero.com/identity/connect/authorize?response_type=code&client_id=APP_CLIENT_ID&redirect_uri=APP_REDIRECT_URI&scope=offline_access accounting.transactions openid profile email accounting.contacts accounting.settings&state=123
-   ```
-
-   **Note**: Replace the following with values copied from the **Configuration** page of your app on the [Xero Developer](https://developer.xero.com/app/manage/) site:
-   - APP_CLIENT_ID: Your app **Client id**.
-   - APP_REDIRECT_URI: Your app **Redirect URIs**.
-
-1. On the **User Consent** page, select your organization and then click **Allow access**.
+- Sign in to [Xero Developer](https://developer.xero.com/app/manage/) and open an app (or create one with **New app**).
+- Click **Webhooks** in the left menu.
+- On **Webhooks**, select the event types you want (e.g. **Billing subscriptions**, **Contacts**, **Invoices**) and enter your ngrok URL in **Delivery URL** (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
+- Click **Send 'Intent to Receive'** and confirm your app receives the request and logs headers and body, then click **Save**.
+- In the [Xero dashboard](https://go.xero.com/), select your organization, go to **Settings** > **Connected Apps**, and confirm your app is connected.
+  If not, authorize it using the OAuth URL from your app’s **Configuration** (Client id, Redirect URIs) and complete **User Consent**.
 
 ### Run webhooks with Xero and ngrok
 
-Xero sends different request body contents depending on the event that is being triggered.
-You can trigger new calls from Xero to your application by following the instructions below.
+Xero sends different request body contents depending on the event.
+To trigger a notification:
 
-1. Access the [Xero dashboard](https://go.xero.com/) site, sign in using your Xero account, and then select your organization in the drop down menu.
+- In the [Xero dashboard](https://go.xero.com/), select your organization.
+- Go to **Contacts** > **New Contact**, fill in **Contact name**, **Account number**, **First Name**, **Last Name**, and click **Save & Close**.
 
-1. On the organization **Dashboard** page, click **Contacts** at the top menu and then click **New Contact**.
-
-1. On the **Add Contact** page, fill up the **Contact name**, **Account number**, **First Name**, and **Last Name** fields, and then click **Save & Close**.
-
-   Confirm your localhost app receives an event notification and logs both headers and body in the terminal.
+Confirm your localhost app receives the event and logs both headers and body in the terminal.
 
 <InspectingRequests />
 
 <ReplayingRequests />
+
 ## Secure webhook requests
 
-The ngrok signature webhook verification feature allows ngrok to assert that requests from your Xero webhook are the only traffic allowed to make calls to your localhost app.
+ngrok can verify that incoming requests are from your Xero webhook so only that traffic reaches your app.
 
-**Note:** This ngrok feature is limited to 500 validations per month on free ngrok accounts.
-For unlimited, upgrade to Pro or Enterprise.
+<Note>
+  Webhook verification is limited to 500 validations per month on free accounts.
+  If you need more, you can upgrade to Hobbyist or Pay-as-you-go.
+  See [TPU Pricing](/pricing-limits/traffic-policy-unit-pricing/) for details.
+</Note>
 
-This is a quick step to add extra protection to your application.
+To add verification:
 
-1. Access [Xero Developer](https://developer.xero.com/myapps/webhooks/) page and sign in using your Xero account.
+- In [Xero Developer](https://developer.xero.com/myapps/webhooks/), open your app and **Webhooks**.
+- Copy the **Webhooks key** value.
+- Create a Traffic Policy file named `xero_policy.yml`.
+  Replace `{your webhook key}` with the value you copied:
 
-1. Click your app tile and then click **Webhooks** on the left menu.
+  ```yaml
+  on_http_request:
+    - actions:
+        - type: verify-webhook
+          config:
+            provider: xero
+            secret: "{your webhook key}"
+  ```
 
-1. Copy the value of the **Webhooks key**.
+- Restart ngrok with the policy file:
 
-1. Create a Traffic Policy file named `xero_policy.yml`:
+  ```bash
+  ngrok http 3000 --traffic-policy-file xero_policy.yml
+  ```
 
-   ```yaml
-   on_http_request:
-     - actions:
-         - type: verify-webhook
-           config:
-             provider: xero
-             secret: { your webhook key }
-   ```
+- Create a new contact in the [Xero dashboard](https://go.xero.com/) to trigger the webhook.
 
-   **Note**: Replace `{your webhook key}` with the value you copied before.
-
-1. Restart your ngrok agent by running the command:
-
-   ```bash
-   ngrok http 3000 --traffic-policy-file xero_policy.yml
-   ```
-
-1. Access the [Xero dashboard](https://go.xero.com/) and create a new contact.
-
-Verify that your local application receives the request and logs information to the terminal.
+Your app should receive the request and log it in the terminal.

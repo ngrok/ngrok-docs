@@ -4,25 +4,31 @@ sidebarTitle: Castle
 description: Develop and test Castle webhooks from localhost.
 ---
 
-
 import InspectingRequests from "/snippets/integrations/_inspecting-requests.mdx";
 import ReplayingRequests from "/snippets/integrations/_replaying-requests.mdx";
 
-This guide covers how to use ngrok to integrate your localhost app with Castle by using Webhooks.
-Castle webhooks can be used to notify an external application whenever specific events occur in your Castle account.
+This guide shows you how to use ngrok to receive Castle webhooks on your localhost app.
 
 By integrating ngrok with Castle, you can:
 
-- **Develop and test Castle webhooks locally**, eliminating the time in deploying your development code to a public environment and setting it up in HTTPS.
-- **Inspect and troubleshoot requests from Castle** in real-time via the inspection UI and API.
-- **Modify and Replay Castle Webhook requests** with a single click and without spending time reproducing events manually in your Castle account.
-- **Secure your app with Castle validation provided by ngrok**. Invalid requests are blocked by ngrok before reaching your app.
+- Develop and test Castle webhooks locally without deploying to a public environment or setting up HTTPS.
+- Inspect and troubleshoot requests from Castle in real time via the inspection UI and API.
+- Modify and replay Castle webhook requests with a single click instead of reproducing events manually in your Castle account.
+- Secure your app with Castle webhook validation provided by ngrok.
+  Invalid requests are blocked by ngrok before reaching your app.
+
+## What you'll need
+
+- An [ngrok account](https://ngrok.com/signup) and your [authtoken](https://dashboard.ngrok.com/get-started/your-authtoken).
+- The [ngrok agent](https://ngrok.com/download) installed.
+- [Node.js](https://nodejs.org/) installed (for the sample app, or use your own app).
+- A Castle account.
 
 ## 1. Start your app
 
-For this tutorial, you can use the [sample Node.js app available on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
 
-To install this sample, run the following commands in a terminal:
+To install the sample, run the following in a terminal:
 
 ```bash
 git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
@@ -30,102 +36,97 @@ cd ngrok-webhook-nodejs-sample
 npm install
 ```
 
-This will get the project installed locally.
-
-Now you can launch the app by running the following command:
+Then start the app:
 
 ```bash
 npm start
 ```
 
-The app runs by default on port 3000.
+The app runs on port 3000 by default.
 
-You can validate that the app is up and running by visiting http://localhost:3000.
-The application logs request headers and body in the terminal and responds with a message in the browser.
+You can confirm it's running by visiting `http://localhost:3000`.
+The app logs request headers and body in the terminal and shows a message in the browser.
 
-## 2. Launch ngrok
+## 2. Expose your app with ngrok
 
 Once your app is running locally, you're ready to put it online securely using ngrok.
 
-1. If you're not an ngrok user yet, just [sign up for ngrok for free](https://ngrok.com/signup).
+- Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
 
-1. [Download the ngrok agent](https://download.ngrok.com).
+<Tip>
+  The ngrok agent uses your authtoken to authenticate when you start a tunnel.
+</Tip>
 
-1. Go to the [ngrok dashboard](https://dashboard.ngrok.com) and copy your Authtoken. <br />
-   **Tip:** The ngrok agent uses the auth token to log into your account when you start a tunnel.
-1. Start ngrok by running the following command:
+- Start ngrok:
 
-   ```bash
-   ngrok http 3000
-   ```
+  ```bash
+  ngrok http 3000
+  ```
 
-1. ngrok will display a URL where your localhost application is exposed to the internet (copy this URL for use with Castle).
-   ![ngrok agent running](../img/twilio/launch_ngrok_tunnel.png)
+- Copy the URL ngrok displays.
+  Your app is now exposed at that URL for use with Castle.
 
-## 3. Integrate Castle
+## 3. Configure Castle to send webhooks
 
-To register a webhook on your Castle account follow the instructions below:
+Castle can send webhook requests to your app when events occur in your account.
+To register for those events:
 
-1. Access the [Castle dashboard](https://dashboard.castle.io/) and sign in using your Castle account.
-
-1. On the left menu, click the gear icon close to your name and then click **Configuration**.
-
-1. On the **Application** page, click **Webhooks** on the top menu, and then click **Add a new Endpoint**.
-
-1. On the **Set up a new webhook endpoint** page, enter the URL provided by the ngrok agent to expose your application to the internet in the **ENDPOINT URL** field (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
-   ![Castle ENDPOINT URL](../img/castle/ngrok_url_configuration_castle.png)
-
-1. Select all events under the **EVENTS TO SUBSCRIBE** section and then click **Save**.
-
-1. On the **Webhooks** page, click the slider icon to activate the webhook.
+- Sign in to the [Castle dashboard](https://dashboard.castle.io/).
+- On the left menu, click the gear icon next to your name and then click **Configuration**.
+- On the **Application** page, click **Webhooks** in the top menu and then click **Add a new Endpoint**.
+- On the **Set up a new webhook endpoint** page, enter your ngrok URL in the **ENDPOINT URL** field (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
+- Select all events under **EVENTS TO SUBSCRIBE** and click **Save**.
+- On the **Webhooks** page, click the slider icon to activate the webhook.
 
 ### Run webhooks with Castle and ngrok
 
-Castle sends different request body contents depending on the event that is being triggered.
-You can trigger new calls from Castle to your application by following the instructions below.
+Castle sends different request body contents depending on the event.
+To trigger new calls from Castle to your app:
 
-1. On the **Application** page, click **Webhooks** on the top menu and then click **Test** for your webhook.
+- On the **Application** page, click **Webhooks** in the top menu and then click **Test** for your webhook.
+- On the **Test the webhook endpoint** popup, select an event in the **EVENT** field and click **Send test webhook**.
 
-1. On the **Test the webhook endpoint** popup, select an event in the **EVENT** field and then click **Send test webhook**.
-   **Note**: Optionally, you can create an event by using the Castle SDK.
+<Note>
+  You can also create an event using the Castle SDK.
+</Note>
 
-   Confirm your localhost app receives the test event notification and logs both headers and body in the terminal.
+Confirm your localhost app receives the test event and logs both headers and body in the terminal.
 
 <InspectingRequests />
 
 <ReplayingRequests />
+
 ## Secure webhook requests
 
-The ngrok signature webhook verification feature allows ngrok to assert that requests from your Castle webhook are the only traffic allowed to make calls to your localhost app.
+ngrok can verify that incoming requests are from your Castle webhook so only that traffic reaches your app.
 
-**Note:** This ngrok feature is limited to 500 validations per month on free ngrok accounts.
-For unlimited, upgrade to Pro or Enterprise.
+<Note>
+  Webhook verification is limited to 500 validations per month on free accounts.
+  If you need more, you can upgrade to Hobbyist or Pay-as-you-go.
+  See [TPU Pricing](/pricing-limits/traffic-policy-unit-pricing/) for details.
+</Note>
 
-This is a quick step to add extra protection to your application.
+To add verification:
 
-1. Access the [Castle dashboard](https://dashboard.castle.io/) and sign in using your Castle account.
+- In the [Castle dashboard](https://dashboard.castle.io/), go to **Configuration** and copy the value of the **API SECRET** field on the **Application** page.
+- Create a Traffic Policy file named `castle_policy.yml`.
+  Replace `{your api secret}` with the value you copied:
 
-1. On the left menu, click the gear icon close to your name and then click **Configuration**.
+  ```yaml
+  on_http_request:
+    - actions:
+        - type: verify-webhook
+          config:
+            provider: castle
+            secret: "{your api secret}"
+  ```
 
-1. On the **Application** page, copy the value of the **API SECRET** field.
+- Restart ngrok with the policy file:
 
-1. Create a Traffic Policy file named `castle_policy.yml`, replacing `{your api secret}` with the value you have copied before:
+  ```bash
+  ngrok http 3000 --traffic-policy-file castle_policy.yml
+  ```
 
-   ```yaml
-   on_http_request:
-     - actions:
-         - type: verify-webhook
-           config:
-             provider: castle
-             secret: "{your api secret}"
-   ```
+- Test the webhook endpoint or create an event using the Castle SDK to trigger a request.
 
-1. Restart your ngrok agent by running the command:
-
-   ```bash
-   ngrok http 3000 --traffic-policy-file castle_policy.yml
-   ```
-
-1. Access the [Castle dashboard](https://dashboard.castle.io/) and test the webhook endpoint or create an event by using the Castle SDK.
-
-Verify that your local application receives the request and logs information to the terminal.
+Your app should receive the request and log it in the terminal.

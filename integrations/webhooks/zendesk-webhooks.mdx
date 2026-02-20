@@ -4,25 +4,31 @@ sidebarTitle: Zendesk
 description: Develop and test Zendesk webhooks from localhost.
 ---
 
-
 import InspectingRequests from "/snippets/integrations/_inspecting-requests.mdx";
 import ReplayingRequests from "/snippets/integrations/_replaying-requests.mdx";
 
-This guide covers how to use ngrok to integrate your localhost app with Zendesk by using Webhooks.
-Zendesk webhooks can be used to notify an external application whenever specific events occur in your Zendesk account.
+This guide explains how to use ngrok to receive Zendesk webhooks on your localhost app.
 
 By integrating ngrok with Zendesk, you can:
 
-- **Develop and test Zendesk webhooks locally**, eliminating the time in deploying your development code to a public environment and setting it up in HTTPS.
-- **Inspect and troubleshoot requests from Zendesk** in real-time via the inspection UI and API.
-- **Modify and Replay Zendesk Webhook requests** with a single click and without spending time reproducing events manually in your Zendesk account.
-- **Secure your app with Zendesk validation provided by ngrok**. Invalid requests are blocked by ngrok before reaching your app.
+- Develop and test Zendesk webhooks locally without deploying to a public environment or setting up HTTPS.
+- Inspect and troubleshoot requests from Zendesk in real time via the inspection UI and API.
+- Modify and replay Zendesk webhook requests with a single click instead of reproducing events manually in your Zendesk account.
+- Secure your app with Zendesk webhook validation provided by ngrok.
+  Invalid requests are blocked by ngrok before reaching your app.
+
+## What you'll need
+
+- An [ngrok account](https://ngrok.com/signup) and your [authtoken](https://dashboard.ngrok.com/get-started/your-authtoken).
+- The [ngrok agent](https://ngrok.com/download) installed.
+- [Node.js](https://nodejs.org/) installed (for the sample app, or use your own app).
+- A Zendesk account.
 
 ## 1. Start your app
 
-For this tutorial, you can use the [sample Node.js app available on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
 
-To install this sample, run the following commands in a terminal:
+To install the sample, run the following in a terminal:
 
 ```bash
 git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
@@ -30,131 +36,94 @@ cd ngrok-webhook-nodejs-sample
 npm install
 ```
 
-This will get the project installed locally.
-
-Now you can launch the app by running the following command:
+Then start the app:
 
 ```bash
 npm start
 ```
 
-The app runs by default on port 3000.
+The app runs on port 3000 by default.
 
-You can validate that the app is up and running by visiting http://localhost:3000.
-The application logs request headers and body in the terminal and responds with a message in the browser.
+You can confirm it's running by visiting `http://localhost:3000`.
+The app logs request headers and body in the terminal and shows a message in the browser.
 
-## 2. Launch ngrok
+## 2. Expose your app with ngrok
 
 Once your app is running locally, you're ready to put it online securely using ngrok.
 
-1. If you're not an ngrok user yet, just [sign up for ngrok for free](https://ngrok.com/signup).
+- Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
 
-1. [Download the ngrok agent](https://download.ngrok.com).
+<Tip>
+  The ngrok agent uses your authtoken to authenticate when you start a tunnel.
+</Tip>
 
-1. Go to the [ngrok dashboard](https://dashboard.ngrok.com) and copy your Authtoken. <br />
-   **Tip:** The ngrok agent uses the auth token to log into your account when you start a tunnel.
-1. Start ngrok by running the following command:
+- Start ngrok:
 
-   ```bash
-   ngrok http 3000
-   ```
+  ```bash
+  ngrok http 3000
+  ```
 
-1. ngrok will display a URL where your localhost application is exposed to the internet (copy this URL for use with Zendesk).
-   ![ngrok agent running](../img/twilio/launch_ngrok_tunnel.png)
+- Copy the URL ngrok displays.
+  Your app is now exposed at that URL for use with Zendesk.
 
-## 3. Integrate Zendesk
+## 3. Configure Zendesk to send webhooks
 
-To register a webhook on your Zendesk account follow the instructions below:
+Zendesk can send webhook requests to your app when automation rules run.
+To set it up:
 
-1. Access [Zendesk](https://www.zendesk.com), and sign in using your Zendesk account.
+- Sign in to [Zendesk](https://www.zendesk.com), go to **Admin** (gear icon) > **Admin Center**.
+- Click **Apps and integrations** > **Webhooks** > **Create Webhooks**.
+- On **Create webhook**, enter a **Name** and your ngrok URL in **Endpoint URL** (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
+- Set **Request method** to **POST** and **Request format** to **JSON** (for production you can add Basic or Bearer authentication; for this tutorial use **None**).
+- Click **Test webhook** > **Send test**, confirm your app receives the request, then click **Create**.
+- Create an automation: **Objects and rules** > **Automations** > **Add automation**. Set title, conditions (e.g. Ticket is Created, Type is Incident, Priority is High), and under **Perform these actions** add **Notify webhook** with a **JSON body** (e.g. `{"message":"{{ticket.requester.name}} we are setting your ticket {{ticket.title}} to urgent priority."}`). Click **Create automation**.
 
-1. On the left menu, click the gear icon named **Admin** and then click **Go to Admin Center**.
+### Run webhooks with Zendesk and ngrok
 
-1. On the **Admin Center** page, click **Apps and integrations** on the left menu, and then click **Webhooks**.
+With the automation above, a high-priority incident ticket triggers the webhook:
 
-1. On the **Get started with webhooks** page, click **Create Webhooks**.
+- In [Zendesk](https://www.zendesk.com), click **+ Add** > **Ticket**.
+- Set **Requester**, **Type** to **Incident**, **Priority** to **High**, enter a subject, and click **Submit as New**.
 
-1. In the **Create webhook** page, provide your webhook with a **Name** and in the **Endpoint URL** field enter the URL provided by the ngrok agent to expose your application to the internet (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
-   ![Your endpoint URL](../img/zendesk/ngrok_url_configuration_zendesk.png)
-
-1. On the same page, select **POST** for the **Request method** field and select **JSON** for the **Request format** field.
-   **Tip**: For your production webhooks, it's recommended to implement your application with either **Basic Authentication** or **Bearer token** authentication method. For this tutorial, leave the **Authentication** field selected as **None** as the sample application doesn't require any sort of authentication.
-
-1. Click **Test webhook** and then click **Send test**.
-
-1. Confirm your localhost app receives the test event notification and logs both headers and body to the terminal, then click **Create** on the **Create webhook** page.
-
-1. On the left menu, click **Objects and rules** and then click **Automations** under the **Business rules** section.
-
-1. On the **Automations** page, click **Add automation** and configure the title, conditions, and actions as per the following image.
-   ![Automation Rule](../img/zendesk/automation_rule_configuration_zendesk.png)
-
-1. In the **Perform these actions**, enter a message like the following for the **JSON body**:
-   `{"message":"{{ticket.requester.name}} we are setting your ticket {{ticket.title}} to urgent priority."}`
-
-   In this automation example, a high-priority incident ticket will be set to urgent priority and Zendesk will call your sample application to communicate about this action.
-
-1. Click **Create automation**.
-
-### Run webhooks with Zendesk and ngrok <a id="run-webhook"></a>
-
-As per the previous configuration, you've selected to trigger your webhook anytime a high-priority incident ticket is created.
-Zendesk sends different request body contents depending on the automation rules you create.
-Follow the instructions below to test your webhook with a new ticket.
-
-1. On the same browser, access [Zendesk](https://www.zendesk.com) and sign in using your Zendesk account.
-
-1. On the top left corner of the home page, mouse over **+ Add**, and then click **Ticket** under the **New** section.
-
-1. In the **New ticket** page, select a user for the **Requester** field, select **Incident** for the **Type** field, select **High** for the **Priority** field, enter a subject, and then click **Submit as New**.
-
-   Zendesk evaluates automation rules every hour.
-   You may need to wait about an hour until Zendesk makes the call to the webhook and your application receives the message about your ticket.
-
-1. Optionally, on the **Admin Center** page, access the **Webhooks** link on the left menu, click your webhook, click the **Activity** tab, and then click the last log that appears on the page.
-   ![Zendesk Webhook logs](../img/zendesk/zendesk_webhook_logs.png)
-
-   Confirm the post request sent by Zendesk is the same as the request received by the localhost application.
+Zendesk evaluates automations on a schedule (e.g. hourly), so you may need to wait for the webhook to be called.
+You can check **Admin Center** > **Webhooks** > your webhook > **Activity** to see delivery logs.
 
 <InspectingRequests />
 
 <ReplayingRequests />
+
 ## Secure webhook requests
 
-The ngrok signature webhook verification feature allows ngrok to assert that requests from your Zendesk webhook are the only traffic allowed to make calls to your localhost app.
+ngrok can verify that incoming requests are from your Zendesk webhook so only that traffic reaches your app.
 
-**Note:** This ngrok feature is limited to 500 validations per month on free ngrok accounts.
-For unlimited, upgrade to Pro or Enterprise.
+<Note>
+  Webhook verification is limited to 500 validations per month on free accounts.
+  If you need more, you can upgrade to Hobbyist or Pay-as-you-go.
+  See [TPU Pricing](/pricing-limits/traffic-policy-unit-pricing/) for details.
+</Note>
 
-This is a quick step to add extra protection to your application.
+To add verification:
 
-1. Access [Zendesk](https://www.zendesk.com), and sign in using your Zendesk account.
+- In [Zendesk](https://www.zendesk.com), go to **Admin Center** > **Apps and integrations** > **Webhooks** and click your webhook.
+- Click **Reveal secret** and **Copy** to copy the **Secret key**.
+- Create a Traffic Policy file named `zendesk_policy.yml`.
+  Replace `{your secret key}` with the value you copied:
 
-1. On the left menu, click the gear icon named **Admin** and then click **Go to Admin Center**.
+  ```yaml
+  on_http_request:
+    - actions:
+        - type: verify-webhook
+          config:
+            provider: zendesk
+            secret: "{your secret key}"
+  ```
 
-1. On the **Admin Center** page, click **Apps and integrations** on the left menu, and then click **Webhooks**.
+- Restart ngrok with the policy file:
 
-1. On the **Webhooks** page, click your webhook.
+  ```bash
+  ngrok http 3000 --traffic-policy-file zendesk_policy.yml
+  ```
 
-1. In your webhook page, click **Reveal secret** and click **Copy** to copy the **Secret key** value.
+- Create another high-priority incident ticket (as in [Run webhooks with Zendesk and ngrok](#run-webhooks-with-zendesk-and-ngrok)) to trigger the webhook.
 
-1. Create a Traffic Policy file named `zendesk_policy.yml`, replacing `{your secret key}` with the value you copied before:
-
-   ```yaml
-   on_http_request:
-     - actions:
-         - type: verify-webhook
-           config:
-             provider: zendesk
-             secret: "{your secret key}"
-   ```
-
-1. Restart your ngrok agent by running the command:
-
-   ```bash
-   ngrok http 3000 --traffic-policy-file zendesk_policy.yml
-   ```
-
-1. Execute the procedures in the [Run Webhooks with Zendesk and ngrok](#run-webhooks-with-zendesk-and-ngrok-) section to create a new ticket.
-
-   Verify that your local application receives the request and logs information to the terminal.
+Your app should receive the request and log it in the terminal.

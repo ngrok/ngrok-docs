@@ -4,25 +4,31 @@ sidebarTitle: DocuSign
 description: Develop and test DocuSign webhooks from localhost.
 ---
 
-
 import InspectingRequests from "/snippets/integrations/_inspecting-requests.mdx";
 import ReplayingRequests from "/snippets/integrations/_replaying-requests.mdx";
 
-This guide covers how to use ngrok to integrate your localhost app with DocuSign by using Webhooks.
-DocuSign webhooks can be used to notify an external application whenever specific events occur in your DocuSign account.
+This guide walks you through using ngrok to receive DocuSign webhooks on your localhost app.
 
 By integrating ngrok with DocuSign, you can:
 
-- **Develop and test DocuSign webhooks locally**, eliminating the time in deploying your development code to a public environment and setting it up in HTTPS.
-- **Inspect and troubleshoot requests from DocuSign** in real-time via the inspection UI and API.
-- **Modify and Replay DocuSign Webhook requests** with a single click and without spending time reproducing events manually in your DocuSign account.
-- **Secure your app with DocuSign validation provided by ngrok**. Invalid requests are blocked by ngrok before reaching your app.
+- Develop and test DocuSign webhooks locally without deploying to a public environment or setting up HTTPS.
+- Inspect and troubleshoot requests from DocuSign in real time via the inspection UI and API.
+- Modify and replay DocuSign webhook requests with a single click instead of reproducing events manually in your DocuSign account.
+- Secure your app with DocuSign webhook validation provided by ngrok.
+  Invalid requests are blocked by ngrok before reaching your app.
+
+## What you'll need
+
+- An [ngrok account](https://ngrok.com/signup) and your [authtoken](https://dashboard.ngrok.com/get-started/your-authtoken).
+- The [ngrok agent](https://ngrok.com/download) installed.
+- [Node.js](https://nodejs.org/) installed (for the sample app, or use your own app).
+- A DocuSign account.
 
 ## 1. Start your app
 
-For this tutorial, you can use the [sample Node.js app available on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
 
-To install this sample, run the following commands in a terminal:
+To install the sample, run the following in a terminal:
 
 ```bash
 git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
@@ -30,111 +36,102 @@ cd ngrok-webhook-nodejs-sample
 npm install
 ```
 
-This will get the project installed locally.
-
-Now you can launch the app by running the following command:
+Then start the app:
 
 ```bash
 npm start
 ```
 
-The app runs by default on port 3000.
+The app runs on port 3000 by default.
 
-You can validate that the app is up and running by visiting http://localhost:3000.
-The application logs request headers and body in the terminal and responds with a message in the browser.
+You can confirm it's running by visiting `http://localhost:3000`.
+The app logs request headers and body in the terminal and shows a message in the browser.
 
-## 2. Launch ngrok
+## 2. Expose your app with ngrok
 
 Once your app is running locally, you're ready to put it online securely using ngrok.
 
-1. If you're not an ngrok user yet, just [sign up for ngrok for free](https://ngrok.com/signup).
+- Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
 
-1. [Download the ngrok agent](https://download.ngrok.com).
+<Tip>
+  The ngrok agent uses your authtoken to authenticate when you start a tunnel.
+</Tip>
 
-1. Go to the [ngrok dashboard](https://dashboard.ngrok.com) and copy your Authtoken. <br />
-   **Tip:** The ngrok agent uses the auth token to log into your account when you start a tunnel.
-1. Start ngrok by running the following command:
+- Start ngrok:
 
-   ```bash
-   ngrok http 3000
-   ```
+  ```bash
+  ngrok http 3000
+  ```
 
-1. ngrok will display a URL where your localhost application is exposed to the internet (copy this URL for use with DocuSign).
-   ![ngrok agent running](../img/twilio/launch_ngrok_tunnel.png)
+- Copy the URL ngrok displays.
+  Your app is now exposed at that URL for use with DocuSign.
 
-## 3. Integrate DocuSign
+## 3. Configure DocuSign to send webhooks
 
-To register a webhook on your DocuSign account follow the instructions below:
+DocuSign can send webhook requests to your app when events occur in your account.
+To register for those events:
 
-1. Access [DocuSign](https://docusign.com/) and sign in using your DocuSign account.
-
-1. In the top menu, click **Settings** and then click **Connect** under the **INTEGRATIONS** section of the left menu.
-
-1. In the **Connect** page, click **ADD CONFIGURATION** and then click **Custom**.
-
-1. On the **Add Custom Configuration** page, enter a name in the **Name** field, and in the **URL to Publish** field enter the URL provided by the ngrok agent to expose your application to the internet (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
-   ![URL to Publish](../img/docusign/ngrok_url_configuration_docusign.png)
-
-1. In the **Trigger Events** sections, expand **Envelope and Recipients**, click **Envelope Sent**, and then click **ADD CONFIGURATION** at the bottom of the page.
+- Sign in to [DocuSign](https://docusign.com/).
+- In the top menu, click **Settings** and then click **Connect** under **INTEGRATIONS** in the left menu.
+- On the **Connect** page, click **ADD CONFIGURATION** and then click **Custom**.
+- On the **Add Custom Configuration** page, enter a name in **Name**, enter your ngrok URL in **URL to Publish** (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
+- Under **Trigger Events**, expand **Envelope and Recipients**, click **Envelope Sent**, and then click **ADD CONFIGURATION** at the bottom.
 
 ### Run webhooks with DocuSign and ngrok
 
-DocuSign sends different request body contents depending on the event that is being triggered.
-You can trigger new calls from DocuSign to your application by following the instructions below.
+DocuSign sends different request body contents depending on the event.
+To trigger new calls from DocuSign to your app:
 
-1. In the same browser, access your DocuSign inbox by clicking **Manage** on the top menu and then clicking **START NOW**.
+- Click **Manage** in the top menu and then **START NOW** to open your DocuSign inbox.
+- On the **Upload a Document and Add Envelope Recipients** page, click **UPLOAD** and then **Desktop**.
+- Select a document, expand **Add recipients**, and click **I'm the only signer**.
 
-1. In the **Upload a Document and Add Envelope Recipients** page, click **UPLOAD** and then click **Desktop**.
+<Note>
+  You can optionally select a user from the **Name** list.
+</Note>
 
-1. Select a document from your desktop, expand the **Add recipients** section and then click **I'm the only signer**.
-   **Tip**: Optionally, you can select a user from the **Name** list.
+- Click **SIGN** at the bottom right.
 
-1. Click **SIGN** at the bottom right of the page.
+Confirm your localhost app receives the envelope event and logs both headers and body in the terminal.
 
-   Confirm your localhost app receives the create-envelop event notification and logs both headers and body in the terminal.
-
-Optionally, you can verify the log of the webhook call in DocuSign:
-
-1. Access your DocuSign account home page, and click **Settings** on the top menu.
-
-1. On the left menu, click **Connect**, click the **LOGS** tab, and then click the most recent entry in the log list.
-   ![Logs](../img/docusign/ngrok_logs_docusign.png)
+You can verify the webhook in DocuSign: go to **Settings**, **Connect**, and the **LOGS** tab.
 
 <InspectingRequests />
 
 <ReplayingRequests />
+
 ## Secure webhook requests
 
-The ngrok signature webhook verification feature allows ngrok to assert that requests from your DocuSign webhook are the only traffic allowed to make calls to your localhost app.
+ngrok can verify that incoming requests are from your DocuSign webhook so only that traffic reaches your app.
 
-**Note:** This ngrok feature is limited to 500 validations per month on free ngrok accounts.
-For unlimited, upgrade to Pro or Enterprise.
+<Note>
+  Webhook verification is limited to 500 validations per month on free accounts.
+  If you need more, you can upgrade to Hobbyist or Pay-as-you-go.
+  See [TPU Pricing](/pricing-limits/traffic-policy-unit-pricing/) for details.
+</Note>
 
-This is a quick step to add extra protection to your application.
+To add verification:
 
-1. Access your DocuSign account home page and click **Settings** on the top menu.
+- In DocuSign, go to **Settings** and **Connect**, open the **CONNECT KEYS** tab, click **ADD SECRET KEY**, and copy the key value.
+- In the **APPLICATIONS** tab, click your webhook and enable **Include HMAC Signature** in **Integration and Security Settings**.
+- Create a Traffic Policy file named `docusign_policy.yml`.
+  Replace `{your connect key}` with the value you copied:
 
-1. On the left menu, click **Connect**, click the **CONNECT KEYS** tab, click **ADD SECRET KEY**, and then copy the key value generated by DocuSign.
+  ```yaml
+  on_http_request:
+    - actions:
+        - type: verify-webhook
+          config:
+            provider: docusign
+            secret: "{your connect key}"
+  ```
 
-1. In the **Connect** page, click the **APPLICATIONS** tab, click your webhook, and then in the **Integration and Security Settings** section click **Include HMAC Signature**.
+- Restart ngrok with the policy file:
 
-1. Create a Traffic Policy file named `docusign_policy.yml`, replacing `{your connect key}` with the value you copied before:
+  ```bash
+  ngrok http 3000 --traffic-policy-file docusign_policy.yml
+  ```
 
-   ```yaml
-   on_http_request:
-     - actions:
-         - type: verify-webhook
-           config:
-             provider: docusign
-             secret: "{your connect key}"
-   ```
+- Create a new envelope in [DocuSign](https://app.docusign.com/home) to trigger the webhook.
 
-1. Restart your ngrok agent by running the command:
-
-   ```bash
-   ngrok http 3000 --traffic-policy-file docusign_policy.yml
-   ```
-
-1. Access [DocuSign](https://app.docusign.com/home) and create a new envelope.
-
-   Verify that your local application receives the request and logs information to the terminal.
+Your app should receive the request and log it in the terminal.

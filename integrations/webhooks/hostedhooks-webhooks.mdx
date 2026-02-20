@@ -4,25 +4,31 @@ sidebarTitle: HostedHooks
 description: Develop and test HostedHooks webhooks from localhost.
 ---
 
-
 import InspectingRequests from "/snippets/integrations/_inspecting-requests.mdx";
 import ReplayingRequests from "/snippets/integrations/_replaying-requests.mdx";
 
-This guide covers how to use ngrok to integrate your localhost app with HostedHooks by using Webhooks.
-HostedHooks webhooks can be used to route requests to HostedHooks servers to your localhost app.
+This guide walks you through using ngrok to receive HostedHooks webhooks on your localhost app.
 
 By integrating ngrok with HostedHooks, you can:
 
-- **Develop and test HostedHooks webhooks locally**, eliminating the time in deploying your development code to a public environment and setting it up in HTTPS.
-- **Inspect and troubleshoot requests from HostedHooks** in real-time via the inspection UI and API.
-- **Modify and Replay HostedHooks Webhook requests** with a single click and without spending time reproducing events manually in your HostedHooks account.
-- **Secure your app with HostedHooks validation provided by ngrok**. Invalid requests are blocked by ngrok before reaching your app.
+- Develop and test HostedHooks webhooks locally without deploying to a public environment or setting up HTTPS.
+- Inspect and troubleshoot requests from HostedHooks in real time via the inspection UI and API.
+- Modify and replay HostedHooks webhook requests with a single click instead of reproducing events manually in your HostedHooks account.
+- Secure your app with HostedHooks webhook validation provided by ngrok.
+  Invalid requests are blocked by ngrok before reaching your app.
+
+## What you'll need
+
+- An [ngrok account](https://ngrok.com/signup) and your [authtoken](https://dashboard.ngrok.com/get-started/your-authtoken).
+- The [ngrok agent](https://ngrok.com/download) installed.
+- [Node.js](https://nodejs.org/) installed (for the sample app, or use your own app).
+- A HostedHooks account.
 
 ## 1. Start your app
 
-For this tutorial, you can use the [sample Node.js app available on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
 
-To install this sample, run the following commands in a terminal:
+To install the sample, run the following in a terminal:
 
 ```bash
 git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
@@ -30,137 +36,113 @@ cd ngrok-webhook-nodejs-sample
 npm install
 ```
 
-This will get the project installed locally.
-
-Now you can launch the app by running the following command:
+Then start the app:
 
 ```bash
 npm start
 ```
 
-The app runs by default on port 3000.
+The app runs on port 3000 by default.
 
-You can validate that the app is up and running by visiting http://localhost:3000.
-The application logs request headers and body in the terminal and responds with a message in the browser.
+You can confirm it's running by visiting `http://localhost:3000`.
+The app logs request headers and body in the terminal and shows a message in the browser.
 
-## 2. Launch ngrok
+## 2. Expose your app with ngrok
 
 Once your app is running locally, you're ready to put it online securely using ngrok.
 
-1. If you're not an ngrok user yet, just [sign up for ngrok for free](https://ngrok.com/signup).
+- Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
 
-1. [Download the ngrok agent](https://download.ngrok.com).
+<Tip>
+  The ngrok agent uses your authtoken to authenticate when you start a tunnel.
+</Tip>
 
-1. Go to the [ngrok dashboard](https://dashboard.ngrok.com) and copy your Authtoken. <br />
-   **Tip:** The ngrok agent uses the auth token to log into your account when you start a tunnel.
-1. Start ngrok by running the following command:
+- Start ngrok:
 
-   ```bash
-   ngrok http 3000
-   ```
+  ```bash
+  ngrok http 3000
+  ```
 
-1. ngrok will display a URL where your localhost application is exposed to the internet (copy this URL for use with HostedHooks).
-   ![ngrok agent running](../img/twilio/launch_ngrok_tunnel.png)
+- Copy the URL ngrok displays.
+  Your app is now exposed at that URL for use with HostedHooks.
 
-## 3. Integrate HostedHooks
+## 3. Configure HostedHooks to send webhooks
 
-To register a webhook on your HostedHooks account follow the instructions below:
+HostedHooks can send webhook requests to your app when events occur in your account.
+To register for those events:
 
-1. Access [HostedHooks](https://www.hostedhooks.com/) and sign in using your HostedHooks account.
+- Sign in to [HostedHooks](https://www.hostedhooks.com/).
+- Click **Apps** and then **Setup New App**.
+- On **Setup Your Application**, enter a name in **App Name** (for example, `My App`) and click **Save App**.
+- On the app page, click **Create Your Webhook Event** (Step 1), enter an event type in **Event Type** (for example, `myapp.event`), and click **Save Webhook Event**.
+- Click **Create your first Subscriber** (Step 2), enter a name in **Subscription Name** (for example, `My Localhost App`), and click **Save Subscription**.
+- On the subscription page, click **+ New Endpoint**.
+- On **New Endpoint**, enter your ngrok URL in **Webhook URL** (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`), enter `1.0` in **Version**, enter a description (for example, `ngrok`), and click **Save Endpoint**.
+- Go back to the app page and click **Subscribe to a webhook event** (Step 4).
+- On **Details**, select your event in **Subscribed Events** and click **Add Event**.
+- Go back to the app page and click **Send a test webhook message**.
 
-1. Click **Apps** on the left menu, and then click **Setup New App**.
-
-1. On the **Setup Your Application** page, enter `My App` in the **App Name** field and then click **Save App**.
-
-1. On the app page, click **Create Your Webhook Event** (Step 1), enter `myapp.event` in the **Event Type** field, and then click **Save Webhook Event**.
-
-1. On the app page, click **Create your first Subscriber** (Step 2), enter `My Localhost App` in the **Subscription Name** field, and then click **Save Subscription**.
-
-1. On the **My Localhost App Subscription** page, click **+ New Endpoint**.
-
-1. On the **New Endpoint** page, enter the URL provided by the ngrok agent to expose your application to the internet in the **Webhook URL** field (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
-   ![hostedhooks URL to Publish](../img/hostedhooks/ngrok_url_configuration_hostedhooks.png)
-
-1. Enter `1.0` in the **Version** field, enter `ngrok` in the **Description** field, and then click **Save Endpoint**.
-
-1. Click the left arrow to go back to the app page and then click **Subscribe to a webhook event** (Step 4).
-
-1. On the **Details** page, select **myapp.event** in the **Subscribed Events** selector and then click **Add Event**.
-
-1. Click the left arrow twice to go back to the app page and then click **Send a test webhook message**.
-
-   Confirm your localhost app receives the **myapp.event** event notification and logs both headers and body in the terminal.
+Confirm your localhost app receives the event and logs both headers and body in the terminal.
 
 ### Run webhooks with HostedHooks and ngrok
 
-Whenever you post a message to the HostedHooks message endpoint using the value **myapp.event** as the event type inside the body of the request, HostedHooks routes this message to your localhost app through your ngrok URL.
-You can trigger new calls from HostedHooks to your application by following the instructions below.
+When you POST to the HostedHooks message endpoint with an event type in the body, HostedHooks routes the message to your app via your ngrok URL.
+To trigger a call:
 
-1. Open a terminal window and run the following command:
+- Run the following (replace `APP_ID` with your app ID from the HostedHooks app page and `API_KEY` with your **API Key** from **Settings**):
 
-   ```bash
-   curl --request POST --url https://hostedhooks.com/api/v1/apps/APP_ID/messages
-   \
-   --header 'Authorization: Bearer API_KEY' \
-   --header 'Content-Type: application/json' --data '{
-       "data": {
-           "foo": "bar"
-       },
-       "event_type": "myapp.event",
-       "version": "1.0",
-       "event_id": "00001"
-   }'
-   ```
+  ```bash
+  curl --request POST --url https://hostedhooks.com/api/v1/apps/APP_ID/messages \
+  --header 'Authorization: Bearer API_KEY' \
+  --header 'Content-Type: application/json' --data '{
+      "data": {"foo": "bar"},
+      "event_type": "myapp.event",
+      "version": "1.0",
+      "event_id": "00001"
+  }'
+  ```
 
-   **Note**: Replace the following with the corresponding values: - APP_ID: The ID of your application.
-   Copy the value from your app page on HostedHooks, in the **My App** section. - API_KEY: The **API Key** value from the **Settings** page on HostedHooks.
+Confirm your localhost app receives the event and logs both headers and body in the terminal.
 
-   Confirm your localhost app receives the event notification and logs both headers and body in the terminal.
-
-Alternatively, you can verify the log of the webhook call in HostedHooks:
-
-1. Access the [HostedHooks Dashboard](https://www.hostedhooks.com/), click **Apps** on the left menu, and then click your app tile.
-
-1. On your app page, scroll down to the **Inbound Messages** section and verify the messages sent to your app.
-   ![Webhook Logs](../img/hostedhooks/ngrok_logs_hostedhooks.png)
+You can verify messages in the HostedHooks Dashboard under **Apps**, your app, and the **Inbound Messages** section.
 
 <InspectingRequests />
 
 <ReplayingRequests />
+
 ## Secure webhook requests
 
-The ngrok signature webhook verification feature allows ngrok to assert that requests from your HostedHooks webhook are the only traffic allowed to make calls to your localhost app.
+ngrok can verify that incoming requests are from your HostedHooks webhook so only that traffic reaches your app.
 
-**Note:** This ngrok feature is limited to 500 validations per month on free ngrok accounts.
-For unlimited, upgrade to Pro or Enterprise.
+<Note>
+  Webhook verification is limited to 500 validations per month on free accounts.
+  If you need more, you can upgrade to Hobbyist or Pay-as-you-go.
+  See [TPU Pricing](/pricing-limits/traffic-policy-unit-pricing/) for details.
+</Note>
 
-This is a quick step to add extra protection to your application.
+To add verification:
 
-1. Access the [HostedHooks Dashboard](https://www.hostedhooks.com/), click **Apps** on the left menu, and then click your app tile.
+- In the [HostedHooks Dashboard](https://www.hostedhooks.com/), go to **Apps** and click your app.
+- In **Subscribers**, click **View**, then **View** in **Endpoints**.
+- On the **Endpoint** page, click **Reveal** next to **Signing Secret** and copy the value.
+- Create a Traffic Policy file named `hostedhooks_policy.yml`.
+  Replace `{app sign secret}` with the value you copied:
 
-1. On the app page, click **View** in the **Subscribers** section and click **View** in the **Endpoints** section.
+  ```yaml
+  on_http_request:
+    - actions:
+        - type: verify-webhook
+          config:
+            provider: hostedhooks
+            secret: "{app sign secret}"
+  ```
 
-1. On the **Endpoint** page, click **Reveal** in the **Signing Secret** field and copy the value that appears.
+- Restart ngrok with the policy file:
 
-1. Create a Traffic Policy file named `hostedhooks_policy.yml`, replacing `{app sign secret}` with the value you copied before:
+  ```bash
+  ngrok http 3000 --traffic-policy-file hostedhooks_policy.yml
+  ```
 
-   ```yaml
-   on_http_request:
-     - name: "Verify HostedHooks requests"
-       actions:
-         - type: verify-webhook
-           config:
-             provider: "hostedhooks"
-             secret: "{app sign secret}"
-   ```
+- Post a new message to the HostedHooks message endpoint (use a unique **event_id** in the JSON body).
 
-1. Restart your ngrok agent by running the command:
-
-   ```bash
-   ngrok http 3000 --traffic-policy-file hostedhooks_policy.yml
-   ```
-
-1. Post a new message to the message endpoint of HostedHooks by following the same procedure as the [Run Webhooks with HostedHooks and ngrok](#run-webhook) section.
-   **Tip**: Modify the value of the **event_id** field in the JSON body. This value must be unique per app.
-
-Verify that your local application receives the request and logs information to the terminal.
+Your app should receive the request and log it in the terminal.

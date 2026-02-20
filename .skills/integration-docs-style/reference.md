@@ -91,3 +91,13 @@
 ## SEO and Metadata
 
 - **SEO-friendly descriptions**: Frontmatter descriptions should be descriptive for SEO purposes and 150 characters or less
+
+---
+
+## Before you're done (verification)
+
+Before you consider the edit complete:
+
+1. Re-read this reference. For each section (Structure, Formatting, Lists, Language, Links, Images, Metadata), confirm the doc satisfies every applicable rule.
+2. For any screenshot you removed: confirm you deleted the image file(s) from the repo, not only the markup in the doc.
+3. Confirm no half-measures: every rule you touched was applied fully.
