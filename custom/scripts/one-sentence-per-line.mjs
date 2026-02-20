@@ -83,8 +83,8 @@ function processBlock(block) {
  */
 function repairComponentContentInFile(content) {
   return content.replace(
-    /(<([A-Z][A-Za-z0-9]*)(?:\s[^>]*)?>)([\s\S]*?)(<\/\2>)/g,
-    (_, openTag, _tagName, inner, closeTag) => {
+    /(\s*)(<([A-Z][A-Za-z0-9]*)(?:\s[^>]*)?>)([\s\S]*?)(<\/\3>)/g,
+    (_, leading, openTag, _tagName, inner, closeTag) => {
       const lines = inner.split("\n");
       const out = [];
       let inFence = false;
@@ -100,12 +100,13 @@ function repairComponentContentInFile(content) {
           continue;
         }
         if (trimmed.startsWith("- ")) out.push("  - " + trimmed.slice(2));
-        else if (trimmed.startsWith("</")) out.push(trimmed);
+        else if (trimmed.startsWith("</")) out.push(line.startsWith("  ") ? line : "  " + trimmed);
         else if (trimmed.length > 0) out.push(line.startsWith("  ") ? line : "  " + trimmed);
         else out.push(line);
       }
       while (out.length && out[out.length - 1] === "") out.pop();
-      return openTag + out.join("\n") + "\n  " + closeTag.trim();
+      const closingIndent = leading.includes("\n") ? leading.slice(leading.lastIndexOf("\n") + 1) : leading;
+      return leading + openTag + out.join("\n") + "\n" + closingIndent + closeTag.trim();
     },
   );
 }
