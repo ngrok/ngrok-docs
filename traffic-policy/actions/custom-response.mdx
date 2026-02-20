@@ -46,7 +46,8 @@ If this action is executed, no subsequent actions in your Traffic Policy will be
 When used during the `on_http_request` phase, this action bypasses the upstream server and immediately returns the configured response to the caller.
 Keep in mind that because this action bypasses the upstream server, request bodies will not be forwarded and will not be visible within the ngrok [Traffic Inspector](/obs/traffic-inspection/).
 
-<Tip>When this policy is executed in the `on_http_request` phase, actions defined in the `on_http_response` phase will still be executed.</Tip>
+<Tip>  When this policy is executed in the `on_http_request` phase, actions defined in the `on_http_response` phase will still be executed.
+</Tip>
 
 ### `on_http_response` usage
 
@@ -60,7 +61,8 @@ If the `content-type` header is not explicitly specified in `headers`, this acti
 
 <TerminatingExplanation />
 
-<Warning>If this action is executed in the [on_http_request phase](#on_http_request-usage), the Traffic Policy will not terminate, but will continue to the [on_http_response phase](#on_http_response-usage), where all actions in that change will be executed normally.</Warning>
+<Warning>  If this action is executed in the [on_http_request phase](#on_http_request-usage), the Traffic Policy will not terminate, but will continue to the [on_http_response phase](#on_http_response-usage), where all actions in that change will be executed normally.
+</Warning>
 
 ## Examples
 
@@ -71,19 +73,19 @@ The following [Traffic Policy](/traffic-policy/) configuration demonstrates how 
 #### Example Traffic Policy document
 
 <CodeGroup>
-```yaml policy.yml
-on_http_request:
+  ```yaml policy.yml
+  on_http_request:
   - actions:
-      - type: custom-response
+  - type: custom-response
         config:
           status_code: 503
           body: <html><body><h1>Service Unavailable</h1><p>Our servers are currently down for maintenance. Please check back later.</p></body></html>
           headers:
             content-type: text/html
-```
+  ```
 
-```json policy.json
-{
+  ```json policy.json
+  {
   "on_http_request": [
     {
       "actions": [
@@ -100,9 +102,8 @@ on_http_request:
       ]
     }
   ]
-}
-```
-
+  }
+  ```
 </CodeGroup>
 
 #### Example request
@@ -134,22 +135,22 @@ The following [Traffic Policy](/traffic-policy/) configuration demonstrates how 
 #### Example Traffic Policy document
 
 <CodeGroup>
-```yaml policy.yml {3-6}
-on_http_request:
+  ```yaml policy.yml {3-6}
+  on_http_request:
   - actions:
-      - type: forward-internal
+  - type: forward-internal
         config:
           url: https://endpoint-1.internal
           on_error: continue
-      - type: custom-response
+  - type: custom-response
         config:
           status_code: 302
           headers:
             location: https://www.example.com
-```
+  ```
 
-```json policy.json {5-11}
-{
+  ```json policy.json {5-11}
+  {
   "on_http_request": [
     {
       "actions": [
@@ -172,9 +173,8 @@ on_http_request:
       ]
     }
   ]
-}
-```
-
+  }
+  ```
 </CodeGroup>
 
 ### Custom JSON API response with CEL interpolation
@@ -184,20 +184,20 @@ The following [Traffic Policy](/traffic-policy/) configuration demonstrates how 
 #### Example Traffic Policy document
 
 <CodeGroup>
-```yaml policy.yml {7}
-on_http_request:
+  ```yaml policy.yml {7}
+  on_http_request:
   - expressions:
-      - req.url.path == '/api/example'
+  - req.url.path == '/api/example'
     actions:
-      - type: custom-response
+  - type: custom-response
         config:
           body: '{"connection-start":"${conn.ts.start}"}'
           headers:
             content-type: application/json
-```
+  ```
 
-```json policy.json {11}
-{
+  ```json policy.json {11}
+  {
   "on_http_request": [
     {
       "expressions": ["req.url.path == '/api/example'"],
@@ -214,9 +214,8 @@ on_http_request:
       ]
     }
   ]
-}
-```
-
+  }
+  ```
 </CodeGroup>
 
 #### Example request
@@ -244,21 +243,21 @@ The following [Traffic Policy](/traffic-policy/) configuration demonstrates how 
 #### Example Traffic Policy document
 
 <CodeGroup>
-```yaml policy.yml {8}
-on_http_request:
+  ```yaml policy.yml {8}
+  on_http_request:
   - expressions:
-      - req.url.path == '/api/example'
+  - req.url.path == '/api/example'
     actions:
-      - type: custom-response
+  - type: custom-response
         config:
           status_code: 418
           body: connection began at ${conn.ts.start}, now ${timestamp(time.now)}
           headers:
             content-type: text/plain
-```
+  ```
 
-```json policy.json {12}
-{
+  ```json policy.json {12}
+  {
   "on_http_request": [
     {
       "expressions": ["req.url.path == '/api/example'"],
@@ -276,9 +275,8 @@ on_http_request:
       ]
     }
   ]
-}
-```
-
+  }
+  ```
 </CodeGroup>
 
 #### Example request
@@ -301,4 +299,5 @@ The response includes a `content-type: text/plain` header and a body that uses m
 
 <ActionVariablesDescription />
 
-<Note>This action does not set any variables after it has been executed.</Note>
+<Note>  This action does not set any variables after it has been executed.
+</Note>

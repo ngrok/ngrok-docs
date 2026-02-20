@@ -28,7 +28,8 @@ You can also use one of the [SDKs](/agent-sdks) or the [Kubernetes Operator](/k8
 ngrok http $DATABASE_PROXY_PORT --url https://database-service.internal
 ```
 
-<Tip>For databases that don't natively support HTTP, consider using a database proxy like [PostgREST](https://postgrest.org/) for PostgreSQL, [Hasura](https://hasura.io/) for GraphQL, or a custom HTTP wrapper that translates requests to your database's native protocol.</Tip>
+<Tip>  For databases that don't natively support HTTP, consider using a database proxy like [PostgREST](https://postgrest.org/) for PostgreSQL, [Hasura](https://hasura.io/) for GraphQL, or a custom HTTP wrapper that translates requests to your database's native protocol.
+</Tip>
 
 ## 2. Reserve a domain
 
@@ -111,21 +112,20 @@ on_http_request:
 Clients are rate limited based on their certificate identity, dangerous SQL operations are blocked, and authenticated requests are forwarded to your database service.
 
 <Tip title="Generate certificates for testing">
-If you don't have certificates, you can generate them using the steps in the [mTLS example documentation](/traffic-policy/actions/terminate-tls/#enabling-mutual-tls):
+  If you don't have certificates, you can generate them using the steps in the [mTLS example documentation](/traffic-policy/actions/terminate-tls/#enabling-mutual-tls):
 
-```bash
-# Generate CA private key and certificate
-openssl genpkey -algorithm RSA -out ca.key -pkeyopt rsa_keygen_bits:2048
-openssl req -x509 -new -nodes -key ca.key -sha256 -days 365 -out ca.crt -subj "/CN=DatabaseCA"
+  ```bash
+  # Generate CA private key and certificate
+  openssl genpkey -algorithm RSA -out ca.key -pkeyopt rsa_keygen_bits:2048
+  openssl req -x509 -new -nodes -key ca.key -sha256 -days 365 -out ca.crt -subj "/CN=DatabaseCA"
 
-# Generate client private key and certificate
-openssl genpkey -algorithm RSA -out client.key -pkeyopt rsa_keygen_bits:2048
-openssl req -new -key client.key -out client.csr -subj "/CN=DatabaseClient"
-openssl x509 -req -in client.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out client.crt -days 365 -sha256
-```
+  # Generate client private key and certificate
+  openssl genpkey -algorithm RSA -out client.key -pkeyopt rsa_keygen_bits:2048
+  openssl req -new -key client.key -out client.csr -subj "/CN=DatabaseClient"
+  openssl x509 -req -in client.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out client.crt -days 365 -sha256
+  ```
 
-Add the contents of `ca.crt` to your vault as `client-ca-certificate`.
-
+  Add the contents of `ca.crt` to your vault as `client-ca-certificate`.
 </Tip>
 
 ## 6. Try out your endpoint

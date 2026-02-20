@@ -15,11 +15,10 @@ ngrok works with the [self-hosted and enterprise editions](https://docs.n8n.io/h
 That way, you can share n8n with colleagues or accept webhooks to fire off workflows.
 
 <Tip>
-Building with LLMs?
+  Building with LLMs?
 
-We want your feedback!
-Sign up for early access to [ngrok's AI Gateway](https://ngrok.ai) and our team will reach out to learn more about your needs.
-
+  We want your feedback!
+  Sign up for early access to [ngrok's AI Gateway](https://ngrok.ai) and our team will reach out to learn more about your needs.
 </Tip>
 
 ## 1: Reserve a domain
@@ -49,49 +48,48 @@ Once that file is saved, you can either create a `docker-compose.yaml` file to r
 
 <CodeGroup>
 
-```yaml docker-compose.yaml
-services:
+  ```yaml docker-compose.yaml
+  services:
   n8n:
     image: docker.n8n.io/n8nio/n8n
     restart: always
     ports:
-      - "127.0.0.1:5678:5678"
+  - "127.0.0.1:5678:5678"
     env_file: .env
     volumes:
-      - n8n_data:/home/node/.n8n
+  - n8n_data:/home/node/.n8n
 
   ngrok:
     image: ngrok/ngrok:latest
     restart: always
     depends_on:
-      - n8n
+  - n8n
     env_file: .env
     command: http --url=${NGROK_DOMAIN} n8n:5678
     ports:
-      - "4040:4040" # ngrok web UI
+  - "4040:4040" # ngrok web UI
 
-volumes:
+  volumes:
   n8n_data:
-```
+  ```
 
-```bash docker
-docker network create n8n
+  ```bash docker
+  docker network create n8n
 
-docker run -d --name n8n \
+  docker run -d --name n8n \
   --network n8n \
   -p 5678:5678 \
   -v n8n_data:/home/node/.n8n \
   --env-file .env \
   docker.n8n.io/n8nio/n8n
 
-docker run -d \
+  docker run -d \
   --name ngrok \
   --network n8n \
   -p 4040:4040 \
   --env-file .env \
   ngrok/ngrok:latest http --url=your-n8n-instance.ngrok.app n8n:5678
-```
-
+  ```
 </CodeGroup>
 
 If you're using Docker Compose, you'll need to run the following command from the same directory where your `docker-compose.yaml` file is located.
@@ -124,55 +122,53 @@ on_http_request:
 ```
 
 <Info>
-**What's happening here?**
+  **What's happening here?**
 
-This policy applies the [`restrict-ips`](/traffic-policy/actions/restrict-ips) Traffic Policy action and allows only devices with a matching IP address to access your n8n instance.
-All other requests are denied at ngrok's network without reaching your service.
-
+  This policy applies the [`restrict-ips`](/traffic-policy/actions/restrict-ips) Traffic Policy action and allows only devices with a matching IP address to access your n8n instance.
+  All other requests are denied at ngrok's network without reaching your service.
 </Info>
 
 Then make the following modifications to your `docker-compose.yaml` file to mount the policy file into the ngrok container and tell ngrok to use it.
 
 <CodeGroup>
 
-```yaml docker-compose.yaml highlight={17-19}
-services:
+  ```yaml docker-compose.yaml highlight={17-19}
+  services:
   n8n:
     image: docker.n8n.io/n8nio/n8n
     restart: always
     ports:
-      - "127.0.0.1:5678:5678"
+  - "127.0.0.1:5678:5678"
     env_file: .env
     volumes:
-      - n8n_data:/home/node/.n8n
+  - n8n_data:/home/node/.n8n
 
   ngrok:
     image: ngrok/ngrok:latest
     restart: always
     depends_on:
-      - n8n
+  - n8n
     env_file: .env
     command: http --url=${NGROK_DOMAIN} --traffic-policy-file /etc/n8n.yaml n8n:5678
     volumes:
-      - ./n8n.yaml:/etc/n8n.yaml
+  - ./n8n.yaml:/etc/n8n.yaml
     ports:
-      - "4040:4040" # ngrok web UI
+  - "4040:4040" # ngrok web UI
 
-volumes:
+  volumes:
   n8n_data:
-```
+  ```
 
-```bash docker highlight={7-8}
-docker kill ngrok
-docker run -d \
+  ```bash docker highlight={7-8}
+  docker kill ngrok
+  docker run -d \
   --name ngrok \
   --network n8n \
   -p 4040:4040 \
   --env-file .env \
   -v $(pwd)/n8n.yaml:/etc/n8n.yaml \
   ngrok/ngrok:latest http --url=your-n8n-instance.ngrok.app --traffic-policy-file /etc/n8n.yaml n8n:5678
-```
-
+  ```
 </CodeGroup>
 
 If you're using Docker Compose, restart your setup to apply the new policy.
@@ -201,11 +197,10 @@ on_http_request:
 ```
 
 <Info>
-**What's happening here?**
+  **What's happening here?**
 
-This policy filters for _only_ traffic that contains the specific `/webhook/$WORKFLOW_UUID` path.
-It then verifies that the traffic both originates from GitHub (or another [supported provider](/traffic-policy/actions/verify-webhook/#supported-providers)) and contains the appropriate secret.
-
+  This policy filters for _only_ traffic that contains the specific `/webhook/$WORKFLOW_UUID` path.
+  It then verifies that the traffic both originates from GitHub (or another [supported provider](/traffic-policy/actions/verify-webhook/#supported-providers)) and contains the appropriate secret.
 </Info>
 
 You'll need to restart your ngrok container to apply the new policy.
@@ -238,11 +233,10 @@ on_http_request:
 ```
 
 <Info>
-**What's happening here?**
+  **What's happening here?**
 
-This policy first verifies any incoming webhooks as before.
-Then, the policy applies IP restrictions to only traffic _not_ to the `/webhook/` path, which allows your webhooks provider's request to reach n8n successfully.
-
+  This policy first verifies any incoming webhooks as before.
+  Then, the policy applies IP restrictions to only traffic _not_ to the `/webhook/` path, which allows your webhooks provider's request to reach n8n successfully.
 </Info>
 
 ## What's next?

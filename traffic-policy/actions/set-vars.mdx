@@ -37,7 +37,7 @@ This is the [Traffic Policy](/traffic-policy/) configuration reference for this 
   - variable_b: value
     ```
 
-  </Note>
+</Note>
 </ConfigField>
 
 ## Behavior
@@ -45,25 +45,25 @@ This is the [Traffic Policy](/traffic-policy/) configuration reference for this 
 The `set-vars` action allows you to define your own global variables to be used in future actions or expressions, like this:
 
 <CodeGroup>
-```yaml policy.yml {6-7, 14}
-on_http_request:
+  ```yaml policy.yml {6-7, 14}
+  on_http_request:
   - actions:
-      - type: set-vars
+  - type: set-vars
         config:
           vars:
-            - variable_a: Hello,
-            - variable_b: World!
+  - variable_a: Hello,
+  - variable_b: World!
   - actions:
-      - type: custom-response
+  - type: custom-response
         config:
           status_code: 200
           headers:
             content-type: text/plain
           body: ${vars.variable_a} ${vars.variable_b}
-```
+  ```
 
-```json policy.json {10,13,29}
-{
+  ```json policy.json {10,13,29}
+  {
   "on_http_request": [
     {
       "actions": [
@@ -97,31 +97,31 @@ on_http_request:
       ]
     }
   ]
-}
-```
-
+  }
+  ```
 </CodeGroup>
 
 After being defined through the `set-vars` action, you can access them through CEL Interpolation or anywhere else that CEL is supported, like expressions.
 
-<Note>You can use any valid CEL type as a variable value, including strings, booleans, doubles, null, maps, and lists.</Note>
+<Note>  You can use any valid CEL type as a variable value, including strings, booleans, doubles, null, maps, and lists.
+</Note>
 
 ### CEL interpolation
 
 Variables also support CEL interpolation (`${<expression>}`) in values, enabling you to create dynamic values and types:
 
 <CodeGroup>
-```yaml policy.yml {6}
-on_http_request:
+  ```yaml policy.yml {6}
+  on_http_request:
   - actions:
-      - type: set-vars
+  - type: set-vars
         config:
           vars:
-            - message: Your IP is ${conn.client_ip}!
-```
+  - message: Your IP is ${conn.client_ip}!
+  ```
 
-```json policy.json {10}
-{
+  ```json policy.json {10}
+  {
   "on_http_request": [
     {
       "actions": [
@@ -138,9 +138,8 @@ on_http_request:
       ]
     }
   ]
-}
-```
-
+  }
+  ```
 </CodeGroup>
 
 CEL-interpolated strings that are exactly of the form `"${vars.<name>}"` will resolve to the evaluated type.
@@ -172,39 +171,39 @@ The following [Traffic Policy](/traffic-policy/) configuration is an example con
 #### Example Traffic Policy document
 
 <CodeGroup>
-```yaml policy.yml
-on_http_request:
+  ```yaml policy.yml
+  on_http_request:
   - actions:
-      - type: set-vars
+  - type: set-vars
         config:
           vars:
-            - sample_string: bar
-            - sample_double: 1.5
-            - sample_bool: true
-            - sample_null: null
-            - sample_list:
-                - 1
-                - 2
-                - 3
-            - sample_map:
+  - sample_string: bar
+  - sample_double: 1.5
+  - sample_bool: true
+  - sample_null: null
+  - sample_list:
+  - 1
+  - 2
+  - 3
+  - sample_map:
                 key: value
-            - sample_nested_map:
+  - sample_nested_map:
                 key:
-                  - value1
-                  - value2
+  - value1
+  - value2
   - expressions:
-      - vars.sample_bool == true
+  - vars.sample_bool == true
     actions:
-      - type: custom-response
+  - type: custom-response
         config:
           status_code: 200
           headers:
             content-type: text/plain
           body: ${vars.sample_string} ${vars.sample_double} ${vars.sample_list[0]} ${vars.sample_map.key} ${vars.sample_nested_map.key[1]}
-```
+  ```
 
-```json policy.json
-{
+  ```json policy.json
+  {
   "on_http_request": [
     {
       "actions": [
@@ -258,9 +257,8 @@ on_http_request:
       ]
     }
   ]
-}
-```
-
+  }
+  ```
 </CodeGroup>
 
 ### CEL interpolation example
@@ -270,21 +268,21 @@ The following [Traffic Policy](/traffic-policy/) configuration is an example of 
 #### Example Traffic Policy document
 
 <CodeGroup>
-```yaml policy.yml
-on_http_request:
+  ```yaml policy.yml
+  on_http_request:
   - actions:
-      - type: set-vars
+  - type: set-vars
         config:
           vars:
-            - sample_string: 'x-foo header: ${request.headers[''x-foo'']}'
-            - sample_uint: ${uint(1.5) + 10u}
-            - sample_int: ${int(50.5)}
-            - sample_map:
+  - sample_string: 'x-foo header: ${request.headers[''x-foo'']}'
+  - sample_uint: ${uint(1.5) + 10u}
+  - sample_int: ${int(50.5)}
+  - sample_map:
                 pem: ${conn.tls.client.pem}
-```
+  ```
 
-```json policy.json
-{
+  ```json policy.json
+  {
   "on_http_request": [
     {
       "actions": [
@@ -312,9 +310,8 @@ on_http_request:
       ]
     }
   ]
-}
-```
-
+  }
+  ```
 </CodeGroup>
 
 ### Setting vars based on previous vars example
@@ -326,24 +323,24 @@ Variables are determined in the order in which they are listed in the configurat
 #### Example Traffic Policy document
 
 <CodeGroup>
-```yaml policy.yml {4-28}
-on_http_request:
+  ```yaml policy.yml {4-28}
+  on_http_request:
   - actions:
-      - type: set-vars
+  - type: set-vars
         config:
           vars:
-            - accepted_models:
-                - openai/o1
-                - openai/4o
-                - openai/4o-mini
-            - models: ${actions.ngrok.http_request.res.body}
-            - models: ${vars.models.filter(model, model.id in vars.accepted_models)}
-            - models: ${vars.models.filter(model, model.latency < 100)}
-            - models: ${vars.models.sort(x, y, x.latency < y.latency)}
-```
+  - accepted_models:
+  - openai/o1
+  - openai/4o
+  - openai/4o-mini
+  - models: ${actions.ngrok.http_request.res.body}
+  - models: ${vars.models.filter(model, model.id in vars.accepted_models)}
+  - models: ${vars.models.filter(model, model.latency < 100)}
+  - models: ${vars.models.sort(x, y, x.latency < y.latency)}
+  ```
 
-```json policy.json
-{
+  ```json policy.json
+  {
   "on_http_request": [
     {
       "actions": [
@@ -372,11 +369,11 @@ on_http_request:
       ]
     }
   ]
-}
-```
+  }
+  ```
 
-```json policy.json
-{
+  ```json policy.json
+  {
   "on_http_request": [
     {
       "actions": [
@@ -405,7 +402,6 @@ on_http_request:
       ]
     }
   ]
-}
-```
-
+  }
+  ```
 </CodeGroup>

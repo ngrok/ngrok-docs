@@ -31,148 +31,148 @@ The hostname, scheme, and port are kept the same, but the entire path of the req
 - Requests to `https://example-hostname.ngrok.io/example/foo` will be redirected to `https://example-hostname.ngrok.io/redirect`
 
 <Tabs>
-<Tab title="AgentEndpoint">
-Check out the [redirect Traffic Policy action](/traffic-policy/actions/redirect/) page for more details about how it functions and the parameters it accepts.
+  <Tab title="AgentEndpoint">
+  Check out the [redirect Traffic Policy action](/traffic-policy/actions/redirect/) page for more details about how it functions and the parameters it accepts.
 
-```yaml
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-kind: AgentEndpoint
-metadata:
+  ```yaml
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: AgentEndpoint
+  metadata:
   name: example-agent-endpoint
-spec:
+  spec:
   url: https://example-hostname.ngrok.io
   upstream:
     url: http://my-service.my-namespace:8080
   trafficPolicy:
     inline:
       on_http_request:
-        - actions:
-            - type: redirect
+  - actions:
+  - type: redirect
               config:
                 from: /.*
                 to: /redirect
-```
+  ```
 
 </Tab>
-<Tab title="CloudEndpoint">
-Check out the [redirect Traffic Policy action](/traffic-policy/actions/redirect/) page for more details about how it functions and the parameters it accepts.
+  <Tab title="CloudEndpoint">
+  Check out the [redirect Traffic Policy action](/traffic-policy/actions/redirect/) page for more details about how it functions and the parameters it accepts.
 
-```yaml
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-kind: CloudEndpoint
-metadata:
+  ```yaml
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: CloudEndpoint
+  metadata:
   name: example-cloud-endpoint
-spec:
+  spec:
   url: https://example-hostname.ngrok.io
   trafficPolicy:
     policy:
       on_http_request:
-        - actions:
-            - type: redirect
+  - actions:
+  - type: redirect
               config:
                 from: /.*
                 to: /redirect
-```
+  ```
 
 </Tab>
-<Tab title="Ingress">
-💡 Ingress resources do not have native redirect capabilities, but they can be extended using a Traffic Policy.
-Check out the [redirect Traffic Policy action](/traffic-policy/actions/redirect/) page for more information about how to customize the parameters.
+  <Tab title="Ingress">
+  💡 Ingress resources do not have native redirect capabilities, but they can be extended using a Traffic Policy.
+  Check out the [redirect Traffic Policy action](/traffic-policy/actions/redirect/) page for more information about how to customize the parameters.
 
-### 1. Create an `NgrokTrafficPolicy`
+  ### 1. Create an `NgrokTrafficPolicy`
 
-```yaml
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-kind: NgrokTrafficPolicy
-metadata:
+  ```yaml
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: NgrokTrafficPolicy
+  metadata:
   name: example-tp
   namespace: default
-spec:
+  spec:
   policy:
     on_http_request:
-      - actions:
-          - type: redirect
+  - actions:
+  - type: redirect
             config:
               from: /.*
               to: /redirect
-```
+  ```
 
-### 2. Use the `NgrokTrafficPolicy` on an `Ingress`
+  ### 2. Use the `NgrokTrafficPolicy` on an `Ingress`
 
-```yaml
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
+  ```yaml
+  apiVersion: networking.k8s.io/v1
+  kind: Ingress
+  metadata:
   annotations:
     k8s.ngrok.com/traffic-policy: example-tp
   name: example-ingress
   namespace: default
-spec:
+  spec:
   ingressClassName: ngrok
   rules:
-    - host: example-hostname.ngrok.io
+  - host: example-hostname.ngrok.io
       http:
         paths:
-          - path: /
+  - path: /
             pathType: Prefix
             backend:
               service:
                 name: example-service
                 port:
                   number: 80
-```
+  ```
 
 </Tab>
-<Tab title="Gateway API">
-✅ Gateway API natively supports redirect configuration, and this feature is fully supported by the ngrok Kubernetes Operator.
+  <Tab title="Gateway API">
+  ✅ Gateway API natively supports redirect configuration, and this feature is fully supported by the ngrok Kubernetes Operator.
 
-### 1. Create a `Gateway`
+  ### 1. Create a `Gateway`
 
-If you already have a `Gateway` you can use that instead
+  If you already have a `Gateway` you can use that instead
 
-```yaml
-apiVersion: gateway.networking.k8s.io/v1
-kind: Gateway
-metadata:
+  ```yaml
+  apiVersion: gateway.networking.k8s.io/v1
+  kind: Gateway
+  metadata:
   name: example-gateway
   namespace: default
-spec:
+  spec:
   gatewayClassName: ngrok
   listeners:
-    - name: example
+  - name: example
       hostname: "example-hostname.ngrok.io"
       port: 443
       protocol: HTTPS
-```
+  ```
 
-### 2. Create an `HTTPRoute` with a RequestRedirect Filter
+  ### 2. Create an `HTTPRoute` with a RequestRedirect Filter
 
-```yaml
-apiVersion: gateway.networking.k8s.io/v1
-kind: HTTPRoute
-metadata:
+  ```yaml
+  apiVersion: gateway.networking.k8s.io/v1
+  kind: HTTPRoute
+  metadata:
   name: example-route
   namespace: default
-spec:
+  spec:
   hostnames:
-    - example-hostname.ngrok.io
+  - example-hostname.ngrok.io
   parentRefs:
-    - group: gateway.networking.k8s.io
+  - group: gateway.networking.k8s.io
       kind: Gateway
       name: example-gateway
       namespace: default
   rules:
-    - matches:
-        - path:
+  - matches:
+  - path:
             type: PathPrefix
             value: /example
       filters:
-        - type: RequestRedirect
+  - type: RequestRedirect
           requestRedirect:
             path:
               type: ReplaceFullPath
               replaceFullPath: "/redirect"
-```
+  ```
 
 </Tab>
 </Tabs>
@@ -186,148 +186,148 @@ The hostname, scheme, and port are kept the same, but only the prefix is changed
 - Requests to `https://example-hostname.ngrok.io/example/foo` will be redirected to `https://example-hostname.ngrok.io/redirect/foo`
 
 <Tabs>
-<Tab title="AgentEndpoint">
-Check out the [redirect Traffic Policy action](/traffic-policy/actions/redirect/) page for more details about how it functions and the parameters it accepts.
+  <Tab title="AgentEndpoint">
+  Check out the [redirect Traffic Policy action](/traffic-policy/actions/redirect/) page for more details about how it functions and the parameters it accepts.
 
-```yaml
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-kind: AgentEndpoint
-metadata:
+  ```yaml
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: AgentEndpoint
+  metadata:
   name: example-agent-endpoint
-spec:
+  spec:
   url: https://example-hostname.ngrok.io
   upstream:
     url: http://my-service.my-namespace:8080
   trafficPolicy:
     inline:
       on_http_request:
-        - actions:
-            - type: redirect
+  - actions:
+  - type: redirect
               config:
                 from: /example(.*)
                 to: /redirect$1
-```
+  ```
 
 </Tab>
-<Tab title="CloudEndpoint">
-Check out the [redirect Traffic Policy action](/traffic-policy/actions/redirect/) page for more details about how it functions and the parameters it accepts.
+  <Tab title="CloudEndpoint">
+  Check out the [redirect Traffic Policy action](/traffic-policy/actions/redirect/) page for more details about how it functions and the parameters it accepts.
 
-```yaml
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-kind: CloudEndpoint
-metadata:
+  ```yaml
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: CloudEndpoint
+  metadata:
   name: example-cloud-endpoint
-spec:
+  spec:
   url: https://example-hostname.ngrok.io
   trafficPolicy:
     policy:
       on_http_request:
-        - actions:
-            - type: redirect
+  - actions:
+  - type: redirect
               config:
                 from: /example(.*)
                 to: /redirect$1
-```
+  ```
 
 </Tab>
-<Tab title="Ingress">
-💡 Ingress resources do not have native redirect capabilities, but they can be extended using a Traffic Policy.
-Check out the [redirect Traffic Policy action](/traffic-policy/actions/redirect/) page for more information about how to customize the parameters.
+  <Tab title="Ingress">
+  💡 Ingress resources do not have native redirect capabilities, but they can be extended using a Traffic Policy.
+  Check out the [redirect Traffic Policy action](/traffic-policy/actions/redirect/) page for more information about how to customize the parameters.
 
-### 1. Create an `NgrokTrafficPolicy`
+  ### 1. Create an `NgrokTrafficPolicy`
 
-```yaml
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-kind: NgrokTrafficPolicy
-metadata:
+  ```yaml
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: NgrokTrafficPolicy
+  metadata:
   name: example-tp
   namespace: default
-spec:
+  spec:
   policy:
     on_http_request:
-      - actions:
-          - type: redirect
+  - actions:
+  - type: redirect
             config:
               from: /example(.*)
               to: /redirect$1
-```
+  ```
 
-### 2. Use the `NgrokTrafficPolicy` on an `Ingress`
+  ### 2. Use the `NgrokTrafficPolicy` on an `Ingress`
 
-```yaml
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
+  ```yaml
+  apiVersion: networking.k8s.io/v1
+  kind: Ingress
+  metadata:
   annotations:
     k8s.ngrok.com/traffic-policy: example-tp
   name: example-ingress
   namespace: default
-spec:
+  spec:
   ingressClassName: ngrok
   rules:
-    - host: example-hostname.ngrok.io
+  - host: example-hostname.ngrok.io
       http:
         paths:
-          - path: /
+  - path: /
             pathType: Prefix
             backend:
               service:
                 name: example-service
                 port:
                   number: 80
-```
+  ```
 
 </Tab>
-<Tab title="Gateway API">
-✅ Gateway API natively supports redirect configuration, and this feature is fully supported by the ngrok Kubernetes Operator.
+  <Tab title="Gateway API">
+  ✅ Gateway API natively supports redirect configuration, and this feature is fully supported by the ngrok Kubernetes Operator.
 
-### 1. Create a `Gateway`
+  ### 1. Create a `Gateway`
 
-If you already have a `Gateway` you can use that instead
+  If you already have a `Gateway` you can use that instead
 
-```yaml
-apiVersion: gateway.networking.k8s.io/v1
-kind: Gateway
-metadata:
+  ```yaml
+  apiVersion: gateway.networking.k8s.io/v1
+  kind: Gateway
+  metadata:
   name: example-gateway
   namespace: default
-spec:
+  spec:
   gatewayClassName: ngrok
   listeners:
-    - name: example
+  - name: example
       hostname: "example-hostname.ngrok.io"
       port: 443
       protocol: HTTPS
-```
+  ```
 
-### 2. Create an `HTTPRoute` with a RequestRedirect Filter
+  ### 2. Create an `HTTPRoute` with a RequestRedirect Filter
 
-```yaml
-apiVersion: gateway.networking.k8s.io/v1
-kind: HTTPRoute
-metadata:
+  ```yaml
+  apiVersion: gateway.networking.k8s.io/v1
+  kind: HTTPRoute
+  metadata:
   name: example-route
   namespace: default
-spec:
+  spec:
   hostnames:
-    - example-hostname.ngrok.io
+  - example-hostname.ngrok.io
   parentRefs:
-    - group: gateway.networking.k8s.io
+  - group: gateway.networking.k8s.io
       kind: Gateway
       name: example-gateway
       namespace: default
   rules:
-    - matches:
-        - path:
+  - matches:
+  - path:
             type: PathPrefix
             value: /example
       filters:
-        - type: RequestRedirect
+  - type: RequestRedirect
           requestRedirect:
             path:
               type: ReplacePrefixMatch
               replacePrefixMatch: "/redirect"
-```
+  ```
 
 </Tab>
 </Tabs>
@@ -340,146 +340,146 @@ The hostname, scheme, and path are kept the same, but only the port is changed.
 - Requests to `http://example-hostname.ngrok.io:8080` will be redirected to `http://example-hostname.ngrok.io:9090`
 
 <Tabs>
-<Tab title="AgentEndpoint">
-Check out the [redirect Traffic Policy action](/traffic-policy/actions/redirect/) page for more details about how it functions and the parameters it accepts.
+  <Tab title="AgentEndpoint">
+  Check out the [redirect Traffic Policy action](/traffic-policy/actions/redirect/) page for more details about how it functions and the parameters it accepts.
 
-```yaml
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-kind: AgentEndpoint
-metadata:
+  ```yaml
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: AgentEndpoint
+  metadata:
   name: example-agent-endpoint
-spec:
+  spec:
   url: http://example-hostname.ngrok.io:8080
   upstream:
     url: http://my-service.my-namespace:8080
   trafficPolicy:
     inline:
       on_http_request:
-        - actions:
-            - type: redirect
+  - actions:
+  - type: redirect
               config:
                 from: :8080
                 to: :9090
-```
+  ```
 
 </Tab>
-<Tab title="CloudEndpoint">
-Check out the [redirect Traffic Policy action](/traffic-policy/actions/redirect/) page for more details about how it functions and the parameters it accepts.
+  <Tab title="CloudEndpoint">
+  Check out the [redirect Traffic Policy action](/traffic-policy/actions/redirect/) page for more details about how it functions and the parameters it accepts.
 
-```yaml
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-kind: CloudEndpoint
-metadata:
+  ```yaml
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: CloudEndpoint
+  metadata:
   name: example-cloud-endpoint
-spec:
+  spec:
   url: http://example-hostname.ngrok.io:8080
   trafficPolicy:
     policy:
       on_http_request:
-        - actions:
-            - type: redirect
+  - actions:
+  - type: redirect
               config:
                 from: :8080
                 to: :9090
-```
+  ```
 
 </Tab>
-<Tab title="Ingress">
-💡 Ingress resources do not have native redirect capabilities, but they can be extended using a Traffic Policy.
-Check out the [redirect Traffic Policy action](/traffic-policy/actions/redirect/) page for more information about how to customize the parameters.
+  <Tab title="Ingress">
+  💡 Ingress resources do not have native redirect capabilities, but they can be extended using a Traffic Policy.
+  Check out the [redirect Traffic Policy action](/traffic-policy/actions/redirect/) page for more information about how to customize the parameters.
 
-### 1. Create an `NgrokTrafficPolicy`
+  ### 1. Create an `NgrokTrafficPolicy`
 
-```yaml
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-kind: NgrokTrafficPolicy
-metadata:
+  ```yaml
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: NgrokTrafficPolicy
+  metadata:
   name: example-tp
   namespace: default
-spec:
+  spec:
   policy:
     on_http_request:
-      - actions:
-          - type: redirect
+  - actions:
+  - type: redirect
             config:
               from: :8080
               to: :9090
-```
+  ```
 
-### 2. Use the `NgrokTrafficPolicy` on an `Ingress`
+  ### 2. Use the `NgrokTrafficPolicy` on an `Ingress`
 
-```yaml
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
+  ```yaml
+  apiVersion: networking.k8s.io/v1
+  kind: Ingress
+  metadata:
   annotations:
     k8s.ngrok.com/traffic-policy: example-tp
   name: example-ingress
   namespace: default
-spec:
+  spec:
   ingressClassName: ngrok
   rules:
-    - host: example-hostname.ngrok.io
+  - host: example-hostname.ngrok.io
       http:
         paths:
-          - path: /
+  - path: /
             pathType: Prefix
             backend:
               service:
                 name: example-service
                 port:
                   number: 80
-```
+  ```
 
 </Tab>
-<Tab title="Gateway API">
-✅ Gateway API natively supports redirect configuration, and this feature is fully supported by the ngrok Kubernetes Operator.
+  <Tab title="Gateway API">
+  ✅ Gateway API natively supports redirect configuration, and this feature is fully supported by the ngrok Kubernetes Operator.
 
-### 1. Create a `Gateway`
+  ### 1. Create a `Gateway`
 
-If you already have a `Gateway` you can use that instead
+  If you already have a `Gateway` you can use that instead
 
-```yaml
-apiVersion: gateway.networking.k8s.io/v1
-kind: Gateway
-metadata:
+  ```yaml
+  apiVersion: gateway.networking.k8s.io/v1
+  kind: Gateway
+  metadata:
   name: example-gateway
   namespace: default
-spec:
+  spec:
   gatewayClassName: ngrok
   listeners:
-    - name: example
+  - name: example
       hostname: "example-hostname.ngrok.io"
       port: 8080
       protocol: HTTP
-```
+  ```
 
-### 2. Create an `HTTPRoute` with a RequestRedirect Filter
+  ### 2. Create an `HTTPRoute` with a RequestRedirect Filter
 
-```yaml
-apiVersion: gateway.networking.k8s.io/v1
-kind: HTTPRoute
-metadata:
+  ```yaml
+  apiVersion: gateway.networking.k8s.io/v1
+  kind: HTTPRoute
+  metadata:
   name: example-route
   namespace: default
-spec:
+  spec:
   hostnames:
-    - example-hostname.ngrok.io
+  - example-hostname.ngrok.io
   parentRefs:
-    - group: gateway.networking.k8s.io
+  - group: gateway.networking.k8s.io
       kind: Gateway
       name: example-gateway
       namespace: default
   rules:
-    - matches:
-        - path:
+  - matches:
+  - path:
             type: PathPrefix
             value: /example
       filters:
-        - type: RequestRedirect
+  - type: RequestRedirect
           requestRedirect:
             port: 9090
-```
+  ```
 
 </Tab>
 </Tabs>
@@ -492,146 +492,146 @@ The scheme, port, and path are kept the same, but only the hostname is changed.
 - Requests to `https://example-hostname.ngrok.io` will be redirected to `https://other-example-hostname.ngrok.io`
 
 <Tabs>
-<Tab title="AgentEndpoint">
-Check out the [redirect Traffic Policy action](/traffic-policy/actions/redirect/) page for more details about how it functions and the parameters it accepts.
+  <Tab title="AgentEndpoint">
+  Check out the [redirect Traffic Policy action](/traffic-policy/actions/redirect/) page for more details about how it functions and the parameters it accepts.
 
-```yaml
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-kind: AgentEndpoint
-metadata:
+  ```yaml
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: AgentEndpoint
+  metadata:
   name: example-agent-endpoint
-spec:
+  spec:
   url: https://example-hostname.ngrok.io
   upstream:
     url: http://my-service.my-namespace:8080
   trafficPolicy:
     inline:
       on_http_request:
-        - actions:
-            - type: redirect
+  - actions:
+  - type: redirect
               config:
                 from: example-hostname.ngrok.io
                 to: other-example-hostname.ngrok.io
-```
+  ```
 
 </Tab>
-<Tab title="CloudEndpoint">
-Check out the [redirect Traffic Policy action](/traffic-policy/actions/redirect/) page for more details about how it functions and the parameters it accepts.
+  <Tab title="CloudEndpoint">
+  Check out the [redirect Traffic Policy action](/traffic-policy/actions/redirect/) page for more details about how it functions and the parameters it accepts.
 
-```yaml
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-kind: CloudEndpoint
-metadata:
+  ```yaml
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: CloudEndpoint
+  metadata:
   name: example-cloud-endpoint
-spec:
+  spec:
   url: https://example-hostname.ngrok.io
   trafficPolicy:
     policy:
       on_http_request:
-        - actions:
-            - type: redirect
+  - actions:
+  - type: redirect
               config:
                 from: example-hostname.ngrok.io
                 to: other-example-hostname.ngrok.io
-```
+  ```
 
 </Tab>
-<Tab title="Ingress">
-💡 Ingress resources do not have native redirect capabilities, but they can be extended using a Traffic Policy.
-Check out the [redirect Traffic Policy action](/traffic-policy/actions/redirect/) page for more information about how to customize the parameters.
+  <Tab title="Ingress">
+  💡 Ingress resources do not have native redirect capabilities, but they can be extended using a Traffic Policy.
+  Check out the [redirect Traffic Policy action](/traffic-policy/actions/redirect/) page for more information about how to customize the parameters.
 
-### 1. Create an `NgrokTrafficPolicy`
+  ### 1. Create an `NgrokTrafficPolicy`
 
-```yaml
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-kind: NgrokTrafficPolicy
-metadata:
+  ```yaml
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: NgrokTrafficPolicy
+  metadata:
   name: example-tp
   namespace: default
-spec:
+  spec:
   policy:
     on_http_request:
-      - actions:
-          - type: redirect
+  - actions:
+  - type: redirect
             config:
               from: example-hostname.ngrok.io
               to: other-example-hostname.ngrok.io
-```
+  ```
 
-### 2. Use the `NgrokTrafficPolicy` on an `Ingress`
+  ### 2. Use the `NgrokTrafficPolicy` on an `Ingress`
 
-```yaml
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
+  ```yaml
+  apiVersion: networking.k8s.io/v1
+  kind: Ingress
+  metadata:
   annotations:
     k8s.ngrok.com/traffic-policy: example-tp
   name: example-ingress
   namespace: default
-spec:
+  spec:
   ingressClassName: ngrok
   rules:
-    - host: example-hostname.ngrok.io
+  - host: example-hostname.ngrok.io
       http:
         paths:
-          - path: /
+  - path: /
             pathType: Prefix
             backend:
               service:
                 name: example-service
                 port:
                   number: 80
-```
+  ```
 
 </Tab>
-<Tab title="Gateway API">
-✅ Gateway API natively supports redirect configuration, and this feature is fully supported by the ngrok Kubernetes Operator.
+  <Tab title="Gateway API">
+  ✅ Gateway API natively supports redirect configuration, and this feature is fully supported by the ngrok Kubernetes Operator.
 
-### 1. Create a `Gateway`
+  ### 1. Create a `Gateway`
 
-If you already have a `Gateway` you can use that instead
+  If you already have a `Gateway` you can use that instead
 
-```yaml
-apiVersion: gateway.networking.k8s.io/v1
-kind: Gateway
-metadata:
+  ```yaml
+  apiVersion: gateway.networking.k8s.io/v1
+  kind: Gateway
+  metadata:
   name: example-gateway
   namespace: default
-spec:
+  spec:
   gatewayClassName: ngrok
   listeners:
-    - name: example
+  - name: example
       hostname: "example-hostname.ngrok.io"
       port: 443
       protocol: HTTPS
-```
+  ```
 
-### 2. Create an `HTTPRoute` with a RequestRedirect Filter
+  ### 2. Create an `HTTPRoute` with a RequestRedirect Filter
 
-```yaml
-apiVersion: gateway.networking.k8s.io/v1
-kind: HTTPRoute
-metadata:
+  ```yaml
+  apiVersion: gateway.networking.k8s.io/v1
+  kind: HTTPRoute
+  metadata:
   name: example-route
   namespace: default
-spec:
+  spec:
   hostnames:
-    - example-hostname.ngrok.io
+  - example-hostname.ngrok.io
   parentRefs:
-    - group: gateway.networking.k8s.io
+  - group: gateway.networking.k8s.io
       kind: Gateway
       name: example-gateway
       namespace: default
   rules:
-    - matches:
-        - path:
+  - matches:
+  - path:
             type: PathPrefix
             value: /example
       filters:
-        - type: RequestRedirect
+  - type: RequestRedirect
           requestRedirect:
             hostname: other-example-hostname.ngrok.io
-```
+  ```
 
 </Tab>
 </Tabs>

@@ -74,20 +74,29 @@ function processBlock(block) {
   return sentences.map((s) => indent + s).join("\n");
 }
 
-/** Repair ConfigField blocks that Prettier stripped: re-indent list items and closing tag. Run on full content. */
-function repairConfigFieldInContent(content) {
-  return content.replace(/(<ConfigField[^>]*>)([\s\S]*?)(<\/ConfigField>)/g, (_, openTag, inner, closeTag) => {
-    const lines = inner.split("\n");
-    const out = [];
-    for (const line of lines) {
-      const trimmed = line.trimStart();
-      if (trimmed.startsWith("- ")) out.push("  - " + trimmed.slice(2));
-      else if (trimmed.length > 0) out.push(line.startsWith("  ") ? line : "  " + trimmed);
-      else out.push(line);
-    }
-    while (out.length && out[out.length - 1] === "") out.pop();
-    return openTag + out.join("\n") + "\n" + closeTag.trim();
-  });
+/**
+ * Repair content inside any JSX component: re-indent list items (  - ), trim closing tag,
+ * and ensure 2-space indent for other content. Prettier often strips these; run on full content.
+ * Matches PascalCase components only (e.g. Warning, Note, ConfigField) to avoid touching HTML.
+ */
+function repairComponentContentInFile(content) {
+  // Match <ComponentName ...>...content...</ComponentName>; non-greedy so innermost matches first
+  return content.replace(
+    /(<([A-Z][A-Za-z0-9]*)(?:\s[^>]*)?>)([\s\S]*?)(<\/\2>)/g,
+    (_, openTag, _tagName, inner, closeTag) => {
+      const lines = inner.split("\n");
+      const out = [];
+      for (const line of lines) {
+        const trimmed = line.trimStart();
+        if (trimmed.startsWith("- ")) out.push("  - " + trimmed.slice(2));
+        else if (trimmed.startsWith("</")) out.push(trimmed);
+        else if (trimmed.length > 0) out.push(line.startsWith("  ") ? line : "  " + trimmed);
+        else out.push(line);
+      }
+      while (out.length && out[out.length - 1] === "") out.pop();
+      return openTag + out.join("\n") + "\n" + closeTag.trim();
+    },
+  );
 }
 
 function processFile(filePath) {
@@ -113,7 +122,7 @@ function processFile(filePath) {
     })
     .join("\n\n");
 
-  out = repairConfigFieldInContent(out);
+  out = repairComponentContentInFile(out);
 
   writeFileSync(filePath, frontmatter + (frontmatter ? "\n" : "") + out, "utf8");
 }

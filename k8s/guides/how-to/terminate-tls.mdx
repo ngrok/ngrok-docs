@@ -83,23 +83,23 @@ These commands will generate the following files:
 ### 2. Create an endpoint with custom TLS termination
 
 <Tabs>
-<Tab title="AgentEndpoint">
-Check out the [terminate TLS Traffic Policy action](/traffic-policy/actions/terminate-tls/) page for more details about how it functions and the parameters it accepts.
+  <Tab title="AgentEndpoint">
+  Check out the [terminate TLS Traffic Policy action](/traffic-policy/actions/terminate-tls/) page for more details about how it functions and the parameters it accepts.
 
-```yaml
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-kind: AgentEndpoint
-metadata:
+  ```yaml
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: AgentEndpoint
+  metadata:
   name: example-agent-endpoint
-spec:
+  spec:
   url: https://example-hostname.ngrok.io
   upstream:
     url: http://my-service.my-namespace:8080
   trafficPolicy:
     inline:
       on_tcp_connect:
-        - actions:
-            - type: terminate-tls
+  - actions:
+  - type: terminate-tls
               config:
                 min_version: "1.3"
                 max_version: "1.3"
@@ -112,28 +112,28 @@ spec:
                   ... certificate ...
                   -----END CERTIFICATE-----
                 mutual_tls_certificate_authorities:
-                  - |-
+  - |-
                     -----BEGIN CERTIFICATE-----
                     ... certificate ...
                     -----END CERTIFICATE-----
-```
+  ```
 
 </Tab>
-<Tab title="CloudEndpoint">
-Check out the [terminate TLS Traffic Policy action](/traffic-policy/actions/terminate-tls/) page for more details about how it functions and the parameters it accepts.
+  <Tab title="CloudEndpoint">
+  Check out the [terminate TLS Traffic Policy action](/traffic-policy/actions/terminate-tls/) page for more details about how it functions and the parameters it accepts.
 
-```yaml
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-kind: CloudEndpoint
-metadata:
+  ```yaml
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: CloudEndpoint
+  metadata:
   name: example-cloud-endpoint
-spec:
+  spec:
   url: https://example-hostname.ngrok.io
   trafficPolicy:
     policy:
       on_tcp_connect:
-        - actions:
-            - type: terminate-tls
+  - actions:
+  - type: terminate-tls
               config:
                 min_version: "1.3"
                 max_version: "1.3"
@@ -146,31 +146,31 @@ spec:
                   ... certificate ...
                   -----END CERTIFICATE-----
                 mutual_tls_certificate_authorities:
-                  - |-
+  - |-
                     -----BEGIN CERTIFICATE-----
                     ... certificate ...
                     -----END CERTIFICATE-----
-```
+  ```
 
 </Tab>
-<Tab title="Ingress">
-💡 `Ingress` resources do not natively support advanced TLS termination options, but they can be extended using a Traffic Policy.
+  <Tab title="Ingress">
+  💡 `Ingress` resources do not natively support advanced TLS termination options, but they can be extended using a Traffic Policy.
 
-Check out the [terminate TLS Traffic Policy action](/traffic-policy/actions/terminate-tls/) page for more details about how it functions and the parameters it accepts.
+  Check out the [terminate TLS Traffic Policy action](/traffic-policy/actions/terminate-tls/) page for more details about how it functions and the parameters it accepts.
 
-### 3. Create an `NgrokTrafficPolicy`
+  ### 3. Create an `NgrokTrafficPolicy`
 
-```yaml
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-kind: NgrokTrafficPolicy
-metadata:
+  ```yaml
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: NgrokTrafficPolicy
+  metadata:
   name: example-tp
   namespace: default
-spec:
+  spec:
   policy:
     on_tcp_connect:
-      - actions:
-          - type: terminate-tls
+  - actions:
+  - type: terminate-tls
             config:
               min_version: "1.3"
               max_version: "1.3"
@@ -183,118 +183,118 @@ spec:
                 ... certificate ...
                 -----END CERTIFICATE-----
               mutual_tls_certificate_authorities:
-                - |-
+  - |-
                   -----BEGIN CERTIFICATE-----
                   ... certificate ...
                   -----END CERTIFICATE-----
-```
+  ```
 
-### 4. Use the `NgrokTrafficPolicy` on an `Ingress`
+  ### 4. Use the `NgrokTrafficPolicy` on an `Ingress`
 
-```yaml
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
+  ```yaml
+  apiVersion: networking.k8s.io/v1
+  kind: Ingress
+  metadata:
   annotations:
     k8s.ngrok.com/traffic-policy: example-tp
   name: example-ingress
   namespace: default
-spec:
+  spec:
   ingressClassName: ngrok
   rules:
-    - host: example-hostname.ngrok.io
+  - host: example-hostname.ngrok.io
       http:
         paths:
-          - path: /
+  - path: /
             pathType: Prefix
             backend:
               service:
                 name: example-service
                 port:
                   number: 80
-```
+  ```
 
 </Tab>
-<Tab title="Gateway API">
-✅ Gateway API natively supports TLS termination, and this feature is fully supported by the ngrok Kubernetes Operator.
+  <Tab title="Gateway API">
+  ✅ Gateway API natively supports TLS termination, and this feature is fully supported by the ngrok Kubernetes Operator.
 
-### 3. Create a `Secret` to terminate TLS
+  ### 3. Create a `Secret` to terminate TLS
 
-Create a Kubernetes `Secret` to configure TLS termination.
+  Create a Kubernetes `Secret` to configure TLS termination.
 
-```bash
-kubectl create secret tls server-cert-secret \
---cert=server.crt \
---key=server.key
-```
+  ```bash
+  kubectl create secret tls server-cert-secret \
+  --cert=server.crt \
+  --key=server.key
+  ```
 
-### 4. Create a `ConfigMap` to validate client certificates
+  ### 4. Create a `ConfigMap` to validate client certificates
 
-Create a Kubernetes `ConfigMap` containing the CA so that client certificates can be validated.
+  Create a Kubernetes `ConfigMap` containing the CA so that client certificates can be validated.
 
-```bash
-kubectl create configmap ca-cert-config \
---from-file=ca.crt
-```
+  ```bash
+  kubectl create configmap ca-cert-config \
+  --from-file=ca.crt
+  ```
 
-### 5. Create a `Gateway` that terminates TLS using the generated certificates
+  ### 5. Create a `Gateway` that terminates TLS using the generated certificates
 
-```yaml
-apiVersion: gateway.networking.k8s.io/v1
-kind: Gateway
-metadata:
+  ```yaml
+  apiVersion: gateway.networking.k8s.io/v1
+  kind: Gateway
+  metadata:
   name: example-gateway
   namespace: default
-spec:
+  spec:
   gatewayClassName: ngrok
   listeners:
-    - name: example
+  - name: example
       hostname: "example-hostname.ngrok.io"
       port: 443
       protocol: HTTPS
       tls:
         mode: Terminate
         certificateRefs:
-          - kind: Secret
+  - kind: Secret
             name: server-cert-secret
         frontendValidation:
           caCertificateRefs:
-            - kind: ConfigMap
+  - kind: ConfigMap
               name: ca-cert-config
         options:
           "k8s.ngrok.com/terminate-tls.min_version": "1.2"
           "k8s.ngrok.com/terminate-tls.max_version": "1.3"
           "k8s.ngrok.com/terminate-tls.mutual_tls_verification_strategy": "require-and-verify"
-```
+  ```
 
-### 6. Generate an `HTTPRoute` to route to the upstream
+  ### 6. Generate an `HTTPRoute` to route to the upstream
 
-```yaml
-apiVersion: gateway.networking.k8s.io/v1
-kind: HTTPRoute
-metadata:
+  ```yaml
+  apiVersion: gateway.networking.k8s.io/v1
+  kind: HTTPRoute
+  metadata:
   name: example-route
   namespace: default
-spec:
+  spec:
   hostnames:
-    - example-hostname.ngrok.io
+  - example-hostname.ngrok.io
   parentRefs:
-    - group: gateway.networking.k8s.io
+  - group: gateway.networking.k8s.io
       kind: Gateway
       name: example-gateway
       namespace: default
   rules:
-    - matches:
-        - path:
+  - matches:
+  - path:
             type: PathPrefix
             value: /
       backendRefs:
-        - group: ""
+  - group: ""
           kind: Service
           name: example-service
           port: 80
           weight: 1
-```
+  ```
 
 </Tab>
 </Tabs>

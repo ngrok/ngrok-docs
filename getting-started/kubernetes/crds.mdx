@@ -59,46 +59,46 @@ If you already have a different deployment on your cluster, you'll need to chang
 <Tabs>
   <Tab title="AgentEndpoint">
 
-```yaml title="ngrok-crds.yaml"
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-kind: AgentEndpoint
-metadata:
+  ```yaml title="ngrok-crds.yaml"
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: AgentEndpoint
+  metadata:
   name: tinyllama-endpoint
-spec:
+  spec:
   url: https://$YOUR_DOMAIN
   upstream:
     url: http://tinyllama.default:80
-```
+  ```
 
-  </Tab>
+</Tab>
   <Tab title="CloudEndpoint + AgentEndpoint">
 
-```yaml title="ngrok-crds.yaml"
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-kind: CloudEndpoint
-metadata:
+  ```yaml title="ngrok-crds.yaml"
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: CloudEndpoint
+  metadata:
   name: tinyllama-cloud-endpoint
-spec:
+  spec:
   url: $YOUR_DOMAIN
-trafficPolicy:
+  trafficPolicy:
   policy:
     on_http_request:
-      - actions:
-          - type: forward-internal
+  - actions:
+  - type: forward-internal
             config:
               url: http://tinyllama.internal
----
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-kind: AgentEndpoint
-metadata:
+  ---
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: AgentEndpoint
+  metadata:
   name: tinyllama-endpoint
-spec:
+  spec:
   url: http://tinyllama.internal
   upstream:
     url: http://tinyllama.default:80
-```
+  ```
 
-  </Tab>
+</Tab>
 </Tabs>
 
 Apply the manifest with `kubectl -n ngrok-operator apply -f ngrok-crds.yaml`.
@@ -117,65 +117,65 @@ First, copy your public IP address via the [`ip4v.ngrok.com` mini-app](https://i
 <Tabs>
   <Tab title="AgentEndpoint">
 
-Add a `trafficPolicy.inline` field followed by the Traffic Policy rule itself.
+  Add a `trafficPolicy.inline` field followed by the Traffic Policy rule itself.
 
-```yaml title="ngrok-crds.yaml"
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-kind: AgentEndpoint
-metadata:
+  ```yaml title="ngrok-crds.yaml"
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: AgentEndpoint
+  metadata:
   name: tinyllama-endpoint
-spec:
+  spec:
   url: https://$YOUR_DOMAIN
   upstream:
     url: http://tinyllama.default:80
   trafficPolicy:
     inline:
       on_http_request:
-        - actions:
-            - type: restrict-ips
+  - actions:
+  - type: restrict-ips
               config:
                 enforce: true
                 allow:
-                  - $YOUR_PUBLIC_IP
-```
+  - $YOUR_PUBLIC_IP
+  ```
 
-  </Tab>
+</Tab>
   <Tab title="CloudEndpoint + AgentEndpoint">
 
-Insert the new rule above your existing `forward-internal` action to require authentication before forwarding traffic to your internal Agent Endpoint.
+  Insert the new rule above your existing `forward-internal` action to require authentication before forwarding traffic to your internal Agent Endpoint.
 
-```yaml title="ngrok-crds.yaml"
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-kind: CloudEndpoint
-metadata:
+  ```yaml title="ngrok-crds.yaml"
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: CloudEndpoint
+  metadata:
   name: tinyllama-cloud-endpoint
-spec:
+  spec:
   url: $YOUR_DOMAIN
   trafficPolicy:
     policy:
       on_http_request:
-        - actions:
-            - type: restrict-ips
+  - actions:
+  - type: restrict-ips
               config:
                 enforce: true
                 allow:
-                  - $YOUR_PUBLIC_IP
-        - actions:
-            - type: forward-internal
+  - $YOUR_PUBLIC_IP
+  - actions:
+  - type: forward-internal
               config:
                 url: http://tinyllama.internal
----
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-kind: AgentEndpoint
-metadata:
+  ---
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: AgentEndpoint
+  metadata:
   name: tinyllama-endpoint
-spec:
+  spec:
   url: http://tinyllama.internal
   upstream:
     url: http://tinyllama.default:80
-```
+  ```
 
-  </Tab>
+</Tab>
 </Tabs>
 
 Re-apply the manifest with `kubectl apply -f ngrok-crds.yaml`.
