@@ -132,30 +132,58 @@ metadata:
     meta.helm.sh/release-namespace: ngrok-operator
 ```
 
-Trying to install the `ngrok-crds` chart while these annotations point to a different release will fail. First, re-annotate the CRDs to be owned by the `ngrok-crds` release:
+Trying to install the `ngrok-crds` chart while these annotations point to a different release will fail. To migrate safely, follow these steps:
+
+**Step 1:** Annotate all ngrok CRDs with `helm.sh/resource-policy=keep`. This prevents the old operator release from deleting the CRDs when you update it, since the CRDs are still tracked in the old release's manifest:
+
+```bash
+for crd in $(kubectl get crds -o name | grep ngrok); do
+  kubectl annotate $crd helm.sh/resource-policy=keep --overwrite
+done
+```
+
+Verify the annotation is present on all CRDs:
+
+```bash
+kubectl get crds -o name | grep ngrok | xargs -I{} kubectl get {} -o jsonpath='{.metadata.name}: {.metadata.annotations.helm\.sh/resource-policy}{"\n"}'
+```
+
+<Warning title="Test in a non-production cluster first">
+This migration relies on Helm honoring the `helm.sh/resource-policy=keep` annotation on live CRD objects. Test this procedure in a non-production cluster before running it in production.
+</Warning>
+
+**Step 2:** Re-annotate the CRDs to be owned by the `ngrok-crds` release. Replace `CRDS_NAMESPACE` with the namespace where you plan to install the `ngrok-crds` release (for example, `default`):
 
 ```bash
 for crd in $(kubectl get crds -o name | grep ngrok); do
   kubectl annotate $crd \
     meta.helm.sh/release-name=ngrok-crds \
-    meta.helm.sh/release-namespace=default \
+    meta.helm.sh/release-namespace=CRDS_NAMESPACE \
     --overwrite
 done
 ```
 
-Now install the `ngrok-crds` chart (this will be a no-op since the CRDs already exist):
+**Step 3:** Install the `ngrok-crds` chart into the same namespace you used above (this will be a no-op since the CRDs already exist):
 
 ```bash
-helm install ngrok-crds ngrok/ngrok-crds
+helm install ngrok-crds ngrok/ngrok-crds --namespace=CRDS_NAMESPACE
 ```
 
-Then update your existing operator to stop managing CRDs:
+**Step 4:** Update your existing operator to stop managing CRDs:
 
 ```bash
 helm upgrade ngrok-operator ngrok/ngrok-operator \
   --namespace=ngrok-operator \
   --reuse-values \
   --set installCRDs=false
+```
+
+**Step 5:** Remove the `resource-policy` annotation so that future `helm uninstall ngrok-crds` can properly delete the CRDs when you're ready:
+
+```bash
+for crd in $(kubectl get crds -o name | grep ngrok); do
+  kubectl annotate $crd helm.sh/resource-policy- --overwrite
+done
 ```
 
 You can now install additional operators with `installCRDs=false`.
