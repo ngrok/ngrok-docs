@@ -91,13 +91,11 @@ kubectl patch <resource> <name> --type=json -p '[{"op": "remove", "path": "/meta
 If you need to bulk-remove finalizers from all ngrok custom resources (for example, after an uninstall where the cleanup job did not complete), you can use the following script:
 
 ```bash
-for crd in $(kubectl get crds -o name | grep ngrok); do
-  crd_name=$(echo "$crd" | cut -d'/' -f2)
-  for resource in $(kubectl get "$crd_name" --all-namespaces -o jsonpath='{range .items[*]}{.metadata.namespace}/{.metadata.name}{"\n"}{end}' 2>/dev/null); do
-    ns=$(echo "$resource" | cut -d'/' -f1)
-    name=$(echo "$resource" | cut -d'/' -f2)
-    kubectl patch "$crd_name" "$name" -n "$ns" --type=json \
-      -p '[{"op": "remove", "path": "/metadata/finalizers"}]' 2>/dev/null
+for crd in $(kubectl get crds -o json | jq -r '.items[].metadata.name | select(contains("ngrok.com"))'); do
+  kubectl get "$crd" --all-namespaces -o json | jq -r '.items[] | select(.metadata.finalizers) | "\(.metadata.namespace) \(.metadata.name)"' | \
+  while read ns name; do
+    kubectl patch "$crd" "$name" -n "$ns" --type=json \
+      -p '[{"op": "remove", "path": "/metadata/finalizers"}]'
   done
 done
 ```

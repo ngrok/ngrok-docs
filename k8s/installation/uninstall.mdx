@@ -60,7 +60,7 @@ The ngrok-operator uses [finalizers](/k8s/guides/finalizers) on its custom resou
 When you `helm uninstall`, the chart's `pre-delete` hook job handles these finalizers so you don't have to. What happens depends on two factors:
 
 1. **How CRDs were installed:** bundled with the operator chart (default) or separately via the `ngrok-crds` chart
-2. **The `drainPolicy` value:** `Keep` (default) or `Delete`
+2. **The `drainPolicy` value:** `Retain` (default) or `Delete`
 
 ### CRDs bundled with operator (default)
 
@@ -68,7 +68,7 @@ When CRDs are part of the same helm release, uninstalling the operator also unin
 
 | drainPolicy | Behavior |
 |---|---|
-| `Keep` (default) | Hook removes all finalizers. Helm then deletes CRDs, forcing CR deletion. ngrok API resources are **preserved**. |
+| `Retain` (default) | Hook removes all finalizers. Helm then deletes CRDs, forcing CR deletion. ngrok API resources are **preserved**. |
 | `Delete` | Hook deletes each CR and waits for cleanup. Helm then deletes CRDs. ngrok API resources are **deleted**. |
 
 ### CRDs installed separately
@@ -77,10 +77,10 @@ When CRDs are installed via the `ngrok-crds` chart with `installCRDs=false` on t
 
 | drainPolicy | Behavior |
 |---|---|
-| `Keep` (default) | Hook removes all finalizers. CRDs and CRs remain in the cluster (without finalizers). ngrok API resources are **preserved**. |
+| `Retain` (default) | Hook removes all finalizers. CRDs and CRs remain in the cluster (without finalizers). ngrok API resources are **preserved**. |
 | `Delete` | Hook deletes each CR and waits for cleanup. CRDs remain in the cluster. ngrok API resources are **deleted**. |
 
-With separate CRDs and `drainPolicy=Keep`, the remaining CRs are left without finalizers, which means you can:
+With separate CRDs and `drainPolicy=Retain`, the remaining CRs are left without finalizers, which means you can:
 - Delete those resources without them getting stuck
 - Delete namespaces containing those resources without them getting stuck
 - Uninstall the CRDs separately whenever you're ready
@@ -162,7 +162,7 @@ After uninstalling, your cluster may be in different states depending on how the
 
 **If ngrok API resources were cleaned up** (`drainPolicy=Delete`): Reinstalling the operator will recreate them from your existing Kubernetes resources.
 
-**If ngrok API resources were preserved** (`drainPolicy=Keep`):
+**If ngrok API resources were preserved** (`drainPolicy=Retain`):
 - If CRDs were installed separately and CRs still exist in the cluster, reinstalling the operator will re-add finalizers and resume managing them with no duplication.
 - If CRDs were bundled and were deleted (forcing CR deletion), you'll need to reapply your manifests. This may create duplicate resources (for example, a second CloudEndpoint in a pool) if the originals still exist in your ngrok account. Check the [ngrok Dashboard](https://dashboard.ngrok.com) and clean up any duplicates.
 - For `Ingress` objects, the new operator will see them and automatically create the corresponding resources.
@@ -188,6 +188,23 @@ If you triggered cleanup via the `KubernetesOperator` resource, the drain proces
 ```bash
 kubectl logs -n ngrok-operator deploy/ngrok-operator-manager | grep -i "drain\|cleanup\|finalizer"
 ```
+
+### Checking drain status
+
+The `KubernetesOperator` custom resource reports the current state of the drain process in its status:
+
+```bash
+kubectl get kubernetesoperator <release-name> -n <namespace> -o yaml
+```
+
+The drain-related status fields are:
+
+| Field | Description |
+|---|---|
+| `drainStatus` | Current state: `pending`, `draining`, `completed`, or `failed` |
+| `drainProgress` | How many resources have been processed versus total (format `X/Y`) |
+| `drainMessage` | Human-readable information about the current drain state |
+| `drainErrors` | List of the most recent errors encountered during drain |
 
 ### Resources stuck in Terminating state
 
@@ -220,7 +237,7 @@ flowchart TD
   M2 --> M4{"Do you want to delete<br/>ngrok API resources?"}
   M3 --> M4
 
-  M4 -- "Keep account resources (default)" --> M5["For EACH operator release:<br/>Run uninstall (default drainPolicy=Keep)"]
+  M4 -- "Keep account resources (default)" --> M5["For EACH operator release:<br/>Run uninstall (default drainPolicy=Retain)"]
   M4 -- "Delete account resources" --> M6["For EACH operator release:<br/>Upgrade and set drainPolicy=Delete<br/>Then run uninstall"]
 
   M6 --> M7{"Are operators strictly scoped<br/>by watchNamespace?"}
@@ -250,14 +267,14 @@ flowchart TD
   S3 --> SB{"Do you want to delete<br/>ngrok API resources?"}
 
   %% Single-install (CRDs separate) outcomes
-  SA -- "Keep account resources (default)" --> S5A["Run uninstall (default drainPolicy=Keep)"]
+  SA -- "Keep account resources (default)" --> S5A["Run uninstall (default drainPolicy=Retain)"]
   SA -- "Delete account resources" --> S6A["Upgrade and set drainPolicy=Delete<br/>Then run uninstall"]
 
   S5A --> FS1
   S6A --> FS4["Final state:<br/>CRDs: Preserved<br/>CRs: Deleted<br/>ngrok API resources: Deleted"]
 
   %% Single-install (CRDs bundled) outcomes
-  SB -- "Keep account resources (default)" --> S5B["Run uninstall (default drainPolicy=Keep)"]
+  SB -- "Keep account resources (default)" --> S5B["Run uninstall (default drainPolicy=Retain)"]
   SB -- "Delete account resources" --> S6B["Upgrade and set drainPolicy=Delete<br/>Then run uninstall"]
 
   S5B --> FS5["Final state:<br/>CRDs: Deleted<br/>CRs: Deleted (forced by CRD removal)<br/>ngrok API resources: Preserved"]
