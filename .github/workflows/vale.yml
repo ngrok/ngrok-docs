@@ -12,8 +12,7 @@ jobs:
       contents: read
       pull-requests: write
       checks: write
-    # Clear default NODE_AUTH_TOKEN so a GitHub token isn't sent to npm (403).
-    # To fix 403 on installs, add an NPM_TOKEN secret (read-only token from https://www.npmjs.com/).
+    # Prevent org/repo NODE_AUTH_TOKEN (e.g. for GitHub Packages) from being sent to registry.npmjs.org — npm returns 403.
     env:
       NODE_AUTH_TOKEN: ''
 
@@ -22,13 +21,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - name: Configure npm for CI
-        run: |
-          echo "registry=https://registry.npmjs.org/" >> .npmrc
-          if [ -n "${{ secrets.NPM_TOKEN }}" ]; then
-            echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" >> .npmrc
-          fi
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
