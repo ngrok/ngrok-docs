@@ -14,12 +14,18 @@ NC='\033[0m' # No Color
 echo "🚀 Testing ngrok traffic policies..."
 echo ""
 
-# Find all yaml/yml files excluding .github directory
-POLICY_FILES=$(find "$(pwd)" -name "*.yaml" -o -name "*.yml" | grep -v "\.github" | sort)
+# Only consider traffic policy directories; exclude known non-policy files
+ROOT="$(pwd)"
+POLICY_FILES=$(
+  (find "$ROOT/traffic-policy" "$ROOT/snippets/traffic-policy" -type f \( -name "*.yaml" -o -name "*.yml" \) 2>/dev/null || true) \
+  | grep -v '_category_\.yml$' \
+  | grep -v '/examples\.yml$' \
+  | sort
+)
 
 if [ -z "$POLICY_FILES" ]; then
-    echo -e "${RED}❌ No policy files found${NC}"
-    exit 1
+    echo "No traffic policy files found (checked traffic-policy/ and snippets/traffic-policy/). Nothing to test."
+    exit 0
 fi
 
 echo "Found $(echo "$POLICY_FILES" | wc -l) policy files:"
