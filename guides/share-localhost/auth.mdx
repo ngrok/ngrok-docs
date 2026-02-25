@@ -1,0 +1,55 @@
+---
+title: Authentication
+sidebarTitle: Authentication
+description: Add authentication to your ngrok endpoints to control who can access your locally shared applications.
+---
+
+ngrok makes it easy to add authentication to any endpoint without modifying your application code. Using [Traffic Policy](/traffic-policy/), you can require visitors to authenticate before they can access your local app.
+
+## Add OAuth with a single flag
+
+The quickest way to protect your endpoint is with the `--oauth` flag:
+
+```bash
+ngrok http 8080 --oauth google
+```
+
+This requires visitors to log in with a Google account before accessing your app. ngrok handles the entire OAuth flow—no application changes required.
+
+## Supported authentication methods
+
+| Method | Description |
+|--------|-------------|
+| [OAuth](/traffic-policy/actions/oauth/) | Require login via Google, GitHub, Microsoft, and other providers |
+| [OpenID Connect](/traffic-policy/actions/oidc/) | Integrate with any OIDC-compliant identity provider |
+| [SAML](/traffic-policy/actions/saml/) | Use SAML-based SSO for enterprise authentication |
+| [Basic Auth](/traffic-policy/actions/basic-auth/) | Require a username and password |
+
+## Configure authentication via Traffic Policy
+
+For more control, define authentication in your ngrok configuration file:
+
+```yaml title="ngrok.yml"
+endpoints:
+  - name: my-app
+    url: $YOUR_DOMAIN
+    traffic_policy:
+      on_http_request:
+        - actions:
+          - type: oauth
+            config:
+              provider: google
+              email_addresses:
+                - "teammate@company.com"
+    upstream:
+      url: 8080
+      protocol: http1
+```
+
+This restricts access to a specific email address, making it ideal for sharing your app with a teammate while keeping it private from everyone else.
+
+## Next steps
+
+- [OAuth action reference](/traffic-policy/actions/oauth/) — Full configuration options for OAuth
+- [Network security](/guides/share-localhost/security) — Combine auth with IP restrictions and other controls
+- [Traffic Policy](/traffic-policy/) — Learn about all available Traffic Policy actions
