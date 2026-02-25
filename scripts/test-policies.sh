@@ -14,17 +14,21 @@ NC='\033[0m' # No Color
 echo "🚀 Testing ngrok traffic policies..."
 echo ""
 
-# Only consider traffic policy directories; exclude known non-policy files
+# Only consider traffic policy directories and extracted snippets; exclude known non-policy files
 ROOT="$(pwd)"
+EXTRACTED="${EXTRACTED_POLICIES_DIR:-$ROOT/.tmp/extracted-policies}"
 POLICY_FILES=$(
-  (find "$ROOT/traffic-policy" "$ROOT/snippets/traffic-policy" -type f \( -name "*.yaml" -o -name "*.yml" \) 2>/dev/null || true) \
+  {
+    find "$ROOT/traffic-policy" "$ROOT/snippets/traffic-policy" -type f \( -name "*.yaml" -o -name "*.yml" -o -name "*.json" \) 2>/dev/null || true
+    [ -d "$EXTRACTED" ] && find "$EXTRACTED" -maxdepth 1 -type f \( -name "*.yaml" -o -name "*.yml" -o -name "*.json" \) 2>/dev/null || true
+  } \
   | grep -v '_category_\.yml$' \
   | grep -v '/examples\.yml$' \
-  | sort
+  | sort -u
 )
 
 if [ -z "$POLICY_FILES" ]; then
-    echo "No traffic policy files found (checked traffic-policy/ and snippets/traffic-policy/). Nothing to test."
+    echo "No traffic policy files found (checked traffic-policy/, snippets/traffic-policy/, and $EXTRACTED). Nothing to test."
     exit 0
 fi
 
