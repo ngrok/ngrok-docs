@@ -26,25 +26,14 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version-file: ".nvmrc"
-          registry-url: "https://registry.npmjs.org"
+          node-version: '24'
 
-      - name: Enable Corepack and install pnpm
+      - name: Install dependencies
         run: |
           corepack enable
           corepack install
-        # Corepack installs pnpm from the Node bundle (no registry fetch),
-        # avoiding 403 when registry.npmjs.org blocks unauthenticated requests.
-
-      - name: Ensure npm registry has no auth
-        run: |
-          echo "registry=https://registry.npmjs.org/" >> .npmrc
-          # Remove token setup-node may have written to ~/.npmrc (e.g. from org NODE_AUTH_TOKEN)
           sed -i '/^\/\/registry\.npmjs\.org\/:_authToken=/d' ~/.npmrc 2>/dev/null || true
-        # Don't send a GitHub token to registry.npmjs.org — npm returns 403.
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+          pnpm install
 
       - name: Setup PATH for mdx2vast
         run: |
