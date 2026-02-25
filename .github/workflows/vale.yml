@@ -24,10 +24,13 @@ jobs:
 
       - name: Get changed files
         id: changed-files
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Get changed markdown files, excluding specific directories and files
-          git diff --name-only --diff-filter=ACMR \
-            ${{ github.event.pull_request.base.sha }} ${{ github.sha }} \
+          # Use GitHub API to get PR changed files (reliable for pull_request events)
+          curl -s -H "Authorization: token $GITHUB_TOKEN" \
+            "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files" \
+            | jq -r '.[].filename' \
             | grep -E '\.(mdx|md)$' \
             | grep -v '^snippets/' \
             | grep -v '^errors/' \
