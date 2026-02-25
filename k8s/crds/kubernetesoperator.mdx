@@ -36,6 +36,8 @@ spec:
     endpointSelectors: <[]string> # required
     ingressEndpoint: <string>     # optional
     tlsSecretName: <string>       # required, default: "default-tls"
+  drain:                          # optional
+    policy: <string>              # optional, default: "Retain"
 ```
 
 ## KubernetesOperator fields
@@ -62,6 +64,7 @@ The following sections outline each field of the `KubernetesOperator` custom res
 | [`spec.region`](#specregion)                   | `string`          | yes      | `"global"`                        | The ngrok region in which the ingress for this Operator is served                        |
 | [`spec.deployment`](#specdeployment)           | `Object`          | no       | none                              | Deployment information for this instance of the ngrok Kubernetes Operator                |
 | [`spec.binding`](#specbinding)                 | `Object`          | no       | none                              | Configuration of the binding feature for this instance of the ngrok Kubernetes Operator  |
+| [`spec.drain`](#specdrain)                     | `Object`          | no       | none                              | Configuration of the drain behavior during operator uninstall                            |
 
 ### `spec.description`
 
@@ -202,6 +205,153 @@ The name of the Kubernetes Secret that contains the TLS private/public keys to u
 **Required:** yes
 
 **Default:** `"default-tls"`
+
+### `spec.drain`
+
+Configuration of the drain behavior during operator uninstall. For more information, see [Uninstalling the Operator](/k8s/installation/uninstall).
+
+**Type:** `Object`
+
+**Required:** no
+
+**Default:** none
+
+**Fields:**
+
+| Field Name                                | Type            | Required | Default    | Description                                                             |
+| ----------------------------------------- | --------------- | -------- | ---------- | ----------------------------------------------------------------------- |
+| [`spec.drain.policy`](#specdrainpolicy)   | `string` (enum) | no       | `"Retain"` | Determines whether to delete ngrok API resources or just remove finalizers during drain |
+
+### `spec.drain.policy`
+
+Determines how ngrok API resources are handled when the operator is uninstalled.
+
+**Type:** `string (enum)`
+
+**Required:** no
+
+**Default:** `"Retain"`
+
+**Allowed Values:** `"Delete"`, `"Retain"`
+
+- `Retain`: removes finalizers from custom resources but preserves ngrok API resources in your account
+- `Delete`: deletes each custom resource and waits for the operator to clean up the corresponding ngrok API resource
+
+## Status fields
+
+The `KubernetesOperator` resource includes status information that reflects the current state of the operator and its registration with the ngrok API.
+
+### `status.id`
+
+The unique identifier for this Kubernetes Operator in the ngrok API.
+
+**Type:** `string`
+
+### `status.uri`
+
+The URI for this Kubernetes Operator in the ngrok API.
+
+**Type:** `string`
+
+### `status.registrationStatus`
+
+The status of the registration of this Kubernetes Operator with the ngrok API.
+
+**Type:** `string (enum)`
+
+**Allowed Values:** `"registered"`, `"error"`, `"pending"`
+
+### `status.registrationErrorCode`
+
+The ngrok error code if registration failed.
+
+**Type:** `string`
+
+**Pattern:** `ERR_NGROK_<number>`
+
+### `status.errorMessage`
+
+A free-form error message if the registration status is `error`.
+
+**Type:** `string`
+
+### `status.enabledFeatures`
+
+String representation of the features enabled for this Kubernetes Operator.
+
+**Type:** `string`
+
+### `status.bindingsIngressEndpoint`
+
+The URL that the operator uses to talk to the ngrok edge when forwarding traffic for kubernetes-bound endpoints.
+
+**Type:** `string`
+
+### `status.drainStatus`
+
+Indicates the current state of the drain process during uninstall.
+
+**Type:** `string (enum)`
+
+**Allowed Values:** `"pending"`, `"draining"`, `"completed"`, `"failed"`
+
+### `status.drainMessage`
+
+Human-readable information about the current drain state.
+
+**Type:** `string`
+
+### `status.drainProgress`
+
+Indicates how many resources have been drained versus total. Format: `X/Y` where X is the number processed (completed + failed) and Y is total.
+
+**Type:** `string`
+
+**Example:** `"5/10"`
+
+### `status.drainErrors`
+
+List of the most recent errors encountered during drain.
+
+**Type:** `[]string`
+
+## Status examples
+
+### Registered Operator
+
+```yaml
+status:
+  id: k8sop_2example123
+  uri: /kubernetes_operators/k8sop_2example123
+  registrationStatus: registered
+  enabledFeatures: ingress,gateway,bindings
+```
+
+### Operator draining during uninstall
+
+```yaml
+status:
+  id: k8sop_2example123
+  uri: /kubernetes_operators/k8sop_2example123
+  registrationStatus: registered
+  drainStatus: draining
+  drainMessage: "Draining resources"
+  drainProgress: "3/10"
+```
+
+### Drain completed with errors
+
+```yaml
+status:
+  id: k8sop_2example123
+  uri: /kubernetes_operators/k8sop_2example123
+  registrationStatus: registered
+  drainStatus: failed
+  drainMessage: "Drain completed with errors"
+  drainProgress: "10/10"
+  drainErrors:
+  - "failed to delete CloudEndpoint my-endpoint: HTTP 500: internal server error"
+```
 
 ## Example KubernetesOperator
 

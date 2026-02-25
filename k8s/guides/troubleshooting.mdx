@@ -4,10 +4,15 @@ sidebarTitle: Troubleshooting
 description: Learn how to troubleshoot common issues with the ngrok Kubernetes Operator using kubectl describe, events, and logs.
 ---
 
-## Describe resources
+## Check resource status
 
-You can use `kubectl describe` on the custom resources for the ngrok Operator to check their statuses if they are not behaving properly or are not accessible.
-This is a good first step
+ngrok custom resources include status conditions that report their current state. Use `kubectl describe` to check conditions and events on a resource:
+
+```bash
+kubectl describe cloudendpoint <name> -n <namespace>
+```
+
+The `Conditions` section in the output shows whether the resource is `Ready` and any errors encountered. For more details on the conditions available for each resource type, see the [CRD reference](/k8s/crds).
 
 ## Check Kubernetes events
 
@@ -50,19 +55,23 @@ LAST SEEN   TYPE     REASON              OBJECT                                 
 Kubernetes events usually expire after an hour, so you might want to restart the Operator to re-create the events while troubleshooting if the events happened more than an hour ago.
 </Tip>
 
-## Check Operator errors
+## Check Operator logs
 
-To quickly check the Operator logs for only errors, you can use a command such as the following.
-You can replace the name/namespace if you installed the Operator somewhere other than the default location.
+The operator runs two main deployments: `ngrok-operator-manager` (handles `CloudEndpoint`, `Domain`, `Ingress`, Gateway API, and other cluster-level resources) and `ngrok-operator-agent` (handles `AgentEndpoint` resources). To check for errors in either:
 
 ```bash
-k logs -n ngrok-operator deploy/ngrok-operator-manager | grep "ERROR"
+kubectl logs -n ngrok-operator deploy/ngrok-operator-manager | grep -i error
+kubectl logs -n ngrok-operator deploy/ngrok-operator-agent | grep -i error
 ```
+
+Replace the namespace if you installed the Operator somewhere other than the default location.
 
 ## Resources not getting deleted
 
 If you marked an ngrok custom resource for deletion but it is not getting deleted, there may be unresolved finalizers on it.
 You can refer to the [finalizers page](/k8s/guides/finalizers) for more information about how the Operator uses finalizers and how to clean up resources with dangling finalizers.
+
+If this is happening during or after an uninstall, see the [uninstall troubleshooting guide](/k8s/installation/uninstall#troubleshooting) for specific steps to resolve stuck resources and namespaces.
 
 ## Cloud Endpoints not getting created from Ingress or Gateway API
 
@@ -128,36 +137,14 @@ spec:
       protocol: HTTPS
 ```
 
-### Check manager pod logs
+### Check Operator logs
 
-The "manager" pods are responsible for performing the translation from `Ingress` and Gateway API into native ngrok resources.
-Check the manager pods for any errors to see if there is a problem with your configuration.
-
-```bash
-kubectl logs -n ngrok-operator deploy/ngrok-operator-manager | grep "ERROR"
-```
+The manager pods handle the translation from `Ingress` and Gateway API into native ngrok resources.
+Check the [Operator logs](#check-operator-logs) for any errors to see if there is a problem with your configuration.
 
 ## Endpoints not showing up on the dashboard
 
-If you have `CloudEndpoint` and/or `AgentEndpoint` resources that are not working, and you can't tell what's wrong with them using `kubectl describe`, then check the logs for any errors processing them.
-
-### Check for `AgentEndpoint` error logs
-
-`AgentEndpoint` resources are handled by the "agent" pods. Check these for any errors to see if there was an issue processing your `AgentEndpoint`.
-Common errors are an invalid Traffic Policy configuration that may prevent your endpoint from being created.
-
-```bash
-kubectl logs -n ngrok-operator deploy/ngrok-operator-agent | grep "ERROR"
-```
-
-### Check for `CloudEndpoint` error logs
-
-`CloudEndpoint` resources are handled by the "manager" pods. Check these for any errors to see if there was an issue processing your `CloudEndpoint`.
-Common errors are an invalid Traffic Policy configuration that may prevent your endpoint from being created.
-
-```bash
-kubectl logs -n ngrok-operator deploy/ngrok-operator-manager | grep "ERROR"
-```
+If `CloudEndpoint` or `AgentEndpoint` resources are not working, first [check the resource status](#check-resource-status) for error conditions, then [check the Operator logs](#check-operator-logs) for errors processing them. Common errors include an invalid Traffic Policy configuration that may prevent your endpoint from being created.
 
 ## Resource limits
 
