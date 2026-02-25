@@ -49,6 +49,13 @@ def extract_blocks(path):
             else:
                 i += 1
                 continue
+            if "skip-validation" in rest or "skip_validation" in rest:
+                i += 1
+                while i < len(lines) and lines[i].strip() != "```":
+                    i += 1
+                if i < len(lines):
+                    i += 1
+                continue
             i += 1
             block = []
             while i < len(lines) and lines[i].strip() != "```":
@@ -64,12 +71,15 @@ def extract_blocks(path):
 
 
 def validate_block(content, is_json):
+    # is_json is the string "json" or "yaml" from extractor
     # Infer format from content so we never parse YAML as JSON
     raw = content.strip()
     if raw.startswith("{"):
         is_json = True
     elif raw.startswith("on_") or "\non_" in "\n" + raw:
         is_json = False
+    else:
+        is_json = is_json == "json"
     if is_json:
         try:
             d = json.loads(content)
@@ -85,6 +95,21 @@ def validate_block(content, is_json):
     if not isinstance(d, dict):
         return "root must be an object"
     if not any(k in d for k in POLICY_KEYS):
+        # Allow agent config format: endpoints: [ { traffic_policy: { on_http_request: ... } } ]
+        if "endpoints" in d and isinstance(d["endpoints"], list):
+            for ep in d["endpoints"]:
+                if isinstance(ep, dict) and "traffic_policy" in ep:
+                    tp = ep["traffic_policy"]
+                    if isinstance(tp, dict) and any(k in tp for k in POLICY_KEYS):
+                        return None
+        # Allow API request body: { "traffic_policy": "{ \"on_http_request\": ... }", "bindings": ..., "type": "cloud" }
+        if isinstance(d.get("traffic_policy"), str) and d.get("type") == "cloud":
+            try:
+                inner = json.loads(d["traffic_policy"])
+                if isinstance(inner, dict) and any(k in inner for k in POLICY_KEYS):
+                    return None
+            except (json.JSONDecodeError, TypeError):
+                pass
         return "missing policy key (need one of: " + ", ".join(POLICY_KEYS) + ")"
     return None
 
