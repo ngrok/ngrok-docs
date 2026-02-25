@@ -19,12 +19,25 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Install jq and curl
-        run: sudo apt-get update && sudo apt-get install -y jq curl
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Install dependencies
+        run: |
+          corepack enable
+          corepack install
+          pnpm install
+
+      - name: Setup PATH for mdx2vast
+        run: |
+          echo "PATH=${{ github.workspace }}/node_modules/.bin:$PATH" >> $GITHUB_ENV
 
       - name: Get changed files
         id: changed-files
         run: |
+          # Get changed markdown files, excluding specific directories and files
           git diff --name-only --diff-filter=ACMR \
             ${{ github.event.pull_request.base.sha }} ${{ github.sha }} \
             | grep -E '\.(mdx|md)$' \
@@ -37,12 +50,11 @@ jobs:
             > changed_files.txt || true
           
           if [ -s changed_files.txt ]; then
+            # Build JSON array of files using jq
             FILES_JSON=$(jq -R -s -c 'split("\n") | map(select(length > 0))' changed_files.txt)
-            { echo 'vale_files<<VEOF'; echo "$FILES_JSON"; echo 'VEOF'; } >> $GITHUB_OUTPUT
-            echo "has_vale_files=true" >> $GITHUB_OUTPUT
+            echo "vale_files=$FILES_JSON" >> $GITHUB_OUTPUT
           else
             echo "vale_files=" >> $GITHUB_OUTPUT
-            echo "has_vale_files=false" >> $GITHUB_OUTPUT
           fi
 
       - name: Install Vale
@@ -55,6 +67,10 @@ jobs:
           wget -q "$VALE_URL" -O vale.tar.gz
           tar -xzf vale.tar.gz -C /usr/local/bin
           vale --version
+
+      - name: Install jq and curl
+        run: |
+          sudo apt-get update && sudo apt-get install -y jq curl
 
       - name: Clean up outdated Vale comments
         env:
@@ -119,33 +135,20 @@ jobs:
           fi
 
       - name: Post individual Vale comments on PR lines
+        if: steps.changed-files.outputs.vale_files != ''
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Don't exit on first failure — jq and others can return non-zero when they just find nothing
-          set +e
+          # Read files into space-separated string for Vale
+          FILES=$(tr '\n' ' ' < changed_files.txt)
           
-          echo "::group::Vale comment step"
-          # Skip if no changed .mdx/.md files (check file directly — no reliance on step outputs)
-          if [ ! -s changed_files.txt ]; then
-            echo "No changed_files.txt or empty — skipping"
-            echo "::endgroup::"
+          # Verify we have files to check
+          if [ -z "$FILES" ] || [ "$FILES" = " " ]; then
             exit 0
           fi
           
-          FILES=$(tr '\n' ' ' < changed_files.txt | xargs)
-          
-          if [ -z "$FILES" ]; then
-            echo "FILES empty — skipping"
-            echo "::endgroup::"
-            exit 0
-          fi
-          
-          echo "Running Vale on: $FILES"
-          vale --config=.vale.ini --output=JSON $FILES > vale_results.json 2>/dev/null || true
-          if [ ! -s vale_results.json ]; then
-            echo '{}' > vale_results.json
-          fi
+          # Run Vale and save JSON output (MinAlertLevel is set in .vale.ini)
+          vale --config=.vale.ini --output=JSON $FILES > vale_results.json || true
           
           # Filter Vale results to only include files that are actually in our changed files list
           # This prevents processing violations from files that Vale might have checked but aren't in the PR
@@ -352,28 +355,21 @@ jobs:
             --arg body "$SUMMARY_BODY" \
             '{body: $body}')
           
-          echo "::group::Post summary comment"
           # Update existing comment or create new one
           if [ -n "$SUMMARY_COMMENT_ID" ] && [ "$SUMMARY_COMMENT_ID" != "" ]; then
-            echo "PATCH existing comment $SUMMARY_COMMENT_ID"
-            RES=$(curl -s -w "\n%{http_code}" -X PATCH \
+            # Update existing comment (this will show live update without refresh)
+            curl -s -X PATCH \
               -H "Authorization: token $GITHUB_TOKEN" \
               -H "Accept: application/vnd.github.v3+json" \
               -H "Content-Type: application/json" \
               "https://api.github.com/repos/${{ github.repository }}/issues/comments/$SUMMARY_COMMENT_ID" \
-              -d "$SUMMARY_JSON")
+              -d "$SUMMARY_JSON" > /dev/null
           else
-            echo "POST new comment to issues/${{ github.event.pull_request.number }}/comments"
-            RES=$(curl -s -w "\n%{http_code}" -X POST \
+            # Create new comment
+            curl -s -X POST \
               -H "Authorization: token $GITHUB_TOKEN" \
               -H "Accept: application/vnd.github.v3+json" \
               -H "Content-Type: application/json" \
               "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments" \
-              -d "$SUMMARY_JSON")
+              -d "$SUMMARY_JSON" > /dev/null
           fi
-          HTTP_CODE=$(echo "$RES" | tail -n1)
-          BODY=$(echo "$RES" | sed '$d')
-          echo "HTTP $HTTP_CODE"
-          echo "$BODY" | head -c 500
-          echo ""
-          echo "::endgroup::"
