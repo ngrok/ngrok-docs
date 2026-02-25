@@ -24,12 +24,9 @@ jobs:
 
       - name: Get changed files
         id: changed-files
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # HEAD is the merge commit; HEAD^ is first parent (base) — diff gives PR file list
-          git diff --name-only --diff-filter=ACMR HEAD^..HEAD 2>/dev/null | head -1000 \
-            || git diff --name-only --diff-filter=ACMR ${{ github.event.pull_request.base.sha }}..HEAD 2>/dev/null | head -1000 \
+          git diff --name-only --diff-filter=ACMR \
+            ${{ github.event.pull_request.base.sha }} ${{ github.sha }} \
             | grep -E '\.(mdx|md)$' \
             | grep -v '^snippets/' \
             | grep -v '^errors/' \
@@ -38,21 +35,6 @@ jobs:
             | grep -v '^agent/cli.mdx$' \
             | grep -v '^style-guide.mdx$' \
             > changed_files.txt || true
-          
-          # Fallback: GitHub API if git diff empty
-          if [ ! -s changed_files.txt ]; then
-            curl -s -H "Authorization: token $GITHUB_TOKEN" \
-              "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files" \
-              | jq -r '.[].filename' 2>/dev/null \
-              | grep -E '\.(mdx|md)$' \
-              | grep -v '^snippets/' \
-              | grep -v '^errors/' \
-              | grep -v '^\.skills/' \
-              | grep -v '^agent/cli-api.mdx$' \
-              | grep -v '^agent/cli.mdx$' \
-              | grep -v '^style-guide.mdx$' \
-              >> changed_files.txt || true
-          fi
           
           if [ -s changed_files.txt ]; then
             FILES_JSON=$(jq -R -s -c 'split("\n") | map(select(length > 0))' changed_files.txt)
