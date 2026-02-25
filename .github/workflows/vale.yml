@@ -120,10 +120,14 @@ jobs:
           fi
 
       - name: Post individual Vale comments on PR lines
-        if: success() && steps.changed-files.outputs.has_vale_files == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          # Skip if no changed .mdx/.md files (check file directly — no reliance on step outputs)
+          if [ ! -s changed_files.txt ]; then
+            exit 0
+          fi
+          
           FILES=$(tr '\n' ' ' < changed_files.txt | xargs)
           
           if [ -z "$FILES" ]; then
@@ -343,18 +347,19 @@ jobs:
           # Update existing comment or create new one
           if [ -n "$SUMMARY_COMMENT_ID" ] && [ "$SUMMARY_COMMENT_ID" != "" ]; then
             # Update existing comment (this will show live update without refresh)
-            curl -s -X PATCH \
+            curl -s -w "\nHTTP_CODE:%{http_code}" -X PATCH \
               -H "Authorization: token $GITHUB_TOKEN" \
               -H "Accept: application/vnd.github.v3+json" \
               -H "Content-Type: application/json" \
               "https://api.github.com/repos/${{ github.repository }}/issues/comments/$SUMMARY_COMMENT_ID" \
-              -d "$SUMMARY_JSON" > /dev/null
+              -d "$SUMMARY_JSON"
           else
             # Create new comment
-            curl -s -X POST \
+            curl -s -w "\nHTTP_CODE:%{http_code}" -X POST \
               -H "Authorization: token $GITHUB_TOKEN" \
               -H "Accept: application/vnd.github.v3+json" \
               -H "Content-Type: application/json" \
               "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments" \
-              -d "$SUMMARY_JSON" > /dev/null
+              -d "$SUMMARY_JSON"
           fi
+          echo ""
