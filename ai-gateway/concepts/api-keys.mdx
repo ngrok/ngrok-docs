@@ -3,15 +3,18 @@ title: AI Gateway API Keys
 description: Authenticate requests to your AI Gateway without needing provider accounts.
 ---
 
-AI Gateway API Keys let you authenticate requests to your AI Gateway. When you use one, ngrok handles the provider API keys for you—you don't need accounts with OpenAI, Anthropic, or other providers.
+AI Gateway API Keys are the simplest way to start using the AI Gateway. Create a key, drop it into your SDK, and start making requests — ngrok handles the provider accounts and API keys for OpenAI and Anthropic on your behalf.
 
-## How they work
+<Note>
+Need providers beyond OpenAI and Anthropic, or already have your own provider accounts? See [Bring Your Own Keys](/ai-gateway/bring-your-own-keys/overview).
+</Note>
 
-1. You [create an AI Gateway API Key](#creating-keys) via the dashboard, CLI, or API
-2. Each key is scoped to a specific AI Gateway endpoint (via the required `endpoint_id`)
-3. You use the key as the `apiKey` value in your SDK or `Authorization: Bearer` header
-4. ngrok validates the key and automatically injects its own provider API keys
-5. Your request is forwarded to the provider
+## Getting started
+
+1. [Create an AI Gateway](/ai-gateway/quickstart) if you haven't already
+2. [Purchase credits](https://dashboard.ngrok.com/ai-gateways/credit/add) — AI Gateway API Keys require [prepaid credits](/ai-gateway/concepts/credits) to work
+3. [Create an API key](#creating-keys) from your gateway's **API Keys** tab in the dashboard
+4. Use the key in your SDK:
 
 ```python
 from openai import OpenAI
@@ -27,42 +30,20 @@ response = client.chat.completions.create(
 )
 ```
 
-Your AI Gateway API Key token is never sent to the provider—only ngrok's managed provider keys are used.
+That's it — no OpenAI account, no provider API key, no Traffic Policy configuration. Your AI Gateway API Key handles authentication with the provider automatically.
 
-## Supported providers
+## When to use AI Gateway API Keys
 
-Currently, the following providers have ngrok-managed keys:
+Use AI Gateway API Keys when you want to:
 
-| Provider | Supported |
-|----------|-----------|
-| **OpenAI** | ✅ |
-| **Anthropic** | ✅ |
-| Google | ❌ (use [BYOK](/ai-gateway/bring-your-own-keys/overview)) |
-| DeepSeek | ❌ (use [BYOK](/ai-gateway/bring-your-own-keys/overview)) |
-| Other providers | ❌ (use [BYOK](/ai-gateway/bring-your-own-keys/overview)) |
+- **Get started quickly** — no provider accounts or billing setup needed
+- **Use OpenAI or Anthropic** — these are the currently supported providers
+- **Keep things simple** — built-in auth means no need to configure secrets or Traffic Policy rules
+- **Let ngrok handle key management** — no provider keys to rotate or secure
 
-This list may grow over time. For providers not listed above, use [Bring Your Own Keys](/ai-gateway/bring-your-own-keys/overview).
-
-## Automatic model selection
-
-When using AI Gateway API Keys, you can set `model: "ngrok/auto"` and the gateway will automatically select from available ngrok-managed providers:
-
-```json
-{
-  "model": "ngrok/auto",
-  "messages": [{"role": "user", "content": "Hello"}]
-}
-```
-
-No explicit provider configuration is needed—the gateway selects the best available model from OpenAI and Anthropic.
-
-## Key format
-
-Tokens have the format `ng-{id}-g1-{secret}` (for example, `ng-2abc123def-g1-7Hj8Kp3Qr5Tv9Wx`). The token is only shown once at creation time—store it securely.
-
-<Warning>
-If you lose your API key token, you cannot retrieve it. Delete the old key and create a new one.
-</Warning>
+<Note>
+AI Gateway API Keys currently work with **OpenAI** and **Anthropic**. For other providers like Google, DeepSeek, or self-hosted models, use [Bring Your Own Keys](/ai-gateway/bring-your-own-keys/overview). You can also combine both — use AI Gateway API Keys for OpenAI and Anthropic while bringing your own keys for other providers in the same gateway.
+</Note>
 
 ## Creating keys
 
@@ -70,9 +51,9 @@ If you lose your API key token, you cannot retrieve it. Delete the old key and c
 
 1. Navigate to [**AI Gateways**](https://dashboard.ngrok.com/ai-gateways) in the dashboard
 2. Select your gateway
-3. Go to the **Keys** tab
-4. Click **Create Key**
-5. Copy the token immediately—it won't be shown again
+3. Go to the **API Keys** tab
+4. Click **New API Key**
+5. Copy the token immediately — it won't be shown again
 
 ### CLI
 
@@ -82,7 +63,9 @@ ngrok api ai-gateway-api-keys create \
   --description "My app"
 ```
 
-The `--endpoint-id` flag is required. The endpoint must have the AI Gateway action enabled.
+<Tip>
+You can find your gateway's endpoint ID in the dashboard on your gateway's detail page, or by running `ngrok api endpoints list`.
+</Tip>
 
 ### API
 
@@ -106,58 +89,59 @@ curl -X POST https://api.ngrok.com/ai_gateway_api_keys \
 | Update | `ngrok api ai-gateway-api-keys update <id>` | `PATCH /ai_gateway_api_keys/{id}` |
 | Delete | `ngrok api ai-gateway-api-keys delete <id>` | `DELETE /ai_gateway_api_keys/{id}` |
 
-## Key properties
+Create separate keys for each application or team. This way you can revoke one client's access without affecting others, and track usage per key.
 
-| Property | Description |
-|----------|-------------|
-| `id` | Unique identifier (for example, `aigk_…`) |
-| `uri` | API resource URI |
-| `created_at` | Creation timestamp (RFC 3339) |
-| `updated_at` | Last update timestamp (RFC 3339) |
-| `description` | Human-readable description (max 255 characters) |
-| `metadata` | Arbitrary user-defined metadata (max 4096 characters) |
-| `created_by` | Reference to the user who created the key |
-| `last_updated_by` | Reference to the user who last updated the key |
-| `endpoint` | Reference to the associated AI Gateway endpoint |
-| `token` | The API key token (only returned on creation) |
-| `display_name` | Display-safe name for the key |
-| `last_used` | Last usage timestamp (eventually consistent—may lag behind actual usage) |
+## Things to know
 
-## Relationship to credits
+### Your key token is only shown once
 
-AI Gateway API Keys require [prepaid credits](/ai-gateway/concepts/credits). When credits run out, all keys stop working. Credits cover both the processing fee and the upstream provider fee when using AI Gateway API Keys.
+When you create a key, the token (starting with `ng-`) is displayed exactly once. Store it somewhere safe. If you lose it, delete the key and create a new one.
 
-## Authentication failure behavior
+<Warning>
+If you lose your API key token, you cannot retrieve it. Delete the old key and create a new one.
+</Warning>
 
-If a key with the `ng-*-g1-*` format is presented but is invalid, the request is **rejected**—it does not fall through to passthrough mode.
+### Keys require credits
 
-| Error code | Description |
-|------------|-------------|
-| [`ERR_NGROK_27007`](/errors/err_ngrok_27007) | The provided API key is invalid or does not exist |
-| [`ERR_NGROK_27008`](/errors/err_ngrok_27008) | This API key is scoped to a different gateway |
-| [`ERR_NGROK_27009`](/errors/err_ngrok_27009) | Failed to validate API key (temporary failure) |
+AI Gateway API Keys require [prepaid credits](/ai-gateway/concepts/credits). Credits cover ngrok's processing fee plus the upstream provider cost (OpenAI, Anthropic). When credits run out, keys stop working until you [purchase more](https://dashboard.ngrok.com/ai-gateways/credit/add).
 
-## Mixed mode (AI Gateway API Keys + BYOK)
+### Each key is tied to one gateway
 
-AI Gateway API Keys and BYOK can coexist in the same gateway. When you authenticate with an AI Gateway API Key:
+A key only works with the specific AI Gateway it was created for. If you use it with a different gateway, you'll get an error.
 
-- **Providers with BYOK keys configured**: Your BYOK keys take precedence
-- **Providers without BYOK keys**: ngrok-managed keys are injected automatically
+### Invalid keys are rejected, not passed through
 
-For example, if you configure BYOK keys for Google and authenticate with an AI Gateway API Key:
-- OpenAI and Anthropic → use ngrok-managed keys
-- Google → uses your BYOK keys
+If you send a request with a malformed or deleted AI Gateway API Key, the request is rejected immediately. It won't silently fall through to another authentication method. See [Troubleshooting](/ai-gateway/guides/troubleshooting) for error codes.
 
-This lets you use AI Gateway API Keys for supported providers while bringing your own keys for others.
+### You can use `ngrok/auto` for automatic model selection
 
-## Difference from other ngrok credentials
+Set `model: "ngrok/auto"` and the gateway picks the best available model from OpenAI and Anthropic — no provider configuration needed:
 
-| Credential | Purpose |
-|------------|---------|
-| **AI Gateway API Keys** | Authenticate requests to AI Gateway endpoints. Used by your application to make AI requests. |
-| **ngrok API Keys** | Authenticate to the ngrok management API (`api.ngrok.com`). Used for managing ngrok resources. |
-| **ngrok Authtokens** | Authenticate ngrok agents to the ngrok platform. |
-| **Provider API Keys** | Keys from OpenAI, Anthropic, etc. Used in [BYOK mode](/ai-gateway/bring-your-own-keys/overview). Not needed when using AI Gateway API Keys for supported providers. |
+```json
+{
+  "model": "ngrok/auto",
+  "messages": [{"role": "user", "content": "Hello"}]
+}
+```
+
+## Mixing AI Gateway API Keys with your own provider keys
+
+You can use both AI Gateway API Keys and [Bring Your Own Keys](/ai-gateway/bring-your-own-keys/overview) in the same gateway. This is useful when you want ngrok to handle OpenAI and Anthropic, but you also need access to other providers like Google.
+
+When you authenticate with an AI Gateway API Key:
+- OpenAI and Anthropic use ngrok's managed keys automatically
+- Any provider where you've configured your own keys uses those instead
+
+## How AI Gateway API Keys differ from other ngrok credentials
+
+ngrok has several types of credentials, and it's easy to mix them up:
+
+| Credential | What it's for |
+|------------|---------------|
+| **AI Gateway API Keys** | Your app uses these to make AI requests through the gateway |
+| **ngrok API Keys** | You use these to manage ngrok resources via the [management API](https://api.ngrok.com) |
+| **ngrok Authtokens** | ngrok agents use these to connect to the platform |
+| **Provider API Keys** | Keys from OpenAI, Anthropic, etc. — only needed with [BYOK](/ai-gateway/bring-your-own-keys/overview) |
 
 ## Next steps
 
