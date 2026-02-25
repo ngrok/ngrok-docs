@@ -3,11 +3,81 @@ title: FAQ
 description: Frequently asked questions about AI Gateway.
 ---
 
+## AI Gateway API Keys
+
+### What are AI Gateway API Keys?
+
+AI Gateway API Keys are keys you create to authenticate requests to your AI Gateway. When you use one, ngrok handles the provider API keys for you — you don't need accounts with OpenAI or Anthropic. See [AI Gateway API Keys](/ai-gateway/concepts/api-keys) for details.
+
+---
+
+### How are AI Gateway API Keys different from ngrok API keys?
+
+**AI Gateway API Keys** authenticate requests to AI Gateway endpoints — they're used by your application to make AI requests. **ngrok API Keys** authenticate to the ngrok management API (`api.ngrok.com`) — they're used for managing ngrok resources like endpoints, domains, and secrets.
+
+---
+
+### Can I create multiple AI Gateway API Keys?
+
+Yes. Create separate keys for each client or application. This enables independent revocation and per-client usage tracking.
+
+---
+
+### What happens if I lose my API key?
+
+The token is only shown once at creation time. If you lose it, delete the old key and create a new one.
+
+---
+
+### Are AI Gateway API Keys scoped to specific endpoints?
+
+Yes. Each key is scoped to a specific AI Gateway endpoint via the required `endpoint_id` field. A key can only be used with the endpoint it was created for.
+
+---
+
+### Which providers work with AI Gateway API Keys?
+
+Currently **OpenAI** and **Anthropic** are supported with ngrok-managed keys. For other providers (Google, DeepSeek, etc.), use [Bring Your Own Keys](/ai-gateway/bring-your-own-keys/overview). This list may grow over time.
+
+---
+
+## Credits & billing
+
+### Which plans support AI Gateway?
+
+AI Gateway requires the **Pay-as-you-go** plan. Free and Hobbyist plans cannot use it.
+
+---
+
+### What are AI Gateway credits?
+
+Prepaid balance that funds all AI Gateway usage. For AI Gateway API Keys, credits cover both the processing fee and upstream provider costs. For BYOK, credits cover the processing fee only ($0.05 per million tokens). See [Credits](/ai-gateway/concepts/credits).
+
+---
+
+### What's the minimum credit purchase?
+
+$5.00. Credits are purchased through the [ngrok dashboard](https://dashboard.ngrok.com/ai-gateways/credit/checkout).
+
+---
+
+### Do credits expire?
+
+Yes. Credits expire **365 days** after purchase.
+
+---
+
+### What happens when credits run out?
+
+**All** AI Gateway usage stops — both AI Gateway API Key requests and BYOK requests. Clients receive HTTP 403 with error [`ERR_NGROK_4026`](/errors/err_ngrok_4026). Purchase more credits to restore access.
+
+---
+
 ## General
 
 ### Does ngrok provide AI provider API keys?
 
-No. The AI Gateway is a routing and observability layer—you use your own API keys from providers like OpenAI, Anthropic, and Google. ngrok doesn't resell or provide AI provider access. You maintain your own provider accounts and billing relationships.
+Yes! When you use [AI Gateway API Keys](/ai-gateway/concepts/api-keys), ngrok manages the provider keys for you — no provider accounts needed. Currently supported for OpenAI and Anthropic. For other providers, you [bring your own keys](/ai-gateway/bring-your-own-keys/overview).
 
 ---
 
@@ -158,74 +228,37 @@ The gateway automatically tries alternative providers when the primary fails. Yo
 
 ## Keys and authentication
 
-### Do I need to configure API keys in the gateway?
+### What's the easiest way to authenticate requests?
 
-No, it's optional. By default (passthrough mode), the gateway forwards whatever key your SDK sends.
-
-Configure keys in the gateway for:
-
-- Key rotation and failover
-- Hiding keys from clients
-- Key-level metrics
+Use [AI Gateway API Keys](/ai-gateway/concepts/api-keys). Create a key, use it in your SDK — authorization is built-in. No Traffic Policy configuration needed. See [Securing Your Gateway](/ai-gateway/guides/securing-endpoints).
 
 ---
 
-### How do I secure my gateway when using server-side API keys?
+### Do I need to configure provider API keys in the gateway?
 
-When you configure API keys in the gateway, your endpoint becomes publicly accessible. Add authorization to protect it:
+Not if you're using AI Gateway API Keys — ngrok handles provider keys for you. If you want to use your own provider keys, see [Bring Your Own Keys](/ai-gateway/bring-your-own-keys/overview).
 
-```yaml
-on_http_request:
-  - expressions:
-      - req.headers['authorization'][0] != 'Bearer ' + secrets.get('gateway-auth', 'access-token')
-    actions:
-      - type: custom-response
-        config:
-          status_code: 401
-          body: '{"error": {"message": "Unauthorized"}}'
+---
 
-  - actions:
-      - type: ai-gateway
-        config:
-          # ...
-```
+### How do I secure my gateway when using my own provider keys (BYOK)?
 
-See [Securing Your Gateway](/ai-gateway/guides/securing-endpoints) for complete examples.
+When you configure your own provider keys in the gateway, your endpoint becomes publicly accessible. You need to add your own authorization layer. See [Securing Endpoints (BYOK)](/ai-gateway/bring-your-own-keys/securing-endpoints) for complete examples.
 
 ---
 
 ### Can I use different keys for different teams?
 
-Yes, configure multiple keys and use metadata:
+Yes. Create separate [AI Gateway API Keys](/ai-gateway/concepts/api-keys) for each team or client. Each key has its own description, metadata, and `last_used` tracking.
 
-```yaml
-providers:
-  - id: openai
-    api_keys:
-      - value: ${secrets.get('openai', 'team-a')}
-      - value: ${secrets.get('openai', 'team-b')}
-```
-
-Note: Per-key metadata is not currently supported. Use separate endpoints or providers for team-based tracking.
+For BYOK, configure multiple provider keys and use separate endpoints or providers for team-based tracking.
 
 ---
 
 ### How do I rotate API keys?
 
-Add the new key, deploy, then remove the old key:
+**AI Gateway API Keys**: Delete the old key and create a new one. Update your clients with the new key.
 
-```yaml
-api_keys:
-  - value: ${secrets.get('openai', 'old-key')}
-  - value: ${secrets.get('openai', 'new-key')}  # Add new
-```
-
-After confirming the new key works:
-
-```yaml
-api_keys:
-  - value: ${secrets.get('openai', 'new-key')}  # Remove old
-```
+**BYOK provider keys**: Add the new key, deploy, then remove the old key. See [Managing Provider Keys](/ai-gateway/bring-your-own-keys/managing-provider-keys#key-rotation) for details.
 
 ---
 
@@ -249,9 +282,7 @@ Token counts are available in metrics and event destinations.
 
 ### Does the gateway charge for token usage?
 
-No, you only pay providers for actual token usage. The gateway itself doesn't charge per token.
-
-Check ngrok's pricing for gateway usage costs.
+Yes. All AI Gateway requests incur a processing fee of **$0.05 per million tokens**, deducted from your [prepaid credits](/ai-gateway/concepts/credits). When using AI Gateway API Keys, credits also cover the upstream provider fee (ngrok pays OpenAI/Anthropic on your behalf). When using BYOK, you pay providers directly and only the processing fee is deducted from credits.
 
 ---
 

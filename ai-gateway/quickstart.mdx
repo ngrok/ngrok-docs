@@ -7,8 +7,8 @@ description: Get your AI Gateway running in minutes.
 ## Before you start
 
 You'll need:
-- An [ngrok account](https://dashboard.ngrok.com/signup)
-- API keys from your AI providers (such as [OpenAI](https://platform.openai.com/api-keys), [Anthropic](https://console.anthropic.com/settings/keys), or [Google](https://aistudio.google.com/apikey))
+- An [ngrok account](https://dashboard.ngrok.com/signup) on the **Pay-as-you-go** plan
+- No AI provider accounts needed — ngrok manages the provider keys for you
 
 <Steps>
   <Step title="Login to the ngrok Dashboard">
@@ -20,20 +20,34 @@ You'll need:
   </Step>
 
   <Step title="Create a New AI Gateway">
-    Click the **+ New AI Gateway** button to create your gateway.
+    Click the **+ New AI Gateway** button. Enter a URL for your endpoint (for example, `https://your-ai-gateway.ngrok.app`). If the domain is available, it will automatically be reserved for you. Click **Create & Configure** to finish setup.
   </Step>
 
-  <Step title="Enter a URL">
-    Enter a URL for your AI Gateway endpoint. If the domain is available, it will automatically be reserved for you. Click **Create & Configure** to finish setup.
+  <Step title="Purchase Credits">
+    AI Gateway usage requires [prepaid credits](/ai-gateway/concepts/credits). Click **Buy Credits** and purchase at least $5.00 in credits. Credits fund both the processing fee and the upstream provider costs.
+  </Step>
+
+  <Step title="Create an AI Gateway API Key">
+    In your gateway's detail page, go to the **Keys** tab and click **Create Key**. Copy the key immediately — it's only shown once.
+
+    You can also create keys via the CLI:
+
+    ```bash
+    ngrok api ai-gateway-api-keys create \
+      --endpoint-id ep_xxxxx \
+      --description "My app"
+    ```
   </Step>
 
   <Step title="Integrate with Your Application">
-    Update your OpenAI SDK configuration to point to your new AI Gateway endpoint:
+    Update your SDK configuration to point to your AI Gateway endpoint, using the AI Gateway API Key you just created:
 
     ```js
+    import OpenAI from "openai";
+
     const openai = new OpenAI({
-      baseURL: "https://your-ai-gateway.ngrok.app",
-      apiKey: process.env.OPENAI_API_KEY
+      baseURL: "https://your-ai-gateway.ngrok.app/v1",
+      apiKey: "ng-xxxxx-g1-xxxxx"  // Your AI Gateway API Key
     });
     ```
 
@@ -48,9 +62,14 @@ You'll need:
   </Step>
 </Steps>
 
+<Warning>
+Your AI Gateway API Key token is only shown once at creation time. Store it securely. If you lose it, delete the key and create a new one.
+</Warning>
+
 ## Next steps
 
-- [Configuring Providers](/ai-gateway/guides/configuring-providers) - Set up providers, models, and API keys
-- [Manual Setup Guide](/ai-gateway/guides/creating-endpoints) - Create endpoints via CLI, API, or Kubernetes
-- [Observability](/ai-gateway/observability) - Monitor traffic and metrics
-- [SDK Integration](/ai-gateway/sdks) - Connect your application
+- [AI Gateway API Keys](/ai-gateway/concepts/api-keys) — Understand how keys work and manage them
+- [Credits](/ai-gateway/concepts/credits) — How usage is billed
+- [Manual Setup Guide](/ai-gateway/guides/creating-endpoints) — Create endpoints via CLI, API, or Kubernetes
+- [SDK Integration](/ai-gateway/sdks) — Connect with OpenAI, Anthropic, and other SDKs
+- [Bring Your Own Keys](/ai-gateway/bring-your-own-keys/overview) — Use your own provider API keys for more providers

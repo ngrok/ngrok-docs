@@ -1,12 +1,12 @@
 ---
-title: Managing Provider API Keys
-description: Securely manage provider API keys for AI providers.
+title: Managing Provider Keys
+description: Store, rotate, and manage your own provider API keys for BYOK usage.
 ---
 
-This guide covers how to store, rotate, and manage provider API keys for your AI Gateway. Managing keys in the gateway keeps them out of your application code and enables features like automatic failover and intelligent key selection.
+This guide covers managing provider API keys when using your own keys (BYOK). If you're using AI Gateway API Keys, key management is handled automatically — see [AI Gateway API Keys](/ai-gateway/concepts/api-keys).
 
 <Warning>
-When you configure provider keys in the gateway, anyone with your endpoint URL can make requests using your provider keys. See [Securing Your Gateway](/ai-gateway/guides/securing-endpoints) to add authorization.
+When you configure provider keys in the gateway, anyone with your endpoint URL can make requests using your provider keys. See [Securing Your Gateway](/ai-gateway/bring-your-own-keys/securing-endpoints) to add authorization.
 </Warning>
 
 ## Key storage options
@@ -135,97 +135,9 @@ This configuration provides:
 - 1 key for Google
 - Automatic key rotation on failures
 
-## Intelligent key selection
-
-For advanced control over which API key is used, configure `api_key_selection` with CEL expressions. This enables intelligent key rotation based on runtime metrics like quota usage and error rates.
-
-### Basic configuration
-
-```yaml
-on_http_request:
-  - type: ai-gateway
-    config:
-      providers:
-        - id: openai
-          api_keys:
-            - value: ${secrets.get('openai', 'key-one')}
-            - value: ${secrets.get('openai', 'key-two')}
-            - value: ${secrets.get('openai', 'key-three')}
-      
-      api_key_selection:
-        strategy:
-          - "ai.keys.filter(k, k.quota.remaining_requests > 100)"
-          - "ai.keys"
-```
-
-### How it works
-
-Strategies execute **in order** until one returns at least one key:
-
-1. First strategy filters keys with >100 remaining requests
-2. If no keys match, falls back to all keys
-3. Selected keys are then tried in order for failover
-
-### Quota-based selection
-
-Prioritize keys with remaining capacity:
-
-```yaml
-api_key_selection:
-  strategy:
-    # High capacity keys first
-    - "ai.keys.filter(k, k.quota.remaining_requests > 500)"
-    # Medium capacity keys
-    - "ai.keys.filter(k, k.quota.remaining_requests > 100)"
-    # Any key with quota
-    - "ai.keys.filter(k, k.quota.remaining_requests > 0)"
-    # Fall back to all keys
-    - "ai.keys"
-```
-
-### Error rate-based selection
-
-Avoid keys experiencing issues:
-
-```yaml
-api_key_selection:
-  strategy:
-    # Keys with very low rate limit errors
-    - "ai.keys.filter(k, k.error_rate.rate_limit < 0.05)"
-    # Keys with acceptable error rates
-    - "ai.keys.filter(k, k.error_rate.total < 0.2)"
-    # Fall back to all keys
-    - "ai.keys"
-```
-
-### Load distribution
-
-Randomize key selection to distribute load:
-
-```yaml
-api_key_selection:
-  strategy:
-    # Randomly select from keys with good quota
-    - "ai.keys.filter(k, k.quota.remaining_requests > 100).randomize()"
-    # Fall back to any key
-    - "ai.keys.randomize()"
-```
-
-### Available key variables
-
-| Variable | Description |
-|----------|-------------|
-| `k.quota.remaining_requests` | Requests remaining before rate limit |
-| `k.quota.remaining_tokens` | Tokens remaining before rate limit |
-| `k.error_rate.total` | Fraction of all errors (0.0 to 1.0) |
-| `k.error_rate.rate_limit` | Fraction of rate limit (429) errors |
-| `k.error_rate.timeout` | Fraction of timeout errors |
-
-See [CEL Functions Reference](/ai-gateway/reference/cel-functions#api-key-selection) for the complete list.
-
 ## Security best practices
 
-- **Add authorization** to your gateway when using server-side keys—see [Securing Your Gateway](/ai-gateway/guides/securing-endpoints)
+- **Add authorization** to your gateway when using server-side keys—see [Securing Your Gateway](/ai-gateway/bring-your-own-keys/securing-endpoints)
 - **Never commit provider API keys** to version control
 - **Use ngrok secrets** for all production keys
 - **Rotate keys regularly** to minimize exposure risk
@@ -250,8 +162,8 @@ This is useful for:
 
 ## Next steps
 
-- [Securing Your Gateway](/ai-gateway/guides/securing-endpoints) - Add authorization when using server-side keys
-- [AI Gateway API Keys](/ai-gateway/concepts/api-keys) - Understanding API key authentication
-- [Multi-Key Failover](/ai-gateway/examples/multi-key-failover) - Example configurations with intelligent selection
+- [Securing Your Gateway](/ai-gateway/bring-your-own-keys/securing-endpoints) - Add authorization when using server-side keys
+- [BYOK Overview](/ai-gateway/bring-your-own-keys/) - Understanding Bring Your Own Keys
+- [Key Selection & Failover](/ai-gateway/bring-your-own-keys/key-selection-failover) - Intelligent key selection with CEL expressions
 - [Configuring Providers](/ai-gateway/bring-your-own-keys/configuring-providers) - Full provider setup
 - [CEL Functions Reference](/ai-gateway/reference/cel-functions#api-key-selection) - Complete API key selection reference

@@ -14,18 +14,49 @@ sequenceDiagram
     participant Gateway as AI Gateway
     participant Provider as AI Provider
 
-    Client->>Gateway: POST /v1/chat/completions
+    Client->>Gateway: POST /v1/chat/completions (with AI Gateway API Key)
+    Gateway->>Gateway: Validate API key
     Gateway->>Gateway: Select model(s) to try
-    Gateway->>Provider: Forward request
+    Gateway->>Gateway: Inject ngrok-managed provider keys
+    Gateway->>Provider: Forward request (with provider key)
     Provider-->>Gateway: Response (or error)
     Gateway-->>Client: Return response
 ```
 
-1. **Your app sends a request** to your ngrok endpoint
-2. **The gateway selects which models to try** based on your configuration and the request path
-3. **The request is forwarded** to the provider with the appropriate provider API key
-4. **If it fails, the gateway retries** with the next model or key in the list
-5. **The response is returned** to your app
+1. **Your app sends a request** with your [AI Gateway API Key](/ai-gateway/concepts/api-keys) to your ngrok endpoint
+2. **The gateway validates your key** and injects ngrok's managed provider keys
+3. **The gateway selects which models to try** based on your configuration and the request
+4. **The request is forwarded** to the provider with the appropriate provider API key
+5. **If it fails, the gateway retries** with the next model or key in the list
+6. **The response is returned** to your app
+
+## Authentication
+
+The gateway supports two authentication paths:
+
+### AI Gateway API Keys (recommended)
+
+When you use an [AI Gateway API Key](/ai-gateway/concepts/api-keys), ngrok handles provider authentication automatically:
+
+1. Your app sends a request with the AI Gateway API Key as `Authorization: Bearer ng-xxxxx-g1-xxxxx`
+2. The gateway validates the key
+3. ngrok's managed provider keys are injected for supported providers (currently OpenAI and Anthropic)
+4. The request is forwarded to the provider
+
+No Traffic Policy configuration is needed — authentication is built-in.
+
+### Bring Your Own Keys (BYOK)
+
+When you [bring your own provider keys](/ai-gateway/bring-your-own-keys/overview), you configure them in your Traffic Policy:
+
+```yaml
+providers:
+  - id: openai
+    api_keys:
+      - value: ${secrets.get('openai', 'key')}
+```
+
+Or in passthrough mode (no provider config), the gateway forwards whatever key your SDK sends.
 
 ## Model selection
 
@@ -61,6 +92,10 @@ Finally the gateway filters the available options against this model supplied in
 ### Custom selection strategies
 
 You can completely customize how models are selected using CEL expressions. Define a `model_selection` strategy to control the order models are tried:
+
+<Note>
+The example below uses BYOK provider keys. When using [AI Gateway API Keys](/ai-gateway/concepts/api-keys), provider keys are handled automatically.
+</Note>
 
 ```yaml title="traffic-policy.yaml" highlight={10-13}
 on_http_request:
@@ -210,7 +245,10 @@ on_event_stream_message:
 ## Next steps
 
 <CardGroup cols={2}>
-  <Card title="Configuring Providers" icon="building" href="/ai-gateway/guides/configuring-providers">
+  <Card title="AI Gateway API Keys" icon="key" href="/ai-gateway/concepts/api-keys">
+    Create keys to authenticate requests
+  </Card>
+  <Card title="Configuring Providers (BYOK)" icon="building" href="/ai-gateway/bring-your-own-keys/overview">
     Set up providers and provider API keys
   </Card>
   <Card title="Model Selection Strategies" icon="route" href="/ai-gateway/guides/model-selection-strategies">
