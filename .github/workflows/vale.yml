@@ -58,11 +58,8 @@ jobs:
             > changed_files.txt || true
           
           if [ -s changed_files.txt ]; then
-            # Build JSON array of files using jq (use delimiter so quotes in JSON don't break GITHUB_OUTPUT)
             FILES_JSON=$(jq -R -s -c 'split("\n") | map(select(length > 0))' changed_files.txt)
-            echo "vale_files<<EOF" >> $GITHUB_OUTPUT
-            echo "$FILES_JSON" >> $GITHUB_OUTPUT
-            echo "EOF" >> $GITHUB_OUTPUT
+            echo "vale_files=$FILES_JSON" >> $GITHUB_OUTPUT
           else
             echo "vale_files=" >> $GITHUB_OUTPUT
           fi
@@ -141,14 +138,13 @@ jobs:
           fi
 
       - name: Post individual Vale comments on PR lines
-        if: steps.changed-files.outputs.vale_files != ''
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Read files into space-separated string for Vale
+          # Read files into space-separated string for Vale (step always runs; script no-ops when no files)
           FILES=$(tr '\n' ' ' < changed_files.txt)
           
-          # Verify we have files to check
+          # No changed .mdx/.md files — exit without posting
           if [ -z "$FILES" ] || [ "$FILES" = " " ]; then
             exit 0
           fi
