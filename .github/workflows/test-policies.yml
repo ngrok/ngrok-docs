@@ -13,19 +13,9 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.ref }}
-      - name: Setup ngrok
-        run: |
-          curl -sSL https://ngrok-agent.s3.amazonaws.com/ngrok.asc \
-          | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null \
-          && echo "deb https://ngrok-agent.s3.amazonaws.com bookworm main" \
-          | sudo tee /etc/apt/sources.list.d/ngrok.list \
-          && sudo apt update \
-          && sudo apt install ngrok
+      - name: Install Python dependencies
+        run: pip install PyYAML
       - name: Extract policy snippets from docs
         run: ./scripts/extract-policy-snippets.sh
-      - name: Test Policies
-        env:
-          NGROK_API_KEY: ${{ secrets.NGROK_API_KEY }}
-        run: |
-          cd $GITHUB_WORKSPACE
-          ./scripts/test-policies.sh
+      - name: Validate policies
+        run: ./scripts/test-policies.sh

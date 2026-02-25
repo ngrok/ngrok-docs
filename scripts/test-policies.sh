@@ -1,20 +1,19 @@
 #!/bin/bash
 
-# Script to test all traffic policy files in the repository
+# Validates traffic policy files: syntax (YAML/JSON) and structure (has policy top-level keys).
+# No ngrok API or API key required.
 # Usage: ./test-policies.sh
 
 set -e
 
-# Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
-NC='\033[0m' # No Color
+NC='\033[0m'
 
-echo "🚀 Testing ngrok traffic policies..."
+echo "🚀 Validating ngrok traffic policies (syntax + structure)..."
 echo ""
 
-# Only consider traffic policy directories and extracted snippets; exclude known non-policy files
 ROOT="$(pwd)"
 EXTRACTED="${EXTRACTED_POLICIES_DIR:-$ROOT/.tmp/extracted-policies}"
 POLICY_FILES=$(
@@ -28,69 +27,79 @@ POLICY_FILES=$(
 )
 
 if [ -z "$POLICY_FILES" ]; then
-    echo "No traffic policy files found (checked traffic-policy/, snippets/traffic-policy/, and $EXTRACTED). Nothing to test."
-    exit 0
+  echo "No traffic policy files found (checked traffic-policy/, snippets/traffic-policy/, and $EXTRACTED). Nothing to test."
+  exit 0
 fi
 
-echo "Found $(echo "$POLICY_FILES" | wc -l) policy files:"
-echo "$POLICY_FILES"
+echo "Found $(echo "$POLICY_FILES" | wc -l) policy files"
 echo ""
 
 TOTAL_FILES=0
 PASSED_FILES=0
 FAILED_FILES=0
 
+validate_one() {
+  local f="$1"
+  local err
+  if [[ "$f" == *.json ]]; then
+    err=$(python3 -c '
+import json, sys
+path = sys.argv[1]
+try:
+    d = json.load(open(path))
+except Exception as e:
+    sys.exit(str(e))
+if not isinstance(d, dict):
+    sys.exit("root must be an object")
+allowed = ("on_http_request", "on_http_response", "on_tcp_connect")
+if not any(k in d for k in allowed):
+    sys.exit("missing policy key (need one of: " + ", ".join(allowed))
+' "$f" 2>&1)
+  else
+    err=$(python3 -c '
+import yaml, sys
+path = sys.argv[1]
+try:
+    d = yaml.safe_load(open(path))
+except Exception as e:
+    sys.exit(str(e))
+if d is None:
+    sys.exit("empty document")
+if not isinstance(d, dict):
+    sys.exit("root must be an object")
+allowed = ("on_http_request", "on_http_response", "on_tcp_connect")
+if not any(k in d for k in allowed):
+    sys.exit("missing policy key (need one of: " + ", ".join(allowed))
+' "$f" 2>&1)
+  fi
+  if [ -n "$err" ]; then
+    echo -e "${RED}❌ FAILED${NC} - $f"
+    echo "  $err"
+    return 1
+  fi
+  echo -e "${GREEN}✅ PASSED${NC} - $f"
+  return 0
+}
+
 for policy_file in $POLICY_FILES; do
-    TOTAL_FILES=$((TOTAL_FILES + 1))
-    
-    # Check file contents to determine protocol type for display
-    if grep -q "on_http" "$policy_file"; then
-        PROTOCOL="http"
-    else
-        PROTOCOL="tcp"
-    fi
-    
-    COMMAND="ngrok api endpoints create --pooling-enabled --url https://testrun.internal --traffic-policy-file $policy_file --log-format json"
-    
-    echo -e "${YELLOW}Testing:${NC} $policy_file ${YELLOW}(${PROTOCOL})${NC}"
-    echo -e "${YELLOW}Command:${NC} $COMMAND"
-    
-    # Run ngrok api command to test policy validation
-    RESULT=$(mktemp)
-    if $COMMAND > "$RESULT" 2>&1; then
-        # Extract endpoint ID from the result for cleanup
-        ENDPOINT_ID=$(grep -o '"id": "[^"]*"' "$RESULT" | cut -d'"' -f4)
-        
-        echo -e "${GREEN}✅ PASSED${NC} - $policy_file ($PROTOCOL)"
-        PASSED_FILES=$((PASSED_FILES + 1))
-        
-        # Clean up the created endpoint
-        if [ -n "$ENDPOINT_ID" ]; then
-            DELETE_COMMAND="ngrok api endpoints delete $ENDPOINT_ID"
-            echo -e "${YELLOW}Cleanup:${NC} $DELETE_COMMAND"
-            $DELETE_COMMAND > /dev/null 2>&1
-        fi
-    else
-        echo -e "${RED}❌ FAILED${NC} - $policy_file ($PROTOCOL)"
-        cat "$RESULT"
-        FAILED_FILES=$((FAILED_FILES + 1))
-    fi
-    
-    rm -f "$RESULT"
+  TOTAL_FILES=$((TOTAL_FILES + 1))
+  if validate_one "$policy_file"; then
+    PASSED_FILES=$((PASSED_FILES + 1))
+  else
+    FAILED_FILES=$((FAILED_FILES + 1))
+  fi
 done
 
 echo ""
 echo "=========================================="
-echo "TEST SUMMARY"
+echo "SUMMARY"
 echo "=========================================="
-echo "Total files tested: $TOTAL_FILES"
-echo -e "Passed: ${GREEN}$PASSED_FILES${NC}"
-echo -e "Failed: ${RED}$FAILED_FILES${NC}"
+echo "Total: $TOTAL_FILES | Passed: $PASSED_FILES | Failed: $FAILED_FILES"
 
 if [ $FAILED_FILES -eq 0 ]; then
-    echo -e "${GREEN}🎉 All tests passed!${NC}"
-    exit 0
+  echo -e "${GREEN}🎉 All valid.${NC}"
+  exit 0
 else
-    echo -e "${RED}❌ $FAILED_FILES test(s) failed.${NC}"
-    exit 1
+  echo -e "${RED}❌ $FAILED_FILES file(s) invalid.${NC}"
+  exit 1
 fi
