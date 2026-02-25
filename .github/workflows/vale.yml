@@ -12,9 +12,6 @@ jobs:
       contents: read
       pull-requests: write
       checks: write
-    # Prevent org/repo NODE_AUTH_TOKEN (e.g. for GitHub Packages) from being sent to registry.npmjs.org — npm returns 403.
-    env:
-      NODE_AUTH_TOKEN: ''
 
     steps:
       - name: Checkout code
@@ -22,24 +19,8 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-
-      - name: Install dependencies
-        run: |
-          sed -i '/^\/\/registry\.npmjs\.org\/:_authToken=/d' ~/.npmrc 2>/dev/null || true
-          corepack enable
-          corepack install
-          pnpm install
-
       - name: Install jq and curl
         run: sudo apt-get update && sudo apt-get install -y jq curl
-
-      - name: Setup PATH for mdx2vast
-        run: |
-          echo "PATH=${{ github.workspace }}/node_modules/.bin:$PATH" >> $GITHUB_ENV
 
       - name: Get changed files
         id: changed-files
