@@ -85,9 +85,7 @@ The gateway builds a set of available options based on your configuration and th
 
 Starting from the model catalog, the gateway adds any custom models from your configuration to the set of available options.  
 
-Then the gateway uses the request path of the request to determine the API format of the request to filter out providers that do not support the format. For example, if the request path is `/v1/chat/completions`, the gateway ensures that the set only includes models from providers that support the OpenAI API format, and likewise for `/v1/messages` and providers that support the Anthropic Claude API format.
-
-Finally the gateway filters the available options against this model supplied in the client request to arrive at the set of available options.
+Then the gateway uses the request path to determine the API format and filters out providers that don't support it. For example, if the request path is `/v1/chat/completions`, only providers that support the OpenAI API format are included; likewise for `/v1/messages` and providers that support the Anthropic Claude API format.
 
 ### Custom selection strategies
 
@@ -115,7 +113,7 @@ on_http_request:
 
 Strategies are evaluated in order—the first one that returns models wins. If Ollama has matching models, only those are tried. The second strategy (sorted by price) is only used if no Ollama models match.
 
-This lets you define sophisticated routing logic:
+Common routing patterns:
 
 - **Cost optimization** - Route to cheapest models first
 - **Provider preference** - Prefer certain providers over others
@@ -128,7 +126,7 @@ Use `ngrok/auto` as the model name to let your selection strategy choose entirel
 
 ## Failover
 
-When a request fails, the gateway automatically tries the next candidate. This happens transparently—your app just sees a successful response (or a final error if all candidates are exhausted).
+When a request fails, the gateway automatically tries the next candidate. Your app receives a successful response, or a final error if all candidates are exhausted.
 
 ### What triggers failover?
 
