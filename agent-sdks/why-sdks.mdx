@@ -1,0 +1,113 @@
+---
+title: Why Agent SDKs
+description: Learn why ngrok's Agent SDKs let you embed secure connectivity directly into your application without running a separate process.
+---
+
+ngrok's Agent SDKs embed ngrok directly into your application as a native library. Instead of running a separate agent process, you add ngrok as a dependency and create endpoints in code.
+
+<CodeGroup>
+```go example.go
+fwd, _ := ngrok.Forward(ctx,
+    ngrok.WithUpstream("http://localhost:8085"),
+)
+log.Println("Available at:", fwd.URL())
+```
+
+```python example.py
+listener = ngrok.forward("localhost:8085", authtoken_from_env=True)
+print(f"Available at: {listener.url()}")
+```
+
+```javascript example.js
+const listener = await ngrok.forward({ addr: 8085, authtoken_from_env: true });
+console.log(`Available at: ${listener.url()}`);
+```
+</CodeGroup>
+
+Your app listens for connections from ngrok's global network the same way it would listen on a local port—a `net.Listener` in Go, a single `forward()` call in Python and JavaScript. TLS, auth, rate limiting, and traffic management are handled at ngrok's edge before requests ever reach your code.
+
+## How it works
+
+When you call `ngrok.Forward()` or `ngrok.forward()`, the SDK establishes a secure, persistent outbound TLS connection to ngrok's nearest Point of Presence. Your app's traffic configuration—domains, auth policies, IP restrictions—is transmitted through that connection and enforced at ngrok's edge. Unauthorized requests are blocked before they reach your application.
+
+There's no inbound port to open, no certificate to manage, no load balancer to configure.
+
+## Networking as a high-level abstraction
+
+Getting an application online typically means managing DNS, TLS certificates, CIDR policies, NATs, reverse proxies, and load balancers—low-level networking details that have nothing to do with your application's business logic. The SDKs abstract all of that into your code.
+
+You define traffic management with ngrok's [Traffic Policy](/traffic-policy/) engine—a portable, YAML/JSON-based rules language that works identically across SDKs, Cloud Endpoints, Agent Endpoints, and the Kubernetes Operator. Pass a Traffic Policy inline to add auth, rate limiting, or routing to any endpoint:
+
+<CodeGroup>
+```go example.go
+fwd, _ := ngrok.Forward(ctx,
+    ngrok.WithUpstream("http://localhost:8085"),
+    ngrok.WithTrafficPolicy(`
+      on_http_request:
+        - actions:
+            - type: oauth
+              config:
+                provider: google
+    `),
+)
+```
+
+```python example.py
+listener = ngrok.forward(
+    "localhost:8085",
+    authtoken_from_env=True,
+    traffic_policy=json.dumps({
+        "on_http_request": [
+            {"actions": [{"type": "oauth", "config": {"provider": "google"}}]},
+        ],
+    }),
+)
+```
+
+```javascript example.js
+const listener = await ngrok.forward({
+    addr: 8085,
+    authtoken_from_env: true,
+    traffic_policy: JSON.stringify({
+        on_http_request: [
+            { actions: [{ type: "oauth", config: { provider: "google" } }] },
+        ],
+    }),
+});
+```
+</CodeGroup>
+
+Because Traffic Policy is a string validated server-side, new traffic management features are available immediately—without upgrading your SDK version.
+
+## No sidecar, no process management
+
+The SDK is a library, not a binary. Install it with your language's package manager. One process, one deployment artifact, one thing to monitor.
+
+This matters most in environments where a separate process isn't practical—IoT devices, embedded systems, edge runtimes, constrained containers—but it simplifies operations everywhere. No binary distribution, no sidecar orchestration, no agent lifecycle management.
+
+## Portable across environments
+
+When your application uses the SDK, it receives traffic the same way no matter where it runs: bare metal, VMs, AWS, Azure, Kubernetes, serverless platforms, a Raspberry Pi, or your laptop. Ingress is decoupled from the hosting environment—no per-environment networking configuration.
+
+## Dynamic, programmatic control
+
+Config files are static. Code isn't. Create endpoints conditionally from feature flags. Parameterize traffic policies from environment variables. Spin up listeners in response to events and tear them down when you're done.
+
+## Framework support
+
+The SDKs integrate with popular frameworks in each language. In Python, ngrok works with Flask, Django, Uvicorn, Gunicorn, AIOHTTP, and Tornado. In JavaScript, there's support for Express, Next.js, Remix, Svelte, and more. See the examples in each SDK's GitHub repo for integration guides.
+
+## SDK vs. agent
+
+Both connect your app to ngrok's network with the same capabilities. The difference is where ngrok runs.
+
+**Use the SDK when** you're shipping production software, building a platform that needs embedded connectivity, deploying to constrained environments, or managing endpoints dynamically at runtime.
+
+**Use the agent when** you want to expose a running service without modifying its code, or you're doing local development and testing.
+
+## What people build with them
+
+- **Embedded connectivity in developer tools.** Ship secure tunneling as part of your own CLI or platform—no separate ngrok install for your users.
+- **Secure access to APIs in customer networks.** Replace per-customer VPN and firewall configs with a standardized connectivity layer that scales.
+- **IoT and device fleet management.** Reach APIs on devices outside the corporate network at scale, with consistent security policies.
+- **Self-contained production services.** Collapse external reverse proxy and load balancer dependencies into the application itself.
