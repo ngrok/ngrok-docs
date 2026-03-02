@@ -3,30 +3,45 @@ title: Providers
 description: Understanding AI providers in the AI Gateway.
 ---
 
-Providers are the AI services that host and serve models. The AI Gateway routes your requests to providers and handles authentication, failover, and observability.
+Providers are the AI services that host and serve models. The AI Gateway routes your requests to providers and handles authentication, failover, and observability. Some providers support [ngrok-managed keys](/ai-gateway/concepts/api-keys)—you don't need your own accounts for these.
 
 ## Built-in providers
 
 The AI Gateway includes built-in support for these providers:
 
-| Provider | Description |
-|----------|-------------|
-| **OpenAI** | GPT models, o1/o3 reasoning models |
-| **Anthropic** | Claude models (supports both OpenAI and Anthropic Claude API formats) |
-| **Google** | Gemini models |
-| **DeepSeek** | DeepSeek Chat and Reasoner models |
-| **OpenRouter** | Multi-provider routing service |
-| **Hyperbolic** | Open-source model hosting |
-| **InceptionLabs** | Diffusion-based language models |
-| **Inference.net** | Distributed inference network |
+| Provider | Description | ngrok-managed Keys |
+|----------|-------------|-------------------|
+| **OpenAI** | GPT models, o1/o3 reasoning models | ✅ |
+| **Anthropic** | Claude models (supports both OpenAI and Anthropic Claude API formats) | ✅ |
+| **Groq** | LPU-accelerated open-source models (Llama, Mixtral) | ❌ |
+| **Google** | Gemini models | ❌ |
+| **DeepSeek** | DeepSeek Chat and Reasoner models | ❌ |
+| **OpenRouter** | Multi-provider routing service | ❌ |
+| **Hyperbolic** | Open-source model hosting | ❌ |
+| **InceptionLabs** | Diffusion-based language models | ❌ |
+| **Inference.net** | Distributed inference network | ❌ |
+
+Providers with ngrok-managed keys work with [AI Gateway API Keys](/ai-gateway/concepts/api-keys)—no provider accounts needed. For other providers, use [Bring Your Own Keys](/ai-gateway/bring-your-own-keys/overview).
 
 For the complete list of models available from each provider, see the [Model Catalog](/ai-gateway/reference/model-catalog).
 
 ## Operating modes
 
+### ngrok-managed mode (recommended)
+
+When you use an [AI Gateway API Key](/ai-gateway/concepts/api-keys), the gateway automatically authenticates with supported providers using ngrok's own keys:
+
+```yaml
+on_http_request:
+  - type: ai-gateway
+    config: {}  # No provider configuration needed
+```
+
+Your application authenticates with the AI Gateway API Key, and ngrok handles provider authentication automatically. No secrets or provider configuration required.
+
 ### Passthrough mode (default)
 
-When no providers are configured, the gateway operates in **passthrough mode**:
+When no providers are configured and the client does not send an AI Gateway API Key, the gateway operates in **passthrough mode**:
 
 - All built-in providers are available
 - Your SDK's API key is forwarded directly to the provider
@@ -39,9 +54,11 @@ on_http_request:
     config: {}  # No configuration needed
 ```
 
-### Managed mode
+The gateway distinguishes ngrok-managed mode from passthrough mode by the key format: `ng-*-g1-*` keys trigger managed mode; any other value is treated as a provider key and forwarded as-is.
 
-When you explicitly configure providers, you gain additional control:
+### BYOK mode
+
+When you [bring your own provider keys](/ai-gateway/bring-your-own-keys/overview), you configure them explicitly in your Traffic Policy:
 
 - Specify which providers are allowed
 - Manage API keys centrally
@@ -84,7 +101,7 @@ When a request arrives, the gateway determines which provider to use:
 
 ## Next steps
 
+- [AI Gateway API Keys](/ai-gateway/concepts/api-keys) - Use ngrok-managed keys for the simplest setup
 - [Models](/ai-gateway/concepts/models) - Understanding model naming and request formats
-- [API Keys](/ai-gateway/concepts/api-keys) - How authentication works
-- [Configuring Providers](/ai-gateway/guides/configuring-providers) - Detailed configuration guide
+- [Configuring Providers](/ai-gateway/bring-your-own-keys/configuring-providers) - Detailed configuration guide
 

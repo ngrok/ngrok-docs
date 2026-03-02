@@ -1,6 +1,6 @@
 ---
 title: Troubleshooting
-description:  When the AI Gateway encounters an error, it returns an ngrok error code and message to help identify the issue. The full list of AI Gateway error codes and their meanings are listed on this page.
+description: When the AI Gateway encounters an error, it returns an ngrok error code and message to help identify the issue. The full list of AI Gateway error codes and their meanings are listed on this page.
 ---
 
 ## Error codes reference
@@ -270,6 +270,224 @@ Input too large: `INPUT_TOKENS` tokens (max `MAX_ALLOWED`). Shorten your prompt.
 - Increase `max_input_tokens` in gateway configuration
 - Implement client-side token counting or compression before sending
 
+### ERR_NGROK_4026
+
+**Message**
+
+Your account has run out of credit.
+
+**HTTP Status**
+
+403 Forbidden
+
+**Causes**
+- Your AI Gateway credit balance has reached zero
+- Credits have expired
+
+**Solutions**
+- [Purchase additional credits](https://dashboard.ngrok.com/ai-gateways/credit/add) to restore access
+- See [Credits](/ai-gateway/concepts/credits) for details on credit management
+
+---
+
+### ERR_NGROK_6033
+
+**Message**
+
+This feature requires a prepaid account. Buy credits to use this feature.
+
+**HTTP Status**
+
+403 Forbidden
+
+**Causes**
+- Your account does not have AI Gateway credits
+- You haven't purchased credits yet
+
+**Solutions**
+- [Purchase credits](https://dashboard.ngrok.com/ai-gateways/credit/add) (minimum $5.00)
+- See [Credits](/ai-gateway/concepts/credits) for details
+
+---
+
+### ERR_NGROK_27001
+
+**Message**
+
+This account does not have access to AI Gateway API Keys.
+
+**HTTP Status**
+
+403 Forbidden
+
+**Causes**
+- Your account plan does not support AI Gateway API Keys
+- The AI Gateway API Keys feature is not enabled for your account
+
+**Solutions**
+- Upgrade to the Pay-as-you-go plan
+- Contact ngrok support if you believe this is an error
+
+---
+
+### ERR_NGROK_27002
+
+**Message**
+
+The specified endpoint was not found.
+
+**HTTP Status**
+
+404 Not Found
+
+**Causes**
+- The `endpoint_id` provided when creating an AI Gateway API Key does not exist
+- The endpoint was deleted
+
+**Solutions**
+- Verify the endpoint ID exists: `ngrok api endpoints list`
+- Use the correct endpoint ID when creating a key
+
+---
+
+### ERR_NGROK_27003
+
+**Message**
+
+The specified endpoint does not have AI Gateway action enabled.
+
+**HTTP Status**
+
+422 Unprocessable Entity
+
+**Causes**
+- The endpoint exists but does not have the `ai-gateway` Traffic Policy action configured
+
+**Solutions**
+- Add the `ai-gateway` action to the endpoint's Traffic Policy
+- See [Creating Endpoints](/ai-gateway/guides/creating-endpoints) for setup instructions
+
+---
+
+### ERR_NGROK_27004
+
+**Message**
+
+The description field cannot be longer than 255 characters.
+
+**HTTP Status**
+
+422 Unprocessable Entity
+
+**Causes**
+- The `description` field in the create or update request exceeds 255 characters
+
+**Solutions**
+- Shorten the description to 255 characters or fewer
+
+---
+
+### ERR_NGROK_27005
+
+**Message**
+
+The metadata field cannot be longer than 4096 characters.
+
+**HTTP Status**
+
+422 Unprocessable Entity
+
+**Causes**
+- The `metadata` field in the create or update request exceeds 4096 characters
+
+**Solutions**
+- Shorten the metadata to 4096 characters or fewer
+
+---
+
+### ERR_NGROK_27006
+
+**Message**
+
+The {field} field is required.
+
+**HTTP Status**
+
+422 Unprocessable Entity
+
+**Causes**
+- A required field was not provided when creating an AI Gateway API Key
+- Most commonly, `endpoint_id` is missing
+
+**Solutions**
+- Include the `endpoint_id` field when creating a key:
+  ```bash
+  ngrok api ai-gateway-api-keys create --endpoint-id ep_xxxxx
+  ```
+
+---
+
+### ERR_NGROK_27007
+
+**Message**
+
+The provided API key is invalid or does not exist.
+
+**HTTP Status**
+
+401 Unauthorized
+
+**Causes**
+- The AI Gateway API Key token is incorrect or has been deleted
+- The key format is `ng-*-g1-*` but the token doesn't match any existing key
+
+**Solutions**
+- Verify you're using the correct AI Gateway API Key token
+- Check if the key was deleted—list keys with `ngrok api ai-gateway-api-keys list`
+- Create a new key if needed—tokens are only shown once at creation time
+
+---
+
+### ERR_NGROK_27008
+
+**Message**
+
+This API key is scoped to a different gateway.
+
+**HTTP Status**
+
+403 Forbidden
+
+**Causes**
+- The AI Gateway API Key was created for a different endpoint
+- Each key is scoped to a specific AI Gateway endpoint via `endpoint_id`
+
+**Solutions**
+- Use the correct AI Gateway API Key for this endpoint
+- Create a new key scoped to this endpoint: `ngrok api ai-gateway-api-keys create --endpoint-id <this-endpoint-id>`
+
+---
+
+### ERR_NGROK_27009
+
+**Message**
+
+Failed to validate API key. Please try again later.
+
+**HTTP Status**
+
+500 Internal Server Error
+
+**Causes**
+- Temporary issue validating the API key
+- Key validation service is temporarily unavailable
+
+**Solutions**
+- Retry the request after a short delay
+- If the issue persists, contact ngrok support
+
+---
+
 ## SDK error handling
 
 Here are some ways you can handle ngrok errors in your SDK:
@@ -280,7 +498,7 @@ from openai import OpenAI, APIError
 
 client = OpenAI(
     base_url="https://your-ai-gateway.ngrok.app/v1",
-    api_key="your-key"
+    api_key="ng-xxxxx-g1-xxxxx"
 )
 
 try:
@@ -300,7 +518,7 @@ import OpenAI from 'openai';
 
 const client = new OpenAI({
   baseURL: 'https://your-ai-gateway.ngrok.app/v1',
-  apiKey: 'your-key',
+  apiKey: 'ng-xxxxx-g1-xxxxx',
 });
 
 try {
