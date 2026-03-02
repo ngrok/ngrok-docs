@@ -1,0 +1,167 @@
+---
+title: Dedicated IPs
+description: Configure static, dedicated IP addresses for your domains and agent connections, exclusively assigned to your account.
+tag: Coming Soon
+---
+
+<Warning>
+This feature is in Early Access and under active development. 
+Behavior, supported fields, and limits may change before General Availability (GA). 
+This guide provides forward-looking context for evaluation and feedback.
+
+[Visit your dashboard](https://dashboard.ngrok.com/developer-preview) to sign up for Early Access, or to send your feedback via the "Let us know" link.
+</Warning>
+
+Dedicated IPs let you configure static IP addresses that are exclusively assigned to your account for receiving traffic to your [domains](/universal-gateway/domains/) and [agent connections](/agent/connect-url/). 
+
+By default, ngrok uses a shared, multi-tenant pool of dynamic IP addresses that may change frequently and without notice. Dedicated IPs provide:
+
+- **Static addresses** - IP addresses that don't change, making it easier to configure firewall rules and allowlists
+- **Account exclusivity** - IP addresses used only by your account, providing additional isolation
+- **Custom port support** - When used with domains, create [endpoints](/universal-gateway/endpoints/) on any inbound port (not restricted to ports 80 and 443)
+- **Protocol support** - Available for any [ngrok-supported protocol](/universal-gateway/protocols/), including HTTP/S, TCP, and TLS
+
+## Use cases
+
+Dedicated IPs are valuable for:
+
+- **Firewall allowlisting** - Your customers can allowlist specific IPs in their firewalls to permit traffic from your services
+- **Compliance requirements** - Meet security policies that require traffic from known, static IP addresses
+- **Network monitoring** - Simplify logs and traffic analysis with consistent source IPs
+- **Custom connect URLs** - Secure agent connections with account-specific IPs (see [Agent Dedicated IPs](#agent-dedicated-ips))
+
+## Dedicated IPs for Domains
+
+### How it works
+
+When you configure a domain with dedicated IPs, all matching [endpoints](/universal-gateway/endpoints/) for that domain receive traffic on your dedicated IP addresses instead of ngrok's shared multi-tenant IPs.
+
+Dedicated IPs and [Region Resolution](/universal-gateway/region-pinning/) (region pinning) share the same `resolves_to` field on the domain resource:
+
+- Region pinning: `resolves_to: [{ "value": "<region-shortcode>" }]`
+- Dedicated IPs: `resolves_to: [{ "value": "<ip-address>" }]`
+
+You can combine both region pinning and dedicated IPs in the same configuration.
+
+### Configuration
+
+Configure dedicated IPs through the [Domains API](/api-reference/reserveddomains/) using the `resolves_to` field.
+
+#### Create a domain with dedicated IPs
+
+```json
+curl --request POST \
+  --url https://api.ngrok.com/reserved_domains \
+  --header "Authorization: Bearer <token>" \
+  --header "Content-Type: application/json" \
+  --header "ngrok-version: 2" \
+  --data '{
+    "domain": "api.example.com",
+    "description": "Production API with dedicated IPs",
+    "certificate_management_policy": {
+      "authority": "letsencrypt",
+      "private_key_type": "ecdsa"
+    },
+    "resolves_to": [
+      { "value": "8.8.8.8:1234" }
+    ]
+  }'
+```
+
+#### Combine dedicated IPs with region pinning
+
+```json
+{
+  "resolves_to": [
+    { "value": "us-cal-1" },
+    { "value": "8.8.8.8:1234" }
+  ]
+}
+```
+
+#### Update an existing domain
+
+```json
+curl --request PATCH \
+  --url https://api.ngrok.com/reserved_domains/{domain_id} \
+  --header "Authorization: Bearer <token>" \
+  --header "Content-Type: application/json" \
+  --header "ngrok-version: 2" \
+  --data '{
+    "resolves_to": [
+      { "value": "8.8.8.8:1234" }
+    ]
+  }'
+```
+
+### Custom ports
+
+When using dedicated IPs, you can create endpoints on any port, not just 80 and 443:
+
+```bash
+# Standard ports (available without dedicated IPs)
+ngrok http 8080 --url https://api.example.com
+
+# Custom ports (requires dedicated IPs)
+ngrok http 8080 --url https://api.example.com:8443
+ngrok tcp 22 --url tcp://api.example.com:2222
+```
+
+## Agent Dedicated IPs
+
+Dedicated IPs are also available for [Agent Connect URLs](/agent/connect-url/#dedicated-ips), providing account-unique IP addresses for your agents to connect to ngrok's service.
+
+This enhances security by:
+- Allowing you to allowlist only your dedicated connect IPs in your network
+- Preventing rogue agents from calling home to unexpected IPs
+- Providing white-labeling with a custom connect URL domain and dedicated IPs
+
+See [Agent Connect URL documentation](/agent/connect-url/#dedicated-ips) for more information.
+
+## Pricing
+
+Dedicated IPs are available as an add-on feature for Pay-as-you-go plan customers.
+
+| Feature | Availability | Pricing |
+| ------- | ------------ | ------- |
+| Dedicated Domain IPs | Early Access | Contact Sales |
+| Dedicated Agent Connect IPs | Available | $900/month per region ([contact Sales](mailto:sales@ngrok.com?subject=Dedicated+Ingress+IPs)) |
+
+See the [Pricing page](https://ngrok.com/pricing) for details.
+
+## Related resources
+
+- [Domains](/universal-gateway/domains/) - Configure domains for your endpoints
+- [Region & IP Resolution](/universal-gateway/region-pinning/) - Pin traffic to specific geographic regions
+- [IP Addresses](/universal-gateway/ip-addresses/) - Learn about ngrok's IP addressing and dynamic IPs
+- [Agent Connect URLs](/agent/connect-url/) - Configure custom connect URLs for agents
+- [Traffic Policy](/traffic-policy/) - Apply rules and transformations to your traffic
+
+## API reference
+
+- [Reserved Domains API](/api-reference/reserveddomains/)
+
+## FAQs
+
+### How do I get dedicated IPs?
+
+Dedicated IPs are in Early Access. [Sign up for access](https://dashboard.ngrok.com/developer-preview) through your ngrok dashboard.
+
+### Can I use dedicated IPs with TCP endpoints?
+
+Yes, dedicated IPs work with all [ngrok-supported protocols](/universal-gateway/protocols/), including HTTP/S, TCP, and TLS.
+
+### What's the difference between dedicated IPs and region pinning?
+
+- **Region pinning** restricts which ngrok Points of Presence handle your traffic for compliance and data residency requirements
+- **Dedicated IPs** provide static IP addresses exclusively for your account
+
+You can use both features together.
+
+### Do dedicated IPs support IPv6?
+
+Currently, dedicated IPs for domains are IPv4 only. IPv6 support may be added in the future.
+
+### How many dedicated IPs do I get?
+
+The number of dedicated IPs available depends on your configuration and requirements. Contact [ngrok Sales](mailto:sales@ngrok.com?subject=Dedicated+IPs) to discuss your needs.
