@@ -1,0 +1,203 @@
+---
+title: What are Tunnels?
+sidebarTitle: Tunnels
+description: Learn what tunnels are, how they work, and how they relate to ngrok endpoints and ingress.
+---
+
+## Overview
+
+A **tunnel** is a secure, persistent connection between your local environment (or any network) and ngrok's global cloud service. Tunnels enable traffic to flow from ngrok's public endpoints to your applications without requiring public IP addresses, open firewall ports, or complex network configuration.
+
+## Is "tunnel" an ngrok term or an industry-standard term?
+
+Both. "Tunneling" is an industry-standard networking concept, but ngrok's implementation and usage of the term has some specific characteristics:
+
+### Industry-standard tunneling
+
+In general networking terminology, a **tunnel** is a method of encapsulating one network protocol within another. Common examples include:
+
+- **VPN tunnels**: Encrypt and route traffic over public networks
+- **SSH tunnels**: Forward ports through secure SSH connections
+- **IPsec tunnels**: Create secure connections between networks
+
+These tunnels typically involve both ends having network connectivity to establish the connection.
+
+### ngrok's secure tunnels
+
+ngrok's tunnels work differently from traditional tunneling:
+
+1. **Outbound-only connections**: The ngrok agent establishes outbound TLS connections to ngrok's cloud service, so no inbound firewall rules are needed
+2. **Persistent connections**: Once established, these connections remain open to quickly transmit traffic
+3. **Reverse tunneling**: Traffic flows "backward" from ngrok's cloud to your local service through these outbound connections
+4. **Zero network configuration**: No need to configure DNS, ports, or certificates on your end
+
+This approach is sometimes called **reverse tunneling** or **agent-based tunneling** in the industry.
+
+## How tunnels differ from endpoints
+
+It's important to understand the relationship between tunnels, endpoints, and ingress:
+
+### Endpoints
+
+An **[endpoint](/universal-gateway/endpoints/)** is a URL (like `https://your-app.ngrok.io`) that receives traffic from the internet or other sources. Endpoints are where external clients connect to reach your services.
+
+- Endpoints have a public-facing URL
+- Endpoints can have Traffic Policy rules for authentication, routing, and transformation
+- Endpoints define *where* traffic enters ngrok's network
+
+### Tunnels
+
+A **tunnel** is the secure connection mechanism that delivers traffic *from* an endpoint *to* your application.
+
+- Tunnels are the persistent TLS connections between the ngrok agent and ngrok's cloud service
+- Tunnels handle the secure transmission of traffic
+- Tunnels define *how* traffic reaches your application
+
+### The relationship
+
+```
+Internet → Endpoint (URL) → ngrok Cloud → Tunnel → ngrok Agent → Your Application
+```
+
+When you run a command like `ngrok http 8080`:
+1. The **ngrok agent** creates a secure **tunnel** to ngrok's cloud service
+2. An **endpoint** with a URL is created to receive traffic
+3. Traffic sent to the endpoint flows through the tunnel to your local application on port 8080
+
+### Agent Endpoints vs Cloud Endpoints
+
+ngrok offers two types of endpoints, which relate to tunnels differently:
+
+**[Agent Endpoints](/universal-gateway/agent-endpoints/)** are created by the ngrok agent and rely on tunnels:
+- Exist only while the agent (and tunnel) is running
+- Automatically forward traffic through the tunnel to the agent
+- Created with the agent CLI, SDKs, or Kubernetes Operator
+
+**[Cloud Endpoints](/universal-gateway/cloud-endpoints/)** don't require tunnels:
+- Exist independently in ngrok's cloud service
+- Can forward traffic to other endpoints, return custom responses, or route via Traffic Policy
+- Created and managed through the API or Dashboard
+
+## How tunnels differ from ingress
+
+**Ingress** is a general term meaning "an entry point into a network for traffic from outside the network" (see [glossary](/glossary/#ingress)).
+
+- **Ingress** describes the *concept* of traffic entering a network
+- **Endpoints** are ngrok's implementation of ingress—the URLs where traffic enters
+- **Tunnels** are the mechanism to securely connect ingress endpoints to services in private networks
+
+For example:
+- "Kubernetes Ingress" is a resource that defines how traffic enters a Kubernetes cluster
+- An "ngrok endpoint" provides ingress to your application
+- An "ngrok tunnel" is how that ingress endpoint connects to your application through firewalls
+
+## Common tunnel use cases
+
+Tunnels enable several powerful use cases:
+
+### Development and testing
+- **Webhook testing**: Receive webhooks directly in your local development environment
+- **Mobile app testing**: Test mobile apps against a backend running on your laptop
+- **Demo previews**: Share work-in-progress with clients without deploying
+
+### Production deployments
+- **Behind-firewall APIs**: Connect to services in customer networks or data centers
+- **IoT devices**: Enable cloud services to reach devices in the field
+- **Edge computing**: Route traffic to applications running in distributed locations
+
+### Remote access
+- **SSH/RDP**: Create secure access to remote machines
+- **Database access**: Connect to databases without exposing them to the internet
+- **Admin panels**: Provide secure access to internal tools
+
+## Creating tunnels
+
+Tunnels are created when you start the ngrok agent. Here are the main ways to create tunnels:
+
+### Using the Agent CLI
+
+```bash
+# Create a tunnel and endpoint for HTTP traffic to localhost:8080
+ngrok http 8080
+
+# Create a tunnel for TCP traffic to localhost:22 (SSH)
+ngrok tcp 22
+
+# Create a tunnel with a custom domain
+ngrok http 8080 --url=myapp.example.com
+```
+
+### Using Agent SDKs
+
+Agent SDKs let you embed tunnel creation directly in your application:
+
+```javascript
+// JavaScript SDK example
+import ngrok from '@ngrok/ngrok';
+
+const listener = await ngrok.forward({
+  addr: 8080,
+  authtoken: '<your-authtoken>',
+});
+
+console.log(`Tunnel created: ${listener.url()}`);
+```
+
+### Using the Kubernetes Operator
+
+The Kubernetes Operator creates tunnels automatically for Kubernetes services:
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-service
+  annotations:
+    k8s.ngrok.com/ingress-url: my-app.ngrok.io
+spec:
+  ports:
+    - port: 80
+      targetPort: 8080
+```
+
+## Tunnel lifecycle and management
+
+### Tunnel sessions
+
+When an ngrok agent connects to ngrok's cloud service, it creates a **tunnel session**. This session:
+- Maintains the secure TLS connections (tunnels) to ngrok's cloud
+- Can host multiple endpoints simultaneously
+- Persists until the agent is stopped or disconnected
+
+### Monitoring tunnels
+
+You can monitor active tunnels through:
+- **[Agent Web Interface](/agent/web-inspection-interface/)**: View tunnel status at `http://localhost:4040`
+- **[Tunnel Sessions API](/api-reference/tunnelsessions/list/)**: List and manage tunnel sessions programmatically
+- **[Dashboard](https://dashboard.ngrok.com)**: View online agents and tunnel sessions
+
+### Remote management
+
+Tunnel sessions can be managed remotely:
+- **Stop**: Disconnect a tunnel session via API or Dashboard
+- **Restart**: Restart a tunnel session to apply configuration changes
+- **Update**: Modify tunnel session metadata
+
+## Security considerations
+
+ngrok tunnels are designed with security in mind:
+
+- **TLS encryption**: All tunnel connections use TLS 1.3 for encryption
+- **Outbound-only**: Agents only make outbound connections, so no firewall changes needed
+- **Authentication**: Agents authenticate using authtokens scoped to your account
+- **SSH reverse tunnels**: Support public key authentication for agent connections
+- **Traffic Policy**: Apply authentication, authorization, and security rules at the endpoint level
+
+Learn more about [securing your tunnels](/guides/security-dev-productivity/securing-your-tunnels/).
+
+## What's next?
+
+- **[Get Started](/getting-started/)**: Create your first tunnel with the ngrok agent
+- **[Agent Overview](/agent/overview/)**: Learn more about the ngrok agent and its capabilities
+- **[Endpoints](/universal-gateway/endpoints/)**: Understand how endpoints receive and route traffic
+- **[Traffic Policy](/traffic-policy/)**: Secure and manage traffic flowing through your tunnels
