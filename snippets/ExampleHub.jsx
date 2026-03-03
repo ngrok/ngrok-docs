@@ -157,7 +157,7 @@ export const ExampleHub = ({ parentDir }) => {
 	}
 
 	return (
-		<>
+		<div style={{ minHeight: '2000px' }}>
 			<div className="mb-4 flex flex-wrap justify-between place-items-end gap-4">
 				<div className="relative max-w-64">
 					<input
@@ -242,6 +242,6 @@ export const ExampleHub = ({ parentDir }) => {
 					</div>
 				</div>
 			)}
-		</>
+		</div>
 	);
 }
