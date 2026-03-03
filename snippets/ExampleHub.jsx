@@ -156,8 +156,16 @@ export const ExampleHub = ({ parentDir }) => {
 		groupedExamples.set(example.primaryCategoryId, group);
 	}
 
+	// Calculate minimum height to prevent CLS (Cumulative Layout Shift)
+	// Estimate based on: filter section (100px) + category headings (50px each) + 
+	// cards in 2-column grid (~280px per row including margins)
+	const numCategories = Array.from(groupedExamples.values()).filter(g => g.length > 0).length;
+	const totalCards = filteredExamples.length;
+	const estimatedRows = Math.ceil(totalCards / 2); // 2-column grid
+	const minHeight = 100 + (numCategories * 50) + (estimatedRows * 280);
+
 	return (
-		<div style={{ minHeight: '2000px' }}>
+		<div style={{ minHeight: `${minHeight}px` }}>
 			<div className="mb-4 flex flex-wrap justify-between place-items-end gap-4">
 				<div className="relative max-w-64">
 					<input
