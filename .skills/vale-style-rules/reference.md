@@ -52,11 +52,11 @@ Run `pnpm run vale` to check your changes before submitting a PR.
 - ✅ `**Create IAM Role:** An IAM role is required so ngrok can stream logs.`
 - ❌ `**Create IAM Role**—An IAM role is required so ngrok can stream logs.`
 
-**Em dashes in body vs. lists:** Em dashes should only be used to connect related sentence fragments in body content—like this. They must never be used when constructing list items; list items that pair a label with an explanation should be colon-separated.
+**Em dashes in body vs. lists:** Em dashes should only be used to connect related sentence fragments in body content—like this. They must never be used when constructing list items; list items that pair a label with an explanation should be colon-separated. In colon-separated list items, capitalize the first word after the colon.
 
 - ✅ Body: `The feature is available—check the settings.`
-- ✅ List: `- Bring Your Own Keys: manage provider API keys centrally`
-- ✅ List: `- Multi-provider failover: automatic failover across providers`
+- ✅ List: `- Bring Your Own Keys: Manage provider API keys centrally`
+- ✅ List: `- Multi-provider failover: Automatic failover across providers`
 - ❌ List: `- Bring Your Own Keys—manage provider API keys centrally`
 - ❌ List: `- Multi-provider failover—automatic failover across providers`
 
