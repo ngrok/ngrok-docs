@@ -28,13 +28,16 @@ jobs:
           ref: main
 
       - name: Fetch and Update Changelog
+        env:
+          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
         run: |
           CHANGELOG_URL="https://raw.githubusercontent.com/ngrok/ngrok-operator/refs/heads/main/CHANGELOG.md"
           OUTPUT_PATH="snippets/k8s/_changelog.mdx"
-          
-          # Fetch and process using perl to remove the title and leading newlines exactly as the script did
-          curl -sSL --fail "$CHANGELOG_URL" | perl -0777 -pe 's/^# Changelog\n*//m' > "$OUTPUT_PATH"
-          
+
+          # Fetch the upstream changelog and convert it to Mintlify Update component format
+          curl -sSL --fail "$CHANGELOG_URL" \
+            | python3 scripts/convert-k8s-changelog.py > "$OUTPUT_PATH"
+
           echo "Updated $OUTPUT_PATH"
 
       - name: Check for changes
