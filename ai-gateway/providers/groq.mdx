@@ -1,0 +1,190 @@
+---
+title: Groq
+description: Use Groq LPU-accelerated models through the ngrok AI Gateway.
+---
+
+[Groq](https://groq.com) provides high-speed inference for open-source models (Llama, Mixtral, and others) using their custom LPU hardware. Groq requires you to bring your own key—ngrok-managed keys are not available for Groq.
+
+## Setup
+
+<Steps>
+  <Step title="Create an AI Gateway endpoint">
+    If you don't have one yet, follow the [quickstart](/ai-gateway/quickstart) to create your AI Gateway endpoint.
+  </Step>
+
+  <Step title="Get a Groq API key">
+    Sign up at [console.groq.com](https://console.groq.com) and create an API key. Keys start with `gsk_`.
+  </Step>
+
+  <Step title="Make a request">
+    Pass your key directly—the gateway forwards it to Groq.
+
+    <CodeGroup>
+    ```python Python
+    from openai import OpenAI
+
+    client = OpenAI(
+        base_url="https://your-ai-gateway.ngrok.app/v1",
+        api_key="gsk_..."  # Your Groq key, forwarded by gateway
+    )
+
+    response = client.chat.completions.create(
+        model="meta-llama/llama-3.3-70b-versatile",
+        messages=[{"role": "user", "content": "Hello!"}]
+    )
+
+    print(response.choices[0].message.content)
+    ```
+
+    ```typescript TypeScript
+    import OpenAI from "openai";
+
+    const client = new OpenAI({
+      baseURL: "https://your-ai-gateway.ngrok.app/v1",
+      apiKey: "gsk_...",  // Your Groq key, forwarded by gateway
+    });
+
+    const response = await client.chat.completions.create({
+      model: "meta-llama/llama-3.3-70b-versatile",
+      messages: [{ role: "user", content: "Hello!" }],
+    });
+
+    console.log(response.choices[0].message.content);
+    ```
+
+    ```typescript Vercel AI SDK
+    import { generateText } from "ai";
+    import { createOpenAI } from "@ai-sdk/openai";
+
+    const gateway = createOpenAI({
+      baseURL: "https://your-ai-gateway.ngrok.app/v1",
+      apiKey: "gsk_...",  // Your Groq key, forwarded by gateway
+    });
+
+    const { text } = await generateText({
+      model: gateway("meta-llama/llama-3.3-70b-versatile"),
+      prompt: "Hello!",
+    });
+
+    console.log(text);
+    ```
+
+    ```bash cURL
+    curl https://your-ai-gateway.ngrok.app/v1/chat/completions \
+      -H "Content-Type: application/json" \
+      -H "Authorization: Bearer gsk_..." \
+      -d '{
+        "model": "meta-llama/llama-3.3-70b-versatile",
+        "messages": [{"role": "user", "content": "Hello!"}]
+      }'
+    ```
+    </CodeGroup>
+  </Step>
+</Steps>
+
+## Available models
+
+See the [model catalog](/ai-gateway/reference/model-catalog#groq) for the full list of supported models.
+
+## Store key in the gateway
+
+Instead of each client passing their own key, you can store it once in ngrok Secrets and have the gateway inject it automatically.
+
+<Warning>
+Storing your provider key in the gateway makes your endpoint publicly accessible. You must add authorization to prevent unauthorized use and unexpected charges. See [Protecting BYOK Endpoints](/ai-gateway/guides/protecting-byok-endpoints).
+</Warning>
+
+<Steps>
+  <Step title="Store your key in ngrok secrets">
+    ```bash
+    ngrok api secrets create \
+      --name groq \
+      --secret-data '{"api-key": "gsk_..."}'
+    ```
+
+    Or use the [Vaults & Secrets dashboard](https://dashboard.ngrok.com/vaults).
+  </Step>
+
+  <Step title="Configure your traffic policy">
+    ```yaml
+    on_http_request:
+      - type: ai-gateway
+        config:
+          providers:
+            - id: "groq"
+              api_keys:
+                - value: ${secrets.get('groq', 'api-key')}
+    ```
+  </Step>
+
+  <Step title="Make a request">
+    Clients no longer need a Groq key—pass any value for `api_key`.
+
+    <CodeGroup>
+    ```python Python
+    from openai import OpenAI
+
+    client = OpenAI(
+        base_url="https://your-ai-gateway.ngrok.app/v1",
+        api_key="unused"  # Gateway injects your Groq key
+    )
+
+    response = client.chat.completions.create(
+        model="meta-llama/llama-3.3-70b-versatile",
+        messages=[{"role": "user", "content": "Hello!"}]
+    )
+
+    print(response.choices[0].message.content)
+    ```
+
+    ```typescript TypeScript
+    import OpenAI from "openai";
+
+    const client = new OpenAI({
+      baseURL: "https://your-ai-gateway.ngrok.app/v1",
+      apiKey: "unused",  // Gateway injects your Groq key
+    });
+
+    const response = await client.chat.completions.create({
+      model: "meta-llama/llama-3.3-70b-versatile",
+      messages: [{ role: "user", content: "Hello!" }],
+    });
+
+    console.log(response.choices[0].message.content);
+    ```
+
+    ```typescript Vercel AI SDK
+    import { generateText } from "ai";
+    import { createOpenAI } from "@ai-sdk/openai";
+
+    const gateway = createOpenAI({
+      baseURL: "https://your-ai-gateway.ngrok.app/v1",
+      apiKey: "unused",  // Gateway injects your Groq key
+    });
+
+    const { text } = await generateText({
+      model: gateway("meta-llama/llama-3.3-70b-versatile"),
+      prompt: "Hello!",
+    });
+
+    console.log(text);
+    ```
+
+    ```bash cURL
+    curl https://your-ai-gateway.ngrok.app/v1/chat/completions \
+      -H "Content-Type: application/json" \
+      -H "Authorization: Bearer unused" \
+      -d '{
+        "model": "meta-llama/llama-3.3-70b-versatile",
+        "messages": [{"role": "user", "content": "Hello!"}]
+      }'
+    ```
+    </CodeGroup>
+  </Step>
+</Steps>
+
+## Next steps
+
+- [Protecting BYOK Endpoints](/ai-gateway/guides/protecting-byok-endpoints) — add authorization to your endpoint
+- [Managing Provider Keys](/ai-gateway/guides/managing-provider-keys) — key rotation and multiple keys
+- [Multi-provider failover](/ai-gateway/examples/multi-provider-failover) — failover patterns

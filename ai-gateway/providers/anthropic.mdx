@@ -1,0 +1,356 @@
+---
+title: Anthropic
+description: Use Anthropic Claude models through the ngrok AI Gateway.
+---
+
+[Anthropic](https://anthropic.com) provides Claude models. The AI Gateway supports Anthropic as a **managed provider**—no Anthropic account needed—and also works with your own Anthropic API key.
+
+Anthropic models can be called using either the **OpenAI-compatible API** (chat completions format) or the **native Anthropic API** (messages format). Both are supported.
+
+## Using with ngrok-managed keys
+
+No Anthropic account needed. [AI Gateway API Keys](/ai-gateway/concepts/api-keys) include access to Claude models—ngrok manages authentication automatically.
+
+**Prerequisites:**
+- An AI Gateway endpoint ([quickstart](/ai-gateway/quickstart))
+- An [AI Gateway API Key](/ai-gateway/concepts/api-keys)
+
+<CodeGroup>
+```python Python (OpenAI SDK)
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://your-ai-gateway.ngrok.app/v1",
+    api_key="ng-xxxxx-g1-xxxxx"  # Your AI Gateway API Key
+)
+
+response = client.chat.completions.create(
+    model="claude-opus-4-6",
+    messages=[{"role": "user", "content": "Hello!"}]
+)
+
+print(response.choices[0].message.content)
+```
+
+```python Python (Anthropic SDK)
+import anthropic
+
+client = anthropic.Anthropic(
+    base_url="https://your-ai-gateway.ngrok.app",
+    api_key="ng-xxxxx-g1-xxxxx"  # Your AI Gateway API Key
+)
+
+message = client.messages.create(
+    model="claude-opus-4-6",
+    max_tokens=1024,
+    messages=[{"role": "user", "content": "Hello!"}]
+)
+
+print(message.content[0].text)
+```
+
+```typescript TypeScript (OpenAI SDK)
+import OpenAI from "openai";
+
+const client = new OpenAI({
+  baseURL: "https://your-ai-gateway.ngrok.app/v1",
+  apiKey: "ng-xxxxx-g1-xxxxx",  // Your AI Gateway API Key
+});
+
+const response = await client.chat.completions.create({
+  model: "claude-opus-4-6",
+  messages: [{ role: "user", content: "Hello!" }],
+});
+
+console.log(response.choices[0].message.content);
+```
+
+```typescript TypeScript (Anthropic SDK)
+import Anthropic from "@anthropic-ai/sdk";
+
+const client = new Anthropic({
+  baseURL: "https://your-ai-gateway.ngrok.app",
+  apiKey: "ng-xxxxx-g1-xxxxx",  // Your AI Gateway API Key
+});
+
+const message = await client.messages.create({
+  model: "claude-opus-4-6",
+  max_tokens: 1024,
+  messages: [{ role: "user", content: "Hello!" }],
+});
+
+console.log(message.content[0].text);
+```
+
+```typescript Vercel AI SDK
+import { generateText } from "ai";
+import { createOpenAI } from "@ai-sdk/openai";
+
+const gateway = createOpenAI({
+  baseURL: "https://your-ai-gateway.ngrok.app/v1",
+  apiKey: "ng-xxxxx-g1-xxxxx",  // Your AI Gateway API Key
+});
+
+const { text } = await generateText({
+  model: gateway("claude-opus-4-6"),
+  prompt: "Hello!",
+});
+
+console.log(text);
+```
+
+```bash cURL (OpenAI format)
+curl https://your-ai-gateway.ngrok.app/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer ng-xxxxx-g1-xxxxx" \
+  -d '{
+    "model": "claude-opus-4-6",
+    "messages": [{"role": "user", "content": "Hello!"}]
+  }'
+```
+
+```bash cURL (Anthropic format)
+curl https://your-ai-gateway.ngrok.app/v1/messages \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: ng-xxxxx-g1-xxxxx" \
+  -H "anthropic-version: 2023-06-01" \
+  -d '{
+    "model": "claude-opus-4-6",
+    "max_tokens": 1024,
+    "messages": [{"role": "user", "content": "Hello!"}]
+  }'
+```
+</CodeGroup>
+
+## Using your own Anthropic key (BYOK)
+
+Store your Anthropic key in the gateway and use it centrally across all clients, or forward your key directly in passthrough mode.
+
+### Option A: Store key in the gateway (recommended)
+
+**1. Store your key in ngrok secrets**
+
+```bash
+ngrok api secrets create \
+  --name anthropic \
+  --secret-data '{"api-key": "sk-ant-..."}'
+```
+
+Or use the [Vaults & Secrets dashboard](https://dashboard.ngrok.com/vaults).
+
+**2. Configure your traffic policy**
+
+```yaml
+on_http_request:
+  - type: ai-gateway
+    config:
+      providers:
+        - id: "anthropic"
+          api_keys:
+            - value: ${secrets.get('anthropic', 'api-key')}
+```
+
+**3. Make a request**
+
+<CodeGroup>
+```python Python (OpenAI SDK)
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://your-ai-gateway.ngrok.app/v1",
+    api_key="unused"  # Gateway injects your Anthropic key
+)
+
+response = client.chat.completions.create(
+    model="claude-opus-4-6",
+    messages=[{"role": "user", "content": "Hello!"}]
+)
+
+print(response.choices[0].message.content)
+```
+
+```python Python (Anthropic SDK)
+import anthropic
+
+client = anthropic.Anthropic(
+    base_url="https://your-ai-gateway.ngrok.app",
+    api_key="unused"  # Gateway injects your Anthropic key
+)
+
+message = client.messages.create(
+    model="claude-opus-4-6",
+    max_tokens=1024,
+    messages=[{"role": "user", "content": "Hello!"}]
+)
+
+print(message.content[0].text)
+```
+
+```typescript TypeScript (OpenAI SDK)
+import OpenAI from "openai";
+
+const client = new OpenAI({
+  baseURL: "https://your-ai-gateway.ngrok.app/v1",
+  apiKey: "unused",  // Gateway injects your Anthropic key
+});
+
+const response = await client.chat.completions.create({
+  model: "claude-opus-4-6",
+  messages: [{ role: "user", content: "Hello!" }],
+});
+```
+
+```typescript TypeScript (Anthropic SDK)
+import Anthropic from "@anthropic-ai/sdk";
+
+const client = new Anthropic({
+  baseURL: "https://your-ai-gateway.ngrok.app",
+  apiKey: "unused",  // Gateway injects your Anthropic key
+});
+
+const message = await client.messages.create({
+  model: "claude-opus-4-6",
+  max_tokens: 1024,
+  messages: [{ role: "user", content: "Hello!" }],
+});
+```
+
+```typescript Vercel AI SDK
+import { generateText } from "ai";
+import { createOpenAI } from "@ai-sdk/openai";
+
+const gateway = createOpenAI({
+  baseURL: "https://your-ai-gateway.ngrok.app/v1",
+  apiKey: "unused",  // Gateway injects your Anthropic key
+});
+
+const { text } = await generateText({
+  model: gateway("claude-opus-4-6"),
+  prompt: "Hello!",
+});
+
+console.log(text);
+```
+
+```bash cURL
+curl https://your-ai-gateway.ngrok.app/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer unused" \
+  -d '{
+    "model": "claude-opus-4-6",
+    "messages": [{"role": "user", "content": "Hello!"}]
+  }'
+```
+</CodeGroup>
+
+### Option B: Passthrough (each client uses their own key)
+
+No traffic policy configuration needed. Each client sends their own Anthropic key and the gateway forwards it.
+
+<CodeGroup>
+```python Python (OpenAI SDK)
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://your-ai-gateway.ngrok.app/v1",
+    api_key="sk-ant-..."  # Client's own Anthropic key
+)
+
+response = client.chat.completions.create(
+    model="claude-opus-4-6",
+    messages=[{"role": "user", "content": "Hello!"}]
+)
+```
+
+```python Python (Anthropic SDK)
+import anthropic
+
+client = anthropic.Anthropic(
+    base_url="https://your-ai-gateway.ngrok.app",
+    api_key="sk-ant-..."  # Client's own Anthropic key
+)
+
+message = client.messages.create(
+    model="claude-opus-4-6",
+    max_tokens=1024,
+    messages=[{"role": "user", "content": "Hello!"}]
+)
+```
+
+```typescript TypeScript (OpenAI SDK)
+import OpenAI from "openai";
+
+const client = new OpenAI({
+  baseURL: "https://your-ai-gateway.ngrok.app/v1",
+  apiKey: "sk-ant-...",  // Client's own Anthropic key
+});
+
+const response = await client.chat.completions.create({
+  model: "claude-opus-4-6",
+  messages: [{ role: "user", content: "Hello!" }],
+});
+```
+
+```typescript TypeScript (Anthropic SDK)
+import Anthropic from "@anthropic-ai/sdk";
+
+const client = new Anthropic({
+  baseURL: "https://your-ai-gateway.ngrok.app",
+  apiKey: "sk-ant-...",  // Client's own Anthropic key
+});
+
+const message = await client.messages.create({
+  model: "claude-opus-4-6",
+  max_tokens: 1024,
+  messages: [{ role: "user", content: "Hello!" }],
+});
+```
+
+```typescript Vercel AI SDK
+import { generateText } from "ai";
+import { createOpenAI } from "@ai-sdk/openai";
+
+const gateway = createOpenAI({
+  baseURL: "https://your-ai-gateway.ngrok.app/v1",
+  apiKey: "sk-ant-...",  // Client's own Anthropic key
+});
+
+const { text } = await generateText({
+  model: gateway("claude-opus-4-6"),
+  prompt: "Hello!",
+});
+```
+
+```bash cURL
+curl https://your-ai-gateway.ngrok.app/v1/messages \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: sk-ant-..." \
+  -H "anthropic-version: 2023-06-01" \
+  -d '{
+    "model": "claude-opus-4-6",
+    "max_tokens": 1024,
+    "messages": [{"role": "user", "content": "Hello!"}]
+  }'
+```
+</CodeGroup>
+
+## Explicit provider routing
+
+Use the `anthropic:` prefix to force routing to Anthropic specifically:
+
+```python
+response = client.chat.completions.create(
+    model="anthropic:claude-opus-4-6",
+    messages=[{"role": "user", "content": "Hello!"}]
+)
+```
+
+## Available models
+
+See the [model catalog](/ai-gateway/reference/model-catalog#anthropic) for the full list of supported Claude models.
+
+## Next steps
+
+- [AI Gateway API Keys](/ai-gateway/concepts/api-keys) — use ngrok-managed keys for the simplest setup
+- [Anthropic SDK guide](/ai-gateway/sdks/anthropic) — detailed SDK integration
+- [Multi-provider failover](/ai-gateway/examples/multi-provider-failover) — automatic failover across providers
