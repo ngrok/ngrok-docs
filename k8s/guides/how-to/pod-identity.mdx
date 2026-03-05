@@ -31,7 +31,7 @@ These variables are only populated for connections to endpoints with a `kubernet
 
 ### Annotations
 
-Only annotations prefixed with `ngrok-` are included in `conn.k8s.pod.annotations`. Annotations without this prefix are not surfaced. The combined size of all included annotations is subject to a 1024-byte cumulative limit. If this limit is exceeded, `conn.k8s.pod.error_code` will be set to `ERR_NGROK_28000` rather than a partial annotation map being returned.
+Only annotations prefixed with `ngrok-` are included in `conn.k8s.pod.metadata.annotations`. Annotations without this prefix are not surfaced. The combined size of all included annotations is subject to a 1024-byte cumulative limit. If this limit is exceeded, `conn.k8s.pod.metadata.error_code` will be set to `ERR_NGROK_28000` rather than a partial annotation map being returned.
 
 To use an annotation in a Traffic Policy expression, add the `ngrok-` prefix to it in your pod spec:
 
@@ -45,7 +45,7 @@ metadata:
 You can then reference the annotation in a Traffic Policy expression:
 
 ```
-conn.k8s.pod.annotations["ngrok-tenant-id"] == "tenant-abc"
+conn.k8s.pod.metadata.annotations["ngrok-tenant-id"] == "tenant-abc"
 ```
 
 ## Handling errors
@@ -66,11 +66,11 @@ Deny the connection if pod identity cannot be resolved.
 ```yaml
 on_tcp_connect:
   - expressions:
-      - conn.k8s.pod.error_code != ""
+      - conn.k8s.pod.metadata.error_code != ""
     actions:
       - type: deny
   - expressions:
-      - conn.k8s.pod.namespace != "my-namespace"
+      - conn.k8s.pod.metadata.namespace != "my-namespace"
     actions:
       - type: deny
 ```
@@ -82,7 +82,7 @@ Allow the connection to proceed even if pod identity is unavailable, but still e
 ```yaml
 on_tcp_connect:
   - expressions:
-      - conn.k8s.pod.error_code == "" && conn.k8s.pod.namespace != "my-namespace"
+      - conn.k8s.pod.metadata.error_code == "" && conn.k8s.pod.metadata.namespace != "my-namespace"
     actions:
       - type: deny
 ```
@@ -116,11 +116,11 @@ spec:
     inline:
       on_tcp_connect:
         - expressions:
-            - conn.k8s.pod.error_code != ""
+            - conn.k8s.pod.metadata.error_code != ""
           actions:
             - type: deny
         - expressions:
-            - conn.k8s.pod.namespace != "payments"
+            - conn.k8s.pod.metadata.namespace != "payments"
           actions:
             - type: deny
 ```
@@ -140,11 +140,11 @@ spec:
     policy:
       on_tcp_connect:
         - expressions:
-            - conn.k8s.pod.error_code != ""
+            - conn.k8s.pod.metadata.error_code != ""
           actions:
             - type: deny
         - expressions:
-            - conn.k8s.pod.namespace != "payments"
+            - conn.k8s.pod.metadata.namespace != "payments"
           actions:
             - type: deny
 ```
@@ -168,11 +168,11 @@ spec:
     policy:
       on_tcp_connect:
         - expressions:
-            - conn.k8s.pod.error_code != ""
+            - conn.k8s.pod.metadata.error_code != ""
           actions:
             - type: deny
         - expressions:
-            - !(conn.k8s.pod.name in ["worker-a", "worker-b"])
+            - !(conn.k8s.pod.metadata.name in ["worker-a", "worker-b"])
           actions:
             - type: deny
 ```
@@ -194,11 +194,11 @@ spec:
     policy:
       on_tcp_connect:
         - expressions:
-            - conn.k8s.pod.error_code != ""
+            - conn.k8s.pod.metadata.error_code != ""
           actions:
             - type: deny
         - expressions:
-            - conn.k8s.pod.annotations["ngrok-environment"] != "production"
+            - conn.k8s.pod.metadata.annotations["ngrok-environment"] != "production"
           actions:
             - type: deny
 ```
@@ -221,11 +221,11 @@ spec:
     policy:
       on_tcp_connect:
         - expressions:
-            - conn.k8s.pod.error_code != ""
+            - conn.k8s.pod.metadata.error_code != ""
           actions:
             - type: deny
         - expressions:
-            - conn.k8s.pod.namespace != "tenant1"
+            - conn.k8s.pod.metadata.namespace != "tenant1"
           actions:
             - type: deny
         - actions:
