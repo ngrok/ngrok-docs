@@ -23,6 +23,7 @@ Apply this skill when resolving Vale linter output or when editing docs where Va
 
 - **Headings**: Sentence-style capitalization (first word + proper nouns only). Add product-name exceptions in `.vale/styles/StyleRules/Headings.yml` if needed.
 - **Spacing**: One space after sentence-ending punctuation; no spaces around em/en dashes. Use a colon (not em dash) after a label/bold phrase that introduces an explanation.
+- **Em dashes**: Use em dashes only to connect related sentence fragments in body content—like this. Never use em dashes in list items; use colon-separated format (e.g. `- Bring Your Own Keys: Manage provider API keys centrally`).
 - **Oxford comma**: Use comma before "and"/"or" in lists of three or more.
 - **Frontmatter**: Every doc needs a `description` field (~150 chars, ends with a period).
 
