@@ -115,6 +115,76 @@ providers:
           max_context: 8192
 ```
 
+## Parameter filtering
+
+By default, no parameter filtering occurs for custom providers or models. Every parameter your client sends is forwarded as-is. If your provider or model rejects parameters that clients commonly include, you can opt into filtering using either or both of the mechanisms below.
+
+### Provider surface allowlist
+
+Use `supported_params` on a `supported_api_surfaces` entry to declare the exact set of parameters the provider accepts for that surface. Any top-level request body parameter not on this list will be removed before the request is forwarded.
+
+```yaml
+providers:
+  - id: "my-provider"
+    base_url: "https://my-service.internal"
+    supported_api_surfaces:
+      - format: openai
+        surface: chat-completions
+        supported_params:
+          - name: model
+          - name: messages
+          - name: temperature
+          - name: max_tokens
+          - name: stream
+```
+
+With this configuration, a request that includes `logit_bias` or `parallel_tool_calls` will have those fields removed before being forwarded to `my-provider`.
+
+<Note>
+`supported_params` only takes effect when the gateway has matched a known surface (`chat-completions`, `responses`, or `messages`). The list must be non-empty to activate filtering.
+</Note>
+
+### Model-specific denylist
+
+Use `unsupported_params` on a model to declare parameters that model doesn't accept. These are removed regardless of what the provider surface allows, and regardless of which surface was matched.
+
+```yaml
+providers:
+  - id: "my-provider"
+    base_url: "https://my-service.internal"
+    models:
+      - id: "my-model"
+        unsupported_params:
+          - name: parallel_tool_calls
+          - name: response_format
+```
+
+### Combining both
+
+The two mechanisms are independent and can be used together. Provider-level filtering (allowlist) runs first, then model-level filtering (denylist) runs second. A common pattern is to set `supported_params` at the provider level for all models, then use `unsupported_params` on individual models that have additional restrictions:
+
+```yaml
+providers:
+  - id: "my-provider"
+    base_url: "https://my-service.internal"
+    supported_api_surfaces:
+      - format: openai
+        surface: chat-completions
+        supported_params:
+          - name: model
+          - name: messages
+          - name: temperature
+          - name: max_tokens
+          - name: stream
+    models:
+      - id: "my-base-model"
+        # No extra filtering needed — provider surface allowlist is sufficient
+      - id: "my-limited-model"
+        # This model additionally can't handle temperature even though the surface allows it
+        unsupported_params:
+          - name: temperature
+```
+
 ## Authentication
 
 ### With provider API keys
