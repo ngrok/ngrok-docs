@@ -1,0 +1,229 @@
+---
+title: OpenRouter
+description: Use OpenRouter models through the ngrok AI Gateway.
+---
+
+[OpenRouter](https://openrouter.ai) is a unified API that provides access to hundreds of models from providers like Anthropic, Google, Meta, Mistral, and more through a single endpoint. It requires you to bring your own key—ngrok-managed keys are not available for OpenRouter.
+
+## Setup
+
+<Steps>
+  <Step title="Create an AI Gateway endpoint">
+    If you don't have one yet, follow the [quickstart](/ai-gateway/quickstart) to create your AI Gateway endpoint.
+  </Step>
+
+  <Step title="Get an OpenRouter API key">
+    Create an account at [openrouter.ai](https://openrouter.ai) and generate an API key from your dashboard. Keys start with `sk-or-v1-`.
+  </Step>
+
+  <Step title="Make a request">
+    Pass your key directly—the gateway forwards it to OpenRouter.
+
+    <CodeGroup>
+    ```python Python
+    from openai import OpenAI
+
+    client = OpenAI(
+        base_url="https://your-ai-gateway.ngrok.app/v1",
+        api_key="sk-or-v1-..."  # Your OpenRouter key, forwarded by gateway
+    )
+
+    response = client.chat.completions.create(
+        model="openrouter:anthropic/claude-3.5-sonnet",
+        messages=[{"role": "user", "content": "Hello!"}]
+    )
+
+    print(response.choices[0].message.content)
+    ```
+
+    ```typescript TypeScript
+    import OpenAI from "openai";
+
+    const client = new OpenAI({
+      baseURL: "https://your-ai-gateway.ngrok.app/v1",
+      apiKey: "sk-or-v1-...",  // Your OpenRouter key, forwarded by gateway
+    });
+
+    const response = await client.chat.completions.create({
+      model: "openrouter:anthropic/claude-3.5-sonnet",
+      messages: [{ role: "user", content: "Hello!" }],
+    });
+
+    console.log(response.choices[0].message.content);
+    ```
+
+    ```typescript Vercel AI SDK
+    import { generateText } from "ai";
+    import { createOpenAI } from "@ai-sdk/openai";
+
+    const gateway = createOpenAI({
+      baseURL: "https://your-ai-gateway.ngrok.app/v1",
+      apiKey: "sk-or-v1-...",  // Your OpenRouter key, forwarded by gateway
+    });
+
+    const { text } = await generateText({
+      model: gateway("openrouter:anthropic/claude-3.5-sonnet"),
+      prompt: "Hello!",
+    });
+
+    console.log(text);
+    ```
+
+    ```bash cURL
+    curl https://your-ai-gateway.ngrok.app/v1/chat/completions \
+      -H "Content-Type: application/json" \
+      -H "Authorization: Bearer sk-or-v1-..." \
+      -d '{
+        "model": "openrouter:anthropic/claude-3.5-sonnet",
+        "messages": [{"role": "user", "content": "Hello!"}]
+      }'
+    ```
+    </CodeGroup>
+  </Step>
+</Steps>
+
+## Model names
+
+<Warning>
+Always prefix OpenRouter model IDs with `openrouter:`. Without the prefix, the gateway may route to the native provider instead of OpenRouter.
+</Warning>
+
+OpenRouter uses a `provider/model` format for its model IDs. When calling through the ngrok AI Gateway, prefix with `openrouter:`:
+
+| What you want | Model string to use |
+|---------------|---------------------|
+| Anthropic Claude via OpenRouter | `openrouter:anthropic/claude-3.5-sonnet` |
+| Google Gemini via OpenRouter | `openrouter:google/gemini-2.0-flash-001` |
+| Meta Llama via OpenRouter | `openrouter:meta-llama/llama-3.1-8b-instruct` |
+| Mistral via OpenRouter | `openrouter:mistralai/mistral-7b-instruct` |
+
+The `openrouter:` prefix tells the gateway to route to OpenRouter specifically, not to the native provider. Without it, `anthropic/claude-3.5-sonnet` would fail—the gateway doesn't recognize the slash-separated format as a valid model without the provider prefix.
+
+For the full list of models OpenRouter supports, see [openrouter.ai/models](https://openrouter.ai/models).
+
+## Store key in the gateway
+
+Instead of each client passing their own key, you can store it once in ngrok Secrets and have the gateway inject it automatically.
+
+<Warning>
+Storing your provider key in the gateway makes your endpoint publicly accessible. You must add authorization to prevent unauthorized use and unexpected charges. See [Protecting BYOK Endpoints](/ai-gateway/guides/protecting-byok-endpoints).
+</Warning>
+
+<Steps>
+  <Step title="Store your key in ngrok secrets">
+    ```bash
+    ngrok api secrets create \
+      --name openrouter \
+      --secret-data '{"api-key": "sk-or-v1-..."}'
+    ```
+
+    Or use the [Vaults & Secrets dashboard](https://dashboard.ngrok.com/vaults).
+  </Step>
+
+  <Step title="Configure your traffic policy">
+    ```yaml
+    on_http_request:
+      - type: ai-gateway
+        config:
+          providers:
+            - id: "openrouter"
+              api_keys:
+                - value: ${secrets.get('openrouter', 'api-key')}
+    ```
+  </Step>
+
+  <Step title="Make a request">
+    Clients no longer need an OpenRouter key—pass any value for `api_key`.
+
+    <CodeGroup>
+    ```python Python
+    from openai import OpenAI
+
+    client = OpenAI(
+        base_url="https://your-ai-gateway.ngrok.app/v1",
+        api_key="unused"  # Gateway injects your OpenRouter key
+    )
+
+    response = client.chat.completions.create(
+        model="openrouter:anthropic/claude-3.5-sonnet",
+        messages=[{"role": "user", "content": "Hello!"}]
+    )
+
+    print(response.choices[0].message.content)
+    ```
+
+    ```typescript TypeScript
+    import OpenAI from "openai";
+
+    const client = new OpenAI({
+      baseURL: "https://your-ai-gateway.ngrok.app/v1",
+      apiKey: "unused",  // Gateway injects your OpenRouter key
+    });
+
+    const response = await client.chat.completions.create({
+      model: "openrouter:anthropic/claude-3.5-sonnet",
+      messages: [{ role: "user", content: "Hello!" }],
+    });
+
+    console.log(response.choices[0].message.content);
+    ```
+
+    ```typescript Vercel AI SDK
+    import { generateText } from "ai";
+    import { createOpenAI } from "@ai-sdk/openai";
+
+    const gateway = createOpenAI({
+      baseURL: "https://your-ai-gateway.ngrok.app/v1",
+      apiKey: "unused",  // Gateway injects your OpenRouter key
+    });
+
+    const { text } = await generateText({
+      model: gateway("openrouter:anthropic/claude-3.5-sonnet"),
+      prompt: "Hello!",
+    });
+
+    console.log(text);
+    ```
+
+    ```bash cURL
+    curl https://your-ai-gateway.ngrok.app/v1/chat/completions \
+      -H "Content-Type: application/json" \
+      -H "Authorization: Bearer unused" \
+      -d '{
+        "model": "openrouter:anthropic/claude-3.5-sonnet",
+        "messages": [{"role": "user", "content": "Hello!"}]
+      }'
+    ```
+    </CodeGroup>
+  </Step>
+</Steps>
+
+## Failover with another provider
+
+Use OpenRouter as a fallback if your primary provider is unavailable:
+
+```yaml
+on_http_request:
+  - type: ai-gateway
+    config:
+      providers:
+        - id: "anthropic"
+          api_keys:
+            - value: ${secrets.get('anthropic', 'api-key')}
+        - id: "openrouter"
+          api_keys:
+            - value: ${secrets.get('openrouter', 'api-key')}
+      model_selection:
+        strategy:
+          - "ai.models.filter(m, m.provider_id == 'anthropic')"
+          - "ai.models.filter(m, m.provider_id == 'openrouter')"
+```
+
+With this config, clients can request `models: ["anthropic:claude-3.5-sonnet", "openrouter:anthropic/claude-3.5-sonnet"]` to fall back to OpenRouter if Anthropic is down.
+
+## Next steps
+
+- [Protecting BYOK Endpoints](/ai-gateway/guides/protecting-byok-endpoints): add authorization to your endpoint
+- [Managing Provider Keys](/ai-gateway/guides/managing-provider-keys): key rotation and multiple keys
+- [Multi-provider failover](/ai-gateway/examples/multi-provider-failover): failover patterns
+- [Model Selection Strategies](/ai-gateway/guides/model-selection-strategies): custom routing logic
