@@ -1,6 +1,13 @@
 const terms = [
 	// Please add new terms in alphabetical order.
 	{
+		titles: ["Agent Endpoint"],
+		meaning:
+			"An Agent Endpoint is an ngrok endpoint created by an ngrok agent (or Agent SDK) that connects to an upstream service. The agent establishes a secure tunnel to the ngrok cloud, which forwards traffic to your local or remote service.",
+		link: "/docs/universal-gateway/agent-endpoints/",
+		pluralEnding: "s",
+	},
+	{
 		titles: ["ALPN"],
 		caseSensitive: true,
 		link: "https://en.wikipedia.org/wiki/Application-Layer_Protocol_Negotiation",
@@ -13,6 +20,27 @@ const terms = [
 		link: "https://github.com/google/cel-spec/tree/master?tab=readme-ov-file#common-expression-language",
 		meaning:
 			"CEL (Common Expression Language) is a fast, safe, and portable expression language developed by Google for evaluating expressions in configuration, policy, and runtime environments.",
+	},
+	{
+		titles: ["circuit breaker"],
+		meaning:
+			"A circuit breaker is a resilience pattern that monitors for failures and temporarily stops forwarding requests to an unhealthy upstream service, allowing it time to recover.",
+		link: "https://en.wikipedia.org/wiki/Circuit_breaker_design_pattern",
+		pluralEnding: "s",
+	},
+	{
+		titles: ["Cloud Endpoint"],
+		meaning:
+			"A Cloud Endpoint is a persistent ngrok endpoint that runs in ngrok's cloud service. Configured entirely in the ngrok dashboard or API, Cloud Endpoints can route traffic to upstream URLs and other endpoints, send custom responses, and more using Traffic Policy.",
+		link: "/docs/universal-gateway/cloud-endpoints/",
+		pluralEnding: "s",
+	},
+	{
+		titles: ["CORS"],
+		caseSensitive: true,
+		meaning:
+			"CORS (Cross-Origin Resource Sharing) is a browser security mechanism that controls which web domains are allowed to make requests to a different domain, preventing unauthorized cross-site interactions.",
+		link: "https://en.wikipedia.org/wiki/Cross-origin_resource_sharing",
 	},
 	{
 		titles: ["CRD"],
@@ -34,8 +62,15 @@ const terms = [
 		glossaryIndex: 0,
 		link: "https://gateway-api.sigs.k8s.io/guides/",
 		meaning:
-			"Gateway API CRDs (Custom Resource Definitions) are a set of standardized, extensible resources that manage networking configurations like routing, gateways, and traffic policies.",
+			"Gateway API CRDs (Custom Resource Definitions) are a set of standardized, extensible resources that manage networking configurations like routing, gateways, and Traffic Policies.",
 		pluralEnding: "s",
+	},
+	{
+		titles: ["gRPC"],
+		caseSensitive: true,
+		meaning:
+			"gRPC is a high-performance, open-source remote procedure call (RPC) framework developed by Google that uses HTTP/2 for transport and Protocol Buffers for serialization.",
+		link: "https://grpc.io/",
 	},
 	{
 		titles: ["Helm"],
@@ -44,10 +79,31 @@ const terms = [
 		link: "https://helm.sh/",
 	},
 	{
+		titles: ["HMAC"],
+		caseSensitive: true,
+		meaning:
+			"HMAC (Hash-based Message Authentication Code) is a cryptographic technique that uses a secret key and a hash function to verify both the integrity and authenticity of a message.",
+		link: "https://en.wikipedia.org/wiki/HMAC",
+	},
+	{
+		titles: ["IdP"],
+		caseSensitive: true,
+		meaning:
+			"An IdP (Identity Provider) is a service that stores and manages digital identities, authenticating users and providing identity information to other applications via protocols like SAML or OIDC.",
+		link: "https://en.wikipedia.org/wiki/Identity_provider",
+	},
+	{
 		titles: ["Ingress"],
 		meaning:
 			"An ingress is an entry point into a network for traffic from outside of the network.",
 		pluralEnding: "es",
+	},
+	{
+		titles: ["Internal Endpoint"],
+		meaning:
+			"Internal Endpoints are only accessible to traffic from your other ngrok endpoints, enabling service-to-service communication without exposing traffic to the public internet. Internal Endpoints use the .internal top-level domain.",
+		link: "/docs/universal-gateway/internal-endpoints/",
+		pluralEnding: "s",
 	},
 	{
 		titles: ["IP CIDR", "CIDR"],
@@ -64,6 +120,14 @@ const terms = [
 		link: "https://en.wikipedia.org/wiki/System_for_Cross-domain_Identity_Management",
 	},
 	{
+		titles: ["JWT"],
+		caseSensitive: true,
+		meaning:
+			"A JWT (JSON Web Token) is a compact, URL-safe token format used to securely transmit information between parties as a JSON object, commonly used for authentication and authorization.",
+		link: "https://en.wikipedia.org/wiki/JSON_Web_Token",
+		pluralEnding: "s",
+	},
+	{
 		titles: ["K8", "K8s"],
 		glossaryIndex: 1,
 		meaning: "K8s is an industry-standard abbreviation for Kubernetes.",
@@ -73,7 +137,7 @@ const terms = [
 	{
 		titles: ["Let's Encrypt", "Let's Encrypt", "LetsEncrypt", "Lets encrypt"],
 		meaning:
-			"Let's Encrypt is a free, automated, and open certificate authority (CA) that provides digital certificates to enable HTTPS (SSL/TLS) for websites.",
+			"A free, automated, and open certificate authority (CA) that provides digital certificates to enable HTTPS (SSL/TLS) for websites.",
 		link: "https://letsencrypt.org/about/",
 	},
 	{
@@ -83,6 +147,26 @@ const terms = [
 			"MCP (Model Context Protocol) is an open standard that allows AI models to access external data, tools, and services, and potentially use them to automate workflows.",
 		link: "https://en.wikipedia.org/wiki/Model_Context_Protocol",
 		pluralEnding: "s",
+	},
+	{
+		titles: ["mTLS"],
+		caseSensitive: true,
+		meaning:
+			"mTLS (Mutual TLS) is a security protocol where both the client and server authenticate each other using TLS certificates, ensuring both parties are who they claim to be.",
+		link: "https://en.wikipedia.org/wiki/Mutual_authentication",
+	},
+	{
+		titles: ["ngrok Agent"],
+		meaning:
+			"The ngrok agent is a lightweight command-line application that you install on your machine or server. It establishes secure, outbound-only connections to the ngrok cloud to create endpoints for your upstream services.",
+		link: "/docs/agent/",
+	},
+	{
+		titles: ["OAuth"],
+		caseSensitive: true,
+		meaning:
+			"OAuth is an open standard for authorization that allows users to grant third-party applications limited access to their resources without sharing their credentials.",
+		link: "https://en.wikipedia.org/wiki/OAuth",
 	},
 	{
 		titles: ["OIDC"],
@@ -96,6 +180,20 @@ const terms = [
 		meaning:
 			"The Open Web Application Security Project is a non-profit organization dedicated to improving software security through providing resources, tools, and community support.",
 		link: "https://owasp.org/about/",
+	},
+	{
+		titles: ["Point of Presence", "PoP"],
+		meaning:
+			"A Point of Presence (PoP) is a physical location in ngrok's global network where traffic enters the ngrok cloud. ngrok operates PoPs around the world to minimize latency for end users.",
+		link: "/docs/universal-gateway/points-of-presence/",
+		pluralEnding: "s",
+	},
+	{
+		titles: ["RBAC"],
+		caseSensitive: true,
+		meaning:
+			"RBAC (Role-Based Access Control) is a method of restricting system access based on the roles assigned to individual users within an organization.",
+		link: "https://en.wikipedia.org/wiki/Role-based_access_control",
 	},
 	{
 		titles: ["reverse proxy", "reverse proxies", "Reverse Proxy"],
@@ -112,10 +210,31 @@ const terms = [
     link: "/iam/service-users/",
   },
 	{
+		titles: ["SAML"],
+		caseSensitive: true,
+		meaning:
+			"SAML (Security Assertion Markup Language) is an open standard for exchanging authentication and authorization data between an identity provider and a service provider, commonly used for enterprise single sign-on.",
+		link: "https://en.wikipedia.org/wiki/Security_Assertion_Markup_Language",
+	},
+	{
+		titles: ["SCIM"],
+		caseSensitive: true,
+		meaning:
+			"SCIM (System for Cross-domain Identity Management) is an open standard for automating the exchange of user identity information between identity domains or IT systems.",
+		link: "https://en.wikipedia.org/wiki/System_for_Cross-domain_Identity_Management",
+	},
+	{
 		titles: ["Shadow IT", "shadow IT"],
 		meaning:
 			"Shadow IT refers to IT systems, software, and cloud services used by individuals within an organization without the IT department's knowledge or approval.",
 		link: "https://en.wikipedia.org/wiki/Shadow_IT",
+	},
+	{
+		titles: ["SSO"],
+		caseSensitive: true,
+		meaning:
+			"SSO (Single Sign-On) is an authentication method that allows users to log in once and gain access to multiple related applications or systems without re-entering credentials.",
+		link: "https://en.wikipedia.org/wiki/Single_sign-on",
 	},
 	{
 		titles: ["SNI"],
@@ -151,8 +270,13 @@ const terms = [
 	{
 		titles: ["Traffic Policy", "Traffic Policies"],
 		meaning:
-			"Traffic Policy is a configuration language that enables you to filter, match, manage and orchestrate traffic to your endpoints. For example, you can add authentication, send custom response, rate limit traffic, and more.",
+			"Traffic Policy is a configuration language that enables you to filter, match, manage, and orchestrate traffic to your endpoints. For example, you can add authentication, send custom responses, rate limit traffic, and more.",
 		link: "/docs/traffic-policy/",
+	},
+	{
+		titles: ["upstream"],
+		meaning:
+			"An upstream is the service, server, or URL that ngrok forwards incoming traffic to. When you create an ngrok endpoint, the upstream is the destination that ultimately handles the request.",
 	},
 	{
 		titles: ["v2"],
@@ -172,6 +296,13 @@ const terms = [
 		caseSensitive: true,
 		meaning:
 			"A web application firewall (WAF) is an intermediary service in the cloud or on a server that protects web services by filtering and monitoring HTTP traffic.",
+	},
+	{
+		titles: ["WebSocket"],
+		meaning:
+			"WebSocket is a communication protocol that provides full-duplex (two-way) communication channels over a single TCP connection, enabling real-time data exchange between a client and server.",
+		link: "https://en.wikipedia.org/wiki/WebSocket",
+		pluralEnding: "s",
 	},
 ];
 
