@@ -20,9 +20,9 @@ on_http_request:
   - name: Block AI crawlers by IP
     expressions:
       - >-
-        ('com.anthropic' in conn.client_ip.categories) ||
-        ('com.openai' in conn.client_ip.categories) ||
-        ('com.perplexity' in conn.client_ip.categories)
+        'com.anthropic.api' in conn.client_ip.categories ||
+        'com.openai.gptbot.ipv4' in conn.client_ip.categories ||
+        'ai.perplexity.bot.ipv4' in conn.client_ip.categories
     actions:
       - type: deny
         config:
@@ -35,7 +35,7 @@ on_http_request:
     {
       "name": "Block AI crawlers by IP",
       "expressions": [
-        "('com.anthropic' in conn.client_ip.categories) || ('com.openai' in conn.client_ip.categories) || ('com.perplexity' in conn.client_ip.categories)"
+        "'com.anthropic.api' in conn.client_ip.categories || 'com.openai.gptbot.ipv4' in conn.client_ip.categories || 'ai.perplexity.bot.ipv4' in conn.client_ip.categories"
       ],
       "actions": [
         {
@@ -97,7 +97,7 @@ on_http_request:
 
 </CodeGroup>
 
-Other common provider categories include `com.aws`, `com.google`, `com.azure`, and `com.cloudflare`.
+Other common provider categories include `com.aws`, `com.google.ipv4`, `com.microsoft.azure`, and `com.cloudflare`.
 See the [full list of cloud provider categories](/traffic-policy/variables/ip-intel#cloud-providers).
 
 ## How to block Tor exit nodes and anonymous proxies
@@ -108,7 +108,7 @@ See the [full list of cloud provider categories](/traffic-policy/variables/ip-in
 on_http_request:
   - name: Block Tor and anonymous proxies
     expressions:
-      - "('proxy.anonymous' in conn.client_ip.categories)"
+      - "'proxy.anonymous' in conn.client_ip.categories"
     actions:
       - type: deny
         config:
@@ -121,7 +121,7 @@ on_http_request:
     {
       "name": "Block Tor and anonymous proxies",
       "expressions": [
-        "('proxy.anonymous' in conn.client_ip.categories)"
+        "'proxy.anonymous' in conn.client_ip.categories"
       ],
       "actions": [
         {
@@ -154,9 +154,9 @@ on_http_request:
   - name: Block known malicious IPs
     expressions:
       - >-
-        ('blocklist.org.spamhaus.drop.ipv4' in conn.client_ip.categories) ||
-        ('blocklist.org.firehol.level_1' in conn.client_ip.categories) ||
-        ('blocklist.de.blocklist.all' in conn.client_ip.categories)
+        'blocklist.org.spamhaus.drop.ipv4' in conn.client_ip.categories ||
+        'blocklist.org.firehol.level_1' in conn.client_ip.categories ||
+        'blocklist.de.blocklist.all' in conn.client_ip.categories
     actions:
       - type: deny
         config:
@@ -169,7 +169,7 @@ on_http_request:
     {
       "name": "Block known malicious IPs",
       "expressions": [
-        "('blocklist.org.spamhaus.drop.ipv4' in conn.client_ip.categories) || ('blocklist.org.firehol.level_1' in conn.client_ip.categories) || ('blocklist.de.blocklist.all' in conn.client_ip.categories)"
+        "'blocklist.org.spamhaus.drop.ipv4' in conn.client_ip.categories || 'blocklist.org.firehol.level_1' in conn.client_ip.categories || 'blocklist.de.blocklist.all' in conn.client_ip.categories"
       ],
       "actions": [
         {
@@ -198,7 +198,7 @@ For example, to exempt Algolia's crawler:
 ```yaml policy.yml
 on_http_request:
   - expressions:
-      - "!('com.algolia.crawler' in conn.client_ip.categories)"
+      - "!('com.algolia.crawer' in conn.client_ip.categories)"
     actions:
       - type: rate-limit
         config:
@@ -215,7 +215,7 @@ on_http_request:
   "on_http_request": [
     {
       "expressions": [
-        "!('com.algolia.crawler' in conn.client_ip.categories)"
+        "!('com.algolia.crawer' in conn.client_ip.categories)"
       ],
       "actions": [
         {
