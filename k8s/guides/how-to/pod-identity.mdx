@@ -1,0 +1,262 @@
+---
+title: Restricting Access by Kubernetes Pod Identity
+sidebarTitle: Pod Identity Variables
+description: Use Kubernetes pod identity variables to secure Endpoints.
+---
+
+Configure Traffic Policies on Kubernetes-bound endpoints to allow or deny connections based on the identity of the originating pod.
+
+When a connection arrives on a Kubernetes-bound endpoint, ngrok makes pod metadata available as Traffic Policy variables under `conn.k8s.pod.*`. This lets you write policies that make access control decisions based on which Kubernetes workload is initiating the connection, not just IP address or network location.
+
+Use cases include:
+
+- Restricting a Kubernetes-bound endpoint so that only pods in a specific namespace can connect.
+- Building allowlists of approved pod names for sensitive internal services.
+- Enforcing tenant isolation in multi-tenant clusters by matching on namespace or pod annotations.
+
+## Requirements
+
+- ngrok Kubernetes Operator version **0.22.1 or later**. See [Updates & Upgrades](/k8s/installation/update) for instructions on upgrading.
+
+## Available pod identity variables
+
+The following variables are available in Traffic Policy expressions on connections to Kubernetes-bound endpoints.
+
+| Variable | Description | Size limit |
+|---|---|---|
+| `conn.k8s.pod.id` | The unique identifier (UID) of the originating pod. | 36 bytes |
+| `conn.k8s.pod.metadata.name` | The name of the originating pod. | 255 bytes |
+| `conn.k8s.pod.metadata.namespace` | The namespace the originating pod belongs to. | 63 bytes |
+| `conn.k8s.pod.metadata.annotations` | A map of pod annotations prefixed with `k8s.ngrok.com/`. See [Annotations](#annotations) below. | 1024 bytes |
+| `conn.k8s.pod.metadata.error_code` | An error code set when pod identity could not be resolved. See [Handling errors](#handling-errors) below. | N/A |
+| `conn.k8s.pod.metadata.error_message` | A human-readable error message providing additional detail when `conn.k8s.pod.metadata.error_code` is set. | N/A |
+
+These variables are only populated for connections to endpoints with a `kubernetes` binding. They are not available on public or internal endpoints.
+
+### Annotations
+
+Only annotations prefixed with `k8s.ngrok.com/` are included in `conn.k8s.pod.metadata.annotations`. Annotations without this prefix are not surfaced. The combined size of all included annotations is subject to a 1024-byte cumulative limit. If this limit is exceeded, `conn.k8s.pod.metadata.error_code` will be set to `ERR_NGROK_28000` and a truncated annotation map being returned.
+
+To use an annotation in a Traffic Policy expression, add the `k8s.ngrok.com` prefix to it in your pod spec:
+
+```yaml
+metadata:
+  annotations:
+    k8s.ngrok.com/tenant-id: "tenant-abc"
+    k8s.ngrok.com/environment: "production"
+```
+
+You can then reference the annotation in a Traffic Policy expression:
+
+```
+conn.k8s.pod.metadata.annotations["k8s.ngrok.com/tenant-id"] == "tenant-abc"
+```
+
+## Handling errors
+
+Pod identity is resolved at connection time. In some circumstances, identity information may be unavailable; for example, immediately after a pod first starts, or if the originating pod cannot be uniquely identified due to network configuration. When this happens, the `conn.k8s.pod.*` metadata variables will not be set, and the error variables will be populated instead.
+
+| Error code | Meaning |
+|---|---|
+| [`ERR_NGROK_28000`](/errors/err_ngrok_28000) | The combined size of one or more pod identity variables exceeded the allowed limit. |
+| [`ERR_NGROK_28001`](/errors/err_ngrok_28001) | Pod identity metadata could not be found for this connection. |
+
+Because pod identity may not always be available, **your Traffic Policy should explicitly handle the case where identity is missing**. The two common approaches are fail-closed (deny the connection if identity is unavailable) and fail-open (allow the connection to proceed). Which you choose depends on your security requirements.
+
+### Fail-closed (recommended for security-sensitive endpoints)
+
+Deny the connection if pod identity cannot be resolved.
+
+```yaml
+on_tcp_connect:
+  - expressions:
+      - conn.k8s.pod.metadata.error_code != ""
+    actions:
+      - type: deny
+  - expressions:
+      - conn.k8s.pod.metadata.namespace != "my-namespace"
+    actions:
+      - type: deny
+  - actions:
+      - type: forward-internal
+        config:
+          url: http://my-service.my-namespace.internal
+```
+
+### Fail-open
+
+Allow the connection to proceed even if pod identity is unavailable, but still enforce the policy when identity is present.
+
+```yaml
+on_tcp_connect:
+  - expressions:
+      - conn.k8s.pod.metadata.error_code == "" && conn.k8s.pod.metadata.namespace != "my-namespace"
+    actions:
+      - type: deny
+  - actions:
+      - type: forward-internal
+        config:
+          url: http://my-service.my-namespace.internal
+```
+
+## Known limitations
+
+- **Pods using `hostNetwork: true`** share the node's IP address and cannot be uniquely identified. Pod identity is not supported for these pods.
+- **Some CNI configurations** may prevent reliable pod identity resolution. If you observe unexpected `ERR_NGROK_28001` errors, verify that your CNI preserves pod source IPs.
+- Pod identity is evaluated once when the connection is established. If a pod's metadata changes after connection, the policy continues to use the identity that was captured at connect time.
+
+## Pod identity examples
+
+The following examples demonstrate common pod identity access control patterns.
+
+### Deny connections from outside a namespace
+
+Only allow connections originating from pods in the `payments` namespace.
+
+<Tabs>
+  <Tab title="Agent Endpoints">
+```yaml
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: AgentEndpoint
+metadata:
+  name: example-agent-endpoint
+spec:
+  url: https://example-hostname.ngrok.io
+  upstream:
+    url: http://my-service.my-namespace:8080
+  trafficPolicy:
+    inline:
+      on_tcp_connect:
+        - expressions:
+            - conn.k8s.pod.metadata.error_code != ""
+          actions:
+            - type: deny
+        - expressions:
+            - conn.k8s.pod.metadata.namespace != "payments"
+          actions:
+            - type: deny
+        - actions:
+            - type: forward-internal
+              config:
+                url: http://my-service.my-namespace.internal
+```
+  </Tab>
+  <Tab title="Cloud Endpoints">
+```yaml
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: CloudEndpoint
+metadata:
+  name: example-cloud-endpoint
+spec:
+  url: http://example-service.my-namespace
+  bindings:
+    - kubernetes
+  trafficPolicy:
+    policy:
+      on_tcp_connect:
+        - expressions:
+            - conn.k8s.pod.metadata.error_code != ""
+          actions:
+            - type: deny
+        - expressions:
+            - conn.k8s.pod.metadata.namespace != "payments"
+          actions:
+            - type: deny
+        - actions:
+            - type: forward-internal
+              config:
+                url: http://my-service.my-namespace.internal
+```
+  </Tab>
+</Tabs>
+
+### Allow only specific pods by name
+
+Allowlist two specific pods by name and deny all others.
+
+```yaml
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: CloudEndpoint
+metadata:
+  name: example-cloud-endpoint
+spec:
+  url: http://example-service.my-namespace
+  bindings:
+    - kubernetes
+  trafficPolicy:
+    policy:
+      on_tcp_connect:
+        - expressions:
+            - conn.k8s.pod.metadata.error_code != ""
+          actions:
+            - type: deny
+        - expressions:
+            - !(conn.k8s.pod.metadata.name in ["worker-a", "worker-b"])
+          actions:
+            - type: deny
+        - actions:
+            - type: forward-internal
+              config:
+                url: http://my-service.my-namespace.internal
+```
+
+### Enforce access using a pod annotation
+
+Only allow connections from pods that have the `k8s.ngrok.com/environment: production` annotation.
+
+```yaml
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: CloudEndpoint
+metadata:
+  name: example-cloud-endpoint
+spec:
+  url: http://example-service.my-namespace
+  bindings:
+    - kubernetes
+  trafficPolicy:
+    policy:
+      on_tcp_connect:
+        - expressions:
+            - conn.k8s.pod.metadata.error_code != ""
+          actions:
+            - type: deny
+        - expressions:
+            - conn.k8s.pod.metadata.annotations["k8s.ngrok.com/environment"] != "production"
+          actions:
+            - type: deny
+        - actions:
+            - type: forward-internal
+              config:
+                url: http://my-service.my-namespace.internal
+```
+
+### Multi-tenant isolation
+
+Deny any connection whose pod namespace does not match the endpoint's own namespace. This is a common pattern for multi-tenant clusters where each tenant runs in a dedicated namespace.
+
+```yaml
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: CloudEndpoint
+metadata:
+  name: webapp-tenant1
+  namespace: tenant1
+spec:
+  url: http://webapp-tenant1.tenant1
+  bindings:
+    - kubernetes
+  trafficPolicy:
+    policy:
+      on_tcp_connect:
+        - expressions:
+            - conn.k8s.pod.metadata.error_code != ""
+          actions:
+            - type: deny
+        - expressions:
+            - conn.k8s.pod.metadata.namespace != "tenant1"
+          actions:
+            - type: deny
+        - actions:
+            - type: forward-internal
+              config:
+                url: http://webapp.tenant1.internal
+```
