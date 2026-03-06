@@ -77,6 +77,10 @@ on_tcp_connect:
       - conn.k8s.pod.metadata.namespace != "my-namespace"
     actions:
       - type: deny
+  - actions:
+      - type: forward-internal
+        config:
+          url: http://my-service.my-namespace.internal
 ```
 
 ### Fail-open
@@ -89,6 +93,10 @@ on_tcp_connect:
       - conn.k8s.pod.metadata.error_code == "" && conn.k8s.pod.metadata.namespace != "my-namespace"
     actions:
       - type: deny
+  - actions:
+      - type: forward-internal
+        config:
+          url: http://my-service.my-namespace.internal
 ```
 
 ## Known limitations
@@ -127,9 +135,12 @@ spec:
             - conn.k8s.pod.metadata.namespace != "payments"
           actions:
             - type: deny
+        - actions:
+            - type: forward-internal
+              config:
+                url: http://my-service.my-namespace.internal
 ```
-   </Tab>
-
+  </Tab>
   <Tab title="Cloud Endpoints">
 ```yaml
 apiVersion: ngrok.k8s.ngrok.com/v1alpha1
@@ -151,8 +162,12 @@ spec:
             - conn.k8s.pod.metadata.namespace != "payments"
           actions:
             - type: deny
+        - actions:
+            - type: forward-internal
+              config:
+                url: http://my-service.my-namespace.internal
 ```
-   </Tab>
+  </Tab>
 </Tabs>
 
 ### Allow only specific pods by name
@@ -179,11 +194,15 @@ spec:
             - !(conn.k8s.pod.metadata.name in ["worker-a", "worker-b"])
           actions:
             - type: deny
+        - actions:
+            - type: forward-internal
+              config:
+                url: http://my-service.my-namespace.internal
 ```
 
 ### Enforce access using a pod annotation
 
-Only allow connections from pods that have the `ngrok-environment: production` annotation.
+Only allow connections from pods that have the `k8s.ngrok.com/environment: production` annotation.
 
 ```yaml
 apiVersion: ngrok.k8s.ngrok.com/v1alpha1
@@ -202,9 +221,13 @@ spec:
           actions:
             - type: deny
         - expressions:
-            - conn.k8s.pod.metadata.annotations["ngrok-environment"] != "production"
+            - conn.k8s.pod.metadata.annotations["k8s.ngrok.com/environment"] != "production"
           actions:
             - type: deny
+        - actions:
+            - type: forward-internal
+              config:
+                url: http://my-service.my-namespace.internal
 ```
 
 ### Multi-tenant isolation
