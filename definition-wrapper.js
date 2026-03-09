@@ -444,8 +444,8 @@ const pricingTerms = [
 	{
 		titles: ["Traffic Inspector Retention"],
 		meaning:
-			"This is the number of hours we retain your traffic data in traffic inspector.",
-		link: "/docs/obs/",
+			"This is the number of hours ngrok retains your traffic data in traffic inspector.",
+		link: "/docs/obs/traffic-inspection",
 	},
 	{
 		titles: ["Traffic Log Exporting"],
@@ -527,7 +527,7 @@ const pricingTerms = [
 	{
 		titles: ["HIPAA / BAAs"],
 		meaning:
-			"HIPAA compliance built in: we'll sign the BAA, you build the app.",
+			"HIPAA compliance is built in: ngrok handles the BAA so you can focus on building the app.",
 	},
 	{
 		titles: ["SOC2"],
@@ -536,12 +536,12 @@ const pricingTerms = [
 	{
 		titles: ["Security questionnaires"],
 		meaning:
-			"If your team requires a security questionnaire, our team can prepare it.",
+			"If your team requires a security questionnaire, ngrok can prepare it.",
 	},
 	{
 		titles: ["Invoicing"],
 		meaning:
-			"If your team requires an invoice for billing purposes, our team can send it.",
+			"If your team requires an invoice for billing purposes, ngrok can send it.",
 	},
 ];
 
