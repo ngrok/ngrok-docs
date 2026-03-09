@@ -308,7 +308,6 @@ const terms = [
 
 // Terms specific to the pricing and limits section.
 const pricingTerms = [
-	// Universal Gateway > Endpoints
 	{
 		titles: ["Online endpoints"],
 		meaning: "The number of endpoints you can have online at the same time.",
@@ -318,24 +317,34 @@ const pricingTerms = [
 		titles: ["Development endpoint hours"],
 		meaning:
 			"Public endpoints started with your development domain do not accrue endpoint hours.",
-		link: "/docs/pricing-limits/",
+		link: "/docs/pricing-limits/#limits-and-licensing",
 	},
 	{
 		titles: ["Active endpoint hours"],
 		meaning: "An endpoint is active if it has outgoing traffic during the hour.",
-		link: "/docs/pricing-limits/",
+		link: "/docs/pricing-limits/#limits-and-licensing",
 	},
 	{
 		titles: ["Endpoint protocols"],
 		meaning:
 			"These are the different protocols available to you as a subscriber of each plan.",
+      link: "/docs/universal-gateway/agent-endpoints#protocols%2C-binding-and-pooling"
+	},
+	{
+		titles: ["Endpoint hours"],
+		meaning:
+			"The amount of time your endpoint(s) are online.",
 	},
 	{
 		titles: ["Load balancing"],
 		meaning: "Load balancing at ngrok is called endpoint pooling.",
-		link: "/docs/universal-gateway/endpoint-pooling/",
+    link: "/docs/universal-gateway/endpoint-pooling"
 	},
-	// Universal Gateway > Domains
+	{
+		titles: ["Domains"],
+		meaning: "Domains you own registered in the ngrok dashboard.",
+		link: "/docs/universal-gateway/domains/",
+	},
 	{
 		titles: ["Development domain"],
 		meaning:
@@ -347,6 +356,11 @@ const pricingTerms = [
 		meaning: "Use any ngrok-branded domain that you pick from ngrok's pool.",
 		link: "/docs/universal-gateway/domains/",
 	},
+  {
+    titles: ["Traffic Policy Units"],
+    meaning: "Traffic Processing Units (TPUs) are ngrok’s usage-based metric for measuring the work your Traffic Policies perform.",
+    link: "/docs/pricing-limits/traffic-policy-unit-pricing"
+  },
 	{
 		titles: ["Bring your own custom domains"],
 		meaning: "Use any custom domain name that you already own with ngrok.",
@@ -358,21 +372,18 @@ const pricingTerms = [
 			"You can create an endpoint which will receive traffic for all of the subdomains matching a given wildcard domain like *.example.com.",
 		link: "/docs/universal-gateway/http/#wildcard-endpoints",
 	},
-	// Universal Gateway > TCP Addresses
 	{
 		titles: ["TCP Addresses"],
 		meaning:
 			"TCP Addresses enable you to create public TCP Endpoints on a fixed address.",
 		link: "/docs/universal-gateway/tcp-addresses/",
 	},
-	// Universal Gateway > Network Transfer
 	{
 		titles: ["Data transfer out"],
 		meaning:
 			"The total volume of data transferred outbound from ngrok's network to clients, including traffic forwarded to agents.",
-		link: "/docs/pricing-limits/how-ngrok-charges/",
+		link: "/docs/pricing-limits/#limits-and-licensing",
 	},
-	// Universal Gateway > Traffic
 	{
 		titles: ["Requests to HTTP/s endpoints"],
 		meaning:
@@ -385,7 +396,6 @@ const pricingTerms = [
 			"The maximum number of TCP/TLS connections a client can make to an account's endpoints in a month.",
 		link: "/docs/universal-gateway/tcp/",
 	},
-	// Universal Gateway > Rate limits
 	{
 		titles: ["HTTP Requests"],
 		meaning:
@@ -542,8 +552,10 @@ function wrapTermsOnLoad() {
   const pageTitleText = pageTitle ? pageTitle.textContent.toLowerCase() : '';
 
   // Pricing terms are only applied on pricing-limits pages
-  const isPricingPage = window.location.pathname.startsWith('/docs/pricing-limits');
+  const isPricingPage = window.location.pathname.includes('/pricing-limits');
   const activeTerms = isPricingPage ? [...terms, ...pricingTerms] : terms;
+
+  console.log("Is pricing page", isPricingPage)
 
   // Get all mdx-content containers
   const mdxContainers = document.querySelectorAll('div[class*="mdx-content"]');
@@ -554,8 +566,9 @@ function wrapTermsOnLoad() {
   mdxContainers.forEach((container, containerIndex) => {
     // Find all p spans and li elements within this container
     const pSpans = container.querySelectorAll('span[data-as="p"]');
+    const tableCells = container.querySelectorAll('strong');
     const listItems = container.querySelectorAll('li');
-    const elementsToProcess = [...pSpans, ...listItems];
+    const elementsToProcess = [...pSpans, ...tableCells, ...listItems];
 
     elementsToProcess.forEach((element, elementIndex) => {
       const elementText = element.textContent;
@@ -607,7 +620,7 @@ function escapeHtml(text) {
 
 function isInsideExcludedElement(element) {
   // List of tag names to exclude
-  const excludedTags = ['A', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'PRE', 'CODE'];
+  const excludedTags = ['A', 'BUTTON', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'PRE', 'CODE'];
   
   // Check current element and all ancestors
   let current = element;
@@ -661,7 +674,9 @@ function replaceInTextNodes(element, regex, termTitle, termObj) {
       if (link) {
         button.setAttribute('data-link', link);
       }
-      
+      button.style.display = 'inline';
+      button.style.textAlign = 'inherit';
+
       const span = document.createElement('span');
       span.className = 'tooltip underline decoration-dotted decoration-2 underline-offset-4 decoration-gray-400 dark:decoration-gray-500';
       
