@@ -1,0 +1,245 @@
+---
+title: Filter Traffic by IP Category
+description: Learn how to allow or block traffic from specific services, bots, cloud providers, and threat categories using ngrok's built-in IP Intelligence categories.
+---
+
+ngrok maintains up-to-date IP ranges for dozens of well-known services, cloud providers, bots, and threat categories under [IP Intelligence](/traffic-policy/variables/ip-intel).
+You can reference these in Traffic Policy [expressions](/traffic-policy/concepts/cel-interpolation) to allow or block traffic without maintaining lists of CIDRs by hand.
+
+All category lookups use the `conn.client_ip.categories` variable.
+See the [full list of available categories](/traffic-policy/variables/ip-intel#ip-categories).
+
+## How to block AI crawlers and bots
+
+Use IP Intelligence categories to deny traffic from AI services that crawl your site.
+
+<CodeGroup>
+
+```yaml policy.yml
+on_http_request:
+  - name: Block AI crawlers by IP
+    expressions:
+      - >-
+        'com.anthropic.api' in conn.client_ip.categories ||
+        'com.openai.gptbot.ipv4' in conn.client_ip.categories ||
+        'ai.perplexity.bot.ipv4' in conn.client_ip.categories
+    actions:
+      - type: deny
+        config:
+          status_code: 404
+```
+
+```json policy.json
+{
+  "on_http_request": [
+    {
+      "name": "Block AI crawlers by IP",
+      "expressions": [
+        "'com.anthropic.api' in conn.client_ip.categories || 'com.openai.gptbot.ipv4' in conn.client_ip.categories || 'ai.perplexity.bot.ipv4' in conn.client_ip.categories"
+      ],
+      "actions": [
+        {
+          "type": "deny",
+          "config": {
+            "status_code": 404
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+</CodeGroup>
+
+<Tip>
+You can add as many categories as you need to the expression.
+See the [full list of AI and crawler categories](/traffic-policy/variables/ip-intel#crawlers--bots).
+</Tip>
+
+## How to allow traffic only from a specific cloud provider
+
+Use an IP category in an expression to restrict access to IPs from a single provider, such as AWS or GitHub.
+
+<CodeGroup>
+
+```yaml policy.yml
+on_http_request:
+  - name: Allow only GitHub IPs
+    expressions:
+      - "!('com.github' in conn.client_ip.categories)"
+    actions:
+      - type: deny
+        config:
+          status_code: 403
+```
+
+```json policy.json
+{
+  "on_http_request": [
+    {
+      "name": "Allow only GitHub IPs",
+      "expressions": [
+        "!('com.github' in conn.client_ip.categories)"
+      ],
+      "actions": [
+        {
+          "type": "deny",
+          "config": {
+            "status_code": 403
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+</CodeGroup>
+
+Other common provider categories include `com.aws`, `com.google.ipv4`, `com.microsoft.azure`, and `com.cloudflare`.
+See the [full list of cloud provider categories](/traffic-policy/variables/ip-intel#cloud-providers).
+
+## How to block Tor exit nodes and anonymous proxies
+
+<CodeGroup>
+
+```yaml policy.yml
+on_http_request:
+  - name: Block Tor and anonymous proxies
+    expressions:
+      - "'proxy.anonymous' in conn.client_ip.categories"
+    actions:
+      - type: deny
+        config:
+          status_code: 403
+```
+
+```json policy.json
+{
+  "on_http_request": [
+    {
+      "name": "Block Tor and anonymous proxies",
+      "expressions": [
+        "'proxy.anonymous' in conn.client_ip.categories"
+      ],
+      "actions": [
+        {
+          "type": "deny",
+          "config": {
+            "status_code": 403
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+</CodeGroup>
+
+Categories are hierarchical.
+Using `proxy.anonymous` blocks all anonymous proxies, including `proxy.anonymous.tor`.
+To block only Tor exit nodes, use `proxy.anonymous.tor` instead.
+
+## How to block IPs on known threat blocklists
+
+ngrok integrates with several third-party threat intelligence feeds.
+You can block IPs listed on these feeds using their category names.
+
+<CodeGroup>
+
+```yaml policy.yml
+on_http_request:
+  - name: Block known malicious IPs
+    expressions:
+      - >-
+        'blocklist.org.spamhaus.drop.ipv4' in conn.client_ip.categories ||
+        'blocklist.org.firehol.level_1' in conn.client_ip.categories ||
+        'blocklist.de.blocklist.all' in conn.client_ip.categories
+    actions:
+      - type: deny
+        config:
+          status_code: 403
+```
+
+```json policy.json
+{
+  "on_http_request": [
+    {
+      "name": "Block known malicious IPs",
+      "expressions": [
+        "'blocklist.org.spamhaus.drop.ipv4' in conn.client_ip.categories || 'blocklist.org.firehol.level_1' in conn.client_ip.categories || 'blocklist.de.blocklist.all' in conn.client_ip.categories"
+      ],
+      "actions": [
+        {
+          "type": "deny",
+          "config": {
+            "status_code": 403
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+</CodeGroup>
+
+See the [full list of blocklist categories](/traffic-policy/variables/ip-intel#blocklists) for all available threat feeds.
+
+## How to exempt a trusted service from rate limiting
+
+You can use IP categories to exclude known-good services from rules like rate limiting.
+For example, to exempt Algolia's crawler:
+
+<CodeGroup>
+
+```yaml policy.yml
+on_http_request:
+  - expressions:
+      - "!('com.algolia.crawer' in conn.client_ip.categories)"
+    actions:
+      - type: rate-limit
+        config:
+          name: Only allow 30 requests per minute
+          algorithm: sliding_window
+          capacity: 30
+          rate: 60s
+          bucket_key:
+            - conn.client_ip
+```
+
+```json policy.json
+{
+  "on_http_request": [
+    {
+      "expressions": [
+        "!('com.algolia.crawer' in conn.client_ip.categories)"
+      ],
+      "actions": [
+        {
+          "type": "rate-limit",
+          "config": {
+            "name": "Only allow 30 requests per minute",
+            "algorithm": "sliding_window",
+            "capacity": 30,
+            "rate": "60s",
+            "bucket_key": [
+              "conn.client_ip"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+</CodeGroup>
+
+## Related
+
+- [IP Intelligence variable reference](/traffic-policy/variables/ip-intel): Full list of variables and IP categories
+- [Restrict IPs action](/traffic-policy/actions/restrict-ips): Allow or deny by CIDR or IP Policy
+- [Block Unwanted Requests](/traffic-policy/examples/block-unwanted-requests): More examples for blocking bots, countries, and bad actors

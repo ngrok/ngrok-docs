@@ -1,69 +1,137 @@
-import RandomGoSdkExample from "/snippets/examples/go-sdk/http-random.mdx";
-import RandomJavascriptSdkExample from "/snippets/examples/javascript-sdk/http-random.mdx";
-import RandomPythonSdkExample from "/snippets/examples/python-sdk/http-random.mdx";
-import RandomRustSdkExample from "/snippets/examples/rust-sdk/http-random.mdx";
-
 Agent SDKs enable you to embed ngrok directly into your application. They allow
 you to programmatically create ngrok endpoints. You handle connections from
 ngrok's cloud service just as if you opened a socket to listen on a port.
 
 ## Example usage
 
-<CodeGroup>
-```go example.go
-import (
-	"context"
-	"net"
-  "golang.ngrok.com/ngrok/v2"
-)
+<Tabs>
+<Tab title="Go">
 
-func ngrokListener(ctx context.Context) (net.Listener, error) {
-return ngrok.Listen(ctx)
-}
-```
+1. Install the SDK:
 
-```javascript example.js
-const ngrok = require("@ngrok/ngrok");
+   ```sh
+   go get golang.ngrok.com/ngrok/v2
+   ```
 
-(async function () {
-	const listener = await ngrok.forward({
-		addr: 8080,
-		authtoken_from_env: true,
-	});
+2. Add the following to your app:
 
-	console.log(`Ingress established at: ${listener.url()}`);
-})();
-```
+   ```go
+   import "golang.ngrok.com/ngrok/v2"
 
-```python example.py
-import ngrok
+   func connectNgrok() {
+       fwd, err := ngrok.Forward(context.Background(),
+           ngrok.WithUpstream("http://localhost:8085"),
+       )
+       if err != nil {
+           log.Fatal(err)
+       }
+       log.Println("Available at:", fwd.URL())
+       select {}
+   }
+   ```
 
-listener = ngrok.forward("localhost:8080", authtoken_from_env=True)
+3. Set your authtoken and restart your app:
 
-print(f"Ingress established at: {listener.url()}");
-```
+   ```sh
+   export NGROK_AUTHTOKEN=<token>
+   ```
 
-```rust example.rs
-use ngrok::prelude::*;
+</Tab>
+<Tab title="JavaScript">
 
-async fn listen_ngrok() -> anyhow::Result<impl Tunnel> {
-    let sess = ngrok::Session::builder()
-        .authtoken_from_env()
-        .connect()
-        .await?;
+1. Install the SDK:
 
-    let tun = sess
-        .http_endpoint()
-        .listen()
-        .await?;
+   ```sh
+   npm install @ngrok/ngrok
+   ```
 
-    println!("Listening on URL: {:?}", tun.url());
+2. Add the following to your app:
 
-    Ok(tun)
-}
-```
+   ```js
+   const ngrok = require("@ngrok/ngrok");
 
-</CodeGroup>
+   async function forwardToApp() {
+     const forwarder = await ngrok.forward({
+       addr: "localhost:8085",
+       authtoken_from_env: true,
+     });
+     console.log(`Available at: ${forwarder.url()}`);
+   }
+   ```
+
+3. Set your authtoken and restart your app:
+
+   ```sh
+   export NGROK_AUTHTOKEN=<token>
+   ```
+
+</Tab>
+<Tab title="Python">
+
+1. Install the SDK:
+
+   ```sh
+   pip install ngrok
+   ```
+
+2. Add the following to your app:
+
+   ```python
+   import ngrok
+
+   def connect_ngrok():
+       forwarder = ngrok.forward("localhost:8085", authtoken_from_env=True)
+       print(f"Available at: {forwarder.url()}")
+   ```
+
+3. Set your authtoken and restart your app:
+
+   ```sh
+   export NGROK_AUTHTOKEN=<token>
+   ```
+
+</Tab>
+<Tab title="Rust">
+
+1. Install the SDK:
+
+   ```sh
+   cargo add ngrok
+   ```
+
+2. Add the following to your app:
+
+   ```rust
+   use ngrok::config::ForwarderBuilder;
+   use ngrok::prelude::*;
+   use url::Url;
+
+   async fn connect_ngrok() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+       let sess = ngrok::Session::builder()
+           .authtoken_from_env()
+           .connect()
+           .await?;
+
+       let mut listener = sess
+           .http_endpoint()
+           .listen_and_forward(Url::parse("http://localhost:8085")?)
+           .await?;
+
+       println!("Available at: {:?}", listener.url());
+
+       let _ = listener.join().await;
+       Ok(())
+   }
+   ```
+
+3. Set your authtoken and restart your app:
+
+   ```sh
+   export NGROK_AUTHTOKEN=<token>
+   ```
+
+</Tab>
+</Tabs>
 
 ## Supported languages
 

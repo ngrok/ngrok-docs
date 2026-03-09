@@ -1,6 +1,13 @@
 const terms = [
 	// Please add new terms in alphabetical order.
 	{
+		titles: ["Agent Endpoint"],
+		meaning:
+			"An Agent Endpoint is an ngrok endpoint created by an ngrok agent (or Agent SDK) that connects to an upstream service. The agent establishes a secure tunnel to the ngrok cloud, which forwards traffic to your local or remote service.",
+		link: "/docs/universal-gateway/agent-endpoints/",
+		pluralEnding: "s",
+	},
+	{
 		titles: ["ALPN"],
 		caseSensitive: true,
 		link: "https://en.wikipedia.org/wiki/Application-Layer_Protocol_Negotiation",
@@ -13,6 +20,27 @@ const terms = [
 		link: "https://github.com/google/cel-spec/tree/master?tab=readme-ov-file#common-expression-language",
 		meaning:
 			"CEL (Common Expression Language) is a fast, safe, and portable expression language developed by Google for evaluating expressions in configuration, policy, and runtime environments.",
+	},
+	{
+		titles: ["circuit breaker"],
+		meaning:
+			"A circuit breaker is a resilience pattern that monitors for failures and temporarily stops forwarding requests to an unhealthy upstream service, allowing it time to recover.",
+		link: "https://en.wikipedia.org/wiki/Circuit_breaker_design_pattern",
+		pluralEnding: "s",
+	},
+	{
+		titles: ["Cloud Endpoint"],
+		meaning:
+			"A Cloud Endpoint is a persistent ngrok endpoint that runs in ngrok's cloud service. Configured entirely in the ngrok dashboard or API, Cloud Endpoints can route traffic to upstream URLs and other endpoints, send custom responses, and more using Traffic Policy.",
+		link: "/docs/universal-gateway/cloud-endpoints/",
+		pluralEnding: "s",
+	},
+	{
+		titles: ["CORS"],
+		caseSensitive: true,
+		meaning:
+			"CORS (Cross-Origin Resource Sharing) is a browser security mechanism that controls which web domains are allowed to make requests to a different domain, preventing unauthorized cross-site interactions.",
+		link: "https://en.wikipedia.org/wiki/Cross-origin_resource_sharing",
 	},
 	{
 		titles: ["CRD"],
@@ -34,8 +62,15 @@ const terms = [
 		glossaryIndex: 0,
 		link: "https://gateway-api.sigs.k8s.io/guides/",
 		meaning:
-			"Gateway API CRDs (Custom Resource Definitions) are a set of standardized, extensible resources that manage networking configurations like routing, gateways, and traffic policies.",
+			"Gateway API CRDs (Custom Resource Definitions) are a set of standardized, extensible resources that manage networking configurations like routing, gateways, and Traffic Policies.",
 		pluralEnding: "s",
+	},
+	{
+		titles: ["gRPC"],
+		caseSensitive: true,
+		meaning:
+			"gRPC is a high-performance, open-source remote procedure call (RPC) framework developed by Google that uses HTTP/2 for transport and Protocol Buffers for serialization.",
+		link: "https://grpc.io/",
 	},
 	{
 		titles: ["Helm"],
@@ -44,10 +79,31 @@ const terms = [
 		link: "https://helm.sh/",
 	},
 	{
+		titles: ["HMAC"],
+		caseSensitive: true,
+		meaning:
+			"HMAC (Hash-based Message Authentication Code) is a cryptographic technique that uses a secret key and a hash function to verify both the integrity and authenticity of a message.",
+		link: "https://en.wikipedia.org/wiki/HMAC",
+	},
+	{
+		titles: ["IdP"],
+		caseSensitive: true,
+		meaning:
+			"An IdP (Identity Provider) is a service that stores and manages digital identities, authenticating users and providing identity information to other applications via protocols like SAML or OIDC.",
+		link: "https://en.wikipedia.org/wiki/Identity_provider",
+	},
+	{
 		titles: ["Ingress"],
 		meaning:
 			"An ingress is an entry point into a network for traffic from outside of the network.",
 		pluralEnding: "es",
+	},
+	{
+		titles: ["Internal Endpoint"],
+		meaning:
+			"Internal Endpoints are only accessible to traffic from your other ngrok endpoints, enabling service-to-service communication without exposing traffic to the public internet. Internal Endpoints use the .internal top-level domain.",
+		link: "/docs/universal-gateway/internal-endpoints/",
+		pluralEnding: "s",
 	},
 	{
 		titles: ["IP CIDR", "CIDR"],
@@ -64,6 +120,14 @@ const terms = [
 		link: "https://en.wikipedia.org/wiki/System_for_Cross-domain_Identity_Management",
 	},
 	{
+		titles: ["JWT"],
+		caseSensitive: true,
+		meaning:
+			"A JWT (JSON Web Token) is a compact, URL-safe token format used to securely transmit information between parties as a JSON object, commonly used for authentication and authorization.",
+		link: "https://en.wikipedia.org/wiki/JSON_Web_Token",
+		pluralEnding: "s",
+	},
+	{
 		titles: ["K8", "K8s"],
 		glossaryIndex: 1,
 		meaning: "K8s is an industry-standard abbreviation for Kubernetes.",
@@ -73,7 +137,7 @@ const terms = [
 	{
 		titles: ["Let's Encrypt", "Let's Encrypt", "LetsEncrypt", "Lets encrypt"],
 		meaning:
-			"Let's Encrypt is a free, automated, and open certificate authority (CA) that provides digital certificates to enable HTTPS (SSL/TLS) for websites.",
+			"A free, automated, and open certificate authority (CA) that provides digital certificates to enable HTTPS (SSL/TLS) for websites.",
 		link: "https://letsencrypt.org/about/",
 	},
 	{
@@ -83,6 +147,26 @@ const terms = [
 			"MCP (Model Context Protocol) is an open standard that allows AI models to access external data, tools, and services, and potentially use them to automate workflows.",
 		link: "https://en.wikipedia.org/wiki/Model_Context_Protocol",
 		pluralEnding: "s",
+	},
+	{
+		titles: ["mTLS"],
+		caseSensitive: true,
+		meaning:
+			"mTLS (Mutual TLS) is a security protocol where both the client and server authenticate each other using TLS certificates, ensuring both parties are who they claim to be.",
+		link: "https://en.wikipedia.org/wiki/Mutual_authentication",
+	},
+	{
+		titles: ["ngrok Agent"],
+		meaning:
+			"The ngrok agent is a lightweight command-line application that you install on your machine or server. It establishes secure, outbound-only connections to the ngrok cloud to create endpoints for your upstream services.",
+		link: "/docs/agent/",
+	},
+	{
+		titles: ["OAuth"],
+		caseSensitive: true,
+		meaning:
+			"OAuth is an open standard for authorization that allows users to grant third-party applications limited access to their resources without sharing their credentials.",
+		link: "https://en.wikipedia.org/wiki/OAuth",
 	},
 	{
 		titles: ["OIDC"],
@@ -96,6 +180,20 @@ const terms = [
 		meaning:
 			"The Open Web Application Security Project is a non-profit organization dedicated to improving software security through providing resources, tools, and community support.",
 		link: "https://owasp.org/about/",
+	},
+	{
+		titles: ["Point of Presence", "PoP"],
+		meaning:
+			"A Point of Presence (PoP) is a physical location in ngrok's global network where traffic enters the ngrok cloud. ngrok operates PoPs around the world to minimize latency for end users.",
+		link: "/docs/universal-gateway/points-of-presence/",
+		pluralEnding: "s",
+	},
+	{
+		titles: ["RBAC"],
+		caseSensitive: true,
+		meaning:
+			"RBAC (Role-Based Access Control) is a method of restricting system access based on the roles assigned to individual users within an organization.",
+		link: "https://en.wikipedia.org/wiki/Role-based_access_control",
 	},
 	{
 		titles: ["reverse proxy", "reverse proxies", "Reverse Proxy"],
@@ -112,10 +210,31 @@ const terms = [
     link: "/iam/service-users/",
   },
 	{
+		titles: ["SAML"],
+		caseSensitive: true,
+		meaning:
+			"SAML (Security Assertion Markup Language) is an open standard for exchanging authentication and authorization data between an identity provider and a service provider, commonly used for enterprise single sign-on.",
+		link: "https://en.wikipedia.org/wiki/Security_Assertion_Markup_Language",
+	},
+	{
+		titles: ["SCIM"],
+		caseSensitive: true,
+		meaning:
+			"SCIM (System for Cross-domain Identity Management) is an open standard for automating the exchange of user identity information between identity domains or IT systems.",
+		link: "https://en.wikipedia.org/wiki/System_for_Cross-domain_Identity_Management",
+	},
+	{
 		titles: ["Shadow IT", "shadow IT"],
 		meaning:
 			"Shadow IT refers to IT systems, software, and cloud services used by individuals within an organization without the IT department's knowledge or approval.",
 		link: "https://en.wikipedia.org/wiki/Shadow_IT",
+	},
+	{
+		titles: ["SSO"],
+		caseSensitive: true,
+		meaning:
+			"SSO (Single Sign-On) is an authentication method that allows users to log in once and gain access to multiple related applications or systems without re-entering credentials.",
+		link: "https://en.wikipedia.org/wiki/Single_sign-on",
 	},
 	{
 		titles: ["SNI"],
@@ -151,8 +270,13 @@ const terms = [
 	{
 		titles: ["Traffic Policy", "Traffic Policies"],
 		meaning:
-			"Traffic Policy is a configuration language that enables you to filter, match, manage and orchestrate traffic to your endpoints. For example, you can add authentication, send custom response, rate limit traffic, and more.",
+			"Traffic Policy is a configuration language that enables you to filter, match, manage, and orchestrate traffic to your endpoints. For example, you can add authentication, send custom responses, rate limit traffic, and more.",
 		link: "/docs/traffic-policy/",
+	},
+	{
+		titles: ["upstream"],
+		meaning:
+			"An upstream is the service, server, or URL that ngrok forwards incoming traffic to. When you create an ngrok endpoint, the upstream is the destination that ultimately handles the request.",
 	},
 	{
 		titles: ["v2"],
@@ -173,37 +297,288 @@ const terms = [
 		meaning:
 			"A web application firewall (WAF) is an intermediary service in the cloud or on a server that protects web services by filtering and monitoring HTTP traffic.",
 	},
+	{
+		titles: ["WebSocket"],
+		meaning:
+			"WebSocket is a communication protocol that provides full-duplex (two-way) communication channels over a single TCP connection, enabling real-time data exchange between a client and server.",
+		link: "https://en.wikipedia.org/wiki/WebSocket",
+		pluralEnding: "s",
+	},
 ];
 
-
+// Terms specific to the pricing and limits section.
+const pricingTerms = [
+	{
+		titles: ["Online endpoints"],
+		meaning: "The number of endpoints you can have online at the same time.",
+		link: "/docs/universal-gateway/agent-endpoints/",
+	},
+	{
+		titles: ["Development endpoint hours"],
+		meaning:
+			"Public endpoints started with your development domain do not accrue endpoint hours.",
+		link: "/docs/pricing-limits/#limits-and-licensing",
+	},
+	{
+		titles: ["Active endpoint hours"],
+		meaning: "An endpoint is active if it has outgoing traffic during the hour.",
+		link: "/docs/pricing-limits/#limits-and-licensing",
+	},
+	{
+		titles: ["Endpoint protocols"],
+		meaning:
+			"These are the different protocols available to you as a subscriber of each plan.",
+      link: "/docs/universal-gateway/agent-endpoints#protocols%2C-binding-and-pooling"
+	},
+	{
+		titles: ["Endpoint hours"],
+		meaning:
+			"The amount of time your endpoints are online.",
+	},
+	{
+		titles: ["Load balancing"],
+		meaning: "Load balancing at ngrok is called endpoint pooling.",
+    link: "/docs/universal-gateway/endpoint-pooling"
+	},
+	{
+		titles: ["Domains"],
+		meaning: "Domains you own registered in the ngrok dashboard.",
+		link: "/docs/universal-gateway/domains/",
+	},
+	{
+		titles: ["Development domain"],
+		meaning:
+			"Your development domain is specific to your account, and does not incur usage charges. You can use anything for free on your sandbox domain within your account's limits.",
+		link: "/docs/universal-gateway/domains/",
+	},
+	{
+		titles: ["ngrok-branded domains"],
+		meaning: "Use any ngrok-branded domain that you pick from ngrok's pool.",
+		link: "/docs/universal-gateway/domains/",
+	},
+  {
+    titles: ["Traffic Policy Units"],
+    meaning: "Traffic Processing Units (TPUs) are ngrok’s usage-based metric for measuring the work your Traffic Policies perform.",
+    link: "/docs/pricing-limits/traffic-policy-unit-pricing"
+  },
+	{
+		titles: ["Bring your own custom domains"],
+		meaning: "Use any custom domain name that you already own with ngrok.",
+		link: "/docs/universal-gateway/custom-domains/",
+	},
+	{
+		titles: ["Wildcard Domains"],
+		meaning:
+			"You can create an endpoint which will receive traffic for all of the subdomains matching a given wildcard domain like *.example.com.",
+		link: "/docs/universal-gateway/http/#wildcard-endpoints",
+	},
+	{
+		titles: ["TCP Addresses"],
+		meaning:
+			"TCP Addresses enable you to create public TCP Endpoints on a fixed address.",
+		link: "/docs/universal-gateway/tcp-addresses/",
+	},
+	{
+		titles: ["Data transfer out"],
+		meaning:
+			"The total volume of data transferred outbound from ngrok's network to clients, including traffic forwarded to agents.",
+		link: "/docs/pricing-limits/#limits-and-licensing",
+	},
+	{
+		titles: ["Requests to HTTP/s endpoints"],
+		meaning:
+			"The maximum number of HTTP/s requests a client can make to an account's endpoints in a month.",
+		link: "/docs/universal-gateway/http/",
+	},
+	{
+		titles: ["Connections to TCP / TLS endpoints"],
+		meaning:
+			"The maximum number of TCP/TLS connections a client can make to an account's endpoints in a month.",
+		link: "/docs/universal-gateway/tcp/",
+	},
+	{
+		titles: ["HTTP Requests"],
+		meaning:
+			"The maximum number of HTTP requests across all endpoints per minute.",
+		link: "/docs/pricing-limits/how-ngrok-charges/",
+	},
+	{
+		titles: ["TCP Connections"],
+		meaning:
+			"The maximum number of TCP connections across all endpoints per minute.",
+		link: "/docs/pricing-limits/how-ngrok-charges/",
+	},
+	// Universal Gateway > TLS
+	{
+		titles: ["Bring your own certificates"],
+		meaning:
+			"Upload your own TLS certificates if you don't want to use the TLS certificates that ngrok automatically provisions for you.",
+		link: "/docs/universal-gateway/tls/",
+	},
+	{
+		titles: ["End to End TLS"],
+		meaning:
+			"Terminate TLS at your upstream service or at the ngrok agent to achieve end-to-end encryption.",
+		link: "/docs/universal-gateway/tls-termination/",
+	},
+	{
+		titles: ["Mutual TLS"],
+		meaning:
+			"Mutual TLS Authentication (mTLS) is a network security protocol that ensures both the client and server authenticate each other using digital certificates.",
+		link: "/docs/traffic-policy/",
+	},
+	// Traffic Policy
+	{
+		titles: ["Traffic Policy Units (TPUs)"],
+		meaning:
+			"This is a combination of the actions, macros, and variables applied to a request. WAF, mTLS, and more are included in TPUs.",
+		link: "/docs/pricing-limits/traffic-policy-unit-pricing/",
+	},
+	{
+		titles: ["Traffic Identities"],
+		meaning:
+			"OAuth/SAML/OIDC. This is calculated by the number of end users that authenticate into your app or service via the traffic policy action.",
+		link: "/docs/traffic-policy/",
+	},
+	// Traffic Observability
+	{
+		titles: ["Traffic Inspector Retention"],
+		meaning:
+			"This is the number of hours ngrok retains your traffic data in traffic inspector.",
+		link: "/docs/obs/traffic-inspection",
+	},
+	{
+		titles: ["Traffic Log Exporting"],
+		meaning:
+			"Export event logs when traffic transits through your endpoints to S3, Datadog, Azure Logs, CloudWatch Logs + more.",
+		link: "/docs/obs/",
+	},
+	// Secure Tunnels
+	{
+		titles: ["Concurrent Agents"],
+		meaning:
+			"The maximum number of ngrok agents that can be simultaneously connected to the ngrok cloud service under a single account.",
+		link: "/docs/agent/",
+	},
+	{
+		titles: ["Dedicated Agent Connect IPs"],
+		meaning: "Get a constant, dedicated IP for your account's agents.",
+		link: "/docs/agent/",
+	},
+	{
+		titles: ["Custom Agent Connect URLs"],
+		meaning: "Customize the URL that the agent connects to.",
+		link: "/docs/agent/",
+	},
+	{
+		titles: ["Remote Agent Update Operations"],
+		meaning: "Run ngrok in the background as a service.",
+		link: "/docs/agent/",
+	},
+	// Identity & Access
+	{
+		titles: ["Users"],
+		meaning: "Members of your account that can view or create endpoints.",
+		link: "/docs/iam/users/",
+	},
+	{
+		titles: ["Service Users"],
+		meaning:
+			"Service users are accounts for automated systems that programmatically interact with your ngrok accounts either by starting ngrok Agents or making requests to the API.",
+		link: "/docs/iam/service-users/",
+	},
+	{
+		titles: ["SSO/RBAC"],
+		meaning:
+			"Federate auth to your Identity Provider (IdP) with SAML or OpenID Connect.",
+		link: "/docs/iam/sso/",
+	},
+	{
+		titles: ["Identity and Access Governance Suite"],
+		meaning:
+			"SCIM, Domain Controls, Account-Wide IP Restrictions, Audit Logs.",
+		link: "/docs/iam/",
+	},
+	{
+		titles: ["Authtoken ACLs"],
+		meaning:
+			"Authtoken ACLs restrict what endpoints an ngrok agent can create when using that authtoken.",
+		link: "/docs/agent/config/",
+	},
+	// Support
+	{
+		titles: ["Basic support"],
+		meaning: "Email support and best-effort response times.",
+	},
+	{
+		titles: ["Slack and MS Teams"],
+		meaning: "Dedicated channel with 24 hour response SLA.",
+	},
+	{
+		titles: ["Dedicated On-Call"],
+		meaning: "Committed/Contractual Uptime SLA and Support SLA.",
+	},
+	// Compliance
+	{
+		titles: ["Region-specific routing"],
+		meaning:
+			"Configure your domains to only route traffic through specific geographic regions.",
+	},
+	{
+		titles: ["HIPAA / BAAs"],
+		meaning:
+			"HIPAA compliance is built in: ngrok handles the BAA so you can focus on building the app.",
+	},
+	{
+		titles: ["SOC2"],
+		meaning: "Independent verification that your data is secure.",
+	},
+	{
+		titles: ["Security questionnaires"],
+		meaning:
+			"If your team requires a security questionnaire, ngrok can prepare it.",
+	},
+	{
+		titles: ["Invoicing"],
+		meaning:
+			"If your team requires an invoice for billing purposes, ngrok can send it.",
+	},
+];
 
 
 function wrapTermsOnLoad() {
   // Get page title to check against
   const pageTitle = document.getElementById('page-title');
   const pageTitleText = pageTitle ? pageTitle.textContent.toLowerCase() : '';
-  
+
+  // Pricing terms are only applied on pricing-limits pages
+  const isPricingPage = window.location.pathname.includes('/pricing-limits');
+  const activeTerms = isPricingPage ? [...terms, ...pricingTerms] : terms;
+
+  console.log("Is pricing page", isPricingPage)
+
   // Get all mdx-content containers
   const mdxContainers = document.querySelectorAll('div[class*="mdx-content"]');
-  
+
   // Track which terms have been wrapped to only wrap the first instance
   const wrappedTerms = new Set();
-  
+
   mdxContainers.forEach((container, containerIndex) => {
     // Find all p spans and li elements within this container
     const pSpans = container.querySelectorAll('span[data-as="p"]');
+    const tableCells = container.querySelectorAll('strong');
     const listItems = container.querySelectorAll('li');
-    const elementsToProcess = [...pSpans, ...listItems];
-    
+    const elementsToProcess = [...pSpans, ...tableCells, ...listItems];
+
     elementsToProcess.forEach((element, elementIndex) => {
       const elementText = element.textContent;
-      
+
       // Skip if element is inside a link, heading, or code block
       if (isInsideExcludedElement(element)) {
         return;
       }
-      
-      terms.forEach(termObj => {
+
+      activeTerms.forEach(termObj => {
         termObj.titles.forEach(termTitle => {
           // Skip if this term is already wrapped or if it appears in the page title
           if (wrappedTerms.has(termTitle) || pageTitleText.includes(termTitle.toLowerCase())) {
@@ -245,7 +620,7 @@ function escapeHtml(text) {
 
 function isInsideExcludedElement(element) {
   // List of tag names to exclude
-  const excludedTags = ['A', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'PRE', 'CODE'];
+  const excludedTags = ['A', 'BUTTON', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'PRE', 'CODE'];
   
   // Check current element and all ancestors
   let current = element;
@@ -299,7 +674,9 @@ function replaceInTextNodes(element, regex, termTitle, termObj) {
       if (link) {
         button.setAttribute('data-link', link);
       }
-      
+      button.style.display = 'inline';
+      button.style.textAlign = 'inherit';
+
       const span = document.createElement('span');
       span.className = 'tooltip underline decoration-dotted decoration-2 underline-offset-4 decoration-gray-400 dark:decoration-gray-500';
       
