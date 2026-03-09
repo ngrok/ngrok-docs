@@ -333,7 +333,7 @@ const pricingTerms = [
 	{
 		titles: ["Endpoint hours"],
 		meaning:
-			"The amount of time your endpoint(s) are online.",
+			"The amount of time your endpoints are online.",
 	},
 	{
 		titles: ["Load balancing"],
