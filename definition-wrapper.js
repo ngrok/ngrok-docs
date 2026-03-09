@@ -306,35 +306,266 @@ const terms = [
 	},
 ];
 
-
+// Terms specific to the pricing and limits section.
+const pricingTerms = [
+	// Universal Gateway > Endpoints
+	{
+		titles: ["Online endpoints"],
+		meaning: "The number of endpoints you can have online at the same time.",
+		link: "/docs/universal-gateway/agent-endpoints/",
+	},
+	{
+		titles: ["Development endpoint hours"],
+		meaning:
+			"Public endpoints started with your development domain do not accrue endpoint hours.",
+		link: "/docs/pricing-limits/",
+	},
+	{
+		titles: ["Active endpoint hours"],
+		meaning: "An endpoint is active if it has outgoing traffic during the hour.",
+		link: "/docs/pricing-limits/",
+	},
+	{
+		titles: ["Endpoint protocols"],
+		meaning:
+			"These are the different protocols available to you as a subscriber of each plan.",
+	},
+	{
+		titles: ["Load balancing"],
+		meaning: "Load balancing at ngrok is called endpoint pooling.",
+		link: "/docs/universal-gateway/endpoint-pooling/",
+	},
+	// Universal Gateway > Domains
+	{
+		titles: ["Development domain"],
+		meaning:
+			"Your development domain is specific to your account, and does not incur usage charges. You can use anything for free on your sandbox domain within your account's limits.",
+		link: "/docs/universal-gateway/domains/",
+	},
+	{
+		titles: ["ngrok-branded domains"],
+		meaning: "Use any ngrok-branded domain that you pick from ngrok's pool.",
+		link: "/docs/universal-gateway/domains/",
+	},
+	{
+		titles: ["Bring your own custom domains"],
+		meaning: "Use any custom domain name that you already own with ngrok.",
+		link: "/docs/universal-gateway/custom-domains/",
+	},
+	{
+		titles: ["Wildcard Domains"],
+		meaning:
+			"You can create an endpoint which will receive traffic for all of the subdomains matching a given wildcard domain like *.example.com.",
+		link: "/docs/universal-gateway/http/#wildcard-endpoints",
+	},
+	// Universal Gateway > TCP Addresses
+	{
+		titles: ["TCP Addresses"],
+		meaning:
+			"TCP Addresses enable you to create public TCP Endpoints on a fixed address.",
+		link: "/docs/universal-gateway/tcp-addresses/",
+	},
+	// Universal Gateway > Network Transfer
+	{
+		titles: ["Data transfer out"],
+		meaning:
+			"The total volume of data transferred outbound from ngrok's network to clients, including traffic forwarded to agents.",
+		link: "/docs/pricing-limits/how-ngrok-charges/",
+	},
+	// Universal Gateway > Traffic
+	{
+		titles: ["Requests to HTTP/s endpoints"],
+		meaning:
+			"The maximum number of HTTP/s requests a client can make to an account's endpoints in a month.",
+		link: "/docs/universal-gateway/http/",
+	},
+	{
+		titles: ["Connections to TCP / TLS endpoints"],
+		meaning:
+			"The maximum number of TCP/TLS connections a client can make to an account's endpoints in a month.",
+		link: "/docs/universal-gateway/tcp/",
+	},
+	// Universal Gateway > Rate limits
+	{
+		titles: ["HTTP Requests"],
+		meaning:
+			"The maximum number of HTTP requests across all endpoints per minute.",
+		link: "/docs/pricing-limits/how-ngrok-charges/",
+	},
+	{
+		titles: ["TCP Connections"],
+		meaning:
+			"The maximum number of TCP connections across all endpoints per minute.",
+		link: "/docs/pricing-limits/how-ngrok-charges/",
+	},
+	// Universal Gateway > TLS
+	{
+		titles: ["Bring your own certificates"],
+		meaning:
+			"Upload your own TLS certificates if you don't want to use the TLS certificates that ngrok automatically provisions for you.",
+		link: "/docs/universal-gateway/tls/",
+	},
+	{
+		titles: ["End to End TLS"],
+		meaning:
+			"Terminate TLS at your upstream service or at the ngrok agent to achieve end-to-end encryption.",
+		link: "/docs/universal-gateway/tls-termination/",
+	},
+	{
+		titles: ["Mutual TLS"],
+		meaning:
+			"Mutual TLS Authentication (mTLS) is a network security protocol that ensures both the client and server authenticate each other using digital certificates.",
+		link: "/docs/traffic-policy/",
+	},
+	// Traffic Policy
+	{
+		titles: ["Traffic Policy Units (TPUs)"],
+		meaning:
+			"This is a combination of the actions, macros, and variables applied to a request. WAF, mTLS, and more are included in TPUs.",
+		link: "/docs/pricing-limits/traffic-policy-unit-pricing/",
+	},
+	{
+		titles: ["Traffic Identities"],
+		meaning:
+			"OAuth/SAML/OIDC. This is calculated by the number of end users that authenticate into your app or service via the traffic policy action.",
+		link: "/docs/traffic-policy/",
+	},
+	// Traffic Observability
+	{
+		titles: ["Traffic Inspector Retention"],
+		meaning:
+			"This is the number of hours we retain your traffic data in traffic inspector.",
+		link: "/docs/obs/",
+	},
+	{
+		titles: ["Traffic Log Exporting"],
+		meaning:
+			"Export event logs when traffic transits through your endpoints to S3, Datadog, Azure Logs, CloudWatch Logs + more.",
+		link: "/docs/obs/",
+	},
+	// Secure Tunnels
+	{
+		titles: ["Concurrent Agents"],
+		meaning:
+			"The maximum number of ngrok agents that can be simultaneously connected to the ngrok cloud service under a single account.",
+		link: "/docs/agent/",
+	},
+	{
+		titles: ["Dedicated Agent Connect IPs"],
+		meaning: "Get a constant, dedicated IP for your account's agents.",
+		link: "/docs/agent/",
+	},
+	{
+		titles: ["Custom Agent Connect URLs"],
+		meaning: "Customize the URL that the agent connects to.",
+		link: "/docs/agent/",
+	},
+	{
+		titles: ["Remote Agent Update Operations"],
+		meaning: "Run ngrok in the background as a service.",
+		link: "/docs/agent/",
+	},
+	// Identity & Access
+	{
+		titles: ["Users"],
+		meaning: "Members of your account that can view or create endpoints.",
+		link: "/docs/iam/users/",
+	},
+	{
+		titles: ["Service Users"],
+		meaning:
+			"Service users are accounts for automated systems that programmatically interact with your ngrok accounts either by starting ngrok Agents or making requests to the API.",
+		link: "/docs/iam/service-users/",
+	},
+	{
+		titles: ["SSO/RBAC"],
+		meaning:
+			"Federate auth to your Identity Provider (IdP) with SAML or OpenID Connect.",
+		link: "/docs/iam/sso/",
+	},
+	{
+		titles: ["Identity and Access Governance Suite"],
+		meaning:
+			"SCIM, Domain Controls, Account-Wide IP Restrictions, Audit Logs.",
+		link: "/docs/iam/",
+	},
+	{
+		titles: ["Authtoken ACLs"],
+		meaning:
+			"Authtoken ACLs restrict what endpoints an ngrok agent can create when using that authtoken.",
+		link: "/docs/agent/config/",
+	},
+	// Support
+	{
+		titles: ["Basic support"],
+		meaning: "Email support and best-effort response times.",
+	},
+	{
+		titles: ["Slack and MS Teams"],
+		meaning: "Dedicated channel with 24 hour response SLA.",
+	},
+	{
+		titles: ["Dedicated On-Call"],
+		meaning: "Committed/Contractual Uptime SLA and Support SLA.",
+	},
+	// Compliance
+	{
+		titles: ["Region-specific routing"],
+		meaning:
+			"Configure your domains to only route traffic through specific geographic regions.",
+	},
+	{
+		titles: ["HIPAA / BAAs"],
+		meaning:
+			"HIPAA compliance built in: we'll sign the BAA, you build the app.",
+	},
+	{
+		titles: ["SOC2"],
+		meaning: "Independent verification that your data is secure.",
+	},
+	{
+		titles: ["Security questionnaires"],
+		meaning:
+			"If your team requires a security questionnaire, our team can prepare it.",
+	},
+	{
+		titles: ["Invoicing"],
+		meaning:
+			"If your team requires an invoice for billing purposes, our team can send it.",
+	},
+];
 
 
 function wrapTermsOnLoad() {
   // Get page title to check against
   const pageTitle = document.getElementById('page-title');
   const pageTitleText = pageTitle ? pageTitle.textContent.toLowerCase() : '';
-  
+
+  // Pricing terms are only applied on pricing-limits pages
+  const isPricingPage = window.location.pathname.startsWith('/docs/pricing-limits');
+  const activeTerms = isPricingPage ? [...terms, ...pricingTerms] : terms;
+
   // Get all mdx-content containers
   const mdxContainers = document.querySelectorAll('div[class*="mdx-content"]');
-  
+
   // Track which terms have been wrapped to only wrap the first instance
   const wrappedTerms = new Set();
-  
+
   mdxContainers.forEach((container, containerIndex) => {
     // Find all p spans and li elements within this container
     const pSpans = container.querySelectorAll('span[data-as="p"]');
     const listItems = container.querySelectorAll('li');
     const elementsToProcess = [...pSpans, ...listItems];
-    
+
     elementsToProcess.forEach((element, elementIndex) => {
       const elementText = element.textContent;
-      
+
       // Skip if element is inside a link, heading, or code block
       if (isInsideExcludedElement(element)) {
         return;
       }
-      
-      terms.forEach(termObj => {
+
+      activeTerms.forEach(termObj => {
         termObj.titles.forEach(termTitle => {
           // Skip if this term is already wrapped or if it appears in the page title
           if (wrappedTerms.has(termTitle) || pageTitleText.includes(termTitle.toLowerCase())) {
