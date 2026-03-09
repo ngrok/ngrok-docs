@@ -1,0 +1,129 @@
+## Connection Kubernetes Pod Variables
+
+The following variables are available under the `conn.k8s.pod` namespace. They are populated on connections to endpoints with a `kubernetes` binding. They are not available on public or internal endpoints.
+
+If pod identity cannot be resolved, the metadata variables will not be set and `conn.k8s.pod.metadata.error_code` will be populated instead. See [`conn.k8s.pod.metadata.error_code`](#connk8spoderror-code) for details.
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| [`conn.k8s.pod.id`](#connk8spodid) | `string` | The unique identifier (UID) of the originating pod. |
+| [`conn.k8s.pod.metadata.name`](#connk8spodname) | `string` | The name of the originating pod. |
+| [`conn.k8s.pod.metadata.namespace`](#connk8spodnamespace) | `string` | The namespace the originating pod belongs to. |
+| [`conn.k8s.pod.metadata.annotations`](#connk8spodannotations) | `map(string, string)` | A map of pod annotations prefixed with `k8s.ngrok.com/`. |
+| [`conn.k8s.pod.metadata.error_code`](#connk8spoderror-code) | `string` | An error code set when pod identity could not be resolved. |
+| [`conn.k8s.pod.metadata.error_message`](#connk8spoderror-message) | `string` | A human-readable error message providing additional detail when `conn.k8s.pod.metadata.error_code` is set. |
+
+### `conn.k8s.pod.id`
+
+The unique identifier (UID) of the originating pod. Maximum size: 36 bytes.
+
+<CodeGroup>
+```yaml policy.yml
+expressions:
+  - "conn.k8s.pod.id == '4b2c1a0e-7f3d-11ee-b962-0242ac120002'"
+```
+```json policy.json
+{
+  "expressions": [
+    "conn.k8s.pod.id == '4b2c1a0e-7f3d-11ee-b962-0242ac120002'"
+  ]
+}
+```
+</CodeGroup>
+
+### `conn.k8s.pod.metadata.name`
+
+The name of the originating pod. Maximum size: 255 bytes.
+
+<CodeGroup>
+```yaml policy.yml
+expressions:
+  - "conn.k8s.pod.metadata.name in ['worker-a', 'worker-b']"
+```
+```json policy.json
+{
+  "expressions": [
+    "conn.k8s.pod.metadata.name in ['worker-a', 'worker-b']"
+  ]
+}
+```
+</CodeGroup>
+
+### `conn.k8s.pod.metadata.namespace`
+
+The namespace the originating pod belongs to. Maximum size: 63 bytes.
+
+<CodeGroup>
+```yaml policy.yml
+expressions:
+  - "conn.k8s.pod.metadata.namespace != 'payments'"
+```
+```json policy.json
+{
+  "expressions": [
+    "conn.k8s.pod.metadata.namespace != 'payments'"
+  ]
+}
+```
+</CodeGroup>
+
+### `conn.k8s.pod.metadata.annotations`
+
+A map of pod annotations prefixed with `ngrok-`. Only annotations with the `ngrok-` prefix are included. The combined size of all included annotations must not exceed 1024 bytes. If the limit is exceeded, `conn.k8s.pod.metadata.error_code` will be set to `ERR_NGROK_28000` instead.
+
+<CodeGroup>
+```yaml policy.yml
+expressions:
+  - "conn.k8s.pod.metadata.annotations['ngrok-environment'] == 'production'"
+```
+```json policy.json
+{
+  "expressions": [
+    "conn.k8s.pod.metadata.annotations['ngrok-environment'] == 'production'"
+  ]
+}
+```
+</CodeGroup>
+
+### `conn.k8s.pod.metadata.error_code`
+
+An error code set when pod identity could not be resolved. When this variable is set, the `conn.k8s.pod` metadata variables will not be populated.
+
+| Error code | Description |
+| ---------- | ----------- |
+| `ERR_NGROK_28000` | The combined size of one or more pod identity variables exceeded the allowed limit. |
+| `ERR_NGROK_28001` | Pod identity metadata could not be found for this connection. |
+
+It is recommended to check this variable at the start of any policy that relies on pod identity. See [Restricting Access by Kubernetes Pod Identity](/k8s/guides/how-to/pod-identity) for guidance on handling missing identity.
+
+<CodeGroup>
+```yaml policy.yml
+expressions:
+  - "conn.k8s.pod.metadata.error_code == ''"
+```
+```json policy.json
+{
+  "expressions": [
+    "conn.k8s.pod.metadata.error_code == ''"
+  ]
+}
+```
+</CodeGroup>
+
+### `conn.k8s.pod.metadata.error_message`
+
+A human-readable error message providing additional detail when `conn.k8s.pod.metadata.error_code` is set. Intended for troubleshooting and diagnostic purposes.
+
+<CodeGroup>
+```yaml policy.yml
+expressions:
+  - "conn.k8s.pod.metadata.error_message != ''"
+```
+```json policy.json
+{
+  "expressions": [
+    "conn.k8s.pod.metadata.error_message != ''"
+  ]
+}
+```
+</CodeGroup>
