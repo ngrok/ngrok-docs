@@ -21,6 +21,10 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Install jq and curl
+        run: |
+          sudo apt-get update && sudo apt-get install -y jq curl
+
       - name: Setup Node.js
         uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.2.0
         with:
@@ -39,6 +43,8 @@ jobs:
       - name: Get changed files
         id: changed-files
         run: |
+          # Ensure we have the base ref so git diff can run (fixes empty file list on PRs)
+          git fetch origin ${{ github.base_ref }}
           # Get changed markdown files, excluding specific directories and files
           git diff --name-only --diff-filter=ACMR \
             ${{ github.event.pull_request.base.sha }} ${{ github.sha }} \
@@ -69,10 +75,6 @@ jobs:
           wget -q "$VALE_URL" -O vale.tar.gz
           tar -xzf vale.tar.gz -C /usr/local/bin
           vale --version
-
-      - name: Install jq and curl
-        run: |
-          sudo apt-get update && sudo apt-get install -y jq curl
 
       - name: Clean up outdated Vale comments
         env:
