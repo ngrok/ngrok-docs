@@ -4,15 +4,19 @@ The following [Traffic Policy](/traffic-policy/)
 configuration will provide your app with a google authentication step.
 
 <CodeGroup>
-```yaml policy.yml {4-10}
+```yaml policy.yml
 on_http_request:
   - actions:
       - type: oauth
         config:
           provider: google
+  - expressions:
+      - "!actions.ngrok.oauth.identity.email.endsWith('@acme.com')"
+    actions:
+      - type: deny
 ```
 
-```json policy.json {5-10}
+```json policy.json
 {
   "on_http_request": [
     {
@@ -22,6 +26,16 @@ on_http_request:
           "config": {
             "provider": "google"
           }
+        }
+      ]
+    },
+    {
+      "expressions": [
+        "!actions.ngrok.oauth.identity.email.endsWith('@acme.com')"
+      ],
+      "actions": [
+        {
+          "type": "deny"
         }
       ]
     }
