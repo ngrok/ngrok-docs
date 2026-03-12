@@ -36,20 +36,15 @@ See the [OAuth action documentation](/traffic-policy/actions/oauth/#managed-appl
 You can restrict access to specific email addresses by defining your Traffic Policy in your ngrok configuration file:
 
 ```yaml title="ngrok.yml"
-endpoints:
-  - name: my-app
-    url: $YOUR_DOMAIN
-    traffic_policy:
-      on_http_request:
-        - actions:
-          - type: oauth
-            config:
-              provider: google
-              email_addresses:
-                - "teammate@company.com"
-    upstream:
-      url: 8080
-      protocol: http1
+on_http_request:
+  - actions:
+      - type: oauth
+        config:
+          provider: google
+  - expressions:
+      - "actions.ngrok.oauth.identity.email == 'teammate@acme.com'"
+    actions:
+      - type: deny
 ```
 
 This is ideal for sharing your app with a specific teammate while keeping it private from everyone else.
