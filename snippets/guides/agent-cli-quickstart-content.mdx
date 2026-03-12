@@ -166,7 +166,7 @@ ngrok config edit
 
 You should see a new console UI with your config version and auth token already set.
 Below the auth token, paste the following snippet into the editor and then save and exit the config file.
-This policy states that whenever an HTTP/S request is made to `$YOUR_DOMAIN`, the Agent Endpoint should redirect the user to Google OAuth for authentication before proceeding to the app running on port `8080`.
+This policy states that whenever an HTTP/S request is made to `$YOUR_DOMAIN`, the Agent Endpoint should redirect the user to Google OAuth for authentication before proceeding to the app running on port `8080`. If the email is not from the specified domain, in this case `@acme.com`, the visitor will be denied access.
 
 ```yaml title="ngrok.yml"
 endpoints:
@@ -175,9 +175,13 @@ endpoints:
     traffic_policy:
       on_http_request:
         - actions:
-          - type: oauth
-            config:
-              provider: google
+            - type: oauth
+              config:
+                provider: google
+        - expressions:
+            - "!actions.ngrok.oauth.identity.email.endsWith('@acme.com')"
+          actions:
+            - type: deny
     upstream:
       url: 8080
       protocol: http1
