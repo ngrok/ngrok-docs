@@ -1,13 +1,84 @@
 ---
 title: FAQ
+icon: circle-question
 description: Frequently asked questions about AI Gateway.
+---
+
+## AI Gateway API Keys
+
+### What are AI Gateway API Keys?
+
+AI Gateway API Keys are keys you create to authenticate requests to your AI Gateway. When you use one, ngrok handles the provider API keys for you—you don't need accounts with OpenAI or Anthropic. See [AI Gateway API Keys](/ai-gateway/concepts/api-keys) for details.
+
+---
+
+### How are AI Gateway API Keys different from ngrok API keys?
+
+**AI Gateway API Keys** authenticate requests to AI Gateway endpoints—they're used by your application to make AI requests. **ngrok API Keys** authenticate to the ngrok management API (`api.ngrok.com`)—they're used for managing ngrok resources like endpoints, domains, and secrets.
+
+---
+
+### Can I create multiple AI Gateway API Keys?
+
+Yes. Create separate keys for each client or application. This enables independent revocation and per-client usage tracking.
+
+---
+
+### What happens if I lose my API key?
+
+The token is only shown once at creation time. If you lose it, delete the old key and create a new one.
+
+---
+
+### Are AI Gateway API Keys scoped to specific endpoints?
+
+Yes. Each key is scoped to a specific AI Gateway endpoint via the required `endpoint_id` field. A key can only be used with the endpoint it was created for.
+
+---
+
+### Which providers work with AI Gateway API Keys?
+
+Currently **OpenAI** and **Anthropic** are supported with ngrok-managed keys. For other providers (Google, DeepSeek, etc.), use [Bring Your Own Keys](/ai-gateway/concepts/bring-your-own-keys).
+
+---
+
+## Credits & billing
+
+### Which plans support AI Gateway?
+
+AI Gateway requires the **Pay-as-you-go** plan. Free and Hobbyist plans cannot use it.
+
+---
+
+### What are AI Gateway credits?
+
+AI Gateway credits are a prepaid balance that funds AI Gateway API Key usage. Credits cover both the processing fee and upstream provider costs. BYOK does not require credits—you pay providers directly. See [Credits](/ai-gateway/concepts/credits).
+
+---
+
+### What's the minimum credit purchase?
+
+$5.00. [Purchase credits](https://dashboard.ngrok.com/ai-gateways/credit/add) directly from the dashboard.
+
+---
+
+### Do credits expire?
+
+Yes. Credits expire **365 days** after purchase.
+
+---
+
+### What happens when credits run out?
+
+AI Gateway API Key requests stop working. Clients receive HTTP 403 with error [`ERR_NGROK_4026`](/errors/err_ngrok_4026). BYOK requests are not affected. [Purchase more credits](https://dashboard.ngrok.com/ai-gateways/credit/add) to restore access.
+
 ---
 
 ## General
 
 ### Does ngrok provide AI provider API keys?
 
-No. The AI Gateway is a routing and observability layer—you use your own API keys from providers like OpenAI, Anthropic, and Google. ngrok doesn't resell or provide AI provider access. You maintain your own provider accounts and billing relationships.
+Yes. When you use [AI Gateway API Keys](/ai-gateway/concepts/api-keys), ngrok manages the provider keys for you—no provider accounts needed. Currently supported for OpenAI and Anthropic. For other providers, you [bring your own keys](/ai-gateway/concepts/bring-your-own-keys).
 
 ---
 
@@ -79,13 +150,13 @@ providers:
 
 ### Can I use the gateway with the Vercel AI SDK?
 
-Yes, the gateway is fully compatible:
+Yes:
 
 ```typescript
 import { createOpenAI } from "@ai-sdk/openai"
 
 const openai = createOpenAI({
-  baseUrl: "https://your-ai-gateway.ngrok.app",
+  baseURL: "https://your-ai-gateway.ngrok.app/v1",
 })
 ```
 
@@ -115,7 +186,7 @@ See [Error Handling](/ai-gateway/guides/error-handling) for details.
 
 ### How long does the gateway try before giving up?
 
-Controlled by `total_timeout` (default: 5 minutes):
+Controlled by `total_timeout` (default: 6 minutes):
 
 ```yaml
 total_timeout: "3m"  # Allow up to 3 minutes for all attempts
@@ -158,74 +229,37 @@ The gateway automatically tries alternative providers when the primary fails. Yo
 
 ## Keys and authentication
 
-### Do I need to configure API keys in the gateway?
+### What's the easiest way to authenticate requests?
 
-No, it's optional. By default (passthrough mode), the gateway forwards whatever key your SDK sends.
-
-Configure keys in the gateway for:
-
-- Key rotation and failover
-- Hiding keys from clients
-- Key-level metrics
+Use [AI Gateway API Keys](/ai-gateway/concepts/api-keys). Create a key, use it in your SDK—authorization is built-in—no Traffic Policy configuration needed. See [Securing Your Gateway](/ai-gateway/guides/securing-endpoints).
 
 ---
 
-### How do I secure my gateway when using server-side API keys?
+### Do I need to configure provider API keys in the gateway?
 
-When you configure API keys in the gateway, your endpoint becomes publicly accessible. Add authorization to protect it:
+Not if you're using AI Gateway API Keys—ngrok handles provider keys for you. If you want to use your own provider keys, see [Bring Your Own Keys](/ai-gateway/concepts/bring-your-own-keys).
 
-```yaml
-on_http_request:
-  - expressions:
-      - req.headers['authorization'][0] != 'Bearer ' + secrets.get('gateway-auth', 'access-token')
-    actions:
-      - type: custom-response
-        config:
-          status_code: 401
-          body: '{"error": {"message": "Unauthorized"}}'
+---
 
-  - actions:
-      - type: ai-gateway
-        config:
-          # ...
-```
+### How do I secure my gateway when using my own provider keys (BYOK)?
 
-See [Securing Your Gateway](/ai-gateway/guides/securing-endpoints) for complete examples.
+When you configure your own provider keys in the gateway, your endpoint becomes publicly accessible. You need to add your own authorization layer. See [Securing Endpoints (BYOK)](/ai-gateway/guides/protecting-byok-endpoints) for complete examples.
 
 ---
 
 ### Can I use different keys for different teams?
 
-Yes, configure multiple keys and use metadata:
+Yes. Create separate [AI Gateway API Keys](/ai-gateway/concepts/api-keys) for each team or client. Each key has its own description, metadata, and `last_used` tracking.
 
-```yaml
-providers:
-  - id: openai
-    api_keys:
-      - value: ${secrets.get('openai', 'team-a')}
-      - value: ${secrets.get('openai', 'team-b')}
-```
-
-Note: Per-key metadata is not currently supported. Use separate endpoints or providers for team-based tracking.
+For BYOK, configure multiple provider keys and use separate endpoints or providers for team-based tracking.
 
 ---
 
 ### How do I rotate API keys?
 
-Add the new key, deploy, then remove the old key:
+**AI Gateway API Keys**: Delete the old key and create a new one. Update your clients with the new key.
 
-```yaml
-api_keys:
-  - value: ${secrets.get('openai', 'old-key')}
-  - value: ${secrets.get('openai', 'new-key')}  # Add new
-```
-
-After confirming the new key works:
-
-```yaml
-api_keys:
-  - value: ${secrets.get('openai', 'new-key')}  # Remove old
-```
+**BYOK provider keys**: Add the new key, deploy, then remove the old key. See [Managing Provider Keys](/ai-gateway/guides/managing-provider-keys#key-rotation) for details.
 
 ---
 
@@ -249,9 +283,7 @@ Token counts are available in metrics and event destinations.
 
 ### Does the gateway charge for token usage?
 
-No, you only pay providers for actual token usage. The gateway itself doesn't charge per token.
-
-Check ngrok's pricing for gateway usage costs.
+When using [AI Gateway API Keys](/ai-gateway/concepts/api-keys), usage is deducted from your [prepaid credits](/ai-gateway/concepts/credits). Credits cover both ngrok's processing fee and the upstream provider cost (ngrok pays OpenAI/Anthropic on your behalf). When using BYOK, there are no credit charges—you pay providers directly.
 
 ---
 
@@ -299,7 +331,7 @@ on_http_request:
               to: "[REDACTED]"
       - type: ai-gateway
         config:
-          # ...
+          # …
 ```
 
 For streaming responses, use `sse-find-replace` in `on_event_stream_message`. See [Modifying Requests](/ai-gateway/guides/modifying-requests) and [Modifying Responses](/ai-gateway/guides/modifying-responses) for details.
@@ -314,12 +346,13 @@ Built-in support for:
 
 - OpenAI
 - Anthropic
+- Groq
 - Google
 - DeepSeek
 - OpenRouter
 - Hyperbolic
-- Inception Labs
-- Inference Net
+- InceptionLabs
+- Inference.net
 
 Plus any self-hosted OpenAI or Anthropic Claude API compatible endpoint. See the [Model Catalog](/ai-gateway/reference/model-catalog) for the full list.
 
@@ -337,7 +370,7 @@ providers:
       - id: "llama3"
 ```
 
-See [Custom Providers](/ai-gateway/custom-providers) for details.
+See [Custom Providers](/ai-gateway/concepts/custom-providers) for details.
 
 ---
 

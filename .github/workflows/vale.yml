@@ -1,5 +1,7 @@
 name: Vale Linting
 
+permissions: {}
+
 on:
   pull_request:
     types: [opened, synchronize, reopened]
@@ -15,12 +17,16 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
           fetch-depth: 0
 
+      - name: Install jq and curl
+        run: |
+          sudo apt-get update && sudo apt-get install -y jq curl
+
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.2.0
         with:
           node-version: '24'
 
@@ -37,6 +43,8 @@ jobs:
       - name: Get changed files
         id: changed-files
         run: |
+          # Ensure we have the base ref so git diff can run (fixes empty file list on PRs)
+          git fetch origin ${{ github.event.pull_request.base.ref }}
           # Get changed markdown files, excluding specific directories and files
           git diff --name-only --diff-filter=ACMR \
             ${{ github.event.pull_request.base.sha }} ${{ github.sha }} \
@@ -67,10 +75,6 @@ jobs:
           wget -q "$VALE_URL" -O vale.tar.gz
           tar -xzf vale.tar.gz -C /usr/local/bin
           vale --version
-
-      - name: Install jq and curl
-        run: |
-          sudo apt-get update && sudo apt-get install -y jq curl
 
       - name: Clean up outdated Vale comments
         env:
@@ -169,7 +173,7 @@ jobs:
           # Check if there are any results
           TOTAL_ISSUES=$(jq '[.[] | length] | add // 0' vale_results.json 2>/dev/null || echo "0")
           
-          # Get PR head SHA (needed for both posting comments and cleanup)
+          # Get PR head SHA (needed for posting comments)
           PR_HEAD_SHA=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
             "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}" \
             | jq -r '.head.sha')
@@ -208,58 +212,6 @@ jobs:
             
             PAGE=$((PAGE + 1))
           done
-          
-          # Get PR files to check which lines are actually changed
-          curl -s -H "Authorization: token $GITHUB_TOKEN" \
-            "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files" > pr_files.json
-          
-          # Function to check if a line is actually changed (added/modified) in the diff
-          is_line_changed() {
-            local file="$1"
-            local target_line="$2"
-            
-            # Get the diff for this file
-            local file_diff=$(jq -r --arg file "$file" '.[] | select(.filename == $file) | .patch // ""' pr_files.json)
-            
-            if [ -z "$file_diff" ] || [ "$file_diff" = "null" ] || [ "$file_diff" = "" ]; then
-              return 1
-            fi
-            
-            local current_line=0
-            local line_changed=0
-            
-            while IFS= read -r diff_line || [ -n "$diff_line" ]; do
-              # Skip diff headers
-              if [[ "$diff_line" =~ ^(@@|diff|index|---|\+\+\+) ]]; then
-                if [[ "$diff_line" =~ ^@@ ]]; then
-                  # Extract starting line number from @@ -old_start,old_count +new_start,new_count @@
-                  if [[ "$diff_line" =~ \+([0-9]+) ]]; then
-                    current_line="${BASH_REMATCH[1]}"
-                    current_line=$((current_line - 1))
-                  fi
-                fi
-                continue
-              fi
-              
-              # Check if this is an added/modified line (starts with +)
-              if [[ "$diff_line" =~ ^\+ ]]; then
-                current_line=$((current_line + 1))
-                if [ "$current_line" -eq "$target_line" ]; then
-                  line_changed=1
-                  break
-                fi
-              # Count unchanged lines (context) but don't mark as changed
-              elif [[ "$diff_line" =~ ^[[:space:]] ]]; then
-                current_line=$((current_line + 1))
-                if [ "$current_line" -eq "$target_line" ]; then
-                  # This line is in the diff but not actually changed
-                  return 1
-                fi
-              fi
-            done <<< "$file_diff"
-            
-            return $((1 - line_changed))
-          }
           
           # Only process violations if there are any
           if [ -n "$TOTAL_ISSUES" ] && [ "$TOTAL_ISSUES" != "null" ] && [ "$TOTAL_ISSUES" -gt 0 ]; then
@@ -303,13 +255,7 @@ jobs:
             COMBINED_BODY=$(echo "$violation_group" | jq -r '.combined_body')
             VIOLATION_COUNT=$(echo "$violation_group" | jq '.violations | length')
             
-            # Check if this line is actually changed in the diff
-            if ! is_line_changed "$FILE" "$LINE"; then
-              SKIP_COUNT=$((SKIP_COUNT + VIOLATION_COUNT))
-              continue
-            fi
-            
-            # Count errors and warnings for this violation group (on changed lines)
+            # Post all violations (Vale line numbers can differ from diff line numbers after MDX parse, so don't filter by is_line_changed or we drop valid violations)
             VIOLATION_ERRORS=$(echo "$violation_group" | jq '[.violations[] | select(.severity == "error")] | length')
             VIOLATION_WARNINGS=$(echo "$violation_group" | jq '[.violations[] | select(.severity == "warning")] | length')
             ERROR_COUNT=$((ERROR_COUNT + VIOLATION_ERRORS))

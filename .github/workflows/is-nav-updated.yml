@@ -1,15 +1,19 @@
 name: Ensure nav is updated if files added/deleted
 
+permissions: {}
+
 on:
   pull_request:
     types: [opened, synchronize, reopened]
 
 jobs:
   is-nav-updated:
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
           fetch-depth: 0
 
@@ -18,10 +22,10 @@ jobs:
         run: |
           git fetch origin ${{ github.base_ref }}
           
+          # Write lists to files so the next step never interpolates untrusted data into the script (code-injection safe)
           added_files=""
           deleted_files=""
           
-          # Process added files - only include .mdx files
           while IFS= read -r file; do
             [ -z "$file" ] && continue
             [[ "$file" == *.mdx ]] || continue
@@ -29,10 +33,14 @@ jobs:
             [[ "$file" == api-reference/* ]] && continue
             [[ "$file" == custom/* ]] && continue
             [[ "$file" == errors/* ]] && continue
+            # Reject paths that could break shell when used later
+            if [[ "$file" =~ [\"\\] ]]; then
+              echo "::error file=$file::Path contains invalid characters"
+              exit 1
+            fi
             added_files+="$file"$'\n'
           done < <(git diff --name-only --diff-filter=A origin/${{ github.base_ref }}...HEAD)
           
-          # Process deleted files - only include .mdx files
           while IFS= read -r file; do
             [ -z "$file" ] && continue
             [[ "$file" == *.mdx ]] || continue
@@ -40,29 +48,30 @@ jobs:
             [[ "$file" == api-reference/* ]] && continue
             [[ "$file" == custom/* ]] && continue
             [[ "$file" == errors/* ]] && continue
+            if [[ "$file" =~ [\"\\] ]]; then
+              echo "::error file=$file::Path contains invalid characters"
+              exit 1
+            fi
             deleted_files+="$file"$'\n'
           done < <(git diff --name-only --diff-filter=D origin/${{ github.base_ref }}...HEAD)
           
-          echo "added_files<<EOF" >> $GITHUB_OUTPUT
-          echo "$added_files" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          printf '%s' "$added_files" > added_files.txt
+          printf '%s' "$deleted_files" > deleted_files.txt
           
-          echo "deleted_files<<EOF" >> $GITHUB_OUTPUT
-          echo "$deleted_files" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          echo "added_count=$(printf '%s' "$added_files" | grep -c . || true)" >> $GITHUB_OUTPUT
+          echo "deleted_count=$(printf '%s' "$deleted_files" | grep -c . || true)" >> $GITHUB_OUTPUT
 
       - name: Check docs.json updated
         run: |
-          added_files="${{ steps.mdx-files.outputs.added_files }}"
-          deleted_files="${{ steps.mdx-files.outputs.deleted_files }}"
+          # Read from files written by previous step (no untrusted data in workflow interpolation)
+          added_files="$(cat added_files.txt)"
+          deleted_files="$(cat deleted_files.txt)"
           
-          # Check if any .mdx files were added or deleted
           if [ -z "$added_files" ] && [ -z "$deleted_files" ]; then
             echo "No .mdx files were added or deleted in this PR."
             exit 0
           fi
           
-          # Filter out added files with noSidebar: true
           echo "Checking if the files you added have noSidebar: true in the frontmatter."
           filtered_added_files=()
           while IFS= read -r file; do
@@ -74,15 +83,13 @@ jobs:
             else
               filtered_added_files+=("$file")
             fi
-          done <<< "$added_files"
+          done < added_files.txt
           
-          # Check if we have any files that need navigation updates
           if [ ${#filtered_added_files[@]} -eq 0 ] && [ -z "$deleted_files" ]; then
             echo "No .mdx files require navigation updates (all added files have noSidebar: true)."
             exit 0
           fi
           
-          # Check if docs.json was modified
           git fetch origin ${{ github.base_ref }}
           docs_json_changed=false
           if git diff --name-only origin/${{ github.base_ref }}...HEAD | grep -q '^docs.json$'; then
@@ -90,29 +97,22 @@ jobs:
           fi
           
           if [ "$docs_json_changed" = false ]; then
-            # docs.json was not changed, but we have added/deleted files
-            # For deleted files, check if they were ever in navigation
             navigation_string=$(jq -c '.navigation' docs.json)
-            
             files_in_nav_but_not_updated=()
             
-            # Check if any deleted files exist in navigation
             while IFS= read -r file; do
               if [ -z "$file" ]; then
                 continue
               fi
-              
               path_without_ext="${file%.mdx}"
-              
               if echo "$navigation_string" | grep -q "$path_without_ext"; then
                 echo "::error file=$file::Deleted file exists in navigation but docs.json was not updated: $file"
                 files_in_nav_but_not_updated+=("$file")
               else
                 echo "⊘ Deleted file was never in navigation, skipping: $file"
               fi
-            done <<< "$deleted_files"
+            done < deleted_files.txt
             
-            # If we have added files (after filtering) OR deleted files that were in navigation, fail
             if [ ${#filtered_added_files[@]} -gt 0 ] || [ ${#files_in_nav_but_not_updated[@]} -gt 0 ]; then
               echo "::error file=docs.json::docs.json was not updated, but .mdx files were added or deleted."
               echo ""
@@ -125,19 +125,12 @@ jobs:
           fi
           
           echo "docs.json was modified. Checking navigation array..."
-          
-          # Get navigation as a string for searching
           navigation_string=$(jq -c '.navigation' docs.json)
-          
           missing_paths=()
           
-          # Check added files - they should exist in navigation
           for file in "${filtered_added_files[@]}"; do
-            # Remove .mdx extension
             path_without_ext="${file%.mdx}"
-            
             echo "Checking if added file is in navigation: $path_without_ext"
-            
             if echo "$navigation_string" | grep -q "$path_without_ext"; then
               echo "✓ Found in navigation: $file"
             else
@@ -146,24 +139,19 @@ jobs:
             fi
           done
           
-          # Check deleted files - they should NOT exist in navigation
           while IFS= read -r file; do
             if [ -z "$file" ]; then
               continue
             fi
-            
-            # Remove .mdx extension
             path_without_ext="${file%.mdx}"
-            
             echo "Checking if deleted file is removed from navigation: $path_without_ext"
-            
             if echo "$navigation_string" | grep -q "$path_without_ext"; then
               echo "::error file=$file::Deleted file still exists in docs.json navigation: $file (path: $path_without_ext)"
               missing_paths+=("- $file → $path_without_ext")
             else
               echo "✓ Removed from navigation: $file"
             fi
-          done <<< "$deleted_files"
+          done < deleted_files.txt
           
           if [ ${#missing_paths[@]} -gt 0 ]; then
             echo ""

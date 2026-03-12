@@ -1,0 +1,75 @@
+---
+title: Bring Your Own Keys
+description: Use your own provider API keys with the AI Gateway.
+---
+
+Instead of using [AI Gateway API Keys](/ai-gateway/concepts/api-keys) with ngrok-managed provider keys, you can configure your own provider API keys directly in the gateway's Traffic Policy. This is called **Bring Your Own Keys (BYOK)**.
+
+<Warning>
+When you configure provider keys in the gateway, your endpoint becomes publicly accessible—anyone with the URL can make requests using your keys. You must add your own authorization layer. See [Securing Endpoints (BYOK)](/ai-gateway/guides/protecting-byok-endpoints).
+</Warning>
+
+## When to use BYOK
+
+- You already have provider accounts and billing relationships
+- You need specific provider plans or tiers (enterprise agreements, committed-use discounts)
+- You want to use providers beyond OpenAI and Anthropic (Google, DeepSeek, OpenRouter, etc.)
+- You want to use custom or self-hosted providers (Ollama, vLLM)—see [Custom Providers](/ai-gateway/concepts/custom-providers)
+- You need fine-grained control over which provider keys are used ([CEL-based key selection](/ai-gateway/guides/key-selection-failover))
+- You want to manage your own cost allocation per key
+
+## How BYOK works
+
+1. Store your provider API keys in [ngrok Vaults & Secrets](/traffic-policy/secrets)
+2. Reference them in your AI Gateway Traffic Policy
+3. The gateway uses your keys instead of ngrok's managed keys
+
+```yaml
+on_http_request:
+  - type: ai-gateway
+    config:
+      providers:
+        - id: openai
+          api_keys:
+            - value: ${secrets.get('openai', 'primary-key')}
+            - value: ${secrets.get('openai', 'backup-key')}
+        - id: google
+          api_keys:
+            - value: ${secrets.get('google', 'key')}
+```
+
+## AI Gateway API Keys compared to BYOK
+
+| | AI Gateway API Keys | BYOK |
+|---|---|---|
+| Provider accounts needed | No (OpenAI & Anthropic only) | Yes |
+| Credits required | Yes (processing fee + upstream provider fee) | No |
+| Provider billing | Included in credits (ngrok pays provider) | Direct with providers |
+| Setup complexity | Low (create key, use it) | Medium (configure secrets, Traffic Policy) |
+| Key rotation | Managed by ngrok (provider keys) | You manage |
+| Multi-key failover | Automatic | Configurable |
+| CEL key selection | Not applicable | Full control |
+| Custom/self-hosted providers | Not supported | Supported |
+| Auth | Built-in (AI Gateway API Key) | DIY (secrets, JWT, etc.) |
+| Supported providers | OpenAI, Anthropic | Any provider |
+
+### Mixed mode
+
+You can combine both approaches in the same gateway. Use AI Gateway API Keys for OpenAI and Anthropic while bringing your own keys for other providers. When you authenticate with an AI Gateway API Key, BYOK keys take precedence for providers where they're configured. See [AI Gateway API Keys—Mixed mode](/ai-gateway/concepts/api-keys#mixing-ai-gateway-api-keys-with-your-own-provider-keys) for details.
+
+## Guides
+
+<CardGroup cols={2}>
+  <Card title="Configuring Providers" icon="building" href="/ai-gateway/guides/configuring-providers">
+    Set up providers, models, and API keys in your Traffic Policy
+  </Card>
+  <Card title="Managing Provider Keys" icon="key" href="/ai-gateway/guides/managing-provider-keys">
+    Store, rotate, and manage your provider API keys
+  </Card>
+  <Card title="Key Selection & Failover" icon="rotate" href="/ai-gateway/guides/key-selection-failover">
+    Advanced CEL-based key selection strategies
+  </Card>
+  <Card title="Securing Endpoints" icon="shield" href="/ai-gateway/guides/protecting-byok-endpoints">
+    Add authorization when using your own provider keys
+  </Card>
+</CardGroup>

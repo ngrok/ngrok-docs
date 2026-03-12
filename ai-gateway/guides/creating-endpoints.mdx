@@ -11,10 +11,9 @@ This guide shows how to create an AI Gateway endpoint manually. For a simpler, f
 
 Before creating an AI Gateway endpoint, you'll need:
 
-- An [ngrok account](https://dashboard.ngrok.com/signup)
+- An ngrok account on the **Pay-as-you-go** plan ([sign up](https://dashboard.ngrok.com/signup))
 - Your [ngrok auth token](https://dashboard.ngrok.com/get-started/your-authtoken)
 - An [ngrok API key](https://dashboard.ngrok.com/api-keys) (for API-based setup)
-- API keys from your AI providers ([OpenAI](https://platform.openai.com/api-keys), [Anthropic](https://console.anthropic.com/settings/keys), [Google](https://aistudio.google.com/apikey), etc.)
 
 ## Option 1: Cloud Endpoint
 
@@ -150,12 +149,16 @@ kubectl apply -f ai-gateway.yaml
 
 ## Testing your endpoint
 
-Once your endpoint is created, test it with a simple request. In passthrough mode, provide your provider API key:
+Once your endpoint is created, you'll need an [AI Gateway API Key](/ai-gateway/concepts/api-keys) to authenticate requests.
+
+<Tip>
+Create one via the dashboard, CLI (`ngrok api ai-gateway-api-keys create --endpoint-id <id>`), or [API](/ai-gateway/concepts/api-keys#creating-keys).
+</Tip>
 
 ```bash
 curl https://your-ai-gateway.ngrok.app/v1/chat/completions \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -H "Authorization: Bearer ng-xxxxx-g1-xxxxx" \
   -d '{
     "model": "gpt-4o",
     "messages": [{"role": "user", "content": "Hello!"}]
@@ -169,7 +172,7 @@ from openai import OpenAI
 
 client = OpenAI(
     base_url="https://your-ai-gateway.ngrok.app/v1",
-    api_key="sk-..."  # Your OpenAI API key
+    api_key="ng-xxxxx-g1-xxxxx"  # Your AI Gateway API Key
 )
 
 response = client.chat.completions.create(
@@ -180,13 +183,9 @@ response = client.chat.completions.create(
 print(response.choices[0].message.content)
 ```
 
-<Tip>
-Once you [configure server-side API keys](#configuring-server-side-api-keys), clients won't need to provide their own keys.
-</Tip>
+## Using your own provider keys (BYOK)
 
-## Configuring server-side API keys
-
-Once your gateway is working, you can configure server-side API keys for failover and to avoid exposing provider keys to clients. Store your keys in [Vaults & Secrets](https://dashboard.ngrok.com/vaults), then reference them in your Traffic Policy:
+If you prefer to manage your own provider API keys instead of using AI Gateway API Keys, you can configure them directly in your Traffic Policy. See [Bring Your Own Keys](/ai-gateway/concepts/bring-your-own-keys) for details.
 
 ```yaml
 on_http_request:
@@ -208,10 +207,8 @@ With this configuration:
 - If OpenAI fails entirely, requests can fail over to Anthropic
 
 <Warning>
-When you configure server-side API keys, your endpoint becomes publicly accessible. Anyone with the URL can make requests using your keys. See [Securing Your Gateway](/ai-gateway/guides/securing-endpoints) to add authorization.
+When you configure server-side API keys, your endpoint becomes publicly accessible. Anyone with the URL can make requests using your keys. See [Securing Endpoints (BYOK)](/ai-gateway/guides/protecting-byok-endpoints) to add authorization.
 </Warning>
-
-See [Managing API Keys](/ai-gateway/guides/managing-api-keys) for detailed instructions on setting up vaults and secrets.
 
 ## When to use each option
 
@@ -224,6 +221,7 @@ See [Managing API Keys](/ai-gateway/guides/managing-api-keys) for detailed instr
 
 ## Next steps
 
+- [AI Gateway API Keys](/ai-gateway/concepts/api-keys) - Learn about API key authentication for your gateway
 - [Configuring Providers](/ai-gateway/guides/configuring-providers) - Set up providers, models, and API keys
 - [Model Selection Strategies](/ai-gateway/guides/model-selection-strategies) - Define custom routing logic
 - [SDK Integration](/ai-gateway/sdks) - Connect your application
