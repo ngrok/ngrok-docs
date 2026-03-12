@@ -33,6 +33,57 @@ This makes it easy to debug webhook integrations without adding logging to your 
 Instead of waiting for the webhook provider to retry a failed delivery, you can [replay the request](/guides/share-localhost/replay) instantly from the Traffic Inspector.
 This dramatically speeds up the development cycle when building webhook handlers.
 
+## Verify webhook signatures
+
+Webhook providers sign each request with a secret so you can confirm it's authentic.
+Instead of writing verification logic in your application, you can use the [verify-webhook Traffic Policy action](/traffic-policy/actions/verify-webhook/) to validate incoming webhook signatures and confirm requests originate from the expected provider.
+
+Add a `verify-webhook` action to your Traffic Policy configuration with your provider name and signing secret:
+
+```yaml title="policy.yml"
+on_http_request:
+  - actions:
+      - type: verify-webhook
+        config:
+          provider: gitlab
+          secret: secret!
+      - type: custom-response
+        config:
+          status_code: 200
+          headers:
+            content-type: text/plain
+          body: GitLab webhook verified
+```
+
+Then start your endpoint with the policy file:
+
+```bash
+ngrok http 8080 --traffic-policy-file  /path/to/policy.yml
+```
+
+If verification succeeds, the request proceeds to the next action defined in your Traffic Policy, which in this case will send a custom HTTP response.
+If it fails, the request is terminated with a `403 Forbidden` response.
+
+### Debugging
+
+When debugging, testing, and crafting custom responses, you may want to allow further Traffic Policy actions to be processed even if the webhook signature isn't verified. To do so, set `enforce` to `false`:
+
+```yaml title="policy.yml" {6}
+on_http_request:
+  - actions:
+      - type: verify-webhook
+        config:
+          provider: github
+          secret: your-webhook-secret
+          enforce: false
+```
+
+With `enforce: false`, unverified requests still reach your server, but you can inspect the verification result using [action result variables](/traffic-policy/actions/verify-webhook/#action-result-variables) in subsequent actions.
+
+### Supported providers for webhook verification
+
+The `verify-webhook` action supports [many providers](/traffic-policy/actions/verify-webhook/#supported-providers), including GitHub, Stripe, Shopify, Slack, and Twilio.
+
 ## Next steps
 
 - [Verify webhooks](/traffic-policy/actions/verify-webhook) using your signing key
