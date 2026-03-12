@@ -1,0 +1,68 @@
+---
+title: Network Security
+sidebarTitle: Network Security
+description: Control access to your ngrok endpoints with IP restrictions, mTLS, and other network-level security controls.
+---
+
+ngrok provides multiple layers of network security that you can apply to your endpoints using [Traffic Policy](/traffic-policy/).
+These controls let you restrict who can reach your local application at the network level.
+
+## IP restrictions
+
+Limit access to your endpoint to specific IP addresses or CIDR ranges:
+
+```yaml title="ngrok.yml"
+endpoints:
+  - name: my-app
+    url: $YOUR_DOMAIN
+    traffic_policy:
+      on_http_request:
+        - actions:
+          - type: restrict-ips
+            config:
+              enforce: true
+              allow:
+                - "203.0.113.0/24"
+                - "198.51.100.42"
+    upstream:
+      url: 8080
+      protocol: http1
+```
+
+## Mutual TLS (mTLS)
+
+For environments that require client certificate verification, ngrok supports mutual TLS.
+This ensures that only clients presenting a valid certificate can connect to your endpoint.
+
+See the [Agent TLS Termination](/agent/agent-tls-termination) documentation for configuration details.
+
+## Combining security controls
+
+You can layer multiple security controls on a single endpoint.
+For example, combine IP restrictions with OAuth authentication:
+
+```yaml title="ngrok.yml"
+endpoints:
+  - name: my-app
+    url: $YOUR_DOMAIN
+    traffic_policy:
+      on_http_request:
+        - actions:
+          - type: restrict-ips
+            config:
+              enforce: true
+              allow:
+                - "203.0.113.0/24"
+          - type: oauth
+            config:
+              provider: google
+    upstream:
+      url: 8080
+      protocol: http1
+```
+
+## Next steps
+
+- [IP Restrictions action reference](/traffic-policy/actions/restrict-ips/): full configuration options for IP restrictions
+- [Authentication](/guides/share-localhost/auth): add user-level authentication to your endpoints
+- [Traffic Policy](/traffic-policy/): explore all available security and traffic management actions
