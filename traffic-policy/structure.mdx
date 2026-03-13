@@ -1,0 +1,107 @@
+---
+title: Traffic Policy Structure
+sidebarTitle: Structure
+description: Learn how Traffic Policy documents are organized and how to configure rules.
+---
+
+A Traffic Policy document is a YAML (or JSON) object whose top-level keys are [phase](/traffic-policy/concepts/phases) names.
+Each phase contains a list of rules.
+Every rule may optionally carry a human-readable name and one or more CEL expressions, plus the list of actions that run when all expressions match.
+Include only the phases you need; the same structure applies to `on_http_request` and `on_http_response`.
+
+```yaml
+# Phase names are the top-level keys.
+on_tcp_connect:           # runs when a TCP connection is established
+  - name: "rule name"     # optional—a human-readable label for the rule
+    expressions:          # optional—all conditions must be true for the rule to run
+      - "expression"      # CEL expression (such as conn.client_ip == '1.2.3.4')
+    actions:              # required—one or more actions to execute in order
+      - type: "action-type"
+        config:           # action-specific configuration; required fields depend on the action type
+          key: value
+```
+
+A policy only needs to include the phases it uses.
+Each phase holds an ordered list of rules, and each rule requires at least one action.
+
+## Rule fields
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `name` | No | A human-readable label for the rule. |
+| `expressions` | No | A list of [CEL expressions](/traffic-policy/concepts/expressions). All must evaluate to `true` for the actions to run. Omitting `expressions` matches all traffic. |
+| `actions` | Yes | An ordered list of [actions](/traffic-policy/concepts/actions) to execute. Each action requires a `type` and may include a `config` block whose required fields depend on the action type (for example, `oauth` requires `config.provider`). |
+
+## Example with multiple rules and phases
+
+The following example shows a complete policy that uses two phases and multiple rules:
+
+<CodeGroup>
+```yaml policy.yml
+on_http_request:
+  # Rule 1: block a specific IP address
+  - name: "block bad actor"
+    expressions:
+      - "conn.client_ip == '1.2.3.4'"
+    actions:
+      - type: deny
+        config:
+          status_code: 403
+
+  # Rule 2: require authentication on /admin paths
+  - name: "admin oauth"
+    expressions:
+      - "req.url.path.startsWith('/admin')"
+    actions:
+      - type: oauth
+        config:
+          provider: google
+
+  # Rule 3: no expressions—forward all remaining traffic to the upstream service
+  - actions:
+      - type: forward-internal
+        config:
+          url: https://example.internal
+
+on_http_response:
+  # Rule 1: add a security header to every response
+  - actions:
+      - type: add-headers
+        config:
+          headers:
+            x-frame-options: "DENY"
+```
+
+```json policy.json
+{
+  "on_http_request": [
+    {
+      "name": "block bad actor",
+      "expressions": ["conn.client_ip == '1.2.3.4'"],
+      "actions": [
+        { "type": "deny", "config": { "status_code": 403 } }
+      ]
+    },
+    {
+      "name": "admin oauth",
+      "expressions": ["req.url.path.startsWith('/admin')"],
+      "actions": [
+        { "type": "oauth", "config": { "provider": "google" } }
+      ]
+    },
+    {
+      "actions": [
+        { "type": "forward-internal", "config": { "url": "https://example.internal" } }
+      ]
+    }
+  ],
+  "on_http_response": [
+    {
+      "actions": [
+        { "type": "add-headers", "config": { "headers": { "x-frame-options": "DENY" } } }
+      ]
+    }
+  ]
+}
+```
+</CodeGroup>
