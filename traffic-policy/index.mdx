@@ -12,36 +12,23 @@ ngrok's Traffic Policy is a configuration language that offers you the flexibili
 
 ## Policy structure at a glance
 
-A Traffic Policy document is a YAML (or JSON) object. The top-level keys are **phase** names — `on_tcp_connect`, `on_http_request`, and `on_http_response`. Each phase holds an ordered list of **rules**, and each rule contains an optional list of **expressions** and a required list of **actions**.
+A Traffic Policy document is a YAML (or JSON) object.
+The top-level keys are phase names: `on_tcp_connect`, `on_http_request`, and `on_http_response`.
+Each phase holds an ordered list of rules with optional expressions and required actions.
 
 ```yaml
-on_tcp_connect:           # Phase: runs when a TCP connection is established
-  - name: "rule name"     # optional — a human-readable label for the rule
-    expressions:          # optional — all conditions must be true for the rule to run
-      - "conn.client_ip == '1.2.3.4'"
-    actions:              # required — one or more actions to execute in order
-      - type: deny
-
-on_http_request:          # Phase: runs when an HTTP request is received
+on_http_request:
   - expressions:
       - "req.url.path.startsWith('/admin')"
     actions:
       - type: oauth
-        config:           # optional — action-specific configuration
-          provider:
-            name: google
-  - actions:              # a rule with no expressions matches all traffic
-      - type: add-headers
         config:
-          headers:
-            x-powered-by: "ngrok"
-
-on_http_response:         # Phase: runs after the upstream service responds
+          provider: google
   - actions:
       - type: add-headers
         config:
           headers:
-            x-frame-options: "DENY"
+            x-powered-by: "ngrok"
 ```
 
 For a detailed explanation of each field, see [Phase Rules](/traffic-policy/concepts/phase-rules).
