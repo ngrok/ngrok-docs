@@ -4,13 +4,34 @@ sidebarTitle: IP Policies
 description: Use rules to allow or deny traffic and dashboard access from specific IPs and CIDRs.
 ---
 
-IP Policies are reusable groups of rules for allowing or denying traffic and ngrok dashboard access from specific IPs and CIDRs. You can enforce them in the following scenarios:
+IP Policies are reusable groups of rules for allowing or denying traffic and ngrok dashboard access from specific IPs and CIDRs.
+Each IP Policy contains one or more rules that specify an IP or CIDR range and whether to `allow` or `deny` traffic from that range.
+
+You can manage IP Policies in [the ngrok dashboard](https://dashboard.ngrok.com/ip-policies) or via the [IP Policies API](/api-reference/ippolicies/list).
+
+## Creating and managing IP Policies
+
+### In the dashboard
+
+1. Go to [**Security**, then **IP Policies**](https://dashboard.ngrok.com/ip-policies) in the ngrok dashboard.
+2. Click **New IP Policy** to create a policy.
+3. Add rules to your policy by specifying a CIDR range (such as `203.0.113.0/24`) and choosing `allow` or `deny`.
+4. Save your policy.
+   You'll get a policy ID (for example, `ipp_...`) that you can reference in your Traffic Policy.
+
+### Via the API
+
+You can also create and manage IP Policies using the [ngrok API](/api-reference/ippolicies/list).
+Refer to the [IP Policy Rules API](/api-reference/ippolicyrules/list) to add or remove rules from existing policies.
 
 ## Applying IP Policies to Endpoints
 
-You can add an IP Policy to your endpoints using the [`restrict-ips`](/traffic-policy/actions/restrict-ips) Traffic Policy Action.
+To enforce an IP Policy on your endpoints, use the [`restrict-ips`](/traffic-policy/actions/restrict-ips) Traffic Policy action.
+This action lets you reference one or more IP Policy IDs, and ngrok will allow or deny traffic based on the rules in those policies.
 
-To get started with an Agent Endpoint, create a `policy.yml` or `policy.json` file on the same machine as the endpoint. To use a Cloud Endpoint, [visit the Endpoints section in the ngrok dashboard](https://dashboard.ngrok.com/endpoints) and select the Cloud Endpoint. You'll be taken to the Traffic Policy editor. 
+To get started with an Agent Endpoint, create a `policy.yml` or `policy.json` file on the same machine as the endpoint.
+To use a Cloud Endpoint, [visit the **Endpoints** section in the ngrok dashboard](https://dashboard.ngrok.com/endpoints) and select the **Cloud Endpoint**.
+You'll be taken to the **Traffic Policy** editor.
 
 The contents of the policy file should be the following:
 
@@ -21,6 +42,7 @@ on_http_request:
   - actions:
       - type: restrict-ips
         config:
+          enforce: true
           allow:
             - 203.0.113.0/24
             - 198.51.100.42/32
@@ -34,6 +56,7 @@ on_http_request:
         {
           "type": "restrict-ips",
           "config": {
+            "enforce": true,
             "allow": [
               "203.0.113.0/24",
               "198.51.100.42/32"
@@ -47,16 +70,58 @@ on_http_request:
 ```
 </CodeGroup>
 
-If you're using a Cloud Endpoint, save your changes in the dashboard. To apply this policy to your Agent Endpoint, start it using the `--traffic-policy-file` flag as shown in the following example:
+You can also reference an existing IP Policy by its ID:
+
+<CodeGroup>
+```yaml policy.yml
+on_http_request:
+  - actions:
+      - type: restrict-ips
+        config:
+          enforce: true
+          ip_policies:
+            - ipp_1yjqdrIBwgciY2I9zH2EelgBbJF
+```
+
+```json policy.json
+{
+  "on_http_request": [
+    {
+      "actions": [
+        {
+          "type": "restrict-ips",
+          "config": {
+            "enforce": true,
+            "ip_policies": [
+              "ipp_1yjqdrIBwgciY2I9zH2EelgBbJF"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+</CodeGroup>
+
+If you're using a Cloud Endpoint, save your changes in the dashboard.
+To apply this policy to your Agent Endpoint, start it using the `--traffic-policy-file` flag as shown in the following example:
 
 ```bash
 ngrok http $YOUR_PORT --url $YOUR_DOMAIN --traffic-policy-file /path/to/policy.yml
 ```
 
+For a full reference of all configuration options, behavior, and examples for the `restrict-ips` action, see the [Restrict IPs action reference](/traffic-policy/actions/restrict-ips).
+
 ## Applying account-wide IP Policies
 
-To apply account-wide IP Policies, you can use [the IP Restrictions feature in the ngrok dashboard](https://dashboard.ngrok.com/ip-restrictions).
+To apply account-wide IP Policies, you can use [the **IP Restrictions** feature in the ngrok dashboard](https://dashboard.ngrok.com/ip-restrictions).
 
 In the dashboard UI, you can apply [IP Restrictions](/traffic-policy/examples/add-authentication#ip-restrictions) to users trying to sign in to your ngrok dashboard, traffic trying to access your API or Endpoints, and source IPs trying to start Agent Endpoints on your account.
-
 You can define the IP Policies that make up your restrictions in the dashboard UI.
+
+## Related resources
+
+- [Restrict IPs Traffic Policy action](/traffic-policy/actions/restrict-ips): Full reference for the `restrict-ips` action, including all configuration options and examples.
+- [IP Policies API reference](/api-reference/ippolicies/list): Manage IP Policies programmatically via the ngrok API.
+- [IP Policy Rules API reference](/api-reference/ippolicyrules/list): Add or remove rules from your IP Policies via the ngrok API.
