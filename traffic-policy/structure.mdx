@@ -1,61 +1,36 @@
 ---
-title: Traffic Policy Document Schema
-sidebarTitle: Traffic Policy Schema
-description: Learn how Traffic Policy documents are structured and how to configure rules.
+title: Traffic Policy Document Structure
+sidebarTitle: Structure
+description: Learn how Traffic Policy documents are organized and how to configure rules.
 ---
 
-A Traffic Policy document is a YAML or JSON object you can use to configure how traffic will be managed before reaching the apps and services at your ngrok endpoints. This reference guide outlines the schema for Traffic Policy documents.
+A Traffic Policy document is a YAML (or JSON) object whose top-level keys are [phase](/traffic-policy/concepts/phases) names.
+Each phase contains a list of rules.
+Every rule may optionally carry a human-readable name and one or more CEL expressions, plus the list of actions that run when all expressions match.
+Include only the phases you need; the same structure applies to `on_http_request` and `on_http_response`.
 
-## How Traffic Policy documents work
-
-Traffic Policy Documents define how traffic is managed at different phases of the request. See [the phases documentation](/traffic-policy/concepts/phases) for a list of all available options.
-Each phase corresponds to an event in the lifecycle of a request, such as when a connection is made, or when a response is sent.
-In your Traffic Policy document, you can use these phases to define a list of [rules](/traffic-policy/concepts/phase-rules), which use [expressions](/traffic-policy/concepts/expressions) to filter traffic and [actions](/traffic-policy/concepts/actions) to manage traffic.
-
-## Basic example
-
-<CodeGroup>
-```yaml policy.yml
+```yaml
 # Phase names are the top-level keys.
-on_http_request: # runs when a TCP connection is established
-  - name: "Custom response for specific client IP"     # optional — a human-readable label for the rule
-    expressions:  # optional — all conditions must be true for the rule to run
-      - conn.client_ip == '1.2.3.4' # Any valid CEL expression. This one checks for a specific client IP
-    actions:  # required — one or more actions to execute in order
-      - type: custom-response
-        config: # action-specific configuration; required fields depend on the action type
-          status_code: 503
-          body: <html><body><h1>Service Unavailable</h1><p>Our servers are currently down for maintenance. Please check back later.</p></body></html>
-          headers:
-            content-type: text/html
+on_tcp_connect:           # runs when a TCP connection is established
+  - name: "rule name"     # optional—a human-readable label for the rule
+    expressions:          # optional—all conditions must be true for the rule to run
+      - "expression"      # CEL expression (such as conn.client_ip == '1.2.3.4')
+    actions:              # required—one or more actions to execute in order
+      - type: "action-type"
+        config:           # action-specific configuration; required fields depend on the action type
+          key: value
 ```
-```json policy.json
-{
-  "on_http_request": [
-    {
-      "name": "Custom response for specific client IP",
-      "expressions": [
-        "conn.client_ip == '1.2.3.4'"
-      ],
-      "actions": [
-        {
-          "type": "custom-response",
-          "config": {
-            "status_code": 503,
-            "body": "<html><body><h1>Service Unavailable</h1><p>Our servers are currently down for maintenance. Please check back later.</p></body></html>",
-            "headers": {
-              "content-type": "text/html"
-            }
-          }
-        }
-      ]
-    }
-  ]
-}
-```
-</CodeGroup>
 
-## Phases
+A policy only needs to include the phases it uses.
+Each phase holds an ordered list of rules, and each rule requires at least one action.
+
+## Rule fields
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `name` | No | A human-readable label for the rule. |
+| `expressions` | No | A list of [CEL expressions](/traffic-policy/concepts/expressions). All must evaluate to `true` for the actions to run. Omitting `expressions` matches all traffic. |
+| `actions` | Yes | An ordered list of [actions](/traffic-policy/concepts/actions) to execute. Each action requires a `type` and may include a `config` block whose required fields depend on the action type (for example, `oauth` requires `config.provider`). |
 
 ## Example with multiple rules and phases
 
