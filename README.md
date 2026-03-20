@@ -11,7 +11,7 @@ See our [Contribution Guidelines](CONTRIBUTING.md) for detailed instructions on 
 
 ## Prerequisites
 
-- [Node 24](https://nodejs.org/en/download)
+- [Node 24 or higher](https://nodejs.org/en/download)
 - [pnpm 10](https://pnpm.io/installation#using-npm)
 - [nvm](https://github.com/nvm-sh/nvm?tab=readme-ov-file#installing-and-updating)
 - `corepack` is included with node by default, no need to install
