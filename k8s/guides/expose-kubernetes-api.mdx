@@ -1,0 +1,379 @@
+---
+title: Exposing the Kubernetes API Server with the ngrok Operator
+sidebarTitle: Expose Kubernetes API
+description: Learn how to expose the Kubernetes API server externally using the ngrok Kubernetes Operator, covering each Kubernetes authentication strategy and how to update your kubeconfig.
+---
+
+Exposing the Kubernetes API server through ngrok lets you reach your cluster's control plane from anywhere — no VPN, no bastion host, no firewall rules required.
+
+Common use cases include:
+
+- Running `kubectl` commands remotely without VPN access
+- Enabling CI/CD pipelines outside the cluster to deploy resources
+- Giving teammates temporary access to a development cluster
+- Accessing clusters running in air-gapped or private networks
+
+The ngrok Operator creates a persistent, secure tunnel from your cluster to ngrok's global network. However, the **type of ngrok endpoint** you need depends on which Kubernetes authentication strategy your cluster uses, since some auth mechanisms rely on TLS client certificates that require end-to-end TLS passthrough.
+
+## Prerequisites
+
+- The [ngrok Kubernetes Operator installed](/k8s/installation) in your cluster
+- `kubectl` configured with access to the cluster you want to expose
+
+## Kubernetes Authentication Strategies
+
+As of Kubernetes 1.33, the following authentication strategies are available. From a `kubectl` client perspective they correspond to specific fields in your kubeconfig, which determines which ngrok endpoint type to use.
+
+| Authentication Strategy | kubeconfig Indicator | ngrok Compatible? | Required Endpoint Type |
+|---|---|---|---|
+| Bearer Token (Service Account, Static) | `token` or `tokenFile` field | ✅ Yes | HTTPS |
+| OIDC Token (via `exec` plugin) | `exec` block (e.g. `kubelogin`) | ✅ Yes | HTTPS |
+| Cloud Provider Token (EKS, GKE, AKS) | `exec` block (e.g. `aws`, `gke-gcloud-auth-plugin`) | ✅ Yes | HTTPS |
+| X.509 Client Certificate | `client-certificate-data` + `client-key-data` fields | ✅ Yes | TLS (passthrough) |
+| Exec Plugin (certificate output) | `exec` block producing `clientCertificateData` | ✅ Yes | TLS (passthrough) |
+| Authenticating Proxy | External proxy infrastructure | ⚠️ Indirect only | N/A |
+| Anonymous | No credentials | ✅ Yes (add ngrok-level auth!) | HTTPS |
+
+### Why endpoint type matters
+
+**HTTPS endpoints** terminate TLS at the ngrok edge. The `Authorization: Bearer <token>` header passes through transparently to the Kubernetes API server, so any token-based strategy works.
+
+**TLS endpoints** pass the raw TLS stream through to the upstream without ngrok terminating it. This means the full TLS handshake — including the client certificate — travels end-to-end from `kubectl` to the Kubernetes API server. This is required for X.509 client certificate authentication.
+
+If you use HTTPS with client certificate auth, ngrok will terminate TLS before the client cert reaches the API server and authentication will fail.
+
+## Identifying Your Authentication Strategy
+
+Open your kubeconfig (default location: `~/.kube/config`) and find the `users` section for the relevant cluster.
+
+```bash
+kubectl config view --minify
+```
+
+### Bearer token
+
+Your kubeconfig has a `token` or `tokenFile` field directly under `user`:
+
+```yaml
+users:
+- name: my-user
+  user:
+    token: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+or
+
+```yaml
+users:
+- name: my-user
+  user:
+    tokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+```
+
+→ Use the **[HTTPS endpoint setup](#scenario-1-bearer-token-or-exec-plugin-producing-a-token-https)**.
+
+### Exec credential plugin
+
+Your kubeconfig has an `exec` block under `user`. This is used by cloud providers (EKS, GKE, AKS) and OIDC login tools:
+
+```yaml
+# Amazon EKS
+users:
+- name: my-eks-user
+  user:
+    exec:
+      apiVersion: client.authentication.k8s.io/v1beta1
+      command: aws
+      args:
+      - eks
+      - get-token
+      - --cluster-name
+      - my-cluster
+```
+
+```yaml
+# Google GKE
+users:
+- name: my-gke-user
+  user:
+    exec:
+      apiVersion: client.authentication.k8s.io/v1beta1
+      command: gke-gcloud-auth-plugin
+```
+
+```yaml
+# OIDC (e.g. kubelogin)
+users:
+- name: my-oidc-user
+  user:
+    exec:
+      apiVersion: client.authentication.k8s.io/v1beta1
+      command: kubectl-oidc-login
+      args:
+      - get-token
+      - --oidc-issuer-url=https://accounts.google.com
+      - --oidc-client-id=my-client-id
+```
+
+Most exec plugins (including all cloud provider implementations) produce a bearer token, not a client certificate. Check the plugin documentation to confirm. If the plugin returns a token:
+
+→ Use the **[HTTPS endpoint setup](#scenario-1-bearer-token-or-exec-plugin-producing-a-token-https)**.
+
+If the plugin returns `clientCertificateData` and `clientKeyData`:
+
+→ Use the **[TLS passthrough setup](#scenario-2-x509-client-certificate-or-exec-plugin-producing-a-certificate-tls-passthrough)**.
+
+### X.509 client certificate
+
+Your kubeconfig has `client-certificate-data` and `client-key-data` fields (or their file-based equivalents) under `user`:
+
+```yaml
+users:
+- name: my-user
+  user:
+    client-certificate-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0t...
+    client-key-data: LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQ==...
+```
+
+or
+
+```yaml
+users:
+- name: my-user
+  user:
+    client-certificate: /path/to/client.crt
+    client-key: /path/to/client.key
+```
+
+→ Use the **[TLS passthrough setup](#scenario-2-x509-client-certificate-or-exec-plugin-producing-a-certificate-tls-passthrough)**.
+
+## Scenario 1: Bearer Token or Exec Plugin Producing a Token (HTTPS)
+
+Use this scenario when your kubeconfig uses `token`, `tokenFile`, or an `exec` block that produces a bearer token (the most common case for EKS, GKE, AKS, and OIDC).
+
+### Apply the AgentEndpoint manifest
+
+Create an `AgentEndpoint` that exposes the in-cluster Kubernetes API service. Replace `my-k8s-api.ngrok.app` with your reserved ngrok domain.
+
+```yaml
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: AgentEndpoint
+metadata:
+  name: kube-api-access
+  namespace: default
+spec:
+  url: https://my-k8s-api.ngrok.app:443
+  upstream:
+    url: https://kubernetes.default.svc:443
+  # Optionally, you can add a traffic policy to restrict access to your endpoint
+  # Remove the traffic policy below if not needed, or update the IP to the IP
+  # you get when running `curl https://ipv4.ngrok.com`
+  trafficPolicy:
+    # You can add an inline traffic policy here to restrict
+    # access to your endpoint, or you can reference an existing
+    # traffic policy like so:
+    #
+    # targetRef:
+    #   name: my-traffic-policy
+    #
+    inline:
+      on_tcp_connect:
+        - actions:
+            - config:
+                allow:
+                  - 1.2.3.4/32
+              type: restrict-ips
+```
+
+Apply it:
+
+```bash
+kubectl apply -f kubernetes-api-endpoint.yaml
+```
+
+### Update your kubeconfig
+
+Find the name of the cluster entry you want to update:
+
+```bash
+kubectl config get-clusters
+```
+
+Replace the server with your ngrok endpoint(ex: `https://my-k8s-api.ngrok.com`)
+
+```bash
+kubectl config set-cluster <cluster-name> --server=https://my-k8s-api.ngrok.app
+```
+
+Remove the previous certificate data as ngrok will now be terminating HTTPS for you:
+```bash
+kubectl config unset clusters.<cluster-name>.certificate-authority-data
+```
+
+Alternatively, edit `~/.kube/config` directly. The cluster entry should look like:
+
+```yaml
+clusters:
+- name: my-cluster
+  cluster:
+    server: https://my-k8s-api.ngrok.app
+```
+
+### Verify access
+
+You should now be able to verify access by running any kubectl command.
+
+```bash
+kubectl cluster-info
+```
+
+
+
+## Scenario 2: X.509 Client Certificate or Exec Plugin Producing a Certificate (TLS Passthrough)
+
+Use this scenario when your kubeconfig uses `client-certificate-data` / `client-key-data` fields or an `exec` plugin that outputs a client certificate. The `tls://` endpoint type passes the raw TLS stream through ngrok without termination, so your client certificate reaches the Kubernetes API server directly.
+
+### Apply the AgentEndpoint manifest
+
+Create an `AgentEndpoint` using the `tls://` scheme for the public URL and `tcp://` for the upstream. Replace `my-k8s-api.ngrok.app` with your desired domain.
+
+```yaml
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: AgentEndpoint
+metadata:
+  name: kubernetes-api
+  namespace: default
+spec:
+  url: tls://my-k8s-api.ngrok.app
+  upstream:
+    url: tls://kubernetes.default.svc:443
+  # Optionally, you can add a traffic policy to restrict access to your endpoint
+  # Remove the traffic policy below if not needed, or update the IP to the IP
+  # you get when running `curl https://ipv4.ngrok.com`
+  trafficPolicy:
+    # You can add an inline traffic policy here to restrict
+    # access to your endpoint, or you can reference an existing
+    # traffic policy like so:
+    #
+    # targetRef:
+    #   name: my-traffic-policy
+    #
+    inline:
+      on_tcp_connect:
+        - actions:
+            - config:
+                allow:
+                  - 1.2.3.4/32
+              type: restrict-ips
+```
+
+Apply it:
+
+```bash
+kubectl apply -f kubernetes-api-endpoint.yaml
+```
+
+### Update your kubeconfig
+
+With TLS passthrough, ngrok forwards the raw TLS handshake to the Kubernetes API server. The server still presents its original cluster certificate, so you keep `certificate-authority-data` pointing to the cluster CA.
+```bash
+# Set the new server URL (https:// — TLS is handled end-to-end by kube-apiserver)
+kubectl config set-cluster <cluster-name> \
+  --server=https://my-k8s-api.ngrok.app
+```
+
+Alternatively, edit `~/.kube/config` directly. The cluster entry should look like:
+
+```yaml
+clusters:
+- name: my-cluster
+  cluster:
+    server: https://my-k8s-api.ngrok.app
+    certificate-authority-data: <your-existing-cluster-ca-base64>  # Keep as-is
+```
+
+The `user` section (with `client-certificate-data` and `client-key-data`) stays unchanged — these are passed through to the API server via the TLS handshake.
+
+Verify access:
+
+```bash
+kubectl cluster-info
+```
+
+### Troubleshooting
+
+If you get an error message like:
+
+```bash
+Unable to connect to the server: tls: failed to verify certificate: x509: certificate is valid for kubernetes, kubernetes.default, kubernetes.default.svc, kubernetes.default.svc.cluster.local, localhost, not my-k8s-api.ngrok.app
+```
+
+then the certificate presented by your Kubernetes API server is only valid for those server names and you will either need to:
+
+1. Create/Obtain a valid certifiacte and instruct your kubeapi server to use it. For example, you can use `--apiserver-cert-extra-sans` if using [kubeadm](https://kubernetes.io/docs/reference/setup-tools/kubeadm/kubeadm-init/) OR
+2. Disable the TLS server verification step, as shown below, which comes with security implications that you should consider.
+
+```bash
+# Remove the cluster CA — it can not be used in conjuction with --insecure-skip-tls-verify
+kubectl config unset clusters.<cluster-name>.certificate-authority-data
+# Set the new server URL
+kubectl config set-cluster <cluster-name> \
+  --server=https://my-k8s-api.ngrok.app \
+  --insecure-skip-tls-verify
+```
+
+Alternatively, edit `~/.kube/config` directly. The cluster entry should look like:
+
+```yaml
+clusters:
+- name: my-cluster
+  cluster:
+    insecure-skip-tls-verify: true
+    server: https://my-k8s-api.ngrok.app
+```
+
+## Security Recommendations
+
+Exposing the Kubernetes API server publicly increases your attack surface. Apply these controls:
+
+### Restrict access by IP
+
+Use a Traffic Policy on your `AgentEndpoint` to allow only known IP ranges. This prevents unauthorized clients from even reaching the API server.
+
+```yaml
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: AgentEndpoint
+metadata:
+  name: kubernetes-api
+  namespace: default
+spec:
+  url: https://my-k8s-api.ngrok.app
+  upstream:
+    url: https://kubernetes.default.svc.cluster.local:443
+  bindings:
+  - public
+  trafficPolicy:
+    inline:
+      on_tcp_connect:
+      - actions:
+        - type: restrict-ips
+          config:
+            enforce: true
+            allow:
+            - 203.0.113.0/28   # Your office public IP
+            - 198.51.100.10/32  # Specific CI/CD system IP
+```
+
+See the [restrict IPs guide](/k8s/guides/how-to/restrict-ips) for more details.
+
+### Kubernetes RBAC remains your primary authorization layer
+
+ngrok handles transport security — the existing Kubernetes RBAC rules still control what any authenticated user can do. Ensure that service accounts and user accounts exposed through the ngrok endpoint follow the principle of least privilege.
+
+### Remove access when no longer needed
+
+When remote access is no longer needed, delete the `AgentEndpoint` resource to immediately close the tunnel:
+
+```bash
+kubectl -n default delete agentendpoint kubernetes-api
+```
