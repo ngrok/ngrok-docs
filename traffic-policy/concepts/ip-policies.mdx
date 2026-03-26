@@ -29,11 +29,20 @@ Refer to the [IP Policy Rules API](/api-reference/ippolicyrules/list) to add or 
 To enforce an IP Policy on your endpoints, use the [`restrict-ips`](/traffic-policy/actions/restrict-ips) Traffic Policy action.
 This action lets you reference one or more IP Policy IDs, and ngrok will allow or deny traffic based on the rules in those policies.
 
-To get started with an Agent Endpoint, create a `policy.yml` or `policy.json` file on the same machine as the endpoint.
-To use a Cloud Endpoint, [visit the **Endpoints** section in the ngrok dashboard](https://dashboard.ngrok.com/endpoints) and select the **Cloud Endpoint**.
-You'll be taken to the **Traffic Policy** editor.
+There are two ways to apply a Traffic Policy to an Agent Endpoint:
 
-The contents of the policy file should be the following:
+- **Standalone policy file**: Create a separate `policy.yml` or `policy.json` file and pass it to ngrok with the `--traffic-policy-file` flag.
+  The policy phases (such as `on_http_request`) are at the top level of the file.
+- **Agent config file**: Define the policy inline inside your [ngrok agent config file](/agent/config/v3) (for example, `ngrok.yml`).
+  In this case, the policy phases must be nested under the `traffic_policy:` key inside the endpoint configuration.
+
+<Note>
+When embedding a Traffic Policy in your agent config file, the `on_http_request` (and other phase) blocks must be placed under `traffic_policy:` inside the endpoint definition—not at the top level of the config file.
+</Note>
+
+### Using a standalone policy file
+
+Create a `policy.yml` or `policy.json` file with the following contents:
 
 <CodeGroup>
 ```yaml policy.yml
@@ -70,7 +79,58 @@ on_http_request:
 ```
 </CodeGroup>
 
-You can also reference an existing IP Policy by its ID:
+Then start your Agent Endpoint using the `--traffic-policy-file` flag:
+
+```bash
+ngrok http $YOUR_PORT --url $YOUR_DOMAIN --traffic-policy-file /path/to/policy.yml
+```
+
+### Using the agent config file
+
+To embed the same policy in your [ngrok agent config file](/agent/config/v3), nest the policy block under `traffic_policy:` inside the endpoint definition:
+
+```yaml ngrok.yml
+endpoints:
+  - name: my-endpoint
+    url: https://example.ngrok.app
+    upstream:
+      url: 8080
+    traffic_policy:
+      on_http_request:
+        # Only allow requests from trusted IPs
+        - actions:
+            - type: restrict-ips
+              config:
+                enforce: true
+                allow:
+                  - 203.0.113.0/24
+                  - 198.51.100.42/32
+```
+
+### Using a Cloud Endpoint
+
+To use a Cloud Endpoint, [visit the **Endpoints** section in the ngrok dashboard](https://dashboard.ngrok.com/endpoints) and select the **Cloud Endpoint**.
+You'll be taken to the **Traffic Policy** editor where you can enter the policy directly.
+The editor uses the standalone policy format.
+Enter the phase blocks (such as `on_http_request`) at the top level:
+
+```yaml
+on_http_request:
+  # Only allow requests from trusted IPs
+  - actions:
+      - type: restrict-ips
+        config:
+          enforce: true
+          allow:
+            - 203.0.113.0/24
+            - 198.51.100.42/32
+```
+
+Save your changes in the dashboard when done.
+
+### Referencing an existing IP Policy by ID
+
+You can also reference an existing [IP Policy](/api-reference/ippolicies/list) by its ID instead of listing CIDRs directly:
 
 <CodeGroup>
 ```yaml policy.yml
@@ -104,12 +164,7 @@ on_http_request:
 ```
 </CodeGroup>
 
-If you're using a Cloud Endpoint, save your changes in the dashboard.
-To apply this policy to your Agent Endpoint, start it using the `--traffic-policy-file` flag as shown in the following example:
-
-```bash
-ngrok http $YOUR_PORT --url $YOUR_DOMAIN --traffic-policy-file /path/to/policy.yml
-```
+The same placement rules apply: use the top-level format in a standalone policy file or in the Cloud Endpoint editor, and nest under `traffic_policy:` when using the agent config file.
 
 For a full reference of all configuration options, behavior, and examples for the `restrict-ips` action, see the [Restrict IPs action reference](/traffic-policy/actions/restrict-ips).
 
