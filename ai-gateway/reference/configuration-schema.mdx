@@ -8,6 +8,10 @@ import { ConfigEnum, ConfigEnumOption } from "/snippets/ConfigTable.jsx";
 
 The [Traffic Policy](/traffic-policy/) configuration reference for the AI Gateway action.
 
+<Note>
+When using [AI Gateway API Keys](/ai-gateway/concepts/api-keys), no provider configuration is needed—ngrok manages provider keys automatically. The `providers` and `api_keys` fields below are only required for [Bring Your Own Keys](/ai-gateway/concepts/bring-your-own-keys) setups.
+</Note>
+
 ## Supported phases
 
 `on_http_request`
@@ -118,7 +122,7 @@ on_http_request:
 </ConfigField>
 
 <ConfigField title="providers" type="array">
-  <p>List of AI provider configurations. When empty, all built-in providers are allowed in passthrough mode.</p>
+  <p>List of AI provider configurations. Not required when using <a href="/ai-gateway/concepts/api-keys">AI Gateway API Keys</a>—ngrok manages provider keys automatically. When empty, all built-in providers are allowed.</p>
   <p>See <a href="#provider-configuration">Provider Configuration</a> below for detailed field definitions.</p>
   
   ```yaml
@@ -246,6 +250,40 @@ Each provider in the `providers` array supports these fields:
   <p>List of model configurations for this provider. See <a href="#model-configuration">Model Configuration</a> below.</p>
 </ConfigField>
 
+<ConfigField title="providers[].supported_api_surfaces" type="array">
+  <p>List of API formats this provider supports. Possible values are <code>openai</code> and <code>anthropic</code>. Default is <code>openai</code>.</p>
+  <p>Each entry optionally includes a <code>surface</code> (the specific endpoint, such as <code>chat-completions</code> or <code>responses</code>) and a <code>supported_params</code> list. When <code>supported_params</code> is non-empty, any top-level request body parameter not on the list is automatically removed before the request is forwarded to the provider. For official providers, this information is maintained automatically.</p>
+  
+<ConfigField title="providers[].supported_api_surfaces" type="array<object>">
+  <p>Lists the API surfaces supported by this provider.</p>
+  <p>Each entry must include <code>format</code>, and may include <code>surface</code> and <code>supported_params</code>.</p>
+
+  <ConfigField title="providers[].supported_api_surfaces[].format" type="string" required>
+    <p>The API format for this entry. Allowed values: <code>openai</code>, <code>anthropic</code>.</p>
+  </ConfigField>
+
+  <ConfigField title="providers[].supported_api_surfaces[].surface" type="string">
+    <p>Optional endpoint surface for this format entry (for example <code>chat-completions</code>, <code>responses</code>, or <code>messages</code>).</p>
+  </ConfigField>
+
+  <ConfigField title="providers[].supported_api_surfaces[].supported_params" type="array<string>">
+    <p>Optional allowlist of top-level request body keys.  You must set <code>surface</code> in order to set this field.</p>
+  </ConfigField>
+</ConfigField>
+
+  ```yaml
+  supported_api_surfaces:
+    - format: openai
+      surface: chat-completions
+      supported_params:
+        - name: model
+        - name: messages
+        - name: temperature
+        - name: stream
+    - format: anthropic
+  ```
+</ConfigField>
+
 ## API key configuration
 
 Each API key in `providers[].api_keys` supports:
@@ -336,6 +374,20 @@ Each model in `providers[].models` supports:
   <p>Features supported by the model (for example, "tool-calling", "coding").</p>
 </ConfigField>
 
+<ConfigField title="providers[].models[].unsupported_params" type="array of objects">
+  <p>A denylist of top-level request body parameters that this model does not support. When a request is forwarded to this model, any listed parameters are automatically removed from the request body before it is sent to the provider.</p>
+  <p>Each entry requires a <code>name</code> field with the parameter name. This is useful for custom models that reject parameters that clients commonly include.</p>
+  <p>For official models in the ngrok model catalog, this information is maintained automatically—no configuration required.</p>
+
+  ```yaml
+  models:
+    - id: "my-model"
+      unsupported_params:
+        - name: parallel_tool_calls
+        - name: response_format
+  ```
+</ConfigField>
+
 ## Complete example
 
 ```yaml
@@ -392,4 +444,3 @@ on_http_request:
           # Fall back to all keys
           - "ai.keys"
 ```
-

@@ -6,18 +6,22 @@ description: Block common web attacks with the `owasp-crs-request` action in Tra
 
 import ActionExamples from "/snippets/traffic-policy/actions/owasp-crs-request/examples/index.mdx";
 import ActionVariablesDescription from "/snippets/traffic-policy/common/action-variables-description.mdx";
+import NonTerminatingExplanation from "/snippets/traffic-policy/common/non-terminating-explanation.mdx";
 import { YouTubeEmbed } from "/snippets/YouTubeEmbed.jsx";
 
 import { ConfigField } from "/snippets/ConfigTable.jsx";
 import { ConfigChildren } from "/snippets/ConfigChildren.jsx";
 
-The `owasp-crs-request` action enables rule processing on incoming HTTP requests
-to your endpoint. To use rule processing to block malicious HTTP _responses_,
-enable the [OWASP CRS Response
-action](/traffic-policy/actions/owasp-crs-response/).
+The `owasp-crs-request` action enables rule processing on incoming HTTP requests to your endpoint.
+To use rule processing to block malicious HTTP _responses_, enable the [OWASP CRS Response action](/traffic-policy/actions/owasp-crs-response/).
 
 <Tip>
-Use both actions.
+**Use both OWASP CRS actions for comprehensive protection.**
+
+The Request action protects against malicious client requests (such as SQL injection and XSS attacks).
+The Response action protects against data leaks or vulnerabilities in your upstream service's responses (such as exposed SQL error messages and sensitive data).
+
+Together, they provide defense-in-depth security for both incoming and outgoing traffic.
 </Tip>
 
 [OWASP](https://owasp.org/) stands for the Open Web Application Security
@@ -46,12 +50,13 @@ reference for this action.
 #### Configuration fields
 
 <ConfigField title="on_error" type="string" required={true}>
-    <p>Behavior if there is an error. Must be one of either "continue" or "halt" (default "halt")</p>
-    <p>More information can be found in the [Managing Fallback Behavior](#on-error) section.</p>
+    <p>Behavior if there is an error processing rules. Must be one of either <code>"continue"</code> or <code>"halt"</code> (default <code>"halt"</code>).</p>
+    <p>More information can be found in the [Managing Fallback Behavior](#managing-fallback-behavior-on-error) section.</p>
 </ConfigField>
 
 <ConfigField title="process_body" type="bool" required={false}>
-    <p>If false, rules for the request body are not processed. Default is false.</p>
+    <p>If <code>true</code>, rules for the request body are evaluated. Default is <code>false</code>.</p>
+    <p>See [Body Processing](#body-processing) for details and limitations.</p>
 </ConfigField>
 
 <ConfigField title="exclude_rule_ids" type="array of integers" required={false}>
@@ -67,6 +72,8 @@ This action evaluates rules for request headers and body (when `process_body` is
 
 The tallying process is called Anomaly Scoring, and is detailed on [the CRS website.](https://coreruleset.org/docs/2-how-crs-works/2-1-anomaly_scoring/)
 
+This action costs **10 [Traffic Policy Units (TPUs)](/pricing-limits/traffic-policy-unit-pricing/)** per request evaluated.
+
 ### Default behavior
 
 The default behavior for this action is based on the following [Coraza](https://coraza.io/) directives and rules from v4.14.0 of the CRS:
@@ -79,13 +86,17 @@ Included in these rules is an inbound anomaly score threshold of 5 and a [parano
 
 ### Managing fallback behavior (`on_error`) 
 
-If `on_error` is set to `halt` (default) and the action encounters an error when forwarding traffic, the Traffic Policy chain will halt and no further actions will be executed. For example, if you have a `log` action after the `owasp-crs-request` action, the `log` action will not be run and the error will be returned.
+If `on_error` is set to `halt` (default) and the action encounters an error while evaluating rules, the Traffic Policy chain will halt and no further actions will be executed. For example, if you have a `log` action after the `owasp-crs-request` action, the `log` action will not be run and the error will be returned.
 
 However, if `on_error` is set to `continue`, actions that appear after the `owasp-crs-request` action will still be executed even if the `owasp-crs-request` action encounters an error.
 
 ### Body processing
 
-When `process_body` is enabled, ngrok evaluates rules against the first 4kb of the body. If the body is larger than 4kb, the portion after the first 4kb is ignored.
+When `process_body` is enabled, ngrok buffers and evaluates rules against the first 4KB of the body. If the body is larger than 4KB, the portion after the first 4KB is ignored.
+
+<Note>
+Enabling `process_body` buffers the request body in memory, which may increase latency for large payloads.
+</Note>
 
 ### Rule exclusion
 
@@ -99,6 +110,9 @@ If the anomaly score accumulated from matching rules exceeds the threshold, ngro
 
 If ngrok is unable to read the request body successfully, ngrok blocks the request with a `HTTP 500` response. The request does not make it to your upstream.
 
+### Non-terminating action
+
+<NonTerminatingExplanation />
 
 ## Examples
 
@@ -223,8 +237,8 @@ on_http_request:
               "matched_rules_first_data": "${actions.ngrok.owasp_crs_request.matched_rules[0].data}"
             }
           }
-      ]
         }
+      ]
     }
   ]
 }

@@ -148,7 +148,7 @@ metadata:
   name: ngrok-22680758-eb09-576e-a7ac-dc3728458dfc
   namespace: ngrok-operator
 spec:
-  endpointURI: http://my-bound-service.my-namespace:80
+  endpointURL: http://my-bound-service.my-namespace:80
   port: 10001
   scheme: http
   target:
@@ -191,6 +191,14 @@ This can be used within a single cluster to use ngrok Traffic Policies on your e
 Furthermore, the true power in Kubernetes bindings is allowing you to project a `Service` in one cluster to one or more other clusters running the ngrok Kubernetes Operator.
 When doing this, you can configure networking between different Kubernetes clusters without needing to expose any publicly accessible URLs that would need to require authentication to prevent unwanted access.
 This is not simply limited to Kubernetes clusters. You could for example, create a Kubernetes bound endpoint using the ngrok CLI/SDK to project workloads running on another system such as a Virtual Machine into your Kubernetes clusters.
+
+### Kubernetes pod identity in Traffic Policy
+
+When a connection arrives on a Kubernetes-bound endpoint, ngrok makes the originating pod's metadata available as Traffic Policy variables under `conn.k8s.pod.*`. This enables policies that make access control decisions based on the Kubernetes workload initiating the connection, such as restricting access to pods in a specific namespace or matching on pod annotations.
+
+Pod identity variables are only available on endpoints with a `kubernetes` binding. They are not populated on public or internal endpoints.
+
+For a full reference of the available variables, error handling, and usage examples, see [Restricting Access by Kubernetes Pod Identity](/k8s/guides/how-to/pod-identity).
 
 ### Enable bindings for the Operator
 

@@ -1,0 +1,129 @@
+---
+title: Key Selection & Failover
+description: Advanced CEL-based API key selection and multi-key failover strategies for BYOK usage.
+---
+
+When using your own provider API keys (BYOK), you can configure advanced key selection strategies using CEL expressions. This enables key rotation based on quota usage, error rates, and load distribution.
+
+## Multi-key failover
+
+When you configure multiple API keys for a provider, the gateway automatically handles failover:
+
+1. Keys are tried **in the order they are listed**
+2. If a key fails, the next key is used automatically
+3. Failover triggers include:
+   - **Rate limit errors** (HTTP 429)
+   - **Quota exceeded** responses from the provider
+   - **Timeout or server errors** (HTTP 5xx)
+
+```yaml
+on_http_request:
+  - type: ai-gateway
+    config:
+      providers:
+        - id: openai
+          api_keys:
+            - value: ${secrets.get('openai', 'key-one')}    # tried first
+            - value: ${secrets.get('openai', 'key-two')}    # failover
+            - value: ${secrets.get('openai', 'key-three')}  # last resort
+```
+
+<Tip>
+Order your keys so that your highest-capacity or primary keys are listed first.
+</Tip>
+
+## Advanced key selection
+
+For fine-grained control over which API key is used, configure `api_key_selection` with CEL expressions that select keys based on runtime metrics like quota usage and error rates.
+
+### Basic configuration
+
+```yaml
+on_http_request:
+  - type: ai-gateway
+    config:
+      providers:
+        - id: openai
+          api_keys:
+            - value: ${secrets.get('openai', 'key-one')}
+            - value: ${secrets.get('openai', 'key-two')}
+            - value: ${secrets.get('openai', 'key-three')}
+      
+      api_key_selection:
+        strategy:
+          - "ai.keys.filter(k, k.quota.remaining_requests > 100)"
+          - "ai.keys"
+```
+
+### How strategies work
+
+Strategies execute **in order** until one returns at least one key:
+
+1. First strategy filters keys with >100 remaining requests
+2. If no keys match, falls back to all keys
+3. Selected keys are then tried in order for failover
+
+<Note>
+Each strategy is a CEL expression that returns a list of keys. The first strategy that returns a non-empty list is used.
+</Note>
+
+### Quota-based selection
+
+Prioritize keys with remaining capacity:
+
+```yaml
+api_key_selection:
+  strategy:
+    # High capacity keys first
+    - "ai.keys.filter(k, k.quota.remaining_requests > 500)"
+    # Medium capacity keys
+    - "ai.keys.filter(k, k.quota.remaining_requests > 100)"
+    # Any key with quota
+    - "ai.keys.filter(k, k.quota.remaining_requests > 0)"
+    # Fall back to all keys
+    - "ai.keys"
+```
+
+### Error-rate-based selection
+
+Avoid keys experiencing issues:
+
+```yaml
+api_key_selection:
+  strategy:
+    # Keys with very low rate limit errors
+    - "ai.keys.filter(k, k.error_rate.rate_limit < 0.05)"
+    # Keys with acceptable error rates
+    - "ai.keys.filter(k, k.error_rate.total < 0.2)"
+    # Fall back to all keys
+    - "ai.keys"
+```
+
+### Load distribution
+
+Randomize key selection to distribute load:
+
+```yaml
+api_key_selection:
+  strategy:
+    # Randomly select from keys with good quota
+    - "ai.keys.filter(k, k.quota.remaining_requests > 100).randomize()"
+    # Fall back to any key
+    - "ai.keys.randomize()"
+```
+
+## Available key variables
+
+| Variable | Description |
+|----------|-------------|
+| `k.quota.remaining_requests` | Requests remaining before rate limit |
+| `k.quota.remaining_tokens` | Tokens remaining before rate limit |
+| `k.error_rate.total` | Fraction of all errors (0.0 to 1.0) |
+| `k.error_rate.rate_limit` | Fraction of rate limit (429) errors |
+| `k.error_rate.timeout` | Fraction of timeout errors |
+
+## Next steps
+
+- [CEL Functions Reference](/ai-gateway/reference/cel-functions#api-key-selection): complete list of CEL functions for key selection
+- [Managing Provider Keys](/ai-gateway/guides/managing-provider-keys): storing, rotating, and securing your provider API keys
+- [Bring Your Own Keys](/ai-gateway/concepts/bring-your-own-keys): overview of using your own provider keys

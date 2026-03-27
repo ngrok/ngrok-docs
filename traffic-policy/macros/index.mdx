@@ -42,7 +42,7 @@ Encodes bytes to a base64-encoded string.
 base64.encode(b'hello') // return 'aGVsbG8='
 ```
 
-## Basic auth
+## Basic Auth
 
 ### `basic_auth.encode(username, password) -> string`
 
@@ -721,6 +721,97 @@ Returns a new sub-list using the indexes provided.
 [1,2,3,4].slice(2, 4) // return [3 ,4]
 ```
 
+### `list.flatten() -> list`
+
+Flattens a list recursively.
+If an optional depth is provided, the list is flattened to the specified level.
+A negative depth value will result in an error.
+
+#### Signatures
+
+- `<list>.flatten() -> <list>`
+- `<list>.flatten(<int>) -> <list>`
+
+#### Example
+
+```go
+[1,[2,3],[4]].flatten()         // returns [1, 2, 3, 4]
+[1,[2,[3,4]]].flatten()         // returns [1, 2, [3, 4]]
+[1,2,[],[],[3,4]].flatten()     // returns [1, 2, 3, 4]
+[1,[2,[3,[4]]]].flatten(2)      // returns [1, 2, 3, [4]]
+[1,[2,[3,[4]]]].flatten(-1)     // error
+```
+
+### `list.sort() -> list`
+
+Sorts a list with comparable elements.
+If the element type is not comparable or the element types are not the same, the function will produce an error.
+
+Comparable types include: int, uint, double, bool, duration, timestamp, string, bytes.
+
+#### Signatures
+
+- `<list(T)>.sort() -> <list(T)>`
+
+#### Example
+
+```go
+[3, 2, 1].sort()        // returns [1, 2, 3]
+["b", "c", "a"].sort()  // returns ["a", "b", "c"]
+[1, "b"].sort()         // error
+[[1, 2, 3]].sort()      // error
+```
+
+### `list.sortBy(x, keyExpr) -> list`
+
+Sorts a list by a key value.
+The order is determined by the result of an expression applied to each element of the list.
+The output of the key expression must be a comparable type, otherwise the function will return an error.
+
+#### Signatures
+
+- `<list(T)>.sortBy(<bindingName>, <keyExpr>) -> <list(T)>`
+
+#### Example
+
+```go
+[
+  Player { name: "foo", score: 0 },
+  Player { name: "bar", score: -10 },
+  Player { name: "baz", score: 1000 },
+].sortBy(e, e.score).map(e, e.name)  // returns ["bar", "foo", "baz"]
+```
+
+### `list.distinct() -> list`
+
+Returns the distinct elements of a list.
+
+#### Signatures
+
+- `<list(T)>.distinct() -> <list(T)>`
+
+#### Example
+
+```go
+[1, 2, 2, 3, 3, 3].distinct()      // returns [1, 2, 3]
+["b", "b", "c", "a", "c"].distinct() // returns ["b", "c", "a"]
+[1, "b", 2, "b"].distinct()        // returns [1, "b", 2]
+```
+
+### `lists.range() -> list`
+
+Returns a list of integers from 0 to n-1.
+
+#### Signatures
+
+- `lists.range(<int>) -> <list(int)>`
+
+#### Example
+
+```go
+lists.range(5)  // returns [0, 1, 2, 3, 4]
+```
+
 ## Maps
 
 ### `map.all(x,p) -> bool`
@@ -1065,6 +1156,23 @@ Tests whether a string contains the specified substring.
 "test".contains("")             // true
 ```
 
+### `string.charAt() -> string`
+
+Returns the character at the given position.
+If the position is negative, or greater than the length of the string, the function will produce an error.
+
+#### Signatures
+
+- `<string>.charAt(<int>) -> <string>`
+
+#### Example
+
+```go
+'hello'.charAt(4)  // returns 'o'
+'hello'.charAt(5)  // returns ''
+'hello'.charAt(-1) // error
+```
+
 ### `string.size() -> int`
 
 Determines the length of a string in terms of the number of Unicode codepoints.
@@ -1098,6 +1206,50 @@ The function also accepts an optional position argument to start the search.
 'hello mellow'.indexOf('jello')    // returns -1
 'hello mellow'.indexOf('', 2)      // returns 2
 'hello mellow'.indexOf('ello', 2)  // returns 7
+```
+
+### `string.format() -> string`
+
+Returns a new string with substitutions being performed, printf-style.
+The valid formatting clauses are `%s` (string), `%d` (integer), `%f` (double with fixed-point precision), `%e` (double in scientific notation), `%b` (binary integer or boolean), `%x` (lowercase hex), `%X` (uppercase hex), and `%o` (octal).
+
+#### Signatures
+
+- `<string>.format(<list>) -> <string>`
+
+#### Example
+
+```go
+"hello %s".format(["world"])                    // returns "hello world"
+"integer: %d".format([42])                      // returns "integer: 42"
+"%f".format([3.14])                             // returns "3.140000"
+"%x".format([26])                               // returns "1a"
+"binary: %b".format([5])                        // returns "binary: 101"
+"bool: %b".format([true])                       // returns "bool: 1"
+```
+
+### `string.lastIndexOf() -> int`
+
+Returns the integer index at the start of the last occurrence of the search string.
+If the search string is not found the function returns -1.
+
+The function also accepts an optional position which represents the last index to be considered as the beginning of the substring match.
+If the substring is the empty string, the index where the search starts is returned (string length or custom).
+
+#### Signatures
+
+- `<string>.lastIndexOf(<string>) -> <int>`
+- `<string>.lastIndexOf(<string>, <int>) -> <int>`
+
+#### Example
+
+```go
+'hello mellow'.lastIndexOf('')         // returns 12
+'hello mellow'.lastIndexOf('ello')     // returns 7
+'hello mellow'.lastIndexOf('jello')    // returns -1
+'hello mellow'.lastIndexOf('ello', 6)  // returns 1
+'hello mellow'.lastIndexOf('ello', 20) // error
+'hello mellow'.lastIndexOf('ello', -1) // error
 ```
 
 ### `string.split() -> list`
@@ -1417,6 +1569,108 @@ Returns the hash in hexadecimal format by default.
 'hello'.xxhash64()           // '26c7827d889f6da3'
 'hello'.xxhash64('hex')      // '26c7827d889f6da3'
 'hello'.xxhash64('base64')   // 'JseCfYifbaM='
+```
+
+### `string.lowerAscii() -> string`
+
+Returns a new string where all ASCII characters are lower-cased.
+
+This function does not perform Unicode case-mapping for characters outside the ASCII range.
+
+#### Signatures
+
+- `<string>.lowerAscii() -> <string>`
+
+#### Example
+
+```go
+'TacoCat'.lowerAscii()      // returns 'tacocat'
+'TacoCÆt Xii'.lowerAscii()  // returns 'tacocÆt xii'
+```
+
+### `string.upperAscii() -> string`
+
+Returns a new string where all ASCII characters are upper-cased.
+
+This function does not perform Unicode case-mapping for characters outside the ASCII range.
+
+#### Signatures
+
+- `<string>.upperAscii() -> <string>`
+
+#### Example
+
+```go
+'TacoCat'.upperAscii()      // returns 'TACOCAT'
+'TacoCÆt Xii'.upperAscii()  // returns 'TACOCÆT XII'
+```
+
+### `string.substring() -> string`
+
+Returns the substring given a numeric range corresponding to character positions.
+Optionally may omit the trailing range for a substring from a given character position until the end of a string.
+
+Character offsets are 0-based with an inclusive start range and exclusive end range.
+It is an error to specify an end range that is lower than the start range, or for either the start or end index to be negative or exceed the string length.
+
+#### Signatures
+
+- `<string>.substring(<int>) -> <string>`
+- `<string>.substring(<int>, <int>) -> <string>`
+
+#### Example
+
+```go
+'tacocat'.substring(4)    // returns 'cat'
+'tacocat'.substring(0, 4) // returns 'taco'
+'tacocat'.substring(-1)   // error
+'tacocat'.substring(2, 1) // error
+```
+
+### `string.trim() -> string`
+
+Returns a new string which removes the leading and trailing whitespace in the target string.
+The trim function uses the Unicode definition of whitespace which does not include the zero-width spaces.
+
+#### Signatures
+
+- `<string>.trim() -> <string>`
+
+#### Example
+
+```go
+'  \ttrim\n    '.trim() // returns 'trim'
+```
+
+### `string.reverse() -> string`
+
+Returns a new string whose characters are the same as the target string, only formatted in reverse order.
+
+#### Signatures
+
+- `<string>.reverse() -> <string>`
+
+#### Example
+
+```go
+'gums'.reverse()        // returns 'smug'
+'John Smith'.reverse()  // returns 'htimS nhoJ'
+```
+
+### `strings.quote() -> string`
+
+Takes the given string and makes it safe to print (without any formatting due to escape sequences).
+If any invalid UTF-8 characters are encountered, they are replaced with \uFFFD.
+
+#### Signatures
+
+- `strings.quote(<string>) -> <string>`
+
+#### Example
+
+```go
+strings.quote('single-quote with "double quote"')  // returns '"single-quote with \"double quote\""'
+strings.quote("two escape sequences \a\n")         // returns '"two escape sequences \\a\\n"'
 ```
 
 ## Timestamps

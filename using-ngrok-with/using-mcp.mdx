@@ -4,9 +4,10 @@ sidebarTitle: Using ngrok as your MCP gateway
 description: Learn how to use ngrok to proxy a local server so you can build custom apps for Claude's MCP.
 ---
 
-This guide walks you through how you can use ngrok as your MCP gateway to securely expose your local development environment to AI platforms like OpenAI and Claude.
+This guide shows you how to use ngrok as your MCP gateway to securely expose your local development environment to AI platforms like OpenAI and Claude.
 
-Wherever your MCP framework is built, ngrok lets you place a secure, policy-driven gateway in front of it without changing your application code. By leveraging ngrok's identity, Traffic Policy, and observability features, you can ensure every MCP request is authenticated, authorized, and fully auditable before it reaches your server.
+Wherever your MCP framework is built, ngrok lets you place a secure, policy-driven gateway in front of it without changing your application code.
+Using ngrok's identity, Traffic Policy, and observability features, you can ensure every MCP request is authenticated, authorized, and fully auditable before it reaches your server.
 
 ## Architectural reference
 
@@ -14,17 +15,21 @@ Wherever your MCP framework is built, ngrok lets you place a secure, policy-driv
 
 ## What you'll need
 
-- An ngrok account. If you don't have one, [sign up](https://dashboard.ngrok.com/signup).
-- An MCP server process running on a local server/VM/container
-- The ngrok agent installed directly on the machine (VM, server, or container) running your local MCP server. See the [downloads page](https://ngrok.com/downloads/) for instructions on how to install the ngrok agent.
+- An [ngrok account](https://dashboard.ngrok.com/signup).
+- An MCP server process running on a local server, VM, or container.
+- The [ngrok agent](https://ngrok.com/downloads/) installed directly on the machine (VM, server, or container) running your local MCP server.
 
-## 1. Install the ngrok agent **and configure internal Agent Endpoints in ngrok.yml**
+## 1. Install the ngrok Agent and configure internal Agent Endpoints
 
-You're going to configure the agent to declare an internal Agent Endpoint that points to the port running your MCP server process. This will connect the server to your ngrok account but nothing will be able to connect to them until you complete the subsequent steps.
+Configure the agent to declare an internal Agent Endpoint that points to the port running your MCP server process.
+This connects the server to your ngrok account, but nothing can connect to it until you complete the subsequent steps.
 
-**Internal Endpoints** are private endpoints that only receive traffic when forwarded through the [forward-internal Traffic Policy action](https://ngrok.com/docs/traffic-policy/actions/forward-internal/). This allows you to route traffic to an application through ngrok without making it publicly addressable. Internal endpoint URL hostnames must end with  `.internal`.
+Internal endpoints are private endpoints that only receive traffic when forwarded through the [forward-internal Traffic Policy action](../traffic-policy/actions/forward-internal/).
+This allows you to route traffic to an application through ngrok without making it publicly addressable.
+Internal endpoint URL hostnames must end with `.internal`.
 
-After installing the ngrok agent, define an internal endpoint inside the ngrok configuration file for the MCP server you want to make accessible from your AI tools. You can install ngrok and its configuration file in `/path/to/ngrok/ngrok.yml` and the executable in `/path/to/ngrok/ngrok`.
+After installing the ngrok agent, define an internal endpoint inside the ngrok configuration file for the MCP server you want to make accessible from your AI tools.
+You can install ngrok and its configuration file in `/path/to/ngrok/ngrok.yml` and the executable in `/path/to/ngrok/ngrok`.
 
 ```yaml
 version: 3
@@ -39,13 +44,14 @@ endpoints:
 
 ## 2. Create a public Cloud Endpoint
 
-[Cloud Endpoints](https://ngrok.com/docs/universal-gateway/cloud-endpoints/) are persistent, always-on endpoints whose creation, deletion and configuration is managed centrally via the Dashboard or API. They exist permanently until they are explicitly deleted. Cloud Endpoints do not forward their traffic to an agent by default and instead only use their attached Traffic Policy to handle connections.
+[Cloud Endpoints](../universal-gateway/cloud-endpoints/) are persistent, always-on endpoints whose creation, deletion and configuration is managed centrally via the Dashboard or API.
+They exist permanently until they are explicitly deleted.
+Cloud Endpoints do not forward their traffic to an agent by default and instead only use their attached Traffic Policy to handle connections.
 
-Create a Cloud Endpoint for the MCP server you need to route traffic to. Go to the endpoints section of your ngrok dashboard and click **New**:
+Create a Cloud Endpoint for the MCP server you need to route traffic to.
+In your ngrok dashboard, go to **Endpoints** and click **New**.
 
-![The Endpoints view in the ngrok dashboard.](./img/dashboard-endpoints.png)
-
-This Cloud Endpoint will forward traffic to the MCP server via the internal endpoint you created in Step 1.
+This Cloud Endpoint forwards traffic to the MCP server via the internal endpoint you created in step 1.
 
 ## 3. Attach Traffic Policy to your Cloud Endpoint
 
@@ -59,9 +65,11 @@ on_http_request:
           url: https://mcp.example.internal
 ```
 
----
+Use ngrok's Traffic Policy to handle routing rules (forward-internal action above), rate limiting, and authentication via IP Intel.
+A full list of available Traffic Policy actions can be seen [here](../traffic-policy/actions/).
+These actions can be used singularly or layered on top of each other (executed sequentially from top to bottom).
 
-Now, use ngrok's Traffic Policy to handle routing rules (forward-internal action above), rate limiting, and authentication via IP Intel. A full list of available Traffic Policy actions can be seen [here](https://ngrok.com/docs/traffic-policy/actions/). These actions can be used singularly or layered on top of each other (executed sequentially from top to bottom). Here's how your Traffic Policy might look like for your Cloud Endpoint which restricts incoming traffic to Claude's MCP host, requires an API key, and rate limits based on that API key:
+The following Traffic Policy example restricts incoming traffic to Claude's MCP host, requires an API key, and rate limits based on that API key:
 
 ```yaml
 on_http_request:
@@ -100,14 +108,24 @@ on_http_request:
 
 ## 4. Test your MCP gateway
 
-Within your Claude configuration file where you've defined your MCP server, replace the `url` field with your ngrok Cloud Endpoint and add an authorization header with your bearer token. Also, ensure your ngrok agent and the internal Agent Endpoint are active. Now, any prompt you send from Claude's MCP host will be routed through your ngrok MCP gateway endpoint. There are a few tests you can run to make sure it's functioning as you need it to:
+In your Claude configuration file where you've defined your MCP server, replace the `url` field with your ngrok Cloud Endpoint and add an authorization header with your bearer token.
+Ensure your ngrok agent and the internal Agent Endpoint are active.
+Any prompt you send from Claude's MCP host is routed through your ngrok MCP gateway endpoint.
 
-1. Remove the auth token from the Claude desktop config. The request should now be blocked and return a 401 status code and a message saying `Authorization required`.
-2. Curl the URL or POST to it directly. The request should be blocked and return a 403 status code since it didn't originate from an Anthropic source IP.
-3. Send a prompt through Claude and ensure the Auth key is present in the Claude config, and the request should return the expected response back. 
+Run these tests to verify it's functioning correctly:
 
-## Recap
+Remove the authtoken from the Claude desktop config.
+The request should be blocked and return a 401 status code with a message saying `Authorization required`.
 
-You've now successfully set up ngrok as your MCP gateway to audit, transform, and authenticate all incoming traffic to your MCP server. 
+Curl the URL or POST to it directly.
+The request should be blocked and return a 403 status code since it didn't originate from an Anthropic source IP.
 
-Check out the related [Traffic Policy](https://ngrok.com/docs/traffic-policy) documentation, and optimize your setup by placing ngrok's [AI Gateway](https://ngrok.com/docs/ai-gateway/overview) in front of your inference providers for dynamic routing and failover.
+Send a prompt through Claude and ensure the Auth key is present in the Claude config.
+The request should return the expected response.
+
+You've now successfully set up ngrok as your MCP gateway to audit, transform, and authenticate all incoming traffic to your MCP server.
+
+## What's next?
+
+- To learn more, see the [Traffic Policy](../traffic-policy/) documentation.
+- Optimize your setup by placing ngrok's [AI Gateway](../ai-gateway/overview/) in front of your inference providers for dynamic routing and failover.

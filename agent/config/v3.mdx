@@ -17,7 +17,7 @@ There are important differences between the v3 ngrok Agent Configuration file an
 - Deprecated the `tunnels` field in favor of [`endpoints`](#endpoint-definitions).
 - Changed `server_addr` agent configuration field to [`connect_url`](#connect-url).
 - Changed `root_cas` agent configuration field to [`connect_cas`](#connect-cas).
-- Labeled tunnels are no longer supported in v3. Use [endpoints](/api-reference/endpoints/list instead.
+- Labeled tunnels are no longer supported in v3. Use [endpoints](/api-reference/endpoints/list) instead.
 
 ## Migrating from v2
 
@@ -38,19 +38,21 @@ tunnels:
     addr: 80
 ```
 
-For v3, you need to update the `version` and introduce the `agent` field:
+For v3, you need to update the `version`, introduce the `agent` field,
+and convert from `tunnels` to `endpoints`:
 
-```yaml {1,3-5}
+```yaml
 version: 3
 
 agent:
   authtoken: 4nq9771bPxe8ctg7LKr_2ClH7Y15Zqe4bWLWF9p
   api_key: 24yRd5U3DestCQapJrrVHLOqiAC_7RviwRqpd3wc9dKLujQZN
 
-tunnels:
-  basic:
-    proto: http
-    addr: 80
+endpoints:
+  - name: http
+    url: http://demo.ngrok.app
+    upstream:
+      url: 80
 ```
 
 You will also need to adjust the following fields if you are using them:
@@ -71,7 +73,7 @@ The ngrok Agent Configuration file supports the following top-level configuratio
 
 The top-level `version` field is **required**. Value **must** be `3`.
 
-#### Example
+### Example
 
 ```yaml
 version: 3
@@ -364,31 +366,20 @@ ngrok start --all
 
 ### Endpoint configuration options
 
-| Name                                                                                                                   | Required | Description                                                                                                                                                                                                    |
-| ---------------------------------------------------------------------------------------------------------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`agent_tls_termination`](#agent-tls-termination)                                                                      |          | Configuration for TLS termination at the ngrok agent. This is applicable only when the endpoint URL scheme is `tls://`.                                                                                        |
-| [`agent_tls_termination.mutual_tls_certificate_authorities`](#agent-tls-terminationmutual-tls-certificate-authorities) |          | A list of trusted Certificate Authorities (each provided as either a file path or the PEM-encoded data ) used to validate client certificates for mutual TLS authentication. Available only for `tls://` URLs. |
-| [`agent_tls_termination.server_certificate`](#agent-tls-terminationserver-certificate)                                 |          | The server certificate (provided as a file path or raw PEM data) used by the ngrok agent for TLS termination. Available only for `tls://` URLs.                                                                |
-| [`agent_tls_termination.server_private_key`](#agent-tls-terminationserver-private-key)                                 |          | The private key (provided as a file path or raw PEM data) corresponding to the server certificate, used for TLS termination by the ngrok agent. Available only for `tls://` URLs.                              |
-| [`name`](#name)                                                                                                        | Required | A unique name for this endpoint's configuration.                                                                                                                                                               |
+| Name                                                   | Required | Description                                                                                                                                                    |
+| ------------------------------------------------------ | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`agent_tls_termination`](#agent-tls-termination)      |          | Configuration for TLS termination at the ngrok agent. This is applicable only when the endpoint URL scheme is `tls://`.                                        |
+| [`name`](#name)                                        | Required | A unique name for this endpoint's configuration.                                                                                                               |
 | [`url`](#url)                                                                                                          |          | The address you would like to use to forward traffic to your upstream service. Leave empty to get a randomly assigned address.                                                                                 |
 | [`bindings`](#bindings)                                                                                                |          | Allows you to configure the bindings for this endpoint. Currently only one binding may be provided.                                                                                                            |
 | [`metadata`](#metadata-1)                                                                                              |          | An arbitrary string of user-defined metadata for this endpoint.                                                                                                                                                |
 | [`description`](#description)                                                                                          |          | An arbitrary user-defined description about this endpoint.                                                                                                                                                     |
 | [`traffic_policy`](#traffic-policy)                                                                                    |          | Accepts a Traffic Policy configuration in YAML format.                                                                                                                                                         |
 | [`upstream`](#upstream)                                                                                                | Required | Upstream service configuration options.                                                                                                                                                                        |
-| [`upstream.url`](#upstreamurl)                                                                                         | Required | The address you would like to forward traffic to.                                                                                                                                                              |
-| [`upstream.protocol`](#upstreamprotocol)                                                                               |          | The application layer protocol the agent should use when talking to your upstream application for HTTP endpoints. Accepted values are `http1` (default) and `http2`.                                           |
-| [`upstream.proxy_protocol`](#upstreamproxy-protocol)                                                                   |          | The version of [PROXY protocol](https://www.haproxy.org/download/1.8/doc/proxy-protocol.txt) to use with this endpoint, empty if not using. Example values are `1` or `2`.                                     |
 
-##### `agent_tls_termination`
+#### `agent_tls_termination`
 
-| Name                                                                                                                   | Required | Description                                                                                                                                                                       |
-| ---------------------------------------------------------------------------------------------------------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`agent_tls_termination`](#agent-tls-termination)                                                                      |          | Configuration for TLS termination at the ngrok agent. This is applicable only when the endpoint URL scheme is `tls://`.                                                           |
-| [`agent_tls_termination.mutual_tls_certificate_authorities`](#agent-tls-terminationmutual-tls-certificate-authorities) |          | Specifies one or more Root CA certificates (as paths or raw PEM data) to validate client certificates for mutual TLS authentication. Available only for `tls://` URLs.            |
-| [`agent_tls_termination.server_certificate`](#agent-tls-terminationserver-certificate)                                 |          | The server certificate (provided as a file path or raw PEM data) used by the ngrok agent for TLS termination. Available only for `tls://` URLs.                                   |
-| [`agent_tls_termination.server_private_key`](#agent-tls-terminationserver-private-key)                                 |          | The private key (provided as a file path or raw PEM data) corresponding to the server certificate, used for TLS termination by the ngrok agent. Available only for `tls://` URLs. |
+Object. Configuration for TLS termination at the ngrok agent. This is applicable only when the endpoint URL scheme is `tls://`.
 
 ##### `agent_tls_termination.mutual_tls_certificate_authorities`
 
@@ -526,11 +517,7 @@ endpoints:
 
 #### `upstream`
 
-| Name                                                 | Required | Description                                                                                                                                                                 |
-| ---------------------------------------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`upstream.url`](#upstreamurl)                       | Required | The address you would like to forward traffic to.                                                                                                                           |
-| [`upstream.protocol`](#upstreamprotocol)             |          | The application layer protocol the agent should use when talking to your upstream application for HTTP endpoints. Accepted values are `http1` (default) and `http2`.        |
-| [`upstream.proxy_protocol`](#upstreamproxy-protocol) |          | The version of [PROXY protocol](https://www.haproxy.org/download/1.8/doc/proxy-protocol.txt) to use with this endpoint, empty if not using. Possible values are `1` or `2`. |
+Object. Upstream service configuration options.
 
 ##### `upstream.url`
 

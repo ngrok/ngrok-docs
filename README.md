@@ -11,7 +11,7 @@ See our [Contribution Guidelines](CONTRIBUTING.md) for detailed instructions on 
 
 ## Prerequisites
 
-- [Node 24](https://nodejs.org/en/download)
+- [Node 24 or higher](https://nodejs.org/en/download)
 - [pnpm 10](https://pnpm.io/installation#using-npm)
 - [nvm](https://github.com/nvm-sh/nvm?tab=readme-ov-file#installing-and-updating)
 - `corepack` is included with node by default, no need to install
@@ -42,6 +42,10 @@ This project uses [Vale](https://vale.sh/) for documentation linting and style c
 `pnpm run vale` runs Vale linting on all documentation files (excluding snippets and errors directories).
 
 Vale checks your docs contributions for style issues (based on the rules the docs team has defined) and provides suggestions for improvements. To ensure your PRs get merged quickly and efficiently, be sure to address any Vale warnings before submitting.
+
+## Style guide
+
+See our [Style Guide](https://ngrok.com/docs/style-guide) for detailed writing guidelines and best practices for ngrok documentation. The style guide covers language preferences, formatting rules, and Vale-specific style rules to help you write consistent, clear documentation.
 
 ## Creating content
 

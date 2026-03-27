@@ -1,64 +1,44 @@
 ---
 title: Automate user provisioning via SCIM with Okta
 sidebarTitle: Okta (SCIM)
-description: In this guide, you'll learn how to enable automated user provisioning for your ngrok account via SCIM with Okta.
+description: Enable automated user provisioning for your ngrok account via SCIM with Okta.
 ---
 
-## Configuring ngrok
+This guide walks you through enabling automated user provisioning for your ngrok account via SCIM with Okta.
 
-Start by logging into your ngrok Dashboard as an admin user.
+<Note>
+This document assumes you have already set up [Okta for dashboard SSO](okta-dashboard-sso-oidc).
+After you complete those steps, continue here.
+</Note>
 
-1. Navigate to the **Settings**, **Account** menu in the left side of the page.
+## 1. Configure ngrok
 
-   ![ngrok Dashboard Settings](../img/okta/okta-scim-account-settings.png)
+Log into your ngrok dashboard as an admin user.
 
-1. Go to the **User Provisioning / SCIM** section and toggle on the **Automated User Provisioning via SCIM 2.0** option to on. This will open a drawer and prompt you to create a new API key. It is recommended to use a unique key just for SCIM.
+- Navigate to **Settings > Account**.
+- Go to the **User Provisioning / SCIM** section and toggle on the **Automated User Provisioning via SCIM 2.0** option.
+This opens a drawer and prompts you to create a new API key.
+Use a unique key just for SCIM.
+- Give the API key a descriptive name and assign it either to an administrator user or a Service User.
+Service Users are ideal for this integration because they are not deactivated when a user leaves the account.
+- Save the API key somewhere safe or keep this window open while you complete the next steps in Okta.
+- Go to the **Account Domain Controls** section and click **Submit New Domain**.
+- Submit a request to ngrok support to allow the domain sync with SCIM provisioning in your account.
 
-   ![ngrok User Provisioning](../img/okta/okta-scim-provisioning.png)
+## 2. Configure Okta SCIM
 
-1. Give the API key a descriptive name and assign it either to an administrator user or a Service User. Service Users are ideal for this integration because they will not be deactivated when a user leaves the account.
+Open a new browser tab and log in to the Okta admin console as a user who can manage the ngrok application.
 
-   ![ngrok create new API key](../img/okta/okta-scim-add-api-key.png)
+- In the Okta admin console, navigate to **Applications > Applications**.
+- Open the ngrok app you created.
+- Enable SCIM on the **General** tab in the ngrok application you created under the **Provisioning** section.
+- Switch to the **Provisioning** tab in your Okta application configuration and configure the following:
+  - SCIM connector base URL: `https://api.ngrok.com/scim/v2/`
+  - Unique identifier field for users: `email`
+  - Supported provisioning actions: Push new users, Push profile updates
+  - Authentication mode: **HTTP Header**
+  - Authorization: The ngrok API key that you saved or copied earlier
+- Click **Test Connect Configuration** and you should see a success message.
 
-1. Save the API key somewhere safe or keep this window up while completing the next steps in Okta.
-
-   ![ngrok new API key](../img/okta/okta-scim-new-api-key.png)
-
-1. Go to the **Account Domain Controls** section and click the **Submit New Domain** button.
-2. Submit a request to ngrok support to allow the domain sync with SCIM provisioning in your account.
-
-## Configuring Okta SCIM
-
-This document assumes you have already set up [Okta for dashboard SSO](/integrations/dashboard-sso/okta-dashboard-sso-scim). Once you've completed those steps, you can continue here.
-
-Open a new tab in your browser, then log in to the Okta admin console as a user with the ability to manage the ngrok application.
-
-1. In the Okta admin console navigate to the to **Applications/Applications** menu on the left side.
-
-   ![Okta Applications](../img/okta/okta-scim-okta-app.png)
-
-1. Open the ngrok app you created.
-
-1. Enable SCIM on the general tab in the ngrok application you created under the Provisioning section:
-
-   ![Okta Application General](../img/okta/okta-scim-okta-general-settings.png)
-
-1. Switch to the Provisioning tab in your Okta application configuration
-   - SCIM connector base URL:
-     - https://api.ngrok.com/scim/v2/
-   - Unique identifier field for users
-     - `email`
-   - Supported provisioning actions
-     - Push new users
-     - Push profile updates
-   - Authentication mode:
-     - HTTP Header
-   - Authorization:
-     - This is the ngrok API key that you saved or copied earlier
-1. The configuration should look like this:
-
-   ![Okta Application Provisioning](../img/okta/okta-scim-okta-app-provisioning.png)
-
-1. Click **Test Connect Configuration** and you should see a success message.
-
-If you get an error message that states no users were returned then you have an error in the configuration and should check the configuration for typos and leading or trailing spaces.
+If you get an error message that states no users were returned, there's an error in the configuration.
+Check for typos and leading or trailing spaces.

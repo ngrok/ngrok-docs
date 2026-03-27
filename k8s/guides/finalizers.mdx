@@ -75,7 +75,7 @@ metadata:
 
 If the Operator is not responding or failing to clean up resources properly, you may need to manually remove the finalizer on a resource.
 This may happen if you are uninstalling the Operator with `helm uninstall` and the Operator pods are removed before they have a chance to clean up the finalizers on all the resources that were
-marked for deletion. When uninstalling the Operator, it is recommended to remove the custom resources first before uninstalling the Pods.
+marked for deletion. When uninstalling the Operator, the [pre-delete cleanup hook](/k8s/installation/uninstall#how-the-uninstall-process-works) handles this automatically, but if it was disabled or failed, you may need to intervene manually.
 
 <Warning title="Warning">
 This will bypass cleanup operations, potentially leaving behind orphaned resources in your ngrok account.
@@ -85,3 +85,26 @@ Check your ngrok dashboard after performing this to ensure that the resource is 
 ```bash
 kubectl patch <resource> <name> --type=json -p '[{"op": "remove", "path": "/metadata/finalizers"}]'
 ```
+
+## Removing finalizers from all ngrok resources
+
+If you need to bulk-remove finalizers from all ngrok custom resources (for example, after an uninstall where the cleanup job did not complete), you can use the following script:
+
+```bash
+for crd in $(kubectl get crds -o json | jq -r '.items[].metadata.name | select(contains("ngrok.com"))'); do
+  kubectl get "$crd" --all-namespaces -o json | jq -r '.items[] | select(.metadata.finalizers) | "\(.metadata.namespace) \(.metadata.name)"' | \
+  while read ns name; do
+    kubectl patch "$crd" "$name" -n "$ns" --type=json \
+      -p '[{"op": "remove", "path": "/metadata/finalizers"}]'
+  done
+done
+```
+
+This iterates through every ngrok CRD type, finds all instances across all namespaces, and removes their finalizers. After running this, any resources stuck in `Terminating` state should complete their deletion.
+
+---
+
+## See also
+
+- To learn more about how the automated cleanup process handles finalizers during uninstall, see [Uninstalling the Operator](/k8s/installation/uninstall).
+- See [Troubleshooting](/k8s/guides/troubleshooting#resources-not-getting-deleted) for help with resources that won't delete.

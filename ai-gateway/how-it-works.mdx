@@ -14,18 +14,50 @@ sequenceDiagram
     participant Gateway as AI Gateway
     participant Provider as AI Provider
 
-    Client->>Gateway: POST /v1/chat/completions
-    Gateway->>Gateway: Select model(s) to try
-    Gateway->>Provider: Forward request
+    Client->>Gateway: POST /v1/chat/completions (with AI Gateway API Key)
+    Gateway->>Gateway: Validate API key
+    Gateway->>Gateway: Select models to try
+    Gateway->>Gateway: Inject ngrok-managed provider keys
+    Gateway->>Provider: Forward request (with provider key)
     Provider-->>Gateway: Response (or error)
     Gateway-->>Client: Return response
 ```
 
-1. **Your app sends a request** to your ngrok endpoint
-2. **The gateway selects which models to try** based on your configuration
-3. **The request is forwarded** to the provider with the appropriate provider API key
-4. **If it fails, the gateway retries** with the next model or key in the list
-5. **The response is returned** to your app
+1. **Your app sends a request** with your [AI Gateway API Key](/ai-gateway/concepts/api-keys) to your ngrok endpoint
+2. **The gateway validates your key** and injects ngrok's managed provider keys
+3. **The gateway selects which models to try** based on your configuration and the request
+4. **Unsupported parameters are stripped if needed** from the request body based on the selected provider/model
+5. **The request is forwarded** to the provider with the appropriate provider API key
+6. **If it fails, the gateway retries** with the next model or key in the list
+7. **The response is returned** to your app
+
+## Authentication
+
+The gateway supports two authentication paths:
+
+### AI Gateway API Keys (recommended)
+
+When you use an [AI Gateway API Key](/ai-gateway/concepts/api-keys), ngrok handles provider authentication automatically:
+
+1. Your app sends a request with the AI Gateway API Key as `Authorization: Bearer ng-xxxxx-g1-xxxxx`
+2. The gateway validates the key
+3. ngrok's managed provider keys are injected for supported providers (currently OpenAI and Anthropic)
+4. The request is forwarded to the provider
+
+No Traffic Policy configuration is needed—authentication is built-in.
+
+### Bring Your Own Keys (BYOK)
+
+When you [bring your own provider keys](/ai-gateway/concepts/bring-your-own-keys), you configure them in your Traffic Policy:
+
+```yaml
+providers:
+  - id: openai
+    api_keys:
+      - value: ${secrets.get('openai', 'key')}
+```
+
+Or in passthrough mode (no provider config), the gateway forwards whatever key your SDK sends.
 
 ## Model selection
 
@@ -37,28 +69,34 @@ The model name in your request determines the starting point:
 
 | Model in Request | What Happens |
 |------------------|--------------|
-| `gpt-4o` | Recognized as OpenAI from the [model catalog](/ai-gateway/reference/model-catalog) |
-| `claude-3-5-sonnet-latest` | Recognized as Anthropic |
-| `openai:gpt-4o` | Explicit provider prefix - no lookup needed |
-| `openai:gpt-5-preview` | Unknown model - passed through to OpenAI as-is |
+| `gpt-4o` | Known OpenAI model in the [model catalog](/ai-gateway/reference/model-catalog) |
+| `claude-3-5-sonnet-latest` | Known Anthropic model in the model catalog |
+| `openai:gpt-4o` | Provider and model match known OpenAI model |
+| `openai:gpt-5-preview` | Known provider but unknown model, so passed through to OpenAI as-is |
 | `my-provider:my-model` | Uses your configured custom provider |
 | `ngrok/auto` | Let the gateway choose based on your selection strategy |
 
 <Note>
-Unknown models (not in the catalog) are automatically passed through if you include a provider prefix. This lets you use new models immediately without waiting for catalog updates.
+Unknown models (not in the catalog) are automatically passed through if you include a known provider prefix. This lets you use new models immediately without waiting for catalog updates.
 </Note>
 
-### Default selection
+### Building the set of available options
 
-By default, the gateway uses the model and provider you requested. If that fails, it tries:
-1. Other provider API keys for the same provider
-2. Other providers that offer the same model
+The gateway builds a set of available options based on your configuration and the request path.
+
+Starting from the model catalog, the gateway adds any custom models from your configuration to the set of available options.  
+
+Then the gateway uses the request path to determine the API format and filters out providers that don't support it. For example, if the request path is `/v1/chat/completions`, only providers that support the OpenAI API format are included; likewise for `/v1/messages` and providers that support the Anthropic Claude API format.
 
 ### Custom selection strategies
 
 You can completely customize how models are selected using CEL expressions. Define a `model_selection` strategy to control the order models are tried:
 
-```yaml title="traffic-policy.yaml" highlight={5-10}
+<Note>
+The example below uses BYOK provider keys. When using [AI Gateway API Keys](/ai-gateway/concepts/api-keys), provider keys are handled automatically.
+</Note>
+
+```yaml title="traffic-policy.yaml" highlight={10-13}
 on_http_request:
   - type: ai-gateway
     config:
@@ -76,7 +114,7 @@ on_http_request:
 
 Strategies are evaluated in order—the first one that returns models wins. If Ollama has matching models, only those are tried. The second strategy (sorted by price) is only used if no Ollama models match.
 
-This lets you define sophisticated routing logic:
+Common routing patterns:
 
 - **Cost optimization** - Route to cheapest models first
 - **Provider preference** - Prefer certain providers over others
@@ -87,9 +125,58 @@ This lets you define sophisticated routing logic:
 Use `ngrok/auto` as the model name to let your selection strategy choose entirely. See [Model Selection Strategies](/ai-gateway/guides/model-selection-strategies) for detailed examples.
 </Tip>
 
+## Parameter compatibility
+
+Different AI providers and models support different sets of request parameters. The gateway can remove parameters that a provider or model doesn't support before forwarding the request, preventing errors caused by unsupported fields.
+
+### How it works
+
+Parameter removal happens in two independent passes before each request is forwarded. Each pass only runs if the relevant configuration is present. If neither is configured, no filtering occurs.
+
+1. **Provider-level (allowlist)**: If the matched surface entry has a non-empty `supported_params` list, any top-level request body parameters not on that list are stripped.
+2. **Model-level (denylist)**: If the model has `unsupported_params` entries, those specific parameters are stripped regardless of what the provider surface allows.
+
+You can configure either mechanism independently or use both together.
+
+<Note>
+Parameter removal only applies to top-level request body fields. Nested structures are not inspected.
+</Note>
+
+### Official providers
+
+For official (built-in) providers and models in the ngrok model catalog, parameter compatibility information is maintained automatically. No configuration is required.
+
+### Custom providers and models
+
+Custom providers and models have no parameter compatibility information by default, so no filtering occurs unless you configure it. You can opt in using either or both mechanisms:
+
+```yaml title="traffic-policy.yaml"
+providers:
+  - id: "my-provider"
+    base_url: "https://my-service.internal"
+    supported_api_surfaces:
+      - format: openai
+        surface: chat-completions
+        # Allowlist: only these params are forwarded for this surface
+        supported_params:
+          - name: model
+          - name: messages
+          - name: temperature
+          - name: max_tokens
+          - name: stream
+    models:
+      - id: "my-model"
+        # Denylist: these params are always stripped for this model
+        unsupported_params:
+          - name: parallel_tool_calls
+          - name: response_format
+```
+
+See the [Custom Providers guide](/ai-gateway/custom-providers) and the [Configuration Schema](/ai-gateway/reference/configuration-schema) for full details.
+
 ## Failover
 
-When a request fails, the gateway automatically tries the next candidate. This happens transparently—your app just sees a successful response (or a final error if all candidates are exhausted).
+When a request fails, the gateway automatically tries the next candidate. Your app receives a successful response, or a final error if all candidates are exhausted.
 
 ### What triggers failover?
 
@@ -125,8 +212,8 @@ Two settings control how long the gateway waits:
 
 | Setting | Default | Description |
 |---------|---------|-------------|
-| `per_request_timeout` | 30s | Max time for a single attempt |
-| `total_timeout` | 5m | Max time including all failover attempts |
+| `per_request_timeout` | 3m | Max time for a single attempt |
+| `total_timeout` | 6m | Max time including all failover attempts |
 
 ```yaml title="traffic-policy.yaml" highlight={4-5}
 on_http_request:
@@ -206,7 +293,10 @@ on_event_stream_message:
 ## Next steps
 
 <CardGroup cols={2}>
-  <Card title="Configuring Providers" icon="building" href="/ai-gateway/guides/configuring-providers">
+  <Card title="AI Gateway API Keys" icon="key" href="/ai-gateway/concepts/api-keys">
+    Create keys to authenticate requests
+  </Card>
+  <Card title="Configuring Providers (BYOK)" icon="building" href="/ai-gateway/concepts/bring-your-own-keys">
     Set up providers and provider API keys
   </Card>
   <Card title="Model Selection Strategies" icon="route" href="/ai-gateway/guides/model-selection-strategies">
