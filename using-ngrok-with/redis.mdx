@@ -1,0 +1,51 @@
+---
+title: Using ngrok with Redis
+sidebarTitle: Redis
+description: Connect to your local Redis server remotely using ngrok TCP endpoints on port 6379.
+---
+
+This guide explains how to reach a Redis server running on your machine from another network using ngrok TCP endpoints.
+
+## What you'll need
+
+- Redis installed and running locally (default port `6379` unless you changed it).
+- An ngrok account.
+- Your ngrok authtoken.
+- A valid payment method added to your account (TCP endpoints are only available on the free plan after adding a valid payment method).
+
+## Security
+
+Redis is often configured with no password on `localhost`.
+A TCP tunnel exposes that port on the public internet, so anyone who can reach the tunnel can run Redis commands unless you protect the instance.
+
+Before tunneling, enable authentication (`requirepass` or ACL users in Redis 6+), use a strong secret, and consider combining the tunnel with [IP restrictions](/traffic-policy/concepts/ip-policies/) or other access controls on your endpoint.
+For long-lived or production-style access, prefer [site-to-site connectivity](/guides/site-to-site-connectivity/) patterns.
+
+## Expose your Redis server
+
+Use a TCP endpoint aimed at the port Redis listens on (commonly `6379`).
+
+```bash
+ngrok tcp 6379
+```
+
+If Redis listens on another port, substitute that port in the command.
+
+## Connect to Redis
+
+When ngrok shows the forwarding address, use your Redis client with that host and port.
+For example, with [`redis-cli`](https://redis.io/docs/latest/develop/tools/cli/):
+
+```bash
+redis-cli -h <tcp-host> -p <tcp-port>
+```
+
+Replace `<tcp-host>` and `<tcp-port>` with the values from the ngrok agent output or dashboard.
+
+TLS-terminated Redis (stunnel, cloud proxies, or Redis with TLS on a different local port) can still be forwarded the same way.
+Point the TCP endpoint at the port where your TLS listener accepts connections.
+
+## Further resources
+
+- [TCP endpoints](/universal-gateway/tcp/)
+- [Configure site-to-site connectivity for databases](/guides/site-to-site-connectivity/)
