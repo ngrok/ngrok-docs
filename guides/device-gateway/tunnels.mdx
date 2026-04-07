@@ -1,0 +1,65 @@
+---
+title: Secure Tunnels for Devices
+sidebarTitle: Secure Tunnels
+description: Learn how ngrok creates outbound-only encrypted tunnels from devices in remote networks to the cloud.
+---
+
+ngrok establishes secure tunnels between devices in remote networks and the ngrok cloud.
+These tunnels allow your devices to be reachable from the internet without opening inbound ports, changing firewall rules, or configuring VPNs.
+
+## How tunnels work
+
+When you run `ngrok http <port>` on a device, the ngrok agent opens an outbound TLS connection to the ngrok cloud.
+ngrok assigns a public URL and routes incoming requests through this encrypted tunnel to the device.
+
+- **Outbound-only connections:** The agent connects outbound on port 443. No firewall changes or port forwarding required on the remote network.
+- **TLS encryption:** All traffic between the ngrok cloud and the agent is encrypted with TLS.
+- **Automatic HTTPS:** ngrok provisions and manages TLS certificates for your endpoints automatically.
+
+## How this differs from a VPN
+
+VPNs require the network owner to configure and maintain them, grant broad network access, and are operationally difficult across heterogeneous customer networks.
+ngrok's agent connects outbound, which means no remote network reconfiguration, and scopes access to specific services rather than entire networks.
+
+## Supported protocols
+
+| Protocol | Command | Use case |
+|----------|---------|----------|
+| HTTP/S | `ngrok http 8080` | Web dashboards, REST APIs, webhooks |
+| TLS | `ngrok tls 8443` | TLS passthrough for custom certificates |
+| TCP | `ngrok tcp 22` | SSH, RDP, databases, industrial protocols |
+
+Your technicians keep using their existing RDP clients, SSH terminals, and thick-client apps.
+Protocols like Modbus and other proprietary protocols work through TCP tunnels.
+
+## One agent per gateway
+
+You don't need an agent on every sensor or controller.
+Run one agent on a single gateway to reach every device on the local network through [internal endpoints](/universal-gateway/internal-endpoints/):
+
+```yaml title="ngrok.yml"
+version: 3
+agent:
+  authtoken: YOUR_NGROK_AUTHTOKEN
+
+endpoints:
+  - name: plc-api
+    url: https://plc-api.internal
+    upstream:
+      url: http://192.168.1.50:8080
+  - name: sensor-ssh
+    url: tcp://sensor-ssh.internal:22
+    upstream:
+      url: tcp://192.168.1.51:22
+```
+
+## Embed tunnels with the SDK
+
+For tighter integration, embed tunnels directly into your software with the [ngrok SDK](/guides/device-gateway/sdk).
+Ship connectivity inside your product rather than alongside it.
+
+## Next steps
+
+- [Quickstart](/guides/device-gateway/quickstart): create your first device tunnel in minutes
+- [Cloud-to-device](/guides/device-gateway/cloud-to-device): connect cloud services to devices through internal and cloud endpoints
+- [Installation guides](/guides/device-gateway/linux): platform-specific setup for Linux, ARM64, Raspberry Pi, and Windows

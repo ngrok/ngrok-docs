@@ -1,0 +1,83 @@
+---
+title: Remote Device Access
+sidebarTitle: Remote Access
+description: Give technicians and end users SSH, RDP, or web access to devices deployed in remote networks using ngrok.
+---
+
+Devices deployed behind firewalls and NATs are difficult to reach for troubleshooting and administration.
+ngrok solves this by creating outbound tunnels from the device, giving technicians and end users direct access using their existing tools.
+
+## How it works
+
+1. [Install ngrok](https://ngrok.com/download) on a device or gateway in the remote network
+2. Start a tunnel for the protocol you need (SSH, RDP, HTTP, or TCP)
+3. Share the ngrok URL with the technician or end user
+4. They connect using their existing tools (SSH client, RDP client, browser)
+
+## Quick example
+
+Expose SSH on a remote Linux device:
+
+```bash
+ngrok tcp 22
+```
+
+Expose RDP on a remote Windows device:
+
+```bash
+ngrok tcp 3389
+```
+
+Expose a web-based admin dashboard:
+
+```bash
+ngrok http 8080
+```
+
+## One gateway for an entire network
+
+You don't need an ngrok agent on every device.
+Run a single agent on one gateway machine and route to any device on the local network:
+
+```yaml title="ngrok.yml"
+version: 3
+agent:
+  authtoken: YOUR_NGROK_AUTHTOKEN
+
+endpoints:
+  - name: plc-ssh
+    url: tcp://plc-ssh.internal:22
+    upstream:
+      url: tcp://192.168.1.50:22
+  - name: admin-dashboard
+    url: https://dashboard.internal
+    upstream:
+      url: http://192.168.1.100:3000
+```
+
+Each endpoint is addressable inside ngrok's network, and you can connect them to [Cloud Endpoints](/universal-gateway/cloud-endpoints/) for external access.
+
+## On-demand access
+
+Not every endpoint needs to be always-on.
+Use the [Agent API](/agent/api/) to start tunnels when a technician needs access and stop them when they're done:
+
+```bash
+# Start a tunnel on demand
+curl -X POST http://localhost:4040/api/tunnels \
+  -H "Content-Type: application/json" \
+  -d '{"name":"dashboard","proto":"http","addr":"3001","domain":"dashboard.example.com"}'
+```
+
+This keeps your attack surface small and reduces costs since you only pay for active endpoints.
+
+## Secure access with authentication
+
+Add authentication so only authorized users can reach your devices.
+See the [Traffic Policy guide](/guides/device-gateway/traffic-policy) for details on adding OAuth, JWT validation, and IP restrictions at ngrok's edge.
+
+## Next steps
+
+- [Quickstart](/guides/device-gateway/quickstart): get a device reachable in minutes
+- [Cloud-to-device](/guides/device-gateway/cloud-to-device): connect your cloud services to device APIs
+- [Security](/guides/device-gateway/security): manage credentials and access controls across your fleet

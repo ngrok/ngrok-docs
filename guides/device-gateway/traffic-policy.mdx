@@ -1,0 +1,96 @@
+---
+title: Traffic Policy for Devices
+sidebarTitle: Traffic Policy
+description: Authenticate, rate limit, and control access to your devices at ngrok's edge using Traffic Policy.
+---
+
+[Traffic Policy](/traffic-policy/) lets you configure access controls once in the cloud and enforce them on every device in your fleet.
+No firmware pushes, OTA updates, or truck rolls required to update security rules.
+
+## Authenticate before traffic reaches the device
+
+Validate credentials at ngrok's edge so unauthenticated traffic never reaches your devices.
+
+### JWT validation
+
+Require a valid JWT token on every request:
+
+```yaml title="Traffic Policy"
+on_http_request:
+  - actions:
+      - type: jwt-validation
+        config:
+          issuer:
+            value: "https://auth.example.com/"
+          audience:
+            value: "https://api.example.com"
+          http:
+            tokens:
+              - type: jwt
+                method: header
+                name: Authorization
+                prefix: "Bearer "
+```
+
+### OAuth
+
+Require login via Google, GitHub, Microsoft, or other providers:
+
+```yaml title="Traffic Policy"
+on_http_request:
+  - actions:
+      - type: oauth
+        config:
+          provider: google
+```
+
+See the [OAuth action reference](/traffic-policy/actions/oauth/) for full configuration options.
+
+## Rate limit per consumer
+
+Prevent a misbehaving integrator, customer app, or internal service from overwhelming your devices:
+
+```yaml title="Traffic Policy"
+on_http_request:
+  - actions:
+      - type: rate-limit
+        config:
+          name: per-consumer
+          algorithm: sliding_window
+          capacity: 100
+          rate: 60s
+          bucket_key:
+            - conn.client_ip
+```
+
+See the [rate-limit action reference](/traffic-policy/actions/rate-limit/) for details.
+
+## Restrict access by IP
+
+Limit access to specific IP addresses or CIDR ranges:
+
+```yaml title="Traffic Policy"
+on_http_request:
+  - actions:
+      - type: restrict-ips
+        config:
+          enforce: true
+          allow:
+            - "203.0.113.0/24"
+```
+
+## Access services, not entire devices
+
+Unlike VPNs, ngrok exposes exactly the service each consumer needs and not a single port or process more.
+Use [internal endpoints](/universal-gateway/internal-endpoints/) combined with [Cloud Endpoints](/universal-gateway/cloud-endpoints/) to control which services are accessible and to whom.
+
+## Update policy without touching devices
+
+When a new security requirement comes in, update one Traffic Policy and the change applies across your entire fleet immediately.
+No need to push updates to individual devices.
+
+## Next steps
+
+- [Traffic Policy reference](/traffic-policy/): explore all available actions
+- [Security](/guides/device-gateway/security): credential management, mTLS, and compliance
+- [Cloud-to-device](/guides/device-gateway/cloud-to-device): configure internal and cloud endpoints for your device services
