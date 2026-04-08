@@ -4,7 +4,7 @@ sidebarTitle: Expose Kubernetes API
 description: Learn how to expose the Kubernetes API server externally using the ngrok Kubernetes Operator, covering each Kubernetes authentication strategy and how to update your kubeconfig.
 ---
 
-Exposing the Kubernetes API server through ngrok lets you reach your cluster's control plane from anywhere — no VPN, no bastion host, no firewall rules required.
+Exposing the Kubernetes API server through ngrok lets you reach your cluster's control plane from anywhere—no VPN, no bastion host, no firewall rules required.
 
 Common use cases include:
 
@@ -20,15 +20,15 @@ The ngrok Operator creates a persistent, secure tunnel from your cluster to ngro
 - The [ngrok Kubernetes Operator installed](/k8s/installation) in your cluster
 - `kubectl` configured with access to the cluster you want to expose
 
-## Kubernetes Authentication Strategies
+## Kubernetes authentication strategies
 
 As of Kubernetes 1.33, the following authentication strategies are available. From a `kubectl` client perspective they correspond to specific fields in your kubeconfig, which determines which ngrok endpoint type to use.
 
 | Authentication Strategy | kubeconfig Indicator | ngrok Compatible? | Required Endpoint Type |
 |---|---|---|---|
 | Bearer Token (Service Account, Static) | `token` or `tokenFile` field | ✅ Yes | HTTPS |
-| OIDC Token (via `exec` plugin) | `exec` block (e.g. `kubelogin`) | ✅ Yes | HTTPS |
-| Cloud Provider Token (EKS, GKE, AKS) | `exec` block (e.g. `aws`, `gke-gcloud-auth-plugin`) | ✅ Yes | HTTPS |
+| OIDC Token (via `exec` plugin) | `exec` block (for example, `kubelogin`) | ✅ Yes | HTTPS |
+| Cloud Provider Token (EKS, GKE, AKS) | `exec` block (for example, `aws`, `gke-gcloud-auth-plugin`) | ✅ Yes | HTTPS |
 | X.509 Client Certificate | `client-certificate-data` + `client-key-data` fields | ✅ Yes | TLS (passthrough) |
 | Exec Plugin (certificate output) | `exec` block producing `clientCertificateData` | ✅ Yes | TLS (passthrough) |
 | Authenticating Proxy | External proxy infrastructure | ⚠️ Architecture dependent | N/A |
@@ -38,11 +38,11 @@ As of Kubernetes 1.33, the following authentication strategies are available. Fr
 
 **HTTPS endpoints** terminate TLS at the ngrok edge. The `Authorization: Bearer <token>` header passes through transparently to the Kubernetes API server, so any token-based strategy works.
 
-**TLS endpoints** pass the raw TLS stream through to the upstream without ngrok terminating it. This means the full TLS handshake — including the client certificate — travels end-to-end from `kubectl` to the Kubernetes API server. This is required for X.509 client certificate authentication.
+**TLS endpoints** pass the raw TLS stream through to the upstream without ngrok terminating it. This means the full TLS handshake—including the client certificate—travels end-to-end from `kubectl` to the Kubernetes API server. This is required for X.509 client certificate authentication.
 
 If you use HTTPS with client certificate auth, ngrok will terminate TLS before the client cert reaches the API server and authentication will fail.
 
-## Identifying Your Authentication Strategy
+## Identifying your authentication strategy
 
 Open your kubeconfig (default location: `~/.kube/config`) and find the `users` section for the relevant cluster.
 
@@ -147,7 +147,7 @@ users:
 
 → Use the **[TLS passthrough setup](#scenario-2-x509-client-certificate-or-exec-plugin-producing-a-certificate-tls-passthrough)**.
 
-## Scenario 1: Bearer Token or Exec Plugin Producing a Token (HTTPS)
+## Scenario 1: Bearer token or exec plugin producing a token (HTTPS)
 
 Use this scenario when your kubeconfig uses `token`, `tokenFile`, or an `exec` block that produces a bearer token (the most common case for EKS, GKE, AKS, and OIDC).
 
@@ -229,7 +229,7 @@ kubectl cluster-info
 
 
 
-## Scenario 2: X.509 Client Certificate or Exec Plugin Producing a Certificate (TLS Passthrough)
+## Scenario 2: X.509 client certificate or exec plugin producing a certificate (TLS passthrough)
 
 Use this scenario when your kubeconfig uses `client-certificate-data` / `client-key-data` fields or an `exec` plugin that outputs a client certificate. The `tls://` endpoint type passes the raw TLS stream through ngrok without termination, so your client certificate reaches the Kubernetes API server directly.
 
@@ -292,7 +292,7 @@ clusters:
     certificate-authority-data: <your-existing-cluster-ca-base64>  # Keep as-is
 ```
 
-The `user` section (with `client-certificate-data` and `client-key-data`) stays unchanged — these are passed through to the API server via the TLS handshake.
+The `user` section (with `client-certificate-data` and `client-key-data`) stays unchanged—these are passed through to the API server via the TLS handshake.
 
 Verify access:
 
@@ -368,7 +368,7 @@ See the [restrict IPs guide](/k8s/guides/how-to/restrict-ips) for more details.
 
 ### Kubernetes RBAC remains your primary authorization layer
 
-ngrok handles transport security — the existing Kubernetes RBAC rules still control what any authenticated user can do. Ensure that service accounts and user accounts exposed through the ngrok endpoint follow the principle of least privilege.
+ngrok handles transport security—the existing Kubernetes RBAC rules still control what any authenticated user can do. Ensure that service accounts and user accounts exposed through the ngrok endpoint follow the principle of least privilege.
 
 ### Remove access when no longer needed
 
