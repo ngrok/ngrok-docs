@@ -27,6 +27,7 @@
             export PATH="$PATH:$(git rev-parse --show-toplevel)/node_modules/.bin"
           '';
           buildInputs = with pkgs; [
+            bc
             nodejs_24
             corepack_24
             pnpm-shim
