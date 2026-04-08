@@ -1,0 +1,93 @@
+---
+title: Device Security
+sidebarTitle: Security
+description: Manage credentials, IP restrictions, mTLS, and compliance across your device fleet with ngrok.
+---
+
+ngrok provides multiple layers of security for your device fleet, from credential management to network-level access controls and compliance certifications.
+
+## Credential management
+
+Each device or site gets its own authtoken scoped with [ACL bindings](/agent/authtokens/#acl-bindings).
+If one token is compromised, revoke it immediately without affecting the rest of your fleet:
+
+- **Create** per-device or per-site tokens via the [Authtokens API](/api/resources/authtokens/)
+- **Scope** tokens to limit which endpoints they can create
+- **Rotate** tokens by creating a replacement and revoking the old one
+- **Revoke** compromised tokens instantly from your cloud
+
+No physical access to the device is required for any of these operations.
+
+## IP restrictions
+
+Limit access to your device endpoints to specific IP addresses or CIDR ranges using [Traffic Policy](/traffic-policy/):
+
+```yaml title="ngrok.yml"
+endpoints:
+  - name: device-api
+    url: $YOUR_DOMAIN
+    traffic_policy:
+      on_http_request:
+        - actions:
+            - type: restrict-ips
+              config:
+                enforce: true
+                allow:
+                  - "203.0.113.0/24"
+    upstream:
+      url: 8080
+      protocol: http1
+```
+
+## Mutual TLS (mTLS)
+
+For environments that require client certificate verification, ngrok supports mutual TLS.
+Only clients presenting a valid certificate can connect to your device endpoints.
+
+See the [Agent TLS Termination](/agent/agent-tls-termination) documentation for configuration details.
+
+## Combining security controls
+
+Layer multiple security controls on a single endpoint.
+For example, combine IP restrictions with OAuth authentication:
+
+```yaml title="ngrok.yml"
+endpoints:
+  - name: device-api
+    url: $YOUR_DOMAIN
+    traffic_policy:
+      on_http_request:
+        - actions:
+            - type: restrict-ips
+              config:
+                enforce: true
+                allow:
+                  - "203.0.113.0/24"
+            - type: oauth
+              config:
+                provider: google
+    upstream:
+      url: 8080
+      protocol: http1
+```
+
+## Compliance
+
+ngrok maintains certifications and controls to help you pass your security review:
+
+| Certification | Details |
+|---------------|---------|
+| SOC 2 Type II | Independently audited |
+| HIPAA & BAA | Business Associate Agreements available |
+| GDPR | EU data protection compliance |
+| CCPA | California consumer privacy |
+| EU-US DPF | Data Privacy Framework |
+
+Additional security features include RBAC, SSO & SCIM, audit logs, DDoS protection, and data residency options.
+Visit the [ngrok Trust Center](https://ngrok.com/trust) for details.
+
+## Next steps
+
+- [Traffic Policy](/guides/device-gateway/traffic-policy): add authentication, rate limiting, and access control at ngrok's edge
+- [Fleet management](/guides/device-gateway/fleet-management): manage multi-tenancy and credentials at scale
+- [Full walkthrough](/guides/device-gateway/agent): see security controls in action in a detailed example scenario

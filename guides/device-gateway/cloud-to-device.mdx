@@ -1,0 +1,73 @@
+---
+title: Connect Cloud Services to Devices
+sidebarTitle: Cloud-to-Device
+description: Connect your cloud services to device APIs and databases behind remote networks using ngrok.
+---
+
+Your cloud services often need to reach APIs, databases, and other services running on devices in remote networks.
+ngrok gives each device service an addressable endpoint that your cloud can call like any other URL.
+
+## How it works
+
+1. Install the ngrok agent on a gateway in the remote network
+2. Define [internal endpoints](/universal-gateway/internal-endpoints/) for each device service
+3. Create [Cloud Endpoints](/universal-gateway/cloud-endpoints/) that route traffic to the internal endpoints
+4. Your cloud services call the Cloud Endpoint URLs like any other API
+
+## Internal and Cloud Endpoints
+
+An **internal endpoint** makes a device service reachable within ngrok's network without exposing it to the public internet.
+A **Cloud Endpoint** is a permanent, externally accessible entry point that routes traffic to internal endpoints.
+
+```yaml title="ngrok.yml"
+version: 3
+agent:
+  authtoken: YOUR_NGROK_AUTHTOKEN
+
+endpoints:
+  - name: telemetry-api
+    url: https://telemetry-api.internal
+    upstream:
+      url: http://192.168.1.100:8080
+  - name: sensor-db
+    url: tcp://sensor-db.internal:5432
+    upstream:
+      url: tcp://192.168.1.101:5432
+```
+
+Then create a Cloud Endpoint that forwards traffic to the internal endpoint:
+
+```yaml title="Cloud Endpoint Traffic Policy"
+on_http_request:
+  - actions:
+      - type: forward-internal
+        config:
+          url: https://telemetry-api.internal
+```
+
+Now your cloud services can call `https://factory1.example.com/api` and traffic is securely routed to the device.
+
+## Always-on vs. on-demand
+
+- **Always-on endpoints** are ideal for production APIs and databases that your cloud queries continuously. Cloud Endpoints persist independently of the agent lifecycle.
+- **On-demand endpoints** are useful for periodic queries, maintenance tasks, or batch jobs. Use the [Agent API](/agent/api/) or the [ngrok API](/api/) to create and tear down endpoints programmatically.
+
+## TCP access for databases
+
+For TCP-based services like databases, reserve a [TCP address](/api/resources/reserved-addrs/) and create a TCP Cloud Endpoint:
+
+```yaml title="TCP Cloud Endpoint Traffic Policy"
+on_tcp_connect:
+  - actions:
+      - type: forward-internal
+        config:
+          url: tcp://sensor-db.internal:5432
+```
+
+Your cloud services connect to the reserved TCP address as if the database were local.
+
+## Next steps
+
+- [Full walkthrough](/guides/device-gateway/agent): a detailed example configuring internal and cloud endpoints for a smart factory
+- [Traffic Policy](/guides/device-gateway/traffic-policy): add authentication and rate limiting to your cloud-to-device connections
+- [Fleet management](/guides/device-gateway/fleet-management): manage multi-tenancy and credentials across your device fleet
