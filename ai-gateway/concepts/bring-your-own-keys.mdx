@@ -38,24 +38,25 @@ on_http_request:
             - value: ${secrets.get('google', 'key')}
 ```
 
-## AI Gateway API Keys compared to BYOK
+## Comparing your options
 
-| | AI Gateway API Keys | BYOK |
-|---|---|---|
-| Provider accounts needed | No (OpenAI & Anthropic only) | Yes |
-| Credits required | Yes (processing fee + upstream provider fee) | No |
-| Provider billing | Included in credits (ngrok pays provider) | Direct with providers |
-| Setup complexity | Low (create key, use it) | Medium (configure secrets, Traffic Policy) |
-| Key rotation | Managed by ngrok (provider keys) | You manage |
-| Multi-key failover | Automatic | Configurable |
-| CEL key selection | Not applicable | Full control |
-| Custom/self-hosted providers | Not supported | Supported |
-| Auth | Built-in (AI Gateway API Key) | DIY (secrets, JWT, etc.) |
-| Supported providers | OpenAI, Anthropic | Any provider |
+| | AI Gateway API Keys | Attached provider keys | BYOK |
+|---|---|---|---|
+| Provider accounts needed | No (OpenAI & Anthropic only) | Yes | Yes |
+| Credits required | Yes | No | No |
+| Provider billing | Included in credits (ngrok pays provider) | Direct with providers | Direct with providers |
+| Setup complexity | Low (create key, use it) | Low (attach key to API key) | Medium (configure secrets, Traffic Policy) |
+| Key storage | ngrok manages | Encrypted by ngrok | ngrok Vaults & Secrets |
+| Key rotation | Managed by ngrok | Update attached key | Update secret or Traffic Policy |
+| Multi-key failover | Automatic | Per-key ordering | Configurable |
+| CEL key selection | Not applicable | Not applicable | Full control |
+| Custom/self-hosted providers | Not supported | Not supported | Supported |
+| Auth | Built-in (AI Gateway API Key) | Built-in (AI Gateway API Key) | DIY (secrets, JWT, etc.) |
+| Supported providers | OpenAI, Anthropic | Any supported provider | Any provider |
 
 ### Mixed mode
 
-You can combine both approaches in the same gateway. Use AI Gateway API Keys for OpenAI and Anthropic while bringing your own keys for other providers. When you authenticate with an AI Gateway API Key, BYOK keys take precedence for providers where they're configured. See [AI Gateway API Keys—Mixed mode](/ai-gateway/concepts/api-keys#mixing-ai-gateway-api-keys-with-your-own-provider-keys) for details.
+You can combine all three approaches in the same gateway. When you authenticate with an AI Gateway API Key, the provider key lookup order is: Traffic Policy BYOK → attached provider keys → ngrok-managed keys. See [Attaching Provider Keys](/ai-gateway/guides/attaching-provider-keys) and [AI Gateway API Keys](/ai-gateway/concepts/api-keys#attaching-your-own-provider-keys) for details.
 
 ## Guides
 
