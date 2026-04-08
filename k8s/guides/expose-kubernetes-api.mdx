@@ -31,7 +31,7 @@ As of Kubernetes 1.33, the following authentication strategies are available. Fr
 | Cloud Provider Token (EKS, GKE, AKS) | `exec` block (e.g. `aws`, `gke-gcloud-auth-plugin`) | ✅ Yes | HTTPS |
 | X.509 Client Certificate | `client-certificate-data` + `client-key-data` fields | ✅ Yes | TLS (passthrough) |
 | Exec Plugin (certificate output) | `exec` block producing `clientCertificateData` | ✅ Yes | TLS (passthrough) |
-| Authenticating Proxy | External proxy infrastructure | ⚠️ Indirect only | N/A |
+| Authenticating Proxy | External proxy infrastructure | ⚠️ Architecture dependent | N/A |
 | Anonymous | No credentials | ✅ Yes (add ngrok-level auth!) | HTTPS |
 
 ### Why endpoint type matters
@@ -310,11 +310,11 @@ Unable to connect to the server: tls: failed to verify certificate: x509: certif
 
 then the certificate presented by your Kubernetes API server is only valid for those server names and you will either need to:
 
-1. Create/Obtain a valid certifiacte and instruct your kubeapi server to use it. For example, you can use `--apiserver-cert-extra-sans` if using [kubeadm](https://kubernetes.io/docs/reference/setup-tools/kubeadm/kubeadm-init/) OR
+1. Create/Obtain a valid certificate and instruct your kubeapi server to use it. For example, you can use `--apiserver-cert-extra-sans` if using [kubeadm](https://kubernetes.io/docs/reference/setup-tools/kubeadm/kubeadm-init/) OR
 2. Disable the TLS server verification step, as shown below, which comes with security implications that you should consider.
 
 ```bash
-# Remove the cluster CA — it can not be used in conjuction with --insecure-skip-tls-verify
+# Remove the cluster CA — it cannot be used in conjunction with --insecure-skip-tls-verify
 kubectl config unset clusters.<cluster-name>.certificate-authority-data
 # Set the new server URL
 kubectl config set-cluster <cluster-name> \
