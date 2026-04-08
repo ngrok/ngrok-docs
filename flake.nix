@@ -31,6 +31,8 @@
             nodejs_24
             corepack_24
             pnpm-shim
+            nixfmt
+            vale
           ];
         };
       });
