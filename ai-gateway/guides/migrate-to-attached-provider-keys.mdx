@@ -18,12 +18,9 @@ providers:
       - value: ${secrets.get('openai', 'backup-key')}
 ```
 
-**Two cases still require Traffic Policy keys** and cannot be migrated yet:
+**One case still requires Traffic Policy keys** and cannot be migrated:
 
-- **CEL-based key selection**: if you use `api_key_selection.strategy` with quota or error-rate expressions, keep those keys in Traffic Policy. Attached keys use simple ordered failover only.
 - **Custom or self-hosted providers**: providers with a `base_url` must stay in Traffic Policy.
-
-If either of those applies, see [partial migration](#partial-migration) below.
 
 ## Migration steps
 
@@ -41,22 +38,25 @@ If either of those applies, see [partial migration](#partial-migration) below.
 
     ```bash
     # Attach OpenAI primary key
-    ngrok api ai-gateway-api-keys add-provider-key \
-      --id ngk_xxxxx \
-      --provider openai \
-      --secret-key sk-proj-primary...
+    ngrok api ai-gateway-provider-keys create \
+      --ai-gateway-api-key-id aigk_xxxxx \
+      --provider-id openai \
+      --name "OpenAI Primary" \
+      --value sk-proj-primary...
 
     # Attach OpenAI backup key
-    ngrok api ai-gateway-api-keys add-provider-key \
-      --id ngk_xxxxx \
-      --provider openai \
-      --secret-key sk-proj-backup...
+    ngrok api ai-gateway-provider-keys create \
+      --ai-gateway-api-key-id aigk_xxxxx \
+      --provider-id openai \
+      --name "OpenAI Backup" \
+      --value sk-proj-backup...
 
     # Attach Anthropic key
-    ngrok api ai-gateway-api-keys add-provider-key \
-      --id ngk_xxxxx \
-      --provider anthropic \
-      --secret-key sk-ant-...
+    ngrok api ai-gateway-provider-keys create \
+      --ai-gateway-api-key-id aigk_xxxxx \
+      --provider-id anthropic \
+      --name "Anthropic Key" \
+      --value sk-ant-...
     ```
 
     Keys are tried in the order they are attached, matching the failover behavior from Traffic Policy.
@@ -138,7 +138,7 @@ If either of those applies, see [partial migration](#partial-migration) below.
     If requests fail, check [error codes](/ai-gateway/reference/error-codes) and verify your keys were attached correctly:
 
     ```bash
-    ngrok api ai-gateway-api-keys list-provider-keys --id ngk_xxxxx
+    ngrok api ai-gateway-provider-keys list --ai-gateway-api-key-id aigk_xxxxx
     ```
   </Step>
 
@@ -157,36 +157,6 @@ If either of those applies, see [partial migration](#partial-migration) below.
   </Step>
 </Steps>
 
-## Partial migration
-
-If you have a mix of simple keys and CEL-based selection, you can migrate the simple providers and leave the advanced ones in Traffic Policy.
-
-For example, if you have OpenAI with CEL selection and Anthropic with simple keys:
-
-```yaml
-# Keep this in Traffic Policy; CEL selection stays
-providers:
-  - id: openai
-    api_keys:
-      - value: ${secrets.get('openai', 'key-one')}
-      - value: ${secrets.get('openai', 'key-two')}
-      - value: ${secrets.get('openai', 'key-three')}
-api_key_selection:
-  strategy:
-    - "ai.keys.filter(k, k.quota.remaining_requests > 100)"
-    - "ai.keys"
-```
-
-Attach only the Anthropic key:
-
-```bash
-ngrok api ai-gateway-api-keys add-provider-key \
-  --id ngk_xxxxx \
-  --provider anthropic \
-  --secret-key sk-ant-...
-```
-
-Then remove only the Anthropic `api_keys` from Traffic Policy. The routing priority still holds—Traffic Policy BYOK on OpenAI wins over any attached key, and Anthropic uses the attached key.
 
 ## What doesn't change
 
@@ -208,5 +178,4 @@ Then remove only the Anthropic `api_keys` from Traffic Policy. The routing prior
 ## Next steps
 
 - [Attaching Provider Keys](/ai-gateway/guides/attaching-provider-keys): full reference for managing attached keys
-- [Key Selection & Failover](/ai-gateway/guides/key-selection-failover): keeping CEL selection for advanced use cases
-- [Managing Provider Keys (BYOK)](/ai-gateway/guides/managing-provider-keys): if you're staying with Traffic Policy keys
+- [Managing Provider Keys (BYOK)](/ai-gateway/guides/managing-provider-keys): if you're staying with Traffic Policy keys for custom providers

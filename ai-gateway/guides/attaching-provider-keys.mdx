@@ -43,10 +43,11 @@ If you just need OpenAI and Anthropic and don't have your own provider accounts,
 ### CLI
 
 ```bash
-ngrok api ai-gateway-api-keys add-provider-key \
-  --id ngk_xxxxx \
-  --provider openai \
-  --secret-key sk-proj-...
+ngrok api ai-gateway-provider-keys create \
+  --ai-gateway-api-key-id aigk_xxxxx \
+  --provider-id openai \
+  --name "My OpenAI Key" \
+  --value sk-proj-...
 ```
 
 ### API
@@ -85,22 +86,25 @@ Attach keys for as many providers as you need. Each provider is configured indep
 
 ```bash
 # Attach an OpenAI key
-ngrok api ai-gateway-api-keys add-provider-key \
-  --id ngk_xxxxx \
-  --provider openai \
-  --secret-key sk-proj-...
+ngrok api ai-gateway-provider-keys create \
+  --ai-gateway-api-key-id aigk_xxxxx \
+  --provider-id openai \
+  --name "My OpenAI Key" \
+  --value sk-proj-...
 
 # Attach an Anthropic key
-ngrok api ai-gateway-api-keys add-provider-key \
-  --id ngk_xxxxx \
-  --provider anthropic \
-  --secret-key sk-ant-...
+ngrok api ai-gateway-provider-keys create \
+  --ai-gateway-api-key-id aigk_xxxxx \
+  --provider-id anthropic \
+  --name "My Anthropic Key" \
+  --value sk-ant-...
 
 # Attach a Google key
-ngrok api ai-gateway-api-keys add-provider-key \
-  --id ngk_xxxxx \
-  --provider google \
-  --secret-key AIza...
+ngrok api ai-gateway-provider-keys create \
+  --ai-gateway-api-key-id aigk_xxxxx \
+  --provider-id google \
+  --name "My Google Key" \
+  --value AIza...
 ```
 
 Requests are then routed to the right provider key based on which model is requested. Providers without an attached key fall back to ngrok-managed keys (if available) or return an error.
@@ -114,10 +118,11 @@ To rotate a provider key without downtime:
     Attach the replacement key alongside the existing one. The gateway tries keys in the order they were attached.
 
     ```bash
-    ngrok api ai-gateway-api-keys add-provider-key \
-      --id ngk_xxxxx \
-      --provider openai \
-      --secret-key sk-proj-new...
+    ngrok api ai-gateway-provider-keys create \
+      --ai-gateway-api-key-id aigk_xxxxx \
+      --provider-id openai \
+      --name "My OpenAI Key (new)" \
+      --value sk-proj-new...
     ```
   </Step>
 
@@ -125,9 +130,7 @@ To rotate a provider key without downtime:
     Once you confirm the new key is working, remove the old one:
 
     ```bash
-    ngrok api ai-gateway-api-keys remove-provider-key \
-      --id ngk_xxxxx \
-      --provider-key-id pkid_xxxxx
+    ngrok api ai-gateway-provider-keys delete pkid_xxxxx
     ```
   </Step>
 
@@ -155,7 +158,7 @@ This means you can use attached keys as a default for most providers while overr
 ### List
 
 ```bash
-ngrok api ai-gateway-api-keys list-provider-keys --id ngk_xxxxx
+ngrok api ai-gateway-provider-keys list --ai-gateway-api-key-id aigk_xxxxx
 ```
 
 ```bash
@@ -167,9 +170,7 @@ curl https://api.ngrok.com/ai_gateway_api_keys/{id}/provider_keys \
 ### Remove
 
 ```bash
-ngrok api ai-gateway-api-keys remove-provider-key \
-  --id ngk_xxxxx \
-  --provider-key-id pkid_xxxxx
+ngrok api ai-gateway-provider-keys delete pkid_xxxxx
 ```
 
 ```bash
@@ -188,4 +189,3 @@ Removing a provider key takes effect immediately. Any in-flight requests using t
 - [AI Gateway API Keys](/ai-gateway/concepts/api-keys): Overview of AI Gateway API Keys and how they work
 - [Bring Your Own Keys](/ai-gateway/concepts/bring-your-own-keys): Configure provider keys directly in Traffic Policy
 - [Managing Provider Keys (BYOK)](/ai-gateway/guides/managing-provider-keys): Key rotation and management for Traffic Policy keys
-- [Key Selection & Failover](/ai-gateway/guides/key-selection-failover): CEL-based key selection strategies
