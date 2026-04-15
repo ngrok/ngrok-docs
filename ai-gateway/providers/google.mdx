@@ -5,19 +5,31 @@ description: Use Google Gemini models through the ngrok AI Gateway.
 
 [Google AI Studio](https://aistudio.google.com) provides Gemini models. Google requires you to bring your own key—ngrok-managed keys are not available for Google.
 
-## Setup
+## Attach your key
+
+Attach your Google key to your AI Gateway API Key. ngrok encrypts and stores it server-side—clients only ever send your AI Gateway API Key.
 
 <Steps>
   <Step title="Create an AI Gateway endpoint">
-    If you don't have one yet, follow the [quickstart](/ai-gateway/quickstart) to create your AI Gateway endpoint.
+    If you don't have one yet, follow the [quickstart](/ai-gateway/quickstart) to create your AI Gateway endpoint with an AI Gateway API Key.
   </Step>
 
   <Step title="Get a Google AI API key">
     Generate an API key at [aistudio.google.com](https://aistudio.google.com). Keys are available on the free tier.
   </Step>
 
+  <Step title="Attach the key">
+    ```bash
+    ngrok api ai-gateway-provider-keys create \
+      --ai-gateway-api-key-id aigk_xxxxx \
+      --provider-id google \
+      --name "My Google Key" \
+      --value AIza...
+    ```
+  </Step>
+
   <Step title="Make a request">
-    Pass your key directly—the gateway forwards it to Google.
+    Use your AI Gateway API Key—the gateway resolves the Google key server-side.
 
     <CodeGroup>
     ```python Python
@@ -25,7 +37,7 @@ description: Use Google Gemini models through the ngrok AI Gateway.
 
     client = OpenAI(
         base_url="https://your-ai-gateway.ngrok.app/v1",
-        api_key="AIza..."  # Your Google AI key, forwarded by gateway
+        api_key="ng-xxxxx-g1-xxxxx"  # Your AI Gateway API Key
     )
 
     response = client.chat.completions.create(
@@ -41,7 +53,7 @@ description: Use Google Gemini models through the ngrok AI Gateway.
 
     const client = new OpenAI({
       baseURL: "https://your-ai-gateway.ngrok.app/v1",
-      apiKey: "AIza...",  // Your Google AI key, forwarded by gateway
+      apiKey: "ng-xxxxx-g1-xxxxx",  // Your AI Gateway API Key
     });
 
     const response = await client.chat.completions.create({
@@ -58,7 +70,7 @@ description: Use Google Gemini models through the ngrok AI Gateway.
 
     const gateway = createOpenAI({
       baseURL: "https://your-ai-gateway.ngrok.app/v1",
-      apiKey: "AIza...",  // Your Google AI key, forwarded by gateway
+      apiKey: "ng-xxxxx-g1-xxxxx",  // Your AI Gateway API Key
     });
 
     const { text } = await generateText({
@@ -72,7 +84,7 @@ description: Use Google Gemini models through the ngrok AI Gateway.
     ```bash cURL
     curl https://your-ai-gateway.ngrok.app/v1/chat/completions \
       -H "Content-Type: application/json" \
-      -H "Authorization: Bearer AIza..." \
+      -H "Authorization: Bearer ng-xxxxx-g1-xxxxx" \
       -d '{
         "model": "gemini-2.5-flash",
         "messages": [{"role": "user", "content": "Hello!"}]
@@ -81,110 +93,14 @@ description: Use Google Gemini models through the ngrok AI Gateway.
     </CodeGroup>
   </Step>
 </Steps>
+
+See [Attaching Provider Keys](/ai-gateway/guides/attaching-provider-keys) for key rotation, listing, and removing attached keys.
 
 ## Available models
 
 See the [model catalog](/ai-gateway/reference/model-catalog#google) for the full list of supported Gemini models.
 
-## Store key in the gateway
-
-Instead of each client passing their own key, you can store it once in ngrok Secrets and have the gateway inject it automatically.
-
-<Warning>
-Storing your provider key in the gateway makes your endpoint publicly accessible. You must add authorization to prevent unauthorized use and unexpected charges. See [Protecting BYOK Endpoints](/ai-gateway/guides/protecting-byok-endpoints).
-</Warning>
-
-<Steps>
-  <Step title="Store your key in ngrok secrets">
-    ```bash
-    ngrok api secrets create \
-      --name google \
-      --secret-data '{"api-key": "AIza..."}'
-    ```
-
-    Or use the [Vaults & Secrets dashboard](https://dashboard.ngrok.com/vaults).
-  </Step>
-
-  <Step title="Configure your traffic policy">
-    ```yaml
-    on_http_request:
-      - type: ai-gateway
-        config:
-          providers:
-            - id: "google"
-              api_keys:
-                - value: ${secrets.get('google', 'api-key')}
-    ```
-  </Step>
-
-  <Step title="Make a request">
-    Clients no longer need a Google key—pass any value for `api_key`.
-
-    <CodeGroup>
-    ```python Python
-    from openai import OpenAI
-
-    client = OpenAI(
-        base_url="https://your-ai-gateway.ngrok.app/v1",
-        api_key="unused"  # Gateway injects your Google key
-    )
-
-    response = client.chat.completions.create(
-        model="gemini-2.5-flash",
-        messages=[{"role": "user", "content": "Hello!"}]
-    )
-
-    print(response.choices[0].message.content)
-    ```
-
-    ```typescript TypeScript
-    import OpenAI from "openai";
-
-    const client = new OpenAI({
-      baseURL: "https://your-ai-gateway.ngrok.app/v1",
-      apiKey: "unused",  // Gateway injects your Google key
-    });
-
-    const response = await client.chat.completions.create({
-      model: "gemini-2.5-flash",
-      messages: [{ role: "user", content: "Hello!" }],
-    });
-
-    console.log(response.choices[0].message.content);
-    ```
-
-    ```typescript Vercel AI SDK
-    import { generateText } from "ai";
-    import { createOpenAI } from "@ai-sdk/openai";
-
-    const gateway = createOpenAI({
-      baseURL: "https://your-ai-gateway.ngrok.app/v1",
-      apiKey: "unused",  // Gateway injects your Google key
-    });
-
-    const { text } = await generateText({
-      model: gateway("gemini-2.5-flash"),
-      prompt: "Hello!",
-    });
-
-    console.log(text);
-    ```
-
-    ```bash cURL
-    curl https://your-ai-gateway.ngrok.app/v1/chat/completions \
-      -H "Content-Type: application/json" \
-      -H "Authorization: Bearer unused" \
-      -d '{
-        "model": "gemini-2.5-flash",
-        "messages": [{"role": "user", "content": "Hello!"}]
-      }'
-    ```
-    </CodeGroup>
-  </Step>
-</Steps>
-
 ## Next steps
 
-- [Protecting BYOK Endpoints](/ai-gateway/guides/protecting-byok-endpoints): add authorization to your endpoint
-- [Managing Provider Keys](/ai-gateway/guides/managing-provider-keys): key rotation and multiple keys
+- [Attaching Provider Keys](/ai-gateway/guides/attaching-provider-keys): attach, rotate, and manage your Google keys
 - [Multi-provider failover](/ai-gateway/examples/multi-provider-failover): failover patterns

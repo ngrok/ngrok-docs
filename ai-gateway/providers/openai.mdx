@@ -70,118 +70,27 @@ curl https://your-ai-gateway.ngrok.app/v1/chat/completions \
 ```
 </CodeGroup>
 
-## Bring your own key
+## Attach your own key
 
-Use your own OpenAI API key. Pass it directly—the gateway forwards it to OpenAI.
+Attach your OpenAI key to your AI Gateway API Key. ngrok encrypts and stores it server-side—clients only ever send your AI Gateway API Key.
 
 <Steps>
-  <Step title="Create an AI Gateway">
-    If you don't have one yet, follow the [quickstart](/ai-gateway/quickstart) to create your AI Gateway endpoint.
-  </Step>
-
   <Step title="Get an OpenAI API key">
     Create an account at [platform.openai.com](https://platform.openai.com) and generate an API key. Keys start with `sk-proj-`.
   </Step>
 
-  <Step title="Make a request">
-    Pass your key directly—the gateway forwards it to OpenAI.
-
-    <CodeGroup>
-    ```python Python
-    from openai import OpenAI
-
-    client = OpenAI(
-        base_url="https://your-ai-gateway.ngrok.app/v1",
-        api_key="sk-proj-..."  # Your OpenAI key, forwarded by gateway
-    )
-
-    response = client.chat.completions.create(
-        model="gpt-4o",
-        messages=[{"role": "user", "content": "Hello!"}]
-    )
-
-    print(response.choices[0].message.content)
-    ```
-
-    ```typescript TypeScript
-    import OpenAI from "openai";
-
-    const client = new OpenAI({
-      baseURL: "https://your-ai-gateway.ngrok.app/v1",
-      apiKey: "sk-proj-...",  // Your OpenAI key, forwarded by gateway
-    });
-
-    const response = await client.chat.completions.create({
-      model: "gpt-4o",
-      messages: [{ role: "user", content: "Hello!" }],
-    });
-
-    console.log(response.choices[0].message.content);
-    ```
-
-    ```typescript Vercel AI SDK
-    import { generateText } from "ai";
-    import { createOpenAI } from "@ai-sdk/openai";
-
-    const gateway = createOpenAI({
-      baseURL: "https://your-ai-gateway.ngrok.app/v1",
-      apiKey: "sk-proj-...",  // Your OpenAI key, forwarded by gateway
-    });
-
-    const { text } = await generateText({
-      model: gateway("gpt-4o"),
-      prompt: "Hello!",
-    });
-
-    console.log(text);
-    ```
-
-    ```bash cURL
-    curl https://your-ai-gateway.ngrok.app/v1/chat/completions \
-      -H "Content-Type: application/json" \
-      -H "Authorization: Bearer sk-proj-..." \
-      -d '{
-        "model": "gpt-4o",
-        "messages": [{"role": "user", "content": "Hello!"}]
-      }'
-    ```
-    </CodeGroup>
-  </Step>
-</Steps>
-
-## Store key in the gateway
-
-Instead of each client passing their own key, you can store it once in ngrok Secrets and have the gateway inject it automatically.
-
-<Warning>
-Storing your provider key in the gateway makes your endpoint publicly accessible. You must add authorization to prevent unauthorized use and unexpected charges. See [Protecting BYOK Endpoints](/ai-gateway/guides/protecting-byok-endpoints).
-</Warning>
-
-<Steps>
-  <Step title="Store your key in ngrok secrets">
+  <Step title="Attach the key">
     ```bash
-    ngrok api secrets create \
-      --name openai \
-      --secret-data '{"api-key": "sk-proj-..."}'
-    ```
-
-    Or use the [Vaults & Secrets dashboard](https://dashboard.ngrok.com/vaults).
-  </Step>
-
-  <Step title="Configure your Traffic Policy">
-    ```yaml
-    on_http_request:
-      - type: ai-gateway
-        config:
-          providers:
-            - id: "openai"
-              api_keys:
-                - value: ${secrets.get('openai', 'api-key')}
+    ngrok api ai-gateway-provider-keys create \
+      --ai-gateway-api-key-id aigk_xxxxx \
+      --provider-id openai \
+      --name "My OpenAI Key" \
+      --value sk-proj-...
     ```
   </Step>
 
   <Step title="Make a request">
-    Clients no longer need an OpenAI key—pass any value for `api_key`.
+    Use your AI Gateway API Key—the gateway resolves the OpenAI key server-side.
 
     <CodeGroup>
     ```python Python
@@ -189,7 +98,7 @@ Storing your provider key in the gateway makes your endpoint publicly accessible
 
     client = OpenAI(
         base_url="https://your-ai-gateway.ngrok.app/v1",
-        api_key="unused"  # Gateway injects your OpenAI key
+        api_key="ng-xxxxx-g1-xxxxx"  # Your AI Gateway API Key
     )
 
     response = client.chat.completions.create(
@@ -205,7 +114,7 @@ Storing your provider key in the gateway makes your endpoint publicly accessible
 
     const client = new OpenAI({
       baseURL: "https://your-ai-gateway.ngrok.app/v1",
-      apiKey: "unused",  // Gateway injects your OpenAI key
+      apiKey: "ng-xxxxx-g1-xxxxx",  // Your AI Gateway API Key
     });
 
     const response = await client.chat.completions.create({
@@ -222,7 +131,7 @@ Storing your provider key in the gateway makes your endpoint publicly accessible
 
     const gateway = createOpenAI({
       baseURL: "https://your-ai-gateway.ngrok.app/v1",
-      apiKey: "unused",  // Gateway injects your OpenAI key
+      apiKey: "ng-xxxxx-g1-xxxxx",  // Your AI Gateway API Key
     });
 
     const { text } = await generateText({
@@ -236,7 +145,7 @@ Storing your provider key in the gateway makes your endpoint publicly accessible
     ```bash cURL
     curl https://your-ai-gateway.ngrok.app/v1/chat/completions \
       -H "Content-Type: application/json" \
-      -H "Authorization: Bearer unused" \
+      -H "Authorization: Bearer ng-xxxxx-g1-xxxxx" \
       -d '{
         "model": "gpt-4o",
         "messages": [{"role": "user", "content": "Hello!"}]
@@ -245,6 +154,8 @@ Storing your provider key in the gateway makes your endpoint publicly accessible
     </CodeGroup>
   </Step>
 </Steps>
+
+See [Attaching Provider Keys](/ai-gateway/guides/attaching-provider-keys) for key rotation, listing, and removing attached keys.
 
 ## Explicit provider routing
 
@@ -266,5 +177,5 @@ See the [model catalog](/ai-gateway/reference/model-catalog#openai) for the full
 ## Next steps
 
 - [AI Gateway API Keys](/ai-gateway/concepts/api-keys): use ngrok-managed keys for the simplest setup
-- [Managing Provider Keys](/ai-gateway/guides/managing-provider-keys): key rotation and multiple keys
+- [Attaching Provider Keys](/ai-gateway/guides/attaching-provider-keys): attach, rotate, and manage your own OpenAI keys
 - [Multi-provider failover](/ai-gateway/examples/multi-provider-failover): automatic failover to other providers
