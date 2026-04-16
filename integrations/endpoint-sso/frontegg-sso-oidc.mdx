@@ -21,7 +21,7 @@ In this mode, users access ngrok endpoints and are redirected to Frontegg for au
 ## What you'll need
 
 - A Frontegg account with administrative rights to create apps.
-- An ngrok Enterprise account with an authtoken or admin access to configure edges with OpenID Connect.
+- An ngrok Enterprise account with an authtoken or admin access to configure endpoints with OpenID Connect.
 
 ## 1. Configure Frontegg 
 
@@ -75,41 +75,35 @@ This tutorial assumes you have an app running locally (for example, on `localhos
 - Copy the URL available next to **Forwarding** (for example, `https://frontegg-sso-test.ngrok.app`).
 - Skip to **Step 3**.
 
-### **Option 2**: ngrok edge
+### **Option 2**: Traffic Policy
 
-To configure an edge with Frontegg:
+<Note>
+This tutorial assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok client installed.
+</Note>
 
-- Access the [ngrok Dashboard](https://dashboard.ngrok.com/) and sign in using your ngrok account.
-- On the left menu, click **Universal Gateway** and then click **Edges**.
-- If you don't have an edge already set to add Frontegg SSO, create a test edge:
-  - Click **+ New Edge**.
-  - Click **Create HTTPS Edge**.
-  - Click the **pencil icon** next to "no description", enter `Frontegg SSO OIDC` as the edge name and click **Save**.
-- On the edge settings menu, click **OIDC**.
-- Click **Begin setup** and enter the following values into the fields:
-  - **Issuer URL**: Your Frontegg **Domain name** URL (for example, `https://app-123456.frontegg.com`).
-  - **Client ID**: The client ID you copied from Frontegg.
-  - **Client Secret**: The API key you copied from Frontegg.
-- Click **Save** at the top, and then click the left arrow to go back to the **Edges** page.
-- Launch a tunnel connected to your Frontegg edge:
+Create a `policy.yaml` file with the following content, replacing the placeholder values with those copied from Frontegg:
 
-   <Note>
-   This step assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok client installed.
-   </Note>
+```yaml
+on_http_request:
+  - actions:
+      - type: openid-connect
+        config:
+          issuer_url: 'https://app-123456.frontegg.com'
+          client_id: 'YOUR_FRONTEGG_CLIENT_ID'
+          client_secret: 'YOUR_FRONTEGG_API_KEY'
+          scopes:
+            - openid
+            - profile
+            - email
+```
 
-- Click **Start a tunnel**.
-- Click the **copy icon** next to the tunnel command.
-- Launch a tunnel:
-  - Launch a terminal.
-  - Paste the command but replace `http://localhost:80` with your localhost app address (such as `http://localhost:3000`).
-  - Press **Enter** and an ngrok tunnel associated with your edge configuration will launch.
-- To confirm that the tunnel is connected to your edge:
-  - Return to the ngrok dashboard.
-  - Close the **Start a tunnel** and the **Tunnel group** tabs.
-  - Refresh the test edge page.
-  Under traffic, you will see the message _You have 1 tunnel online. Start additional tunnels to begin load balancing_.
-- In the test edge, copy the **endpoint URL**.
-You use this URL to test the Frontegg authentication.
+Launch an ngrok tunnel with this policy:
+
+```bash
+ngrok http 3000 --traffic-policy-file policy.yaml --url YOUR_DOMAIN
+```
+
+Copy the URL next to **Forwarding** (for example, `https://frontegg-sso-test.ngrok.app`).
 
 ## 3. Test the integration
 
