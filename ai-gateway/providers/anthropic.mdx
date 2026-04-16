@@ -118,154 +118,27 @@ curl https://your-ai-gateway.ngrok.app/v1/messages \
 ```
 </CodeGroup>
 
-## Bring your own key
+## Attach your own key
 
-Use your own Anthropic API key. Pass it directly—the gateway forwards it to Anthropic.
+Attach your Anthropic key to your AI Gateway API Key. ngrok encrypts and stores it server-side—clients only ever send your AI Gateway API Key.
 
 <Steps>
-  <Step title="Create an AI Gateway">
-    If you don't have one yet, follow the [quickstart](/ai-gateway/quickstart) to create your AI Gateway endpoint.
-  </Step>
-
   <Step title="Get an Anthropic API key">
     Create an account at [console.anthropic.com](https://console.anthropic.com) and generate an API key. Keys start with `sk-ant-`.
   </Step>
 
-  <Step title="Make a request">
-    Pass your key directly—the gateway forwards it to Anthropic.
-
-    <CodeGroup>
-    ```python Python (OpenAI SDK)
-    from openai import OpenAI
-
-    client = OpenAI(
-        base_url="https://your-ai-gateway.ngrok.app/v1",
-        api_key="sk-ant-..."  # Your Anthropic key, forwarded by gateway
-    )
-
-    response = client.chat.completions.create(
-        model="claude-opus-4-6",
-        messages=[{"role": "user", "content": "Hello!"}]
-    )
-
-    print(response.choices[0].message.content)
-    ```
-
-    ```python Python (Anthropic SDK)
-    import anthropic
-
-    client = anthropic.Anthropic(
-        base_url="https://your-ai-gateway.ngrok.app",
-        api_key="sk-ant-..."  # Your Anthropic key, forwarded by gateway
-    )
-
-    message = client.messages.create(
-        model="claude-opus-4-6",
-        max_tokens=1024,
-        messages=[{"role": "user", "content": "Hello!"}]
-    )
-
-    print(message.content[0].text)
-    ```
-
-    ```typescript TypeScript (OpenAI SDK)
-    import OpenAI from "openai";
-
-    const client = new OpenAI({
-      baseURL: "https://your-ai-gateway.ngrok.app/v1",
-      apiKey: "sk-ant-...",  // Your Anthropic key, forwarded by gateway
-    });
-
-    const response = await client.chat.completions.create({
-      model: "claude-opus-4-6",
-      messages: [{ role: "user", content: "Hello!" }],
-    });
-
-    console.log(response.choices[0].message.content);
-    ```
-
-    ```typescript TypeScript (Anthropic SDK)
-    import Anthropic from "@anthropic-ai/sdk";
-
-    const client = new Anthropic({
-      baseURL: "https://your-ai-gateway.ngrok.app",
-      apiKey: "sk-ant-...",  // Your Anthropic key, forwarded by gateway
-    });
-
-    const message = await client.messages.create({
-      model: "claude-opus-4-6",
-      max_tokens: 1024,
-      messages: [{ role: "user", content: "Hello!" }],
-    });
-
-    console.log(message.content[0].text);
-    ```
-
-    ```typescript Vercel AI SDK
-    import { generateText } from "ai";
-    import { createOpenAI } from "@ai-sdk/openai";
-
-    const gateway = createOpenAI({
-      baseURL: "https://your-ai-gateway.ngrok.app/v1",
-      apiKey: "sk-ant-...",  // Your Anthropic key, forwarded by gateway
-    });
-
-    const { text } = await generateText({
-      model: gateway("claude-opus-4-6"),
-      prompt: "Hello!",
-    });
-
-    console.log(text);
-    ```
-
-    ```bash cURL
-    curl https://your-ai-gateway.ngrok.app/v1/messages \
-      -H "Content-Type: application/json" \
-      -H "x-api-key: sk-ant-..." \
-      -H "anthropic-version: 2023-06-01" \
-      -d '{
-        "model": "claude-opus-4-6",
-        "max_tokens": 1024,
-        "messages": [{"role": "user", "content": "Hello!"}]
-      }'
-    ```
-    </CodeGroup>
-  </Step>
-</Steps>
-
-## Store key in the gateway
-
-Instead of each client passing their own key, you can store it once in ngrok Secrets and have the gateway inject it automatically.
-
-<Warning>
-Storing your provider key in the gateway makes your endpoint publicly accessible. You must add authorization to prevent unauthorized use and unexpected charges. See [Protecting BYOK Endpoints](/ai-gateway/guides/protecting-byok-endpoints).
-</Warning>
-
-<Steps>
-  <Step title="Store your key in ngrok secrets">
+  <Step title="Attach the key">
     ```bash
-    ngrok api secrets create \
-      --name anthropic \
-      --secret-data '{"api-key": "sk-ant-..."}'
-    ```
-
-    Or use the [Vaults & Secrets dashboard](https://dashboard.ngrok.com/vaults).
-  </Step>
-
-  <Step title="Configure your Traffic Policy">
-    ```yaml
-    on_http_request:
-      - type: ai-gateway
-        config:
-          providers:
-            - id: "anthropic"
-              api_keys:
-                - value: ${secrets.get('anthropic', 'api-key')}
+    ngrok api ai-gateway-provider-keys create \
+      --ai-gateway-api-key-id aigk_xxxxx \
+      --provider-id anthropic \
+      --name "My Anthropic Key" \
+      --value sk-ant-...
     ```
   </Step>
 
   <Step title="Make a request">
-    Clients no longer need an Anthropic key—pass any value for `api_key`.
+    Use your AI Gateway API Key—the gateway resolves the Anthropic key server-side.
 
     <CodeGroup>
     ```python Python (OpenAI SDK)
@@ -273,7 +146,7 @@ Storing your provider key in the gateway makes your endpoint publicly accessible
 
     client = OpenAI(
         base_url="https://your-ai-gateway.ngrok.app/v1",
-        api_key="unused"  # Gateway injects your Anthropic key
+        api_key="ng-xxxxx-g1-xxxxx"  # Your AI Gateway API Key
     )
 
     response = client.chat.completions.create(
@@ -289,7 +162,7 @@ Storing your provider key in the gateway makes your endpoint publicly accessible
 
     client = anthropic.Anthropic(
         base_url="https://your-ai-gateway.ngrok.app",
-        api_key="unused"  # Gateway injects your Anthropic key
+        api_key="ng-xxxxx-g1-xxxxx"  # Your AI Gateway API Key
     )
 
     message = client.messages.create(
@@ -306,7 +179,7 @@ Storing your provider key in the gateway makes your endpoint publicly accessible
 
     const client = new OpenAI({
       baseURL: "https://your-ai-gateway.ngrok.app/v1",
-      apiKey: "unused",  // Gateway injects your Anthropic key
+      apiKey: "ng-xxxxx-g1-xxxxx",  // Your AI Gateway API Key
     });
 
     const response = await client.chat.completions.create({
@@ -322,7 +195,7 @@ Storing your provider key in the gateway makes your endpoint publicly accessible
 
     const client = new Anthropic({
       baseURL: "https://your-ai-gateway.ngrok.app",
-      apiKey: "unused",  // Gateway injects your Anthropic key
+      apiKey: "ng-xxxxx-g1-xxxxx",  // Your AI Gateway API Key
     });
 
     const message = await client.messages.create({
@@ -340,7 +213,7 @@ Storing your provider key in the gateway makes your endpoint publicly accessible
 
     const gateway = createOpenAI({
       baseURL: "https://your-ai-gateway.ngrok.app/v1",
-      apiKey: "unused",  // Gateway injects your Anthropic key
+      apiKey: "ng-xxxxx-g1-xxxxx",  // Your AI Gateway API Key
     });
 
     const { text } = await generateText({
@@ -354,7 +227,7 @@ Storing your provider key in the gateway makes your endpoint publicly accessible
     ```bash cURL
     curl https://your-ai-gateway.ngrok.app/v1/chat/completions \
       -H "Content-Type: application/json" \
-      -H "Authorization: Bearer unused" \
+      -H "Authorization: Bearer ng-xxxxx-g1-xxxxx" \
       -d '{
         "model": "claude-opus-4-6",
         "messages": [{"role": "user", "content": "Hello!"}]
@@ -363,6 +236,8 @@ Storing your provider key in the gateway makes your endpoint publicly accessible
     </CodeGroup>
   </Step>
 </Steps>
+
+See [Attaching Provider Keys](/ai-gateway/guides/attaching-provider-keys) for key rotation, listing, and removing attached keys.
 
 ## Explicit provider routing
 
@@ -382,5 +257,6 @@ See the [model catalog](/ai-gateway/reference/model-catalog#anthropic) for the f
 ## Next steps
 
 - [AI Gateway API Keys](/ai-gateway/concepts/api-keys): use ngrok-managed keys for the simplest setup
+- [Attaching Provider Keys](/ai-gateway/guides/attaching-provider-keys): attach, rotate, and manage your own Anthropic keys
 - [Anthropic SDK guide](/ai-gateway/sdks/anthropic): detailed SDK integration
 - [Multi-provider failover](/ai-gateway/examples/multi-provider-failover): automatic failover across providers

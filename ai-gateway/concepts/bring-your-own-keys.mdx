@@ -3,73 +3,55 @@ title: Bring Your Own Keys
 description: Use your own provider API keys with the AI Gateway.
 ---
 
-Instead of using [AI Gateway API Keys](/ai-gateway/concepts/api-keys) with ngrok-managed provider keys, you can configure your own provider API keys directly in the gateway's Traffic Policy. This is called **Bring Your Own Keys (BYOK)**.
-
 <Warning>
-When you configure provider keys in the gateway, your endpoint becomes publicly accessible—anyone with the URL can make requests using your keys. You must add your own authorization layer. See [Securing Endpoints (BYOK)](/ai-gateway/guides/protecting-byok-endpoints).
+Configuring provider API keys in Traffic Policy (`providers[].api_keys`) is deprecated for standard providers. Use [Attached Provider Keys](/ai-gateway/guides/attaching-provider-keys) instead. Traffic Policy keys are still supported for [custom or self-hosted providers](#when-traffic-policy-keys-are-still-needed).
 </Warning>
 
-## When to use BYOK
+The recommended way to use your own provider API keys is to attach them directly to your [AI Gateway API Key](/ai-gateway/concepts/api-keys). ngrok encrypts and stores them—no Traffic Policy configuration or Vaults & Secrets needed.
 
-- You already have provider accounts and billing relationships
-- You need specific provider plans or tiers (enterprise agreements, committed-use discounts)
-- You want to use providers beyond OpenAI and Anthropic (Google, DeepSeek, OpenRouter, etc.)
-- You want to use custom or self-hosted providers (Ollama, vLLM)—see [Custom Providers](/ai-gateway/concepts/custom-providers)
-- You need fine-grained control over which provider keys are used ([CEL-based key selection](/ai-gateway/guides/key-selection-failover))
-- You want to manage your own cost allocation per key
+See [Attaching Provider Keys](/ai-gateway/guides/attaching-provider-keys) to get started.
 
-## How BYOK works
+## When Traffic Policy keys are still needed
 
-1. Store your provider API keys in [ngrok Vaults & Secrets](/traffic-policy/secrets)
-2. Reference them in your AI Gateway Traffic Policy
-3. The gateway uses your keys instead of ngrok's managed keys
+Traffic Policy `providers[].api_keys` configuration is still required for:
 
-```yaml
-on_http_request:
-  - type: ai-gateway
-    config:
-      providers:
-        - id: openai
-          api_keys:
-            - value: ${secrets.get('openai', 'primary-key')}
-            - value: ${secrets.get('openai', 'backup-key')}
-        - id: google
-          api_keys:
-            - value: ${secrets.get('google', 'key')}
-```
+- **Custom or self-hosted providers**: any provider with a `base_url` (Ollama, vLLM, custom endpoints). See [Custom Providers](/ai-gateway/concepts/custom-providers).
 
-## AI Gateway API Keys compared to BYOK
+For everything else, use attached provider keys.
 
-| | AI Gateway API Keys | BYOK |
-|---|---|---|
-| Provider accounts needed | No (OpenAI & Anthropic only) | Yes |
-| Credits required | Yes (processing fee + upstream provider fee) | No |
-| Provider billing | Included in credits (ngrok pays provider) | Direct with providers |
-| Setup complexity | Low (create key, use it) | Medium (configure secrets, Traffic Policy) |
-| Key rotation | Managed by ngrok (provider keys) | You manage |
-| Multi-key failover | Automatic | Configurable |
-| CEL key selection | Not applicable | Full control |
-| Custom/self-hosted providers | Not supported | Supported |
-| Auth | Built-in (AI Gateway API Key) | DIY (secrets, JWT, etc.) |
-| Supported providers | OpenAI, Anthropic | Any provider |
+## Migrating from Traffic Policy keys
+
+If you currently use `providers[].api_keys`, see [Migrate to Attached Provider Keys](/ai-gateway/guides/migrate-to-attached-provider-keys) for step-by-step instructions.
+
+## Comparing your options
+
+| | AI Gateway API Keys | Attached provider keys | BYOK |
+|---|---|---|---|
+| Provider accounts needed | No (OpenAI & Anthropic only) | Yes | Yes |
+| Credits required | Yes | No | No |
+| Provider billing | Included in credits (ngrok pays provider) | Direct with providers | Direct with providers |
+| Setup complexity | Low (create key, use it) | Low (attach key to API key) | Medium (configure secrets, Traffic Policy) |
+| Key storage | ngrok manages | Encrypted by ngrok | ngrok Vaults & Secrets |
+| Key rotation | Managed by ngrok | Update attached key | Update secret or Traffic Policy |
+| Multi-key failover | Automatic | Per-key ordering | Configurable |
+| Custom/self-hosted providers | Not supported | Not supported | Supported |
+| Auth | Built-in (AI Gateway API Key) | Built-in (AI Gateway API Key) | DIY (secrets, JWT, etc.) |
+| Supported providers | OpenAI, Anthropic | Any supported provider | Any provider |
 
 ### Mixed mode
 
-You can combine both approaches in the same gateway. Use AI Gateway API Keys for OpenAI and Anthropic while bringing your own keys for other providers. When you authenticate with an AI Gateway API Key, BYOK keys take precedence for providers where they're configured. See [AI Gateway API Keys—Mixed mode](/ai-gateway/concepts/api-keys#mixing-ai-gateway-api-keys-with-your-own-provider-keys) for details.
+You can combine all three approaches in the same gateway. When you authenticate with an AI Gateway API Key, the provider key lookup order is: Traffic Policy BYOK → attached provider keys → ngrok-managed keys. See [Attaching Provider Keys](/ai-gateway/guides/attaching-provider-keys) and [AI Gateway API Keys](/ai-gateway/concepts/api-keys#attaching-your-own-provider-keys) for details.
 
 ## Guides
 
 <CardGroup cols={2}>
+  <Card title="Attaching Provider Keys" icon="key" href="/ai-gateway/guides/attaching-provider-keys">
+    Attach your own provider keys to an AI Gateway API Key
+  </Card>
+  <Card title="Migrate to Attached Provider Keys" icon="arrow-right" href="/ai-gateway/guides/migrate-to-attached-provider-keys">
+    Move existing Traffic Policy keys to attached keys
+  </Card>
   <Card title="Configuring Providers" icon="building" href="/ai-gateway/guides/configuring-providers">
-    Set up providers, models, and API keys in your Traffic Policy
-  </Card>
-  <Card title="Managing Provider Keys" icon="key" href="/ai-gateway/guides/managing-provider-keys">
-    Store, rotate, and manage your provider API keys
-  </Card>
-  <Card title="Key Selection & Failover" icon="rotate" href="/ai-gateway/guides/key-selection-failover">
-    Advanced CEL-based key selection strategies
-  </Card>
-  <Card title="Securing Endpoints" icon="shield" href="/ai-gateway/guides/protecting-byok-endpoints">
-    Add authorization when using your own provider keys
+    Set up custom and self-hosted providers in Traffic Policy
   </Card>
 </CardGroup>
