@@ -5,7 +5,7 @@ sidebarTitle: Microsoft Entra ID
 ---
 
 This guide explains how to add ingress to any app running in Kubernetes and restrict access to users authorized through Microsoft Entra ID (formerly Azure Active Directory), using the ngrok Kubernetes Operator.
-It walks you through (optionally) creating a Kubernetes cluster and example deployment, installing the Operator to route traffic through the [ngrok cloud service](https://ngrok.com/product/cloud-edge), and using the [ngrok dashboard](https://dashboard.ngrok.com/) to enable Security Assertion Markup Language (SAML) with Microsoft Entra ID as your identity provider for single sign-on.
+It walks you through (optionally) creating a Kubernetes cluster and example deployment, installing the Operator to route traffic through the [ngrok cloud service](https://ngrok.com/product/cloud-edge), and using the ngrok Kubernetes Operator's Traffic Policy to enable SAML with Microsoft Entra ID as your identity provider for single sign-on.
 
 The [ngrok Kubernetes Operator](/k8s) is ngrok's official controller for adding secure public ingress and middleware execution to your Kubernetes apps with ngrok's cloud service.
 Microsoft Entra ID is an identity and access management platform that helps administrators and DevOps engineers safeguard their organization's multicloud environment with strong authentication and unified identity management.
@@ -133,28 +133,74 @@ Configure and deploy the [ngrok Kubernetes Operator](https://github.com/ngrok/ng
 
 - Access your app (ingress now handled by ngrok) by navigating to your ngrok domain (for example, `https://one-two-three.ngrok.app`) in your browser.
 
-## 3. Update your ngrok Edge to enable SAML
+## 3. Enable SAML with a Traffic Policy
+
+<Warning>
+The SAML Traffic Policy action is currently in [developer preview](/traffic-policy/actions/saml/). [Request access](https://dashboard.ngrok.com/developer-preview) to configure SAML via Traffic Policy.
+</Warning>
 
 Your Kubernetes-based app is now publicly accessible through the ngrok cloud service.
-To restrict access to authorized users with Microsoft Entra ID credentials, enable SAML on your Edge.
+To restrict access to authorized users with Microsoft Entra ID credentials, create a `NgrokTrafficPolicy` custom resource with the SAML action and apply it to your Ingress.
 
-- Go to the [**Edges** section](https://dashboard.ngrok.com/edges) of the ngrok dashboard and click the Edge created by the ngrok Kubernetes Operator.
-  The domain name should match your `NGROK_DOMAIN`, and you should see **Created by kubernetes-ingress-controller** in the edge description.
+- Create a file named `saml-policy.yaml` with the following content:
 
-- From the Overview, click **Add SAML**, then **Begin setup**.
-
-- In the **IdP Metadata** textbox, add the following:
-
-  ```xml
-  <EntityDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata"></EntityDescriptor>
+  ```yaml
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: NgrokTrafficPolicy
+  metadata:
+    name: saml
+    namespace: default
+  spec:
+    policy:
+      on_http_request:
+        - actions:
+            - type: saml
+              config:
+                idp_metadata: 'YOUR_IDP_METADATA_XML'
   ```
 
-- Click **Save**.
-  ngrok will update your SAML configuration with **SP Metadata**, **Entity ID**, and **ACS URL** values; you'll need these in the next step.
+- Apply the Traffic Policy CR:
+
+  ```bash
+  kubectl apply -f saml-policy.yaml
+  ```
+
+- Update your `boutique-ingress.yaml` to reference this policy with an annotation:
+
+  ```yaml
+  apiVersion: networking.k8s.io/v1
+  kind: Ingress
+  metadata:
+    name: boutique-ingress
+    namespace: default
+    annotations:
+      k8s.ngrok.com/traffic-policy: saml
+  spec:
+    ingressClassName: ngrok
+    rules:
+      - host: NGROK_DOMAIN
+        http:
+          paths:
+            - path: /
+              pathType: Prefix
+              backend:
+                service:
+                  name: frontend
+                  port:
+                    number: 80
+  ```
+
+- Re-apply the Ingress manifest:
+
+  ```bash
+  kubectl apply -f boutique-ingress.yaml
+  ```
+
+- Refer to the [SAML action documentation](/traffic-policy/actions/saml/) to retrieve your SP Entity ID and ACS URL values, which you'll need in the next step.
 
 ## 4. Create an enterprise app in Microsoft Entra ID 
 
-With SAML configured on your ngrok Edge, configure Microsoft Entra ID to operate as your identity provider (IdP).
+With a SAML Traffic Policy applied to your Ingress, configure Microsoft Entra ID to operate as your identity provider (IdP).
 
 - Open your Microsoft Entra ID tenant in the Azure console.
 
@@ -168,18 +214,22 @@ With SAML configured on your ngrok Edge, configure Microsoft Entra ID to operate
 - Click **Set up single sign on** so users can sign in with their Microsoft Entra credentials, then choose **SAML** as the single sign-on protocol.
 
 - Click **Edit** in the **Basic SAML Configuration** box.
-  Copy the **Entity ID** from ngrok into the **Identifier (Entity ID)** field and the **ACS URL** from ngrok into the **Reply URL (Assertion Consumer Service URL)** field.
+  Refer to the [SAML action documentation](/traffic-policy/actions/saml/) to retrieve your SP Entity ID and ACS URL, then copy them into the **Identifier (Entity ID)** and **Reply URL (Assertion Consumer Service URL)** fields respectively.
   Click **Save** before closing the modal.
 
 - In the **SAML Certificates** box, download the **Federation Metadata XML**.
 
-## 5. Finish adding Microsoft Entra ID authorization to your ngrok Edge
+## 5. Update the Traffic Policy with the IdP metadata
 
-Finish the SAML configuration in your [ngrok dashboard](https://dashboard.ngrok.com/).
+With Microsoft Entra ID configured as your identity provider, update your Traffic Policy with the real IdP metadata.
 
-- Update the **IdP Metadata** field by clicking **Upload XML** and choosing the `.xml` file you just downloaded.
+- Open your `saml-policy.yaml` and replace `YOUR_IDP_METADATA_XML` with the contents of the Federation Metadata XML file you downloaded.
 
-- Click **Save**.
+- Re-apply the updated Traffic Policy:
+
+  ```bash
+  kubectl apply -f saml-policy.yaml
+  ```
 
 ## 6. Test authorization to your app using Microsoft Entra ID
 
@@ -213,15 +263,15 @@ If you created a local cluster with Minikube for the Online Boutique demo app, d
 minikube delete -p online-boutique
 ```
 
-ngrok will delete your Edge automatically.
+ngrok will delete your endpoint automatically.
 
 To restore your previous authorization settings, open your Microsoft Entra ID tenant and delete your enterprise application.
 
 ### Extend your ngrok Kubernetes Operator and Microsoft Entra ID integration
 
-ngrok can manage multiple routes on a single Edge.
+ngrok's [Traffic Policy system](/traffic-policy/) can secure multiple apps with single sign-on.
 
-You can configure [name-based virtual hosting](https://github.com/ngrok/ngrok-operator/blob/main/docs/user-guide/ingress-to-edge-relationship.md#name-based-virtual-hosting) or [route modules](https://github.com/ngrok/ngrok-operator/blob/main/docs/user-guide/route-modules.md) to secure multiple apps with single sign-on.
+You can configure [name-based virtual hosting](https://github.com/ngrok/ngrok-operator/blob/main/docs/user-guide/ingress-to-edge-relationship.md#name-based-virtual-hosting) and use [`NgrokTrafficPolicy` resources](/k8s/guides/using-ingresses/#using-ngroktrafficpolicy-with-ingress) to secure multiple apps with single sign-on.
 
 [Custom domains](https://github.com/ngrok/ngrok-operator/blob/main/docs/user-guide/custom-domain.md) and a [circuit breaker](/traffic-policy/actions/circuit-breaker/) are good next steps for production.
 
