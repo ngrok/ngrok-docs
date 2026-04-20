@@ -4,17 +4,17 @@ sidebarTitle: Attaching Provider Keys
 description: Attach your own provider keys to an AI Gateway API Key. ngrok encrypts and stores them—no Traffic Policy configuration needed.
 ---
 
-Instead of configuring provider API keys in your Traffic Policy (BYOK), you can attach them directly to an [AI Gateway API Key](/ai-gateway/concepts/api-keys). ngrok encrypts your keys at rest and automatically uses them when routing requests—no secrets or Traffic Policy changes needed.
+Instead of configuring provider API keys in your Traffic Policy, you can attach them directly to an [AI Gateway API Key](/ai-gateway/concepts/api-keys). ngrok encrypts your keys at rest and automatically uses them when routing requests—no secrets or Traffic Policy changes needed.
 
 ## How it works
 
-When a request arrives authenticated with your AI Gateway API Key, the gateway checks for attached provider keys before falling back to other sources. The lookup order for each provider is:
+When a request arrives authenticated with your AI Gateway API Key, the gateway selects a provider key for the target provider as follows:
 
-1. **Traffic Policy BYOK**: provider keys in `providers[].api_keys` always take precedence
-2. **Attached provider keys**: your keys stored securely against the AI Gateway API Key _(this feature)_
-3. **ngrok-managed keys**: ngrok's shared keys for OpenAI and Anthropic (requires [credits](/ai-gateway/concepts/credits))
+1. **Attached provider keys**: if any are attached for the provider, they are used exclusively _(this feature)_
+2. **Traffic Policy BYOK**: provider keys in `providers[].api_keys`—used only when no attached key exists for that provider
+3. **ngrok-managed keys**: ngrok's shared keys for OpenAI and Anthropic (requires [credits](/ai-gateway/concepts/credits))—used only when no attached or BYOK key exists for that provider
 
-This means you can attach keys for the providers you care about, use ngrok-managed keys for the rest, and keep BYOK in Traffic Policy as an override when needed—all with the same AI Gateway API Key.
+Selection happens per provider. You can attach keys for some providers, leave others on BYOK, and fall back to ngrok-managed keys for the rest—all with the same AI Gateway API Key.
 
 ## When to use attached provider keys
 
@@ -53,13 +53,14 @@ ngrok api ai-gateway-provider-keys create \
 ### API
 
 ```bash
-curl -X POST https://api.ngrok.com/ai_gateway_api_keys/{id}/provider_keys \
+curl -X POST https://api.ngrok.com/ai_gateway_provider_keys \
   -H "Authorization: Bearer $NGROK_API_KEY" \
   -H "Content-Type: application/json" \
   -H "Ngrok-Version: 2" \
   -d '{
+    "ai_gateway_api_key_id": "aigk_xxxxx",
     "provider_id": "openai",
-    "key": "sk-proj-..."
+    "value": "sk-proj-..."
   }'
 ```
 
@@ -130,7 +131,7 @@ To rotate a provider key without downtime:
     Once you confirm the new key is working, remove the old one:
 
     ```bash
-    ngrok api ai-gateway-provider-keys delete pkid_xxxxx
+    ngrok api ai-gateway-provider-keys delete aigpk_xxxxx
     ```
   </Step>
 
@@ -141,17 +142,17 @@ To rotate a provider key without downtime:
 
 ## Relationship with Traffic Policy BYOK
 
-Attached provider keys and BYOK ([Traffic Policy `providers[].api_keys`](/ai-gateway/concepts/bring-your-own-keys)) can coexist. BYOK always takes precedence for a given provider:
+Attached provider keys and BYOK ([Traffic Policy `providers[].api_keys`](/ai-gateway/concepts/bring-your-own-keys)) can coexist, but attached keys always win for a given provider:
 
 | Provider config | What gets used |
 |---|---|
 | Attached key only | Your attached key |
 | BYOK only | Your BYOK key |
-| Both attached and BYOK | BYOK key (Traffic Policy wins) |
+| Both attached and BYOK | Attached key (BYOK is ignored for that provider) |
 | Neither | ngrok-managed key (if available) |
 | None of the above | Error |
 
-This means you can use attached keys as a default for most providers while overriding specific providers in Traffic Policy—for example, to use a high-capacity key for production traffic on a particular endpoint.
+Attaching a key for a provider fully replaces BYOK for that provider—BYOK is not used as a fallback. If you need both configured simultaneously (for example during a migration), expect traffic to route through the attached key as soon as it's attached.
 
 ## Listing and removing attached keys
 
@@ -162,7 +163,7 @@ ngrok api ai-gateway-provider-keys list --ai-gateway-api-key-id aigk_xxxxx
 ```
 
 ```bash
-curl https://api.ngrok.com/ai_gateway_api_keys/{id}/provider_keys \
+curl "https://api.ngrok.com/ai_gateway_provider_keys?ai_gateway_api_key_id=aigk_xxxxx" \
   -H "Authorization: Bearer $NGROK_API_KEY" \
   -H "Ngrok-Version: 2"
 ```
@@ -170,11 +171,11 @@ curl https://api.ngrok.com/ai_gateway_api_keys/{id}/provider_keys \
 ### Remove
 
 ```bash
-ngrok api ai-gateway-provider-keys delete pkid_xxxxx
+ngrok api ai-gateway-provider-keys delete aigpk_xxxxx
 ```
 
 ```bash
-curl -X DELETE https://api.ngrok.com/ai_gateway_api_keys/{id}/provider_keys/{provider_key_id} \
+curl -X DELETE https://api.ngrok.com/ai_gateway_provider_keys/aigpk_xxxxx \
   -H "Authorization: Bearer $NGROK_API_KEY" \
   -H "Ngrok-Version: 2"
 ```
