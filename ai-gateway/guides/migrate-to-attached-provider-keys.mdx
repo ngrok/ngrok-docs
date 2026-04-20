@@ -4,7 +4,7 @@ sidebarTitle: Migrate to Attached Provider Keys
 description: Move your provider API keys out of Traffic Policy config and attach them directly to your AI Gateway API Key.
 ---
 
-`providers[].api_keys` in Traffic Policy is deprecated for standard providers. The supported path going forward is to attach keys directly to your [AI Gateway API Key](/ai-gateway/concepts/api-keys). This removes key management from your Traffic Policy entirely—no more secrets references, no redeployment needed when rotating keys.
+API keys in Traffic Policy config is deprecated for standard providers. The supported path going forward is to attach keys directly to your [AI Gateway API Key](/ai-gateway/concepts/api-keys). This removes key management from your Traffic Policy entirely—no more secrets references, no redeployment needed when rotating keys.
 
 ## Before you start
 
@@ -28,7 +28,7 @@ providers:
   <Step title="Attach your keys to your AI Gateway API Key">
     For each provider and key in your Traffic Policy, attach the key to your AI Gateway API Key.
 
-    If you stored keys in ngrok Vaults & Secrets, retrieve the raw key values:
+    If you stored keys in ngrok Vaults & Secrets, retrieve the raw key values
 
     Then attach each key:
 
@@ -55,11 +55,8 @@ providers:
       --value sk-ant-...
     ```
 
-    Keys are tried in the order they are attached, matching the failover behavior from Traffic Policy.
+    Keys are tried in the order they are attached.
 
-    <Tip>
-    Attach keys in the same order they appear in your Traffic Policy so failover behavior stays the same.
-    </Tip>
   </Step>
 
   <Step title="Verify the attached keys work">
@@ -137,29 +134,15 @@ providers:
     ngrok api ai-gateway-provider-keys list --ai-gateway-api-key-id aigk_xxxxx
     ```
   </Step>
-
-  <Step title="Clean up secrets (optional)">
-    If the only consumers of your Vaults & Secrets entries were these Traffic Policy references, you can delete them:
-
-    ```bash
-    ngrok api secrets delete --vault openai --description primary-key
-    ngrok api secrets delete --vault openai --description backup-key
-    ngrok api secrets delete --vault anthropic --description key
-    ```
-
-    <Warning>
-    Only delete secrets after confirming your Traffic Policy no longer references them and all deployments have picked up the updated config.
-    </Warning>
-  </Step>
 </Steps>
 
 
 ## What doesn't change
 
 - **Your application code**: same AI Gateway API Key, same gateway URL, no client changes needed
-- **Failover behavior**: attached keys are tried in the order they were attached, same as Traffic Policy list ordering
+- **Failover behavior**: attached keys are tried in the order they were attached
 - **Gateway auth**: the gateway still validates requests with your AI Gateway API Key before routing
-- **Observability**: logs and metrics work the same way; you can inspect which key was used in [Traffic Inspector](/ai-gateway/observability/traffic-inspector)
+- **Observability**: you can inspect which key was used on your AI Gateway's usage page
 
 ## What changes
 
