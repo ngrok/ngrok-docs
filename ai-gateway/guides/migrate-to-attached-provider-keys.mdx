@@ -11,11 +11,16 @@ API keys in Traffic Policy config is deprecated for standard providers. The supp
 This migration applies to you if your Traffic Policy has `api_keys` under one or more providers:
 
 ```yaml
-providers:
-  - id: openai
-    api_keys:                                           # ← migrating this
-      - value: ${secrets.get('openai', 'primary-key')}
-      - value: ${secrets.get('openai', 'backup-key')}
+on_http_request:
+  - name: DefaultAIGateway
+    actions:
+      - type: ai-gateway
+        config:
+          providers:
+            - id: openai
+              api_keys: # ← migrating this
+                - value: ${secrets.get('openai', 'primary-key')}
+                - value: ${secrets.get('openai', 'backup-key')}
 ```
 
 **One case still requires Traffic Policy keys** and cannot be migrated:
@@ -25,12 +30,18 @@ providers:
 ## Migration steps
 
 <Steps>
+  <Step title="Create an AI Gateway Managed Key">
+  First we'll need to create a AI Gateway Managed Key that will be added to your SDK or cURL requests.
+  ```bash
+  nd api ai-gateway-api-keys create \
+  --endpoint-id ep_xxxx \
+
+  ```
+
+  Make sure to save the ng-xxxxx-g1-xxxxx token since this will be the only time you'll see the unredacted key
+  </Step>
   <Step title="Attach your keys to your AI Gateway API Key">
     For each provider and key in your Traffic Policy, attach the key to your AI Gateway API Key.
-
-    If you stored keys in ngrok Vaults & Secrets, retrieve the raw key values
-
-    Then attach each key:
 
     ```bash
     # Attach OpenAI primary key
@@ -46,14 +57,6 @@ providers:
       --provider-id openai \
       --description "OpenAI Backup" \
       --value sk-proj-backup...
-
-    # Attach Anthropic key
-    ngrok api ai-gateway-provider-keys create \
-      --ai-gateway-api-key-id aigk_xxxxx \
-      --provider-id anthropic \
-      --description "Anthropic Key" \
-      --value sk-ant-...
-    ```
 
     Keys are tried in the order they are attached.
 
@@ -77,7 +80,7 @@ providers:
     print(response.choices[0].message.content)
     ```
 
-    Check [Traffic Inspector](/ai-gateway/observability/traffic-inspector) to confirm the request used your attached key. Attached keys take precedence over Traffic Policy BYOK for each provider, so as soon as a key is attached the gateway starts routing through it—even while BYOK is still configured. If the attached key works, you're safe to remove the BYOK config in the next step.
+    Check your AI gateway's usage page to confirm the request used your attached key. If the attached key works, you're safe to remove the BYOK config in the next step.
   </Step>
 
   <Step title="Remove api_keys from your Traffic Policy">
@@ -87,41 +90,26 @@ providers:
 
     ```yaml
     on_http_request:
-      - type: ai-gateway
-        config:
-          providers:
-            - id: openai
-              api_keys:
-                - value: ${secrets.get('openai', 'primary-key')}
-                - value: ${secrets.get('openai', 'backup-key')}
-            - id: anthropic
-              api_keys:
-                - value: ${secrets.get('anthropic', 'key')}
+      actions:
+        - type: ai-gateway
+          config:
+            providers:
+              - id: openai
+                api_keys:
+                  - value: ${secrets.get('openai', 'primary-key')}
+                  - value: ${secrets.get('openai', 'backup-key')}
+              - id: google
+                api_keys:
+                  - value: ${secrets.get('google', 'key')}
     ```
 
     **After:**
 
     ```yaml
     on_http_request:
-      - type: ai-gateway
-        config: {}
+      actions:
+        - type: ai-gateway
     ```
-
-    Or if you have other provider configuration to keep:
-
-    ```yaml
-    on_http_request:
-      - type: ai-gateway
-        config:
-          providers:
-            - id: openai
-              models:
-                - id: gpt-4o
-                - id: gpt-4o-mini
-            - id: anthropic
-              # api_keys removed; key is now attached to the AI Gateway API Key
-    ```
-
     Deploy the updated Traffic Policy.
   </Step>
 
