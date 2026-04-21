@@ -16,6 +16,16 @@ When a request arrives authenticated with your AI Gateway API Key, the gateway s
 
 Selection happens per provider. You can attach keys for some providers, leave others on BYOK, and fall back to ngrok-managed keys for the rest—all with the same AI Gateway API Key.
 
+## How keys are stored and shown
+
+Provider keys are envelope-encrypted with AES-256 before being persisted. Plaintext exists only in memory for the duration of a single upstream request and is never written to disk or logged.
+
+**Shown exactly once at creation.** The full key value is returned in the API response and dashboard exactly once, when you create it. Save it somewhere safe—if you lose it, delete the key and create a new one.
+
+**Display form is redacted everywhere else.** After creation, the key appears in the API and dashboard as `first10***last4` for standard-length keys (or `***lastN` for short keys, matching the Stripe/Cloudflare "last 4" convention). The redacted form identifies the key without exposing it.
+
+**No update-in-place.** There is no `PATCH` operation for a key value. To rotate, attach a replacement and delete the old key—see [Rotating attached keys](#rotating-attached-keys) below.
+
 ## When to use attached provider keys
 
 Attach provider keys to your AI Gateway API Key when you:
@@ -109,6 +119,10 @@ ngrok api ai-gateway-provider-keys create \
 ```
 
 Requests are then routed to the right provider key based on which model is requested. Providers without an attached key fall back to ngrok-managed keys (if available) or return an error.
+
+<Note>
+You can attach up to **15 keys per provider** to a single AI Gateway API Key. Requests beyond that return [`ERR_NGROK_27506`](/ai-gateway/reference/error-codes) (provider key limit exceeded). Most teams need 2–3 for failover and staged rotation.
+</Note>
 
 ## Rotating attached keys
 
