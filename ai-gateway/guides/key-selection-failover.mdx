@@ -4,12 +4,12 @@ description: Automatic failover across multiple provider keys for resilience and
 ---
 
 <Warning>
-CEL-based `api_key_selection` strategies are deprecated. Attached provider keys use simple ordered failover—keys are tried in the order they were attached. For advanced routing logic, use [model selection strategies](/ai-gateway/guides/model-selection-strategies) instead.
+CEL-based `api_key_selection` strategies are deprecated. Attached provider keys use simple ordered failover—the most recently attached key is tried first. For advanced routing logic, use [model selection strategies](/ai-gateway/guides/model-selection-strategies) instead.
 </Warning>
 
 When multiple keys are configured for a provider, the gateway automatically fails over between them:
 
-1. Keys are tried **in the order they are attached**
+1. Keys are tried in **reverse order of attachment**—the most recently attached key first
 2. If a key fails, the next key is tried automatically
 3. Failover triggers include:
    - **Rate limit errors** (HTTP 429)
@@ -18,26 +18,26 @@ When multiple keys are configured for a provider, the gateway automatically fail
 
 ## With attached provider keys
 
-Attach multiple keys for the same provider to your AI Gateway API Key. They are tried in the order they were attached:
+Attach multiple keys for the same provider to your AI Gateway API Key. The most recently attached key is tried first, then the gateway falls back to older keys in reverse order of attachment:
 
 ```bash
-# Attach primary key (tried first)
-ngrok api ai-gateway-provider-keys create \
-  --ai-gateway-api-key-id aigk_xxxxx \
-  --provider-id openai \
-  --description "OpenAI Primary" \
-  --value sk-proj-primary...
-
-# Attach backup key (tried if primary fails)
+# Attach backup key first (tried last)
 ngrok api ai-gateway-provider-keys create \
   --ai-gateway-api-key-id aigk_xxxxx \
   --provider-id openai \
   --description "OpenAI Backup" \
   --value sk-proj-backup...
+
+# Attach primary key last (tried first)
+ngrok api ai-gateway-provider-keys create \
+  --ai-gateway-api-key-id aigk_xxxxx \
+  --provider-id openai \
+  --description "OpenAI Primary" \
+  --value sk-proj-primary...
 ```
 
 <Tip>
-Attach keys in priority order—highest-capacity or most reliable keys first.
+Attach your highest-capacity or most reliable key **last**—the most recently attached key is tried first.
 </Tip>
 
 ## With Traffic Policy keys (custom providers only)

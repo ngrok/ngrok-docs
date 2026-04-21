@@ -44,21 +44,21 @@ on_http_request:
     For each provider and key in your Traffic Policy, attach the key to your AI Gateway API Key.
 
     ```bash
-    # Attach OpenAI primary key
-    ngrok api ai-gateway-provider-keys create \
-      --ai-gateway-api-key-id aigk_xxxxx \
-      --provider-id openai \
-      --description "OpenAI Primary" \
-      --value sk-proj-primary...
-
-    # Attach OpenAI backup key
+    # Attach OpenAI backup key first (tried last)
     ngrok api ai-gateway-provider-keys create \
       --ai-gateway-api-key-id aigk_xxxxx \
       --provider-id openai \
       --description "OpenAI Backup" \
       --value sk-proj-backup...
 
-    Keys are tried in the order they are attached.
+    # Attach OpenAI primary key last (tried first)
+    ngrok api ai-gateway-provider-keys create \
+      --ai-gateway-api-key-id aigk_xxxxx \
+      --provider-id openai \
+      --description "OpenAI Primary" \
+      --value sk-proj-primary...
+
+    The most recently attached key is tried first. Attach the key you want tried first **last**.
 
   </Step>
 
@@ -128,7 +128,7 @@ on_http_request:
 ## What doesn't change
 
 - **Your application code**: same AI Gateway API Key, same gateway URL, no client changes needed
-- **Failover behavior**: attached keys are tried in the order they were attached
+- **Failover behavior**: attached keys are tried in reverse order of attachment (most recently attached first)
 - **Gateway auth**: the gateway still validates requests with your AI Gateway API Key before routing
 - **Observability**: you can inspect which key was used on your AI Gateway's usage page
 
