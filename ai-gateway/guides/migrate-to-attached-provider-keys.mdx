@@ -1,0 +1,148 @@
+---
+title: Migrate from Traffic Policy Keys to Attached Provider Keys
+sidebarTitle: Migrate to Attached Provider Keys
+description: Move your provider API keys out of Traffic Policy config and attach them directly to your AI Gateway API Key.
+---
+
+API keys in Traffic Policy config is deprecated for standard providers. The supported path going forward is to attach keys directly to your [AI Gateway API Key](/ai-gateway/concepts/api-keys). This removes key management from your Traffic Policy entirely—no more secrets references, no redeployment needed when rotating keys.
+
+## Before you start
+
+This migration applies to you if your Traffic Policy has `api_keys` under one or more providers:
+
+```yaml
+on_http_request:
+  - name: DefaultAIGateway
+    actions:
+      - type: ai-gateway
+        config:
+          providers:
+            - id: openai
+              api_keys: # ← migrating this
+                - value: ${secrets.get('openai', 'primary-key')}
+                - value: ${secrets.get('openai', 'backup-key')}
+```
+
+<Warning>
+One case still requires Traffic Policy keys and cannot be migrated: Custom or self-hosted providers (that is, providers with a `base_url`) must stay in Traffic Policy.
+</Warning>
+
+## Migration steps
+
+<Steps>
+  <Step title="Create an AI Gateway Managed Key">
+    First, create an AI Gateway Managed Key that will be added to your SDK or cURL requests.
+
+    ```bash
+    ngrok api ai-gateway-api-keys create \
+      --endpoint-id ep_xxxx
+    ```
+
+    Make sure to save the `ng-xxxxx-g1-xxxxx` token since this will be the only time you'll see the unredacted key.
+  </Step>
+  <Step title="Attach your keys to your AI Gateway API Key">
+    For each provider and key in your Traffic Policy, attach the key to your AI Gateway API Key.
+
+    ```bash
+    # Attach OpenAI backup key first (tried last)
+    ngrok api ai-gateway-provider-keys create \
+      --ai-gateway-api-key-id aigk_xxxxx \
+      --provider-id openai \
+      --description "OpenAI Backup" \
+      --value sk-proj-backup...
+
+    # Attach OpenAI primary key last (tried first)
+    ngrok api ai-gateway-provider-keys create \
+      --ai-gateway-api-key-id aigk_xxxxx \
+      --provider-id openai \
+      --description "OpenAI Primary" \
+      --value sk-proj-primary...
+    ```
+
+    The most recently attached key is tried first. Attach the key you want tried first **last**.
+  </Step>
+
+  <Step title="Verify the attached keys work">
+    Before removing keys from Traffic Policy, confirm your attached keys are routing correctly. Make a test request using your AI Gateway API Key and check the response:
+
+    ```python
+    from openai import OpenAI
+
+    client = OpenAI(
+        base_url="https://your-ai-gateway.ngrok.app/v1",
+        api_key="ng-xxxxx-g1-xxxxx"
+    )
+
+    response = client.chat.completions.create(
+        model="gpt-4o",
+        messages=[{"role": "user", "content": "ping"}]
+    )
+    print(response.choices[0].message.content)
+    ```
+
+    Check your AI gateway's usage page to confirm the request used your attached key. If the attached key works, you're safe to remove the BYOK config in the next step.
+  </Step>
+
+  <Step title="Remove api_keys from your Traffic Policy">
+    Remove the `api_keys` fields from your provider configurations. If a provider has no other configuration (models, `base_url`, metadata), you can remove it entirely.
+
+    **Before:**
+
+    ```yaml
+    on_http_request:
+      actions:
+        - type: ai-gateway
+          config:
+            providers:
+              - id: openai
+                api_keys:
+                  - value: ${secrets.get('openai', 'primary-key')}
+                  - value: ${secrets.get('openai', 'backup-key')}
+              - id: google
+                api_keys:
+                  - value: ${secrets.get('google', 'key')}
+    ```
+
+    **After:**
+
+    ```yaml
+    on_http_request:
+      actions:
+        - type: ai-gateway
+    ```
+    Deploy the updated Traffic Policy.
+  </Step>
+
+  <Step title="Confirm requests still work">
+    Make another test request and verify it succeeds. The gateway now routes using your attached provider keys.
+
+    If requests fail, check [error codes](/ai-gateway/reference/error-codes) and verify your keys were attached correctly:
+
+    ```bash
+    ngrok api ai-gateway-provider-keys list --ai-gateway-api-key-id aigk_xxxxx
+    ```
+  </Step>
+</Steps>
+
+
+## What doesn't change
+
+- **Your application code**: same AI Gateway API Key, same gateway URL, no client changes needed
+- **Failover behavior**: attached keys are tried in reverse order of attachment (most recently attached first)
+- **Gateway auth**: the gateway still validates requests with your AI Gateway API Key before routing
+- **Observability**: you can inspect which key was used on your AI Gateway's usage page
+
+## What changes
+
+| | Traffic Policy BYOK | Attached provider keys |
+|---|---|---|
+| Key rotation | Update secret or Traffic Policy, redeploy | Add new key, remove old key via API—no redeploy |
+| CEL selection | Supported | Not supported (simple failover only) |
+| Custom providers (`base_url`) | Supported | Not supported—keep in Traffic Policy |
+| Secrets vault needed | Yes | No |
+| Key visible in config | As secret reference | Never visible |
+
+## Next steps
+
+- [Attaching Provider Keys](/ai-gateway/guides/attaching-provider-keys): full reference for managing attached keys
+- [Managing Provider Keys (BYOK)](/ai-gateway/guides/managing-provider-keys): if you're staying with Traffic Policy keys for custom providers
