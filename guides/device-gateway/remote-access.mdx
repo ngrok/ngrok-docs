@@ -16,28 +16,36 @@ ngrok solves this by creating outbound tunnels from the device, giving technicia
 
 ## Quick example
 
-Expose [SSH on a remote Linux device](/using-ngrok-with/ssh):
+<Tabs>
+  <Tab title="HTTP">
+    Expose a web-based admin dashboard (or any HTTP service):
 
-```bash
-ngrok tcp 22
-```
+    ```bash
+    ngrok http 8080
+    ```
+  </Tab>
+  <Tab title="SSH">
+    Expose [SSH on a remote Linux device](/using-ngrok-with/ssh):
 
-Expose [RDP on a remote Windows device](/guides/ssh-rdp/):
+    ```bash
+    ngrok tcp 22
+    ```
+  </Tab>
+  <Tab title="RDP">
+    Expose [RDP on a remote Windows device](/guides/ssh-rdp/):
 
-```bash
-ngrok tcp 3389
-```
+    ```bash
+    ngrok tcp 3389
+    ```
+  </Tab>
+</Tabs>
 
-Expose a web-based admin dashboard (or any http service):
-
-```bash
-ngrok http 8080
-```
+See [the device gateway quickstart](/guides/device-gateway/quickstart) for further steps.
 
 ## One gateway for an entire network
 
 You don't need an ngrok agent on every device.
-Run a single agent on one gateway machine and route to any device on the local network:
+You can run a single agent on one gateway machine and route to any device on the local network. The following is an example [ngrok agent config](/agent/config/) that does just that:
 
 ```yaml title="ngrok.yml"
 version: 3
@@ -55,12 +63,11 @@ endpoints:
       url: http://192.168.1.100:3000
 ```
 
-Each endpoint is addressable inside ngrok's network, and you can connect them to [Cloud Endpoints](/universal-gateway/cloud-endpoints/) for external access.
+Each endpoint is addressable inside ngrok's network, and you can connect them to [Cloud Endpoints](/universal-gateway/cloud-endpoints/) for external access. Cloud Endpoints are long-lived endpoints that run in the ngrok cloud service.
 
-## On-demand access
+## Using the API
 
-Not every endpoint needs to be always-on.
-Use the [Agent API](/agent/api/) to start tunnels when a technician needs access and stop them when they're done:
+You can use the [Agent API](/agent/api/) to start and stop tunnels:
 
 ```bash
 # Start a tunnel on demand
@@ -69,12 +76,55 @@ curl -X POST http://localhost:4040/api/tunnels \
   -d '{"name":"dashboard","proto":"http","addr":"3001","domain":"dashboard.example.com"}'
 ```
 
-This keeps your attack surface small and reduces costs since you only pay for active endpoints.
-
 ## Secure access with authentication
 
 Add authentication so only authorized users can reach your devices.
-See the [Traffic Policy guide](/guides/device-gateway/traffic-policy) for details on adding OAuth, JWT validation, and IP restrictions at ngrok's edge.
+See the [Traffic Policy guide](/guides/device-gateway/traffic-policy) for details on adding OAuth, JWT validation, and IP restrictions.
+
+The following example demonstrates a Traffic Policy that uses basic auth to secure traffic to your endpoints:
+
+<CodeGroup>
+
+```yaml policy.yml
+on_http_request:
+  # Prompt for username and password with up to 10 credential pairs
+  - actions:
+      - type: basic-auth
+        config:
+          credentials:
+            - username: user1
+              password: password123
+            - username: user2
+              password: securepass456
+```
+
+```json policy.json
+{
+  "on_http_request": [
+    {
+      "actions": [
+        {
+          "type": "basic-auth",
+          "config": {
+            "credentials": [
+              {
+                "username": "user1",
+                "password": "password123"
+              },
+              {
+                "username": "user2",
+                "password": "securepass456"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+</CodeGroup>
 
 ## Next steps
 

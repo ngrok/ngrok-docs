@@ -9,15 +9,17 @@ ngrok gives each device service an addressable endpoint that your cloud can call
 
 ## How it works
 
-1. Install the ngrok agent on a gateway in the remote network
+1. [Install the ngrok agent](https://ngrok.com/download) on a gateway in the remote network
 2. Define [internal endpoints](/universal-gateway/internal-endpoints/) for each device service
-3. Create [Cloud Endpoints](/universal-gateway/cloud-endpoints/) that route traffic to the internal endpoints
+3. Create [Cloud Endpoints](/getting-started/cloud-endpoints-quickstart) that route traffic to the internal endpoints
 4. Your cloud services call the Cloud Endpoint URLs like any other API
 
 ## Internal and Cloud Endpoints
 
 An **internal endpoint** makes a device service reachable within ngrok's network without exposing it to the public internet.
-A **Cloud Endpoint** is a permanent, externally accessible entry point that routes traffic to internal endpoints.
+A **Cloud Endpoint** is an always-on, externally accessible entry point that routes traffic to internal endpoints.
+
+To get started, create your [agent config](/agent/config/):
 
 ```yaml title="ngrok.yml"
 version: 3
@@ -35,7 +37,7 @@ endpoints:
       url: tcp://192.168.1.101:5432
 ```
 
-Then create a Cloud Endpoint that forwards traffic to the internal endpoint:
+Then [create a Cloud Endpoint](/getting-started/cloud-endpoints-quickstart) with a Traffic Policy that forwards traffic to the internal endpoint:
 
 ```yaml title="Cloud Endpoint Traffic Policy"
 on_http_request:
@@ -45,16 +47,16 @@ on_http_request:
           url: https://telemetry-api.internal
 ```
 
-Now your cloud services can call `https://factory1.example.com/api` and traffic is securely routed to the device.
+Now your cloud services can call `https://factory1.example.com/api`. Traffic will be securely routed to the device.
 
 ## Always-on vs. on-demand
 
 - **Always-on endpoints** are ideal for production APIs and databases that your cloud queries continuously. Cloud Endpoints persist independently of the agent lifecycle.
-- **On-demand endpoints** are useful for periodic queries, maintenance tasks, or batch jobs. Use the [Agent API](/agent/api/) or the [ngrok API](/api/) to create and tear down endpoints programmatically.
+- **On-demand endpoints** are useful for periodic queries, maintenance tasks, or batch jobs. You can use the [Agent API](/agent/api/) or the [ngrok API](/api/) to create and tear down endpoints programmatically.
 
 ## TCP access for databases
 
-For TCP-based services like databases, reserve a [TCP address](/api-reference/reservedaddrs/) and create a TCP Cloud Endpoint:
+For TCP-based services like databases, reserve a TCP address and create a TCP Cloud Endpoint with a Traffic Policy similar to the following:
 
 ```yaml title="TCP Cloud Endpoint Traffic Policy"
 on_tcp_connect:
@@ -68,6 +70,6 @@ Your cloud services connect to the reserved TCP address as if the database were 
 
 ## Next steps
 
-- [Full walkthrough](/guides/device-gateway/agent): a detailed example configuring internal and cloud endpoints for a smart factory
-- [Traffic Policy](/guides/device-gateway/traffic-policy): add authentication and rate limiting to your cloud-to-device connections
+- [Full walkthrough](/guides/device-gateway/agent): a detailed example configuring internal and cloud endpoints for remote device connectivity
+- [Traffic Policy](/guides/device-gateway/traffic-policy): Learn how to filter, secure, and route traffic to your endpoints with authentication, rate limiting, and more 
 - [Fleet management](/guides/device-gateway/fleet-management): manage multi-tenancy and credentials across your device fleet
