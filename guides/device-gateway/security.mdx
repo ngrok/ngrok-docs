@@ -1,0 +1,109 @@
+---
+title: Device Security
+description: Manage credentials, IP restrictions, mTLS, and compliance across your device fleet with ngrok.
+---
+
+ngrok provides multiple layers of security for your device fleet, from credential management to network-level access controls and compliance certifications.
+
+## Credential management
+
+Each device or site gets its own authtoken scoped with [ACL bindings](/guides/site-to-site-connectivity/authtoken-acls).
+If one token is compromised, revoke it immediately without affecting the rest of your fleet:
+
+- **Create** per-device or per-site [auth tokens](/agent/index#authtokens)
+- **Scope** tokens to [limit which endpoints they can create](/agent/index#authtokens)
+- **Rotate** tokens by creating a replacement and revoking the old one
+- **Revoke** compromised tokens instantly from your cloud
+
+No physical access to the device is required for any of these operations.
+
+## IP restrictions
+
+Limit access to your device endpoints to specific IP addresses or CIDR ranges [using Traffic Policy](/traffic-policy/actions/restrict-ips/). The following example demonstrates an [agent config](/agent/config/) which allows traffic only from a specific IP:
+
+```yaml title="ngrok.yml"
+endpoints:
+  - name: device-api
+    url: $YOUR_DOMAIN
+    traffic_policy:
+      on_http_request:
+        - actions:
+            - type: restrict-ips
+              config:
+                enforce: true
+                allow:
+                  - "203.0.113.0/24"
+    upstream:
+      url: 8080
+      protocol: http1
+```
+
+## Mutual TLS (mTLS)
+
+For environments that require client certificate verification, ngrok supports mutual TLS.
+Only clients presenting a valid certificate can connect to your device endpoints.
+
+See the [mTLS Termination](/agent/agent-mutual-tls-termination) documentation for configuration details.
+
+## Combining security controls
+
+Layer multiple security controls on a single endpoint.
+For example, combine IP restrictions with OAuth authentication:
+
+```yaml title="ngrok.yml"
+endpoints:
+  - name: device-api
+    url: $YOUR_DOMAIN
+    traffic_policy:
+      on_http_request:
+        - actions:
+            - type: restrict-ips
+              config:
+                enforce: true
+                allow:
+                  - "203.0.113.0/24"
+            - type: oauth
+              config:
+                provider: google
+    upstream:
+      url: 8080
+      protocol: http1
+```
+
+<Tip>
+ This example will work out of the box, but it uses ngrok's managed OAuth application. This means you won't be able to customize the provider's authentication behavior. For full control, [use your own OAuth application](/traffic-policy/actions/oauth#using-a-custom-provider).
+</Tip>
+
+## Compliance
+
+ngrok maintains certifications and controls to help you pass your security review:
+
+| Certification | Details |
+|---------------|---------|
+| SOC 2 Type II | Independently audited |
+| HIPAA & BAA | Business Associate Agreements available |
+| GDPR | EU data protection compliance |
+| CCPA | California consumer privacy |
+| EU-US DPF | Data Privacy Framework |
+
+Additional security features include [RBAC](/iam/rbac), [SSO & SCIM](/iam/sso), [audit logs](/obs/events), [DDoS protection](/universal-gateway/ddos-protection), and [data residency](/universal-gateway/region-pinning/) options.
+Visit the [ngrok Trust Center](https://trust.ngrok.com/) for details.
+
+## Where does traffic travel?
+
+When a device connects, the ngrok agent opens an outbound TLS connection to the ngrok edge.
+Traffic from your cloud services or users flows through the ngrok edge and is forwarded to the device through this encrypted tunnel.
+By default, ngrok does not store or persist request bodies or response data.
+(The opt-in [Traffic Inspector](/obs/traffic-inspection/) Full Capture mode does store request and response headers and bodies for debugging purposes.)
+
+- **Encryption in transit:** All traffic between the ngrok edge and the agent is encrypted with TLS.
+- **Scoped access:** Each endpoint exposes one specific service on the device—not the entire network behind it.
+- **Data residency:** Control where traffic is processed and is available using [Region pinning](/universal-gateway/region-pinning/), available on [Pay-as-you-go](/pricing-limits/#pay-as-you-go-faqs) plans and above.
+
+Visit the [ngrok Trust Center](https://trust.ngrok.com/) for audit reports, compliance documentation, and answers to security review questions.
+
+## Next steps
+
+- [Traffic Policy](/guides/device-gateway/traffic-policy): add authentication, rate limiting, and access control to your endpoints.
+- [Fleet management](/guides/device-gateway/fleet-management): manage multi-tenancy and credentials at scale
+- [Full walkthrough](/guides/device-gateway/agent): see security controls in action in a detailed example scenario
