@@ -6,3 +6,54 @@ description: ngrok HTTP endpoints support WebSockets without any special configu
 
 WebSocket endpoints work through ngrok's HTTP endpoints without any changes. 
 However, there is currently no support for introspecting WebSockets beyond the initial `101 Switching Protocols` response.
+
+## What you'll need
+
+- Node.js installed on your machine.
+- An [ngrok account](https://dashboard.ngrok.com/signup).
+- Your [ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken).
+
+## 1. Install dependencies
+
+```sh
+npm install ws
+```
+
+## 2. Create the server
+
+HTTP and WebSocket share the same port.
+
+Create a `server.js` file:
+
+```js
+import { createServer } from 'http';
+import { WebSocketServer } from 'ws';
+
+const server = createServer((req, res) => {
+  res.writeHead(200, { 'Content-Type': 'text/plain' });
+  res.end('OK\n');
+});
+
+const wss = new WebSocketServer({ server });
+
+wss.on('connection', (ws) => {
+  ws.on('message', (data) => ws.send(`Echo: ${data}`));
+  ws.send('Hello from WebSocket');
+});
+
+server.listen(8000);
+```
+
+A single ngrok endpoint handles traffic for both protocols.
+
+## 3. Start ngrok
+
+```sh
+ngrok http 8000
+```
+
+Connect to your WebSocket using the `wss://` scheme:
+
+```js
+const ws = new WebSocket('wss://<your-ngrok-domain>');
+```
