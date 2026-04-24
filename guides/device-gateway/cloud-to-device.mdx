@@ -6,51 +6,61 @@ description: Use ngrok to remotely access IoT devices and services in the field 
 
 ngrok is a universal gateway, which means it allows you to connect to any app, IoT device, or service without networking expertise.
 
-This guide will walk you through an example scenario using ngrok to set up a secure, controlled remote access solution for IoT devices. The solution will enable you to grant trusted parties access to critical systems without exposing those systems to the public internet or relying on complex VPN setups.
+This guide walks you through an example scenario using ngrok to set up a secure, controlled remote access solution for IoT devices.
+The solution enables you to grant trusted parties access to critical systems without exposing those systems to the public internet or relying on complex VPN setups.
 
 ## Example scenario
 
-Consider a situation where a network of smart factories is coming online, each with IoT-connected controllers, security cameras, and machine sensors. In this scenario, each factory's network blocks inbound connections. However, your technicians need to do remote maintenance on these cameras via SSH, and your SaaS platform's cloud software needs access to device data via a web app for mission critical operations. 
+Consider a situation where a network of smart factories is coming online, each with IoT-connected controllers, security cameras, and machine sensors.
+In this scenario, each factory's network blocks inbound connections.
+However, your technicians need to do remote maintenance on these cameras via SSH, and your SaaS platform's cloud software needs access to device data via a web app for mission-critical operations.
 
-## Architectural Reference
+## Architectural reference
 
 ![Device GW Arch (1).png](img/cloud-to-device/cloud-to-device-arch.png)
 
-### Why only one ngrok Agent per factory?
+### Why only one ngrok agent per factory?
 
-Traditionally, you might assume that every device inside the factory needs its own ngrok agent, but this isn't necessary. A single ngrok agent is installed on a network-accessible machine inside the factory. The agent acts as a central gateway (jumpbox) that can reach any machine on the local network, eliminating the need for multiple agents.
+Traditionally, you might assume that every device inside the factory needs its own ngrok agent, but this isn't necessary.
+A single ngrok agent is installed on a network-accessible machine inside the factory.
+The agent acts as a central gateway (jumpbox) that can reach any machine on the local network, eliminating the need for multiple agents.
 
 ## What you'll need
 
-- An ngrok account. If you don't have one, [**sign up**](https://dashboard.ngrok.com/signup).
-- An ngrok agent configured in a remote IoT based network. See the [**getting started guide**](https://ngrok.com/docs/getting-started) for instructions on how to install the ngrok agent.
+- An ngrok account. If you don't have one, [sign up](https://dashboard.ngrok.com/signup).
+- An ngrok agent configured in a remote IoT-based network. See the [getting started guide](https://ngrok.com/docs/getting-started) for instructions on how to install the ngrok agent.
 
-### 1. Create a Service User and authtoken for isolated network access
+## 1. Create a service user and authtoken for isolated network access
 
-First, you'll create a service user and an associated authtoken for each of your factories. A Service User is intended for automated systems that programmatically interact with your ngrok account (other platforms sometimes call this concept a Service Account). Create a separate Service User + associated authtoken for each of your factories so that:
+First, create a service user and an associated authtoken for each of your factories.
+A service user is intended for automated systems that programmatically interact with your ngrok account (other platforms sometimes call this concept a Service Account).
+Create a separate service user and associated authtoken for each of your factories so that:
 
-1. Their usage of your ngrok account is isolated and scoped with a specific permission set
-2. If an agent is compromised you can revoke its access independently
-3. Agent start/stop audit events are properly attributed to each customer
-4. Your ngrok agents don't stop working if the human user who set them up leaves your ngrok account.
+- Their usage of your ngrok account is isolated and scoped with a specific permission set
+- If an agent is compromised, you can revoke its access independently
+- Agent start/stop audit events are properly attributed to each customer
+- Your ngrok agents don't stop working if the human user who set them up leaves your ngrok account
 
-Navigate to the [**Service Users](https://dashboard.ngrok.com/service-users)** section of your dashboard and click “new Service User”.
+Navigate to the [Service Users](https://dashboard.ngrok.com/service-users) section of your dashboard and click **New Service User**.
 
 ![image.png](img/cloud-to-device/cloud-to-device-service-user.png)
 
-Next, create an authtoken assigned to this specific bot user. 
+Next, create an authtoken assigned to this specific service user.
 
-![Screenshot 2026-01-23 at 12.35.00 PM.png](img/cloud-to-device/cloud-to-device-authtoken.png)
+![Screenshot 2026-01-23 at 12.35.00 PM.png](img/cloud-to-device/cloud-to-device-authtoken.png)
 
-### 2. Install the ngrok Agent within your remote network and configure internal Agent endpoints in ngrok.yml
+## 2. Install the ngrok agent within your remote network and configure internal Agent Endpoints in ngrok.yml
 
-Configure the agent to create internal Agent Endpoints that point to the devices you want to remotely access. This will connect the devices to your ngrok account but nothing will be able to connect to them until completing the subsequent steps. The configuration to achieve this is shown below in the example agent configuration file.
+Configure the agent to create internal Agent Endpoints that point to the devices you want to remotely access.
+This connects the devices to your ngrok account, but nothing can connect to them until you complete the subsequent steps.
+The configuration to achieve this is shown in the example agent configuration file below.
 
-Internal Endpoints ****are private endpoints that only receive traffic when forwarded through the
+Internal Agent Endpoints are private endpoints that only receive traffic when forwarded through the [forward-internal Traffic Policy action](https://ngrok.com/docs/traffic-policy/actions/forward-internal).
+This allows you to route traffic to an application through ngrok without making it publicly addressable.
+Internal Agent Endpoint URL hostnames must end with `.internal`.
 
-[**forward-internal Traffic Policy action**](https://ngrok.com/docs/traffic-policy/actions/forward-internal). This allows you to route traffic to an application through ngrok without making it publicly addressable. Internal endpoint URL hostnames must end with `.internal`. 
-
-After installing the ngrok agent, define internal endpoints for each service you want to remotely access inside the ngrok configuration file. You can install ngrok and its configuration file in `/path/to/ngrok/ngrok.yml` and the executable in `/path/to/ngrok/ngrok` .
+After installing the ngrok agent, define internal Agent Endpoints for each service you want to remotely access inside the ngrok configuration file.
+You can install ngrok and its configuration file at `/path/to/ngrok/ngrok.yml` and the executable at `/path/to/ngrok/ngrok`.
 
 ```yaml
 version: 3
@@ -73,21 +83,24 @@ endpoints:
       url: 22 
 ```
 
-### 3. Reserve a tcp address for security camera connectivity
+## 3. Reserve a TCP address for security camera connectivity
 
-Reserving a TCP address is required for creating a TCP cloud endpoint which will be done in a later step. By reserving a TCP address, this address is held specifically for your ngrok account. 
+You need to reserve a TCP address to create a TCP Cloud Endpoint, which you'll do in the next step.
+Reserving the address holds it exclusively for your ngrok account.
 
-![Screenshot 2026-01-23 at 12.37.00 PM.png](img/cloud-to-device/cloud-to-device-tcp-address.png)
+![Screenshot 2026-01-23 at 12.37.00 PM.png](img/cloud-to-device/cloud-to-device-tcp-address.png)
 
-### 4. Create your cloud endpoints and attach a Traffic Policy
+## 4. Create your Cloud Endpoints and attach a Traffic Policy
 
-Cloud Endpoints are persistent, always-on endpoints whose creation, deletion, and configuration is managed centrally via the Dashboard or API. They exist permanently until they are explicitly deleted. Cloud Endpoints do not forward their traffic to an agent by default and instead only use their attached **Traffic Policy** to handle connections.
+Cloud Endpoints are persistent, always-on endpoints whose creation, deletion, and configuration is managed centrally via the dashboard or API.
+They exist permanently until explicitly deleted.
+Cloud Endpoints don't forward their traffic to an agent by default—they only use their attached Traffic Policy to handle connections.
 
-Create a public Cloud Endpoint in the ngrok dashboard by navigating to endpoints and clicking **new** as shown in the screenshot below:
+Create a public Cloud Endpoint in the ngrok dashboard by navigating to **Endpoints** and clicking **New**.
 
-![Screenshot 2026-02-10 at 1.54.24 PM.png](img/cloud-to-device/cloud-to-device-cloud-endpoint.png)
+![Screenshot 2026-02-10 at 1.54.24 PM.png](img/cloud-to-device/cloud-to-device-cloud-endpoint.png)
 
-Additionally, create Cloud Endpoints for the sensor and camera: “*https://sensor.acme.com” and “tcp://1.tcp.ngrok.io:12345“ (using your reserved TCP addr).*
+Additionally, create Cloud Endpoints for the sensor and camera: `https://sensor.acme.com` and `tcp://1.tcp.ngrok.io:12345` (using your reserved TCP address).
 
 Click on your newly created controller Cloud Endpoint and replace the default Traffic Policy with:
 
@@ -119,11 +132,15 @@ on_tcp_connect:
           url: tcp://camera.internal:22
 ```
 
-### 5. Secure your cloud endpoints with OAuth, TLS version control, and IP Restrictions
+## 5. Secure your Cloud Endpoints with OAuth, TLS version control, and IP restrictions
 
-Navigate to your newly created cloud endpoints in the [endpoints](https://dashboard.ngrok.com/authtokens) tab on your ngrok dashboard, and apply a traffic policy action to each. For this example, we can apply OAuth to your controller endpoint, enforce a minimum TLS version for your sensor endpoint and, enable IP restrictions for your camera endpoint. Feel free to browse through the full list of traffic policy actions listed [here](https://ngrok.com/docs/traffic-policy/actions). You can add this action directly to the cloud endpoint's YAML configuration. The properly final traffic policy config for each endpoint can be seen below:
+Navigate to your newly created Cloud Endpoints in the [Endpoints](https://dashboard.ngrok.com/endpoints) tab on your ngrok dashboard, and apply a Traffic Policy action to each.
+For this example, apply OAuth to your controller endpoint, enforce a minimum TLS version for your sensor endpoint, and enable IP restrictions for your camera endpoint.
+Browse the full list of [Traffic Policy actions](https://ngrok.com/docs/traffic-policy/actions).
+You can add each action directly to the Cloud Endpoint's YAML configuration.
+The final Traffic Policy config for each endpoint is shown below.
 
-*https://controller.acme.com*
+`https://controller.acme.com`
 
 ```yaml
 on_http_request:
@@ -141,7 +158,7 @@ on_http_request:
           url: https://controller.internal
 ```
 
-*https://sensor.acme.com*
+`https://sensor.acme.com`
 
 ```yaml
 on_tcp_connect:
@@ -156,7 +173,7 @@ on_http_request:
           url: https://sensor.internal
 ```
 
-*tcp://1.tcp.ngrok.io:12345*
+`tcp://1.tcp.ngrok.io:12345`
 
 ```yaml
 on_tcp_connect:
@@ -171,7 +188,7 @@ on_tcp_connect:
           url: tcp://camera.internal:22
 ```
 
-## What's Next
+## What's next
 
 - [Install ngrok as a background service](/guides/site-to-site-connectivity/background-service) to ensure the agent starts on boot and recovers from failures.
 - [Eliminate single points of failure with redundant agents](/guides/site-to-site-connectivity/redundant-agents) to achieve high availability.
