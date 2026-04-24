@@ -1,133 +1,136 @@
 ---
-title: Remote Device Access
+title: Secure Remote Access with ngrok for SSH and RDP
 sidebarTitle: Secure Remote Access
 description: Give technicians and end users SSH, RDP, or web access to devices deployed in remote networks using ngrok.
 ---
 
-Devices deployed behind firewalls and NATs are difficult to reach for troubleshooting and administration.
-ngrok solves this by creating outbound tunnels from the device, giving technicians and end users direct access using their existing tools.
+By creating secure TCP endpoints, ngrok enables easy, centralized access for technicians, engineers, and IT admins to maintain and update remote devices and services.
+This guide helps you streamline connectivity without compromising security for remote access using SSH or RDP.
 
-## How it works
+Use cases include secure SSH into remote IoT devices or connecting to a Windows RDP server in a remote network.
+This guide demonstrates the setup for a single remote network.
 
-1. [Install ngrok](https://ngrok.com/download) on a device or gateway in the remote network
-2. Start a tunnel for the protocol you need (SSH, RDP, HTTP, or TCP)
-3. Share the ngrok URL with the technician or end user
-4. They connect using their existing tools (SSH client, RDP client, browser)
+## Architectural reference
 
-## Quick example
+![Architecture diagram: one ngrok agent per remote network routing cloud traffic to internal SSH and RDP devices](img/secure-remote-access/ngrok_SSH_RDP_Arch_(2).png)
 
-<Tabs>
-  <Tab title="HTTP">
-    Expose a web-based admin dashboard (or any HTTP service):
+### Why only one ngrok agent per remote network?
 
-    ```bash
-    ngrok http 8080
-    ```
-  </Tab>
-  <Tab title="SSH">
-    Expose [SSH on a remote Linux device](/using-ngrok-with/ssh):
+Traditionally, you might assume that every service or device inside the network needs its own ngrok agent, but this isn't necessary.
+A single ngrok agent is installed on a network-accessible server inside the remote network.
+The agent acts as a central gateway that can reach any service on the local network, eliminating the need for multiple agents.
 
-    ```bash
-    ngrok tcp 22
-    ```
-  </Tab>
-  <Tab title="RDP">
-    Expose [RDP on a remote Windows device](/guides/ssh-rdp/):
+## What you'll need
 
-    ```bash
-    ngrok tcp 3389
-    ```
-  </Tab>
-</Tabs>
+- An ngrok account. If you don't have one, [sign up](https://dashboard.ngrok.com/signup).
+- An ngrok agent configured in a remote network or remote device. See the [getting started guide](https://ngrok.com/docs/getting-started/) for instructions on how to install the ngrok agent.
 
-See [the device gateway quickstart](/guides/device-gateway/quickstart) for further steps.
+## 1. Create a service user and authtoken for isolated network access
 
-## One gateway for an entire network
+First, create a service user and an associated authtoken for each of your customers.
+A service user is intended for automated systems that programmatically interact with your ngrok account (other platforms sometimes call this concept a Service Account).
+Create a separate service user and associated authtoken for each of your customers so that:
 
-You don't need an ngrok agent on every device.
-You can run a single agent on one gateway machine and route to any device on the local network. The following is an example [ngrok agent config](/agent/config/) that does just that:
+- Their usage of your ngrok account is isolated and scoped with a specific permission set
+- If a customer is compromised, you can revoke their access independently
+- Agent start/stop audit events are properly attributed to each customer
+- Your ngrok agents don't stop working if the human user who set them up leaves your ngrok account
 
-```yaml title="ngrok.yml"
+Navigate to the [Service Users](https://dashboard.ngrok.com/service-users) section of your dashboard and click **New Service User**.
+
+![Service Users page with New Service User button](img/secure-remote-access/Screenshot_2026-01-23_at_12.35.00_PM.png)
+
+Next, create an authtoken assigned to this specific service user.
+
+![Authtokens page showing a new authtoken assigned to a service user](img/secure-remote-access/Screenshot_2026-01-23_at_12.36.20_PM.png)
+
+## 2. Install the ngrok agent within your remote network and configure internal Agent Endpoints in ngrok.yml
+
+Configure the agent to create internal Agent Endpoints that point to the devices you want to remotely access.
+This connects the devices to your ngrok account, but nothing can connect to them until you complete the subsequent steps.
+The configuration to achieve this is shown in the example agent configuration file below.
+
+Internal Agent Endpoints are private endpoints that only receive traffic when forwarded through the [forward-internal Traffic Policy action](https://ngrok.com/docs/traffic-policy/actions/forward-internal).
+This allows you to route traffic to an application through ngrok without making it publicly addressable.
+Internal Agent Endpoint URL hostnames must end with `.internal`.
+
+After installing the ngrok agent, define internal Agent Endpoints for each service you want to remotely access inside the ngrok configuration file.
+You can install ngrok and its configuration file at `/path/to/ngrok/ngrok.yml` and the executable at `/path/to/ngrok/ngrok`.
+
+```yaml
 version: 3
+
 agent:
-  authtoken: YOUR_NGROK_AUTHTOKEN
+  authtoken: AUTHTOKEN_CREATED_IN_STEP_1
 
 endpoints:
-  - name: plc-ssh
-    url: tcp://plc-ssh.internal:22
+  - name: Internal Endpoint for Device 1
+    url: tcp://device1.internal:22
     upstream:
-      url: tcp://192.168.1.50:22
-  - name: admin-dashboard
-    url: https://dashboard.internal
+      url: 22 
+  - name: Internal Endpoint for Device 2
+    url: tcp://device2.internal:22
     upstream:
-      url: http://192.168.1.100:3000
+      url: 22 
+  - name: Internal Endpoint for RDP Server
+    url: tcp://rdp-server.internal:3389
+    upstream:
+      url: 3389 
 ```
 
-Each endpoint is addressable inside ngrok's network, and you can connect them to [Cloud Endpoints](/universal-gateway/cloud-endpoints/) for external access. Cloud Endpoints are long-lived endpoints that run in the ngrok cloud service.
+## 3. Reserve a TCP address for each device and server
 
-## Using the API
+You need to reserve a TCP address to create a TCP Cloud Endpoint, which you'll do in the next step.
+Reserving the address holds it exclusively for your ngrok account.
+Do this for each device and for the RDP server.
 
-You can use the [Agent API](/agent/api/) to start and stop tunnels:
+![Reserved TCP addresses page with a newly reserved address](img/secure-remote-access/Screenshot_2026-01-23_at_12.37.00_PM.png)
 
-```bash
-# Start a tunnel on demand
-curl -X POST http://localhost:4040/api/tunnels \
-  -H "Content-Type: application/json" \
-  -d '{"name":"dashboard","proto":"http","addr":"3001","domain":"dashboard.example.com"}'
-```
+## 4. Create your TCP Cloud Endpoints and attach a Traffic Policy
 
-## Secure access with authentication
+Cloud Endpoints are persistent, always-on endpoints whose creation, deletion, and configuration is managed centrally via the dashboard or API.
+They exist permanently until explicitly deleted.
+Cloud Endpoints don't forward their traffic to an agent by default—they only use their attached Traffic Policy to handle connections.
 
-Add authentication so only authorized users can reach your devices.
-See the [Traffic Policy guide](/guides/device-gateway/traffic-policy) for details on adding OAuth, JWT validation, and IP restrictions.
+![Endpoints page with New button to create a TCP Cloud Endpoint](img/secure-remote-access/Screenshot_2026-01-23_at_12.38.46_PM.png)
 
-The following example demonstrates a Traffic Policy that uses basic auth to secure traffic to your endpoints:
+Click on your newly created Cloud Endpoint and replace the default Traffic Policy with:
 
-<CodeGroup>
-
-```yaml policy.yml
-on_http_request:
-  # Prompt for username and password with up to 10 credential pairs
+```yaml
+on_tcp_connect:
   - actions:
-      - type: basic-auth
+      - type: forward-internal
         config:
-          credentials:
-            - username: user1
-              password: password123
-            - username: user2
-              password: securepass456
+          url: tcp://device1.internal:22
 ```
 
-```json policy.json
-{
-  "on_http_request": [
-    {
-      "actions": [
-        {
-          "type": "basic-auth",
-          "config": {
-            "credentials": [
-              {
-                "username": "user1",
-                "password": "password123"
-              },
-              {
-                "username": "user2",
-                "password": "securepass456"
-              }
-            ]
-          }
-        }
-      ]
-    }
-  ]
-}
+## 5. Secure your Cloud Endpoint with IP restrictions
+
+Navigate to your newly created Cloud Endpoint in the [Endpoints](https://dashboard.ngrok.com/endpoints) tab on your ngrok dashboard and apply a `restrict-ips` Traffic Policy action to enable a source IP allow list.
+IP restrictions let you directly filter who can use the endpoint and prevent port scanners or other malicious actors.
+You can add this action directly to the Cloud Endpoint's YAML configuration.
+The final config for this action is shown below:
+
+```yaml
+on_tcp_connect:
+  - actions:
+      - type: restrict-ips
+        config:
+          enforce: true
+          allow:
+            - e680:5791:be4c:5739:d959:7b94:6d54:d4b4/128
+            - 203.0.113.42/32
+  - actions:
+      - type: forward-internal
+        config:
+          url: tcp://device1.internal:22
 ```
 
-</CodeGroup>
+## 6. Use your ngrok TCP endpoints with your SSH and RDP clients
 
-## Next steps
+Now that you've created and secured your TCP Cloud Endpoints, you can use them in your existing SSH and RDP client setups to test your remote connectivity.
 
-- [Quickstart](/guides/device-gateway/quickstart): get a device reachable in minutes
-- [Cloud-to-device](/guides/device-gateway/cloud-to-device): connect your cloud services to device APIs
-- [Security](/guides/device-gateway/security): manage credentials and access controls across your fleet
+## What's next
+
+- [Install ngrok as a background service](/guides/site-to-site-connectivity/background-service) to ensure the agent starts on boot and recovers from failures.
+- [Eliminate single points of failure with redundant agents](/guides/site-to-site-connectivity/redundant-agents) to achieve high availability.
