@@ -18,9 +18,9 @@ By integrating Curity Identity Server with ngrok, you can:
 ## What you'll need
 
 - A Curity account with administrative rights to create clients.
-- An ngrok Enterprise account with an authtoken or admin access to configure edges with OpenID Connect.
+- An ngrok Enterprise account with an authtoken or admin access to configure endpoints with OpenID Connect.
 
-## 1. Configure Curity Authentication 
+## 1. Configure Curity authentication 
 
 The Curity Identity Server provides an authenticator called `html-form` that is suitable for setting up a login with username and password. It uses a Credential Manager to verify the credentials, which in turn uses a data-source. There are many options for stronger authentication than username and password; Curity documents possible authentication methods.
 
@@ -48,6 +48,7 @@ The Curity Identity Server provides an authenticator called `html-form` that is 
    - Select the **Code Flow** capability and click **Next**.
 
    - Enter `http://localhost/callback` as a **Redirect URI** and click **Add**.
+   - Enter `https://idp.ngrok.com/oauth2/callback` as a **Redirect URI** and click **Add**.
    - Click **Next**.
    - On the **Client Authentication** screen, select **secret**.
    - Click **Generate** to generate a new secret.
@@ -92,44 +93,35 @@ Replace `<curity_url>` with your Curity issuer address (for example, `https://ac
 
 - Skip to **Step 4** to test the integration.
 
-### **Option 2**: ngrok edge
+### **Option 2**: Traffic Policy
 
-To configure an edge with Curity:
+<Note>
+This tutorial assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok client installed.
+</Note>
 
-- Go to your [ngrok dashboard](https://dashboard.ngrok.com).
-- Click **Universal Gateway > Edges**.
-- If you don't have an edge already set to add Curity Identity Server, create a test edge:
-  - Click **New Edge**.
-  - Click **HTTPS Edge**.
-  - Click the **pencil icon** next to "no description".
-  Enter `Edge with Curity Identity Server` as the edge name and click **Save**.
-- On the edge settings, click **OIDC**.
-- Click **Begin setup** and enter the following:
-  - **Issuer URL**: Your Curity issuer URL (for example, `https://acme.com/oauth/v2/oauth-anonymous`).
-  - **Client ID**: The name of the client from Curity.
-  - **Client Secret**: The client secret copied from Curity.
-- Click **Save**.
-- Launch a tunnel connected to your Curity edge:
+Create a `policy.yaml` file with the following content, replacing the placeholder values with those copied from Curity Identity Server:
 
-   <Note>
-   This step assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok client installed.
-   </Note>
+```yaml
+on_http_request:
+  - actions:
+      - type: openid-connect
+        config:
+          issuer_url: 'https://acme.com/oauth/v2/oauth-anonymous'
+          client_id: 'YOUR_CURITY_CLIENT_ID'
+          client_secret: 'YOUR_CURITY_CLIENT_SECRET'
+          scopes:
+            - openid
+            - profile
+            - email
+```
 
-- Click **Start a tunnel**.
-- Click the **copy icon** next to the tunnel command.
-- Launch a tunnel:
-  - Launch a terminal.
-  - Paste the command.
-  Replace `http://localhost:80` with your local web app address (for example, `http://localhost:3000`).
-  - Press **Enter**.
-  An ngrok tunnel associated with your edge configuration will launch.
-- To confirm that the tunnel is connected to your edge:
-  - Return to the ngrok dashboard.
-  - Close the **Start a tunnel** and the **Tunnel group** tabs.
-  - Refresh the test edge page.
-  Under traffic, you will see the message _You have 1 tunnel online. Start additional tunnels to begin load balancing_.
-- In the test edge, copy the **endpoint URL**.
-You will use this URL to test the Curity authentication.
+Launch an ngrok tunnel with this policy:
+
+```bash
+ngrok http 3000 --traffic-policy-file policy.yaml --url YOUR_DOMAIN
+```
+
+Copy the URL next to **Forwarding** (for example, `https://curity-sso-test.ngrok.app`).
 
 ## 4. Test the integration
 

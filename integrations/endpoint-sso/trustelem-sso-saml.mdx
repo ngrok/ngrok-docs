@@ -18,7 +18,7 @@ By integrating Wallix Trustelem SSO with ngrok, you can:
 ## What you'll need
 
 - A Wallix Trustelem account with administrative rights to create apps.
-- An ngrok Enterprise account with an authtoken or admin access to configure edges with SAML.
+- An ngrok Enterprise account with an authtoken or admin access to configure endpoints with SAML.
 
 ## 1. Configure Wallix Trustelem 
 
@@ -28,46 +28,42 @@ By integrating Wallix Trustelem SSO with ngrok, you can:
 
 ## 2. Configure ngrok 
 
-To configure an edge with Wallix Trustelem:
+<Warning>
+The SAML Traffic Policy action is currently in [developer preview](/traffic-policy/actions/saml/). [Request access](https://dashboard.ngrok.com/developer-preview) to configure SAML via Traffic Policy.
+</Warning>
 
-- Access the [ngrok Dashboard](https://dashboard.ngrok.com/) and sign in using your ngrok account.
-- On the left menu, click **Universal Gateway** and then click **Edges**.
-- If you don't have an edge already set to add Wallix Trustelem SSO, create a test edge:
-  - Click **+ New Edge**.
-  - Click **Create HTTPS Edge**.
-  - Click the **pencil icon** next to "no description", enter `Edge with Trustelem SSO SAML` as the edge name, and click **Save**.
-- On the edge settings menu, click **SAML**.
-- On the **SAML** page, click **Begin setup**, click **Upload XML**, and then open the XML metadata file you downloaded from Wallix Trustelem (See [Configure Wallix Trustelem](#1-configure-wallix-trustelem)).
-- Click **Save** at the top.
-- On the **SAML** page of your [ngrok edge](https://dashboard.ngrok.com/edges), make note of the URL of both the **Entity ID** and **ACS URL** fields.
+Once you have developer preview access, create a `policy.yaml` file with the following content, replacing `YOUR_IDP_METADATA_XML` with the IdP metadata XML from Wallix Trustelem:
+
+```yaml
+on_http_request:
+  - actions:
+      - type: saml
+        config:
+          idp_metadata: 'YOUR_IDP_METADATA_XML'
+```
+
+The SAML action generates your ngrok SP Entity ID and ACS URL based on your endpoint URL. Refer to the [SAML action documentation](/traffic-policy/actions/saml/) for how to retrieve these values to complete your IdP configuration.
 
 ## 3. Link Wallix Trustelem with ngrok 
 
 - On the WALLIX Trustelem administration console, click **Apps** on the left menu, and then click your application.
-- On the **Settings** popup, click **Edit**, paste the **Entity ID** URL in the **EntityID** field and the **ACS URL** URL in the **Assertion Consumer Service** field.
-You copied both URLs from the previous step.
+- On the **Settings** popup, click **Edit**, paste the **SP Entity ID** in the **EntityID** field and the **ACS URL** in the **Assertion Consumer Service** field.
+Retrieve both values from the [SAML action documentation](/traffic-policy/actions/saml/) (see [Configure ngrok](#2-configure-ngrok)).
 - Click **Save**.
 
 ## 4. Start a tunnel 
 
-- Access the [ngrok edges page](https://dashboard.ngrok.com/edges), click your edge, and then click **Start a tunnel**.
+<Note>
+This step assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok client installed.
+</Note>
 
-   <Note>
-   This step assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok client installed.
-   </Note>
+Run the following command, replacing `3000` with your local web app port and `YOUR_DOMAIN` with your ngrok domain:
 
-- Click the **copy icon** next to the tunnel command.
-- Launch a tunnel:
-  - Launch a terminal.
-  - Paste the command but replace `http://localhost:80` with your localhost app address (such as `http://localhost:3000`).
-  - Press **Enter** and an ngrok tunnel associated with your edge configuration will launch.
-- To confirm that the tunnel is connected to your edge:
-  - Return to the ngrok dashboard.
-  - Close the **Start a tunnel** and the **Tunnel group** tabs.
-  - Refresh the test edge page.
-  Under traffic, you will see the message _You have 1 tunnel online. Start additional tunnels to begin load balancing_.
-- In the test edge, copy the **endpoint URL**.
-You use this URL to test the Wallix Trustelem authentication.
+```bash
+ngrok http 3000 --traffic-policy-file policy.yaml --url YOUR_DOMAIN
+```
+
+Copy the URL next to **Forwarding**. You use this URL to test the Wallix Trustelem authentication.
 
 ## Grant access to Wallix Trustelem users 
 

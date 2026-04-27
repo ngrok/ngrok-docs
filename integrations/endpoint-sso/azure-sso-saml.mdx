@@ -8,7 +8,7 @@ import Disclaimer from "/snippets/integrations/_endpoint-sso-disclaimer.mdx";
 
 <Disclaimer />
 
-This guide walks you through configuring Azure AD B2C as an Identity Provider for your ngrok Edge using single sign-on (SSO).
+This guide walks you through configuring Azure AD B2C as an Identity Provider for your ngrok endpoints using single sign-on (SSO).
 By integrating Azure AD B2C with ngrok, you can:
 
 - Restrict access to ngrok tunnels to only users who authenticated via Azure AD B2C
@@ -16,31 +16,35 @@ By integrating Azure AD B2C with ngrok, you can:
 
 ## What you'll need
 
-- An [ngrok Enterprise account](https://ngrok.com/pricing) with an authtoken or admin access to configure edges with SAML.
+- An [ngrok Enterprise account](https://ngrok.com/pricing) with an authtoken or admin access to configure endpoints with SAML.
 - A Microsoft Azure account with access to an Azure AD B2C tenant.
 - An understanding of Azure AD B2C custom policies.
 
-## 1. Create an ngrok Edge
+## 1. Configure ngrok
 
-- Go to the [ngrok dashboard](https://dashboard.ngrok.com).
-- Click **Universal Gateway > Edges**.
-- Create an Edge:
-  - Click **New Edge**.
-  - Click **HTTPS Edge**.
-  - Click the **pencil icon** next to "no description".
-  Enter `Edge With Azure Active Directory B2C SSO` as the Edge name and click **Save**.
-- Configure the SAML module for this Edge:
-  - On the Routes section, click **SAML**.
-  - Click **Begin setup**.
-  - In the Identity Provider section, copy the following XML as a placeholder into the input box:
+<Warning>
+The SAML Traffic Policy action is currently in [developer preview](/traffic-policy/actions/saml/). [Request access](https://dashboard.ngrok.com/developer-preview) to configure SAML via Traffic Policy.
+</Warning>
 
-    ```xml
-    <EntityDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata"></EntityDescriptor>
-    ```
+Once you have developer preview access, create a `policy.yaml` file with the following content, replacing `YOUR_IDP_METADATA_XML` with the IdP metadata XML from Azure AD B2C:
 
-  - Click **Save**.
-- Note that ngrok has now generated values for the fields in the Service Provider section.
-These will be used to configure Azure AD B2C later.
+```yaml
+on_http_request:
+  - actions:
+      - type: saml
+        config:
+          idp_metadata: 'YOUR_IDP_METADATA_XML'
+```
+
+The SAML action generates your ngrok SP Entity ID and ACS URL based on your endpoint URL. Refer to the [SAML action documentation](/traffic-policy/actions/saml/) for how to retrieve these values to complete your IdP configuration.
+
+Launch an ngrok tunnel with this policy:
+
+```bash
+ngrok http 3000 --traffic-policy-file policy.yaml --url YOUR_DOMAIN
+```
+
+Copy the URL next to **Forwarding**. You use this URL to test the integration.
 
 ## 2. Configure Azure AD B2C custom policies
 
@@ -62,7 +66,7 @@ These will be used to configure Azure AD B2C later.
   - Update your previously created custom policies to use SAML.
   You can either update the files in the starter pack repo or download the XML files for your existing policies from the Identity Experience Framework in the Azure portal.
   - If you are using the `LocalAccounts` starter pack, remember to adjust the orchestration step order value to `4` as noted in these docs.
-  - Use the following mapping of Azure AD B2C configuration properties to ngrok generated values (found in your Edge's SAML configuration in the Service Provider section) to configure your application:
+  - Use the following mapping of Azure AD B2C configuration properties to ngrok generated values (retrieved from the SAML action as described in the [SAML action documentation](/traffic-policy/actions/saml/)) to configure your application:
 
     | Azure AD B2C      | ngrok         |
     | ----------------- | ------------- |
@@ -70,11 +74,10 @@ These will be used to configure Azure AD B2C later.
     | `identifierUri`   | `EntityID`    |
     | `samlMetadataUrl` | `SP Metadata` |
 
-## 4. Update the ngrok Edge with the IdP metadata
+## 4. Update the ngrok configuration with the IdP metadata
 
-- Back in the ngrok dashboard for your Edge's SAML configuration, copy and paste the XML found at the IdP Saml Metadata URL in the Identity Provider section, replacing the previously set placeholder value.
-Note the IdP Metadata URL follows this format: `https://<tenant-name>.b2clogin.com/<tenant-name>.onmicrosoft.com/<policy-name>/Samlp/metadata`.
-- Click **Save**.
+- Retrieve the IdP Metadata XML from the IdP Saml Metadata URL. The URL follows this format: `https://<tenant-name>.b2clogin.com/<tenant-name>.onmicrosoft.com/<policy-name>/Samlp/metadata`.
+- Update the `idp_metadata` value in your `policy.yaml` with the real IdP metadata XML, replacing the placeholder value you set earlier.
 
 ## 5. Test the integration
 
@@ -82,21 +85,11 @@ Note the IdP Metadata URL follows this format: `https://<tenant-name>.b2clogin.c
 This step assumes you have an app running locally (for example, at `localhost:3000`) with the ngrok client installed.
 </Tip>
 
-- Launch a tunnel connected to your configured Edge.
-- On your Edge's page, in the Routes section, click **Start a tunnel**.
-- Copy the tunnel command.
-- Launch a terminal and paste the command, replacing `http://localhost:80` with your local web app address (for example, `http://localhost:3000`).
-- Press **Enter** to launch the tunnel.
-- Confirm that the tunnel is connected to your edge:
-  - Return to the ngrok dashboard.
-  - Close the **Start a tunnel** and the **Tunnel group** drawers.
-  - Refresh the Edge page.
-  - In the Routes section > Traffic section you will see the message _You have 1 tunnel online. Start additional tunnels to begin load balancing._
-- Copy the ngrok URL on the Endpoints section.
-- Access your Edge application:
-  - In your browser, launch an incognito window.
-  - Access your ngrok tunnel via your copied URL.
-  - You should be prompted to log in or sign up.
+Run: `ngrok http 3000 --traffic-policy-file policy.yaml --url YOUR_DOMAIN`
+
+- Access your ngrok tunnel via your forwarding URL.
+- In your browser, launch an incognito window.
+- You should be prompted to log in or sign up.
 - After logging in, you should be able to see the application.
 
 ## Bonus: Update your Azure AD B2C custom policies to support the password reset flow

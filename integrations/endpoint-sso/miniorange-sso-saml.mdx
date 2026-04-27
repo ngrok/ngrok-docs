@@ -18,7 +18,7 @@ By integrating miniOrange SSO with ngrok, you can:
 ## What you'll need
 
 - A miniOrange account with administrative rights to create apps.
-- An ngrok Enterprise account with an authtoken or admin access to configure edges with SAML.
+- An ngrok Enterprise account with an authtoken or admin access to configure endpoints with SAML.
 
 ## 1. Configure miniOrange 
 
@@ -34,48 +34,45 @@ By integrating miniOrange SSO with ngrok, you can:
 
 ## 3. Configure ngrok 
 
-To configure an edge with miniOrange:
+<Warning>
+The SAML Traffic Policy action is currently in [developer preview](/traffic-policy/actions/saml/). [Request access](https://dashboard.ngrok.com/developer-preview) to configure SAML via Traffic Policy.
+</Warning>
 
-- Access the [ngrok Dashboard](https://dashboard.ngrok.com/) and sign in using your ngrok account.
-- On the left menu, click **Universal Gateway** and then click **Edges**.
-- If you don't have an edge already set to add miniOrange SSO, create a test edge:
-  - Click **+ New Edge**.
-  - Click **Create HTTPS Edge**.
-  - Click the **pencil icon** next to "no description", enter `Edge with miniOrange SSO SAML` as the edge name, and click **Save**.
-- On the edge settings menu, click **SAML**.
-- On the **SAML** page, click **Begin setup**, click **Upload XML**, and then open the XML metadata file you downloaded from miniOrange (See [Download the IdP metadata](#2-download-the-idp-metadata)).
-- Click **Save** at the top.
+Once you have developer preview access, create a `policy.yaml` file with the following content, replacing `YOUR_IDP_METADATA_XML` with the IdP metadata XML from miniOrange:
 
-## 4. Download the SP metadata 
+```yaml
+on_http_request:
+  - actions:
+      - type: saml
+        config:
+          idp_metadata: 'YOUR_IDP_METADATA_XML'
+```
 
-- On the **SAML** page of your [ngrok edge](https://dashboard.ngrok.com/edges), click the three dots close to the **SP Metadata** field, click **Download XML File**, and then save the XML file on your desktop.
+The SAML action generates your ngrok SP Entity ID and ACS URL based on your endpoint URL. Refer to the [SAML action documentation](/traffic-policy/actions/saml/) for how to retrieve these values to complete your IdP configuration.
+
+## 4. Obtain the SP metadata
+
+The SAML action generates your ngrok SP Entity ID and ACS URL based on your endpoint URL. Once you have [developer preview access](https://dashboard.ngrok.com/developer-preview), refer to the [SAML action documentation](/traffic-policy/actions/saml/) for how to retrieve these values.
 
 ## 5. Link miniOrange with ngrok 
 
 - On the miniOrange Dashboard, click **Apps** on the left menu, click **Select** in the **ngrok SAML** app line, and then click **Edit**.
-- On the **Edit Application** page, click **Import SP Metadata**, click **File**, open the XML metadata file you downloaded from ngrok (See [Download the SP metadata](#4-download-the-sp-metadata)), and then click **Import**.
+- On the **Edit Application** page, enter the SP Entity ID and ACS URL from the [SAML action documentation](/traffic-policy/actions/saml/) (see [Obtain the SP metadata](#4-obtain-the-sp-metadata)) into the corresponding fields.
 - On the **Edit Application** page, click **Save**.
 
 ## 6. Start a tunnel 
 
-- Access the [ngrok edges page](https://dashboard.ngrok.com/edges), click your edge, and then click **Start a tunnel**.
+<Note>
+This step assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok client installed.
+</Note>
 
-   <Note>
-   This step assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok client installed.
-   </Note>
+Run the following command, replacing `3000` with your local web app port and `YOUR_DOMAIN` with your ngrok domain:
 
-- Click the **copy icon** next to the tunnel command.
-- Launch a tunnel:
-  - Launch a terminal.
-  - Paste the command but replace `http://localhost:80` with your localhost app address (such as `http://localhost:3000`).
-  - Press **Enter** and an ngrok tunnel associated with your edge configuration will launch.
-- To confirm that the tunnel is connected to your edge:
-  - Return to the ngrok dashboard.
-  - Close the **Start a tunnel** and the **Tunnel group** tabs.
-  - Refresh the test edge page.
-  Under traffic, you will see the message _You have 1 tunnel online. Start additional tunnels to begin load balancing_.
-- In the test edge, copy the **endpoint URL**.
-You use this URL to test the miniOrange authentication.
+```bash
+ngrok http 3000 --traffic-policy-file policy.yaml --url YOUR_DOMAIN
+```
+
+Copy the URL next to **Forwarding**. You use this URL to test the miniOrange authentication.
 
 ## Grant access to miniOrange users 
 

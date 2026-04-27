@@ -16,12 +16,12 @@ By integrating miniOrange SSO with ngrok, you can:
 - Use miniOrange's Dashboard to facilitate access to ngrok apps
 
 The ngrok integration with miniOrange supports SP-Initiated SSO.
-In this mode, users access ngrok edges and tunnels and are redirected to miniOrange for authentication.
+In this mode, users access ngrok endpoints and are redirected to miniOrange for authentication.
 
 ## What you'll need
 
 - A miniOrange account with administrative rights to create apps.
-- An ngrok Enterprise account with an authtoken or admin access to configure edges with OpenID Connect.
+- An ngrok Enterprise account with an authtoken or admin access to configure endpoints with OpenID Connect.
 
 ## 1. Configure miniOrange 
 
@@ -73,44 +73,49 @@ This tutorial assumes you have an app running locally (for example, on `localhos
 - Copy the URL available next to **Forwarding** (for example, `https://miniorange-sso-test.ngrok.app`).
 - Skip to **Step 3**.
 
-### **Option 2**: ngrok edge
+### **Option 2**: Traffic Policy
 
-To configure an edge with miniOrange:
+<Note>
+This tutorial assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok client installed.
+</Note>
 
-- Access the [ngrok Dashboard](https://dashboard.ngrok.com/) and sign in using your ngrok account.
-- On the left menu, click **Universal Gateway** and then click **Edges**.
-- If you don't have an edge already set to add miniOrange SSO, create a test edge:
-  - Click **+ New Edge**.
-  - Click **Create HTTPS Edge**.
-  - Click the **pencil icon** next to "no description", enter `Edge with miniOrange SSO OIDC` as the edge name and click **Save**.
-- On the edge settings menu, click **OIDC**.
-- Click **Begin setup** and enter the following values into the fields:
-  - **Issuer URL**: The **Discovery Endpoint** URL you copied from miniOrange, without the `/.well-known/openid-configuration` suffix (for example, `https://login.xecurify.com/moas/discovery/v2.0/abcd1234efG`).
-  - **Client ID**: The client ID you copied from miniOrange.
-  - **Client Secret**: The client secret you copied from miniOrange.
-- Click **Save** at the top, and then click the left arrow to go back to the **Edges** page.
+Create a `policy.yaml` file with the following content, replacing the placeholder values with those copied from miniOrange:
 
-## 4. Start a tunnel 
+```yaml
+on_http_request:
+  - actions:
+      - type: openid-connect
+        config:
+          issuer_url: 'YOUR_MINIORANGE_DISCOVERY_ENDPOINT_URL'
+          client_id: 'YOUR_MINIORANGE_CLIENT_ID'
+          client_secret: 'YOUR_MINIORANGE_CLIENT_SECRET'
+          scopes:
+            - openid
+            - profile
+            - email
+```
 
-- Launch a tunnel connected to your miniOrange edge:
+Launch an ngrok tunnel with this policy:
 
-   <Note>
-   This step assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok client installed.
-   </Note>
+```bash
+ngrok http 3000 --traffic-policy-file policy.yaml --url YOUR_DOMAIN
+```
 
-- Click **Start a tunnel**.
-- Click the **copy icon** next to the tunnel command.
-- Launch a tunnel:
-  - Launch a terminal.
-  - Paste the command but replace `http://localhost:80` with your localhost app address (such as `http://localhost:3000`).
-  - Press **Enter** and an ngrok tunnel associated with your edge configuration will launch.
-- To confirm that the tunnel is connected to your edge:
-  - Return to the ngrok dashboard.
-  - Close the **Start a tunnel** and the **Tunnel group** tabs.
-  - Refresh the test edge page.
-  Under traffic, you will see the message _You have 1 tunnel online. Start additional tunnels to begin load balancing_.
-- In the test edge, copy the **endpoint URL**.
-You use this URL to test the miniOrange authentication.
+Copy the URL next to **Forwarding** (for example, `https://miniorange-sso-test.ngrok.app`).
+
+## 4. Start a tunnel
+
+<Note>
+This step assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok client installed.
+</Note>
+
+Launch a terminal and run the following command, replacing `http://localhost:3000` with your local web app address:
+
+```bash
+ngrok http 3000 --traffic-policy-file policy.yaml --url YOUR_DOMAIN
+```
+
+Copy the URL next to **Forwarding**. You use this URL to test the miniOrange authentication.
 
 ## Test the integration
 
