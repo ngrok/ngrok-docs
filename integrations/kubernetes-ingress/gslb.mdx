@@ -58,110 +58,58 @@ Using CNAMEs, ngrok can host an endpoint on your domain while also managing the 
 If you'd prefer to use a custom domain rather than an ngrok-managed one, [follow the guide](/universal-gateway/custom-domains/) to set up your DNS and replace your custom domain in the `export` command above.
 </Tip>
 
-## 2. Create your ngrok Edge
+## 2. Create a Cloud Endpoint
 
-With ngrok, you can manage multiple endpoints, such as domains or routes, using a single [Edge](/universal-gateway/edges/) configuration in the cloud.
-Edges let you update endpoints without taking them offline, connect multiple ngrok agents to a single endpoint, apply modules like [OAuth](/traffic-policy/actions/oauth/) or [IP restrictions](/traffic-policy/actions/restrict-ips/), and balance the load between your upstream services.
+Create a `policy.yaml` file on your local workstation with the Traffic Policy for your endpoint.
+This policy forwards all incoming requests to `https://gslb-demo.internal`, a shared internal domain that all three of your VMs' ngrok agents will connect to.
+ngrok automatically routes each request to the nearest connected agent, providing global load balancing without additional configuration.
 
-Send a `POST` request to the [`/edges/https` endpoint](/api-reference/edgeshttps/create), replacing the `description` field below as needed.
+```yaml
+on_http_request:
+  - actions:
+      - type: forward-internal
+        config:
+          url: https://gslb-demo.internal
+          on_error: continue
+      - type: custom-response
+        config:
+          status_code: 503
+          body: "No upstream tunnel available."
+```
+
+Use [`jq`](https://jqlang.org/download/) to safely embed the Traffic Policy YAML in the JSON payload and create your Cloud Endpoint:
 
 ```bash
 curl \
-  -X POST https://api.ngrok.com/edges/https \
+  -X POST https://api.ngrok.com/endpoints \
   -H "Authorization: Bearer ${NGROK_API_KEY}" \
   -H "Content-Type: application/json" \
   -H "Ngrok-Version: 2" \
-  -d '{"description":"DigitalOcean HTTPS Edge","hostports":["'${NGROK_DOMAIN}':443"]}'
+  --data "$(jq -n \
+    --arg url "https://${NGROK_DOMAIN}" \
+    --rawfile policy policy.yaml \
+    '{type:"cloud",url:$url,description:"DigitalOcean GSLB",traffic_policy:$policy}'
+  )"
 ```
 
-Export the `id` in this response, which begins with `edghts_...`, for future use.
+Export the `id` from the response for use in optional step 5.
 
 ```bash
-export EDGE_ID=edghts_...
+export ENDPOINT_ID=ep_...
 ```
 
-## 3. Create Tunnel Group backends for your VMs
+If you open `https://<YOUR_NGROK_DOMAIN>` now, you'll see an error from ngrok: the domain and endpoint configuration exist, but there are no ngrok agents connected yet.
+You can go to the [Endpoints dashboard](https://dashboard.ngrok.com/endpoints) to see your endpoint.
 
-Next, create a Tunnel Group for each of your globally distributed VMs.
-A Tunnel Group uses one or more labels to identify which agent-created tunnels it should attach to a given Edge and route, which you'll create in a moment.
+## 3. Install the ngrok Agent and an example workload on each VM
 
-You'll need to run the API request to the [`/backends/tunnel_group` endpoint](/api-reference/tunnelgroupbackends/list) for **each** of your VMs, changing the `<LOCATION_NAME>` with the name of the city or region of the data center where they're deployed (for example, `nyc`, `sydney`, and `frankfurt`).
-
-```bash
-curl \
-  -X POST https://api.ngrok.com/backends/tunnel_group \
-  -H "Authorization: Bearer ${NGROK_API_KEY}" \
-  -H "Content-Type: application/json" \
-  -H "Ngrok-Version: 2" \
-  -d '{"labels":{"dc":"<LOCATION_NAME>"}}'
-```
-
-Export the `id`, beginning with `bkdtg_...`, returned from the ngrok API for each Tunnel Group you create.
-
-```bash
-export BACKEND_ID_01=bkdtg_...
-export BACKEND_ID_02=bkdtg_...
-export BACKEND_ID_03=bkdtg_...
-```
-
-## 4. Create a weighted backend and route on your edge
-
-With a [Weighted Backend](/universal-gateway/edges/#weighted), you can specify custom weights for Tunnel Group backends, shaping precisely how to load-balance traffic across the infrastructure you've distributed around the globe.
-Without a Weighted Backend, the ngrok Edge and [GSLB](/universal-gateway/global-load-balancer/) will always favor the Point of Presence (PoP) and VM nearest the user making requests.
-
-Create a Weighted Backend at the [`/backends/weighted` endpoint](/api-reference/weightedbackends/list) using your Tunnel Group backend `id`s exported from the previous step.
-The `curl` command below creates equal weighting for your backends, but you can use integers between `0-10000` to configure precise proportional weights.
-
-```bash
-curl \
-	-X POST https://api.ngrok.com/backends/weighted \
-	-H "Authorization: Bearer ${NGROK_API_KEY}" \
-	-H "Content-Type: application/json" \
-	-H "Ngrok-Version: 2" \
-	-d '{"backends":{"'${BACKEND_ID_01}'":1,"'${BACKEND_ID_02}'":1,"'${BACKEND_ID_03}'":1}}'
-```
-
-Export the `id` of your new Weighted Backend.
-
-```bash
-export WEIGHTED_BACKEND_ID=bkdwd_...
-```
-
-You can now create a catch-all Edge Route at `/` using your Weighted Backend using the [`/edges/https/{EDGE_ID}/routes` endpoint](/api-reference/edgeshttpsroutes/get).
-
-```bash
-curl \
-  -X POST "https://api.ngrok.com/edges/https/${EDGE_ID}/routes" \
-  -H "Authorization: Bearer ${NGROK_API_KEY}" \
-  -H "Content-Type: application/json" \
-  -H "Ngrok-Version: 2" \
-  -d '{"match":"/","match_type":"path_prefix","backend":{"enabled":true,"backend_id":"'${WEIGHTED_BACKEND_ID}'"}}'
-```
-
-If you'd like to do optional step 7, export a variable for the route you just created.
-
-```bash
-export ROUTE_ID=edghtsrt_...
-```
-<Tip>
-Make sure you grab the right ID—the command starts with two ID values (`edge_id` and `id`). 
-Be sure to use `id` with the value that starts with `edghtsrt_...`.
-</Tip>
-
-You now have an active domain, Edge, Tunnel Group backends, a Weighted Backend, and a route.
-
-If you open `https://<YOUR_NGROK_DOMAIN>` now, you'll see an error from ngrok: the domain and Edge exist, but there are no ngrok agents or active tunnels yet.
-You can go to the [Edges dashboard](https://dashboard.ngrok.com/edges) to see your Edge configuration.
-
-## 5. Install the ngrok Agent and an example workload on each VM
-
-To get some tunnels online and quickly see how ngrok's GSLB works, you'll use an [example API deployment](https://github.com/joelhans/ngrok-vps-gslb-demo).
+To get some agents online and quickly see how ngrok's GSLB works, you'll use an [example API deployment](https://github.com/joelhans/ngrok-vps-gslb-demo).
 This demo deployment has four parts:
 
 - A straightforward Go-based API with a single endpoint at `/api`, which returns a randomly generated UUID and the machine's `hostname`, which should reflect the regions of your VMs.
 - A `Dockerfile` for containerizing said Go-based API.
 - A `docker-compose.yml` file for starting the API container and a containerized edition of the ngrok agent on the same network.
-- A `ngrok.yml` [agent configuration file](/agent/config/v3/) to connect the agent to your ngrok account and one of the Tunnel Group backends you previously created.
+- A `ngrok.yml` [agent configuration file](/agent/config/v3/) to connect the agent to your ngrok account and the shared internal domain.
 
 Repeat the following steps on each VM:
 
@@ -173,18 +121,18 @@ Repeat the following steps on each VM:
   ```
 
 - Edit the `ngrok.yml` [ngrok agent configuration file](/agent/config/) with your `<YOUR_NGROK_AUTHTOKEN>` (find it in the [ngrok dashboard](https://dashboard.ngrok.com/get-started/your-authtoken)); it's different from the API key you created in the first step.
-  Next, edit the `<LOCATION_NAME>` for that VM to match the labels you created in [step 3](#3-create-tunnel-group-backends-for-your-vms) (for example, `nyc`, `sydney`, and `frankfurt`).
+  All three VMs use the same `url` value—ngrok automatically routes each incoming request to the nearest connected agent.
 
   ```yaml
-  version: 2
+  version: 3
   authtoken: <YOUR_NGROK_AUTHTOKEN>
   log_level: debug
   log: stdout
-  tunnels:
-    vps-demo:
-      addr: 5000
-      labels:
-        - dc=<LOCATION_NAME>
+  endpoints:
+    - name: vps-demo
+      url: https://gslb-demo.internal
+      upstream:
+        url: http://localhost:5000
   ```
 
 - Build and start the containerized API deployment, passing the hostname of the VM to the hostname of the Docker container.
@@ -193,18 +141,18 @@ Repeat the following steps on each VM:
   HOSTNAME=$(hostname -f) docker compose up -d
   ```
 
-## 6. Test out ngrok's Global Server Load Balancing
+## 4. Test out ngrok's Global Server Load Balancing
 
 ngrok is now load-balancing your single API endpoint across all three distributed VMs.
 
-You can now ping your demo API at `<YOUR_NGROK_DOMAIN>/api` to see which backend responds.
+You can now ping your demo API at `<YOUR_NGROK_DOMAIN>/api` to see which agent responds.
 
 ```bash
 curl ${NGROK_DOMAIN}/api
 [{"id":"1cf26269-ce8b-4f16-91f1-fdf7bc6d9e80","dc":"nyc"}]
 ```
 
-To see the weighting in action, try a batch of `curl` requests.
+To see the distribution in action, try a batch of `curl` requests.
 
 ```bash
 for i in `seq 1 20`; do \
@@ -238,40 +186,51 @@ You should see each VM respond with similar frequency:
 [{"id":"dce5a46e-15af-4479-a073-8fbc7f0097c5","dc":"nyc"}]
 ```
 
-To confirm global load balancing, go to the [Edges dashboard](https://dashboard.ngrok.com/edges) and confirm your tunnels are online and weighted equally (33.33% each).
+To confirm global load balancing, go to the [Endpoints dashboard](https://dashboard.ngrok.com/endpoints) and confirm all three agents are connected and traffic is flowing.
 
-## Step 7 (optional): Enable the Traffic Policy module for API gateway features 
+## Step 5 (optional): Extend with Traffic Policy
 
-Your demo API is already globally load-balanced, but if you want to extend your ngrok usage even further, you can enable one or more [Traffic Policy modules](/traffic-policy/) on your Edge to control traffic or establish standards for how your upstream services are accessed.
+Your demo API is globally load-balanced with equal distribution across your three VMs.
+You can extend your endpoint's Traffic Policy in two ways: adding API gateway features like header injection, or configuring custom weights for fine-grained traffic control.
 
-You have two options:
+### Add API gateway features
 
-1. Using `curl` with the ngrok API's [`/edges/https/{edge_id}/routes/{id}/policy` endpoint](/api-reference/edgeroutetrafficpolicymodule/get).
-   For this step, you will need to have exported the `ROUTE_ID` environment variable in step 4.
+Update your `policy.yaml` to include an `on_http_response` phase that adds headers to every response:
 
-  ```bash
-  curl \
-    -X PUT "https://api.ngrok.com/edges/https/${EDGE_ID}/routes/${ROUTE_ID}/policy" \
-    -H "Authorization: Bearer ${NGROK_API_KEY}" \
-    -H "Content-Type: application/json" \
-    -H "Ngrok-Version: 2" \
-    -d '{"enabled":true,"on_http_response":[{"actions":[{"type":"add-headers","config":{"headers": {"is-ngrok": "1","country": "${conn.client_ip.geo.location.country_code}"}}}],"name":"Add ngrok headers"}]}'
-  ```
+```yaml
+on_http_request:
+  - actions:
+      - type: forward-internal
+        config:
+          url: https://gslb-demo.internal
+          on_error: continue
+      - type: custom-response
+        config:
+          status_code: 503
+          body: "No upstream tunnel available."
+on_http_response:
+  - name: Add ngrok headers
+    actions:
+      - type: add-headers
+        config:
+          headers:
+            country: ${conn.client_ip.geo.location.country_code}
+            is-ngrok: "1"
+```
 
-2. In the Traffic Policy module section of your [Edge](https://dashboard.ngrok.com/edges) in the ngrok dashboard, click **Edit Traffic Policy**, then **YAML**, and add the YAML below.
+Apply the updated policy to your Cloud Endpoint:
 
-  ```yaml
-  on_http_request: []
-  on_http_response:
-    - expressions: []
-      name: Add ngrok headers
-      actions:
-        - type: add-headers
-          config:
-            headers:
-              country: ${conn.client_ip.geo.location.country_code}
-              is-ngrok: "1"
-  ```
+```bash
+curl \
+  -X PATCH "https://api.ngrok.com/endpoints/${ENDPOINT_ID}" \
+  -H "Authorization: Bearer ${NGROK_API_KEY}" \
+  -H "Content-Type: application/json" \
+  -H "Ngrok-Version: 2" \
+  --data "$(jq -n \
+    --rawfile policy policy.yaml \
+    '{traffic_policy:$policy}'
+  )"
+```
 
 When you request your API again, the response includes the `country` (with the appropriate code for your request origin) and `is-ngrok` headers.
 
@@ -286,17 +245,69 @@ is-ngrok: 1
 content-length: 63
 ```
 
+### Configure weighted distribution
+
+To route traffic by explicit weight across specific regions—for example, to run A/B tests or shift capacity—update each VM's `ngrok.yml` to use a unique per-region internal domain instead of the shared one:
+
+- NYC VM: `url: https://nyc.internal`
+- Sydney VM: `url: https://sydney.internal`
+- Frankfurt VM: `url: https://frankfurt.internal`
+
+Then create a `policy-weighted.yaml` with a Traffic Policy that uses `set-vars` to select a backend by weight on each request.
+Adjust the `weight` values as needed; the `cumulative_weights` list must be recomputed to match (each entry is the sum of all weights up to and including that index).
+
+```yaml
+on_http_request:
+  - actions:
+      - type: set-vars
+        config:
+          vars:
+            - urls:
+                - weight: 33
+                  url: https://nyc.internal
+                - weight: 33
+                  url: https://sydney.internal
+                - weight: 34
+                  url: https://frankfurt.internal
+            - cumulative_weights: [33, 66, 100]
+            - weighted_chance: ${rand.int(0, 99)}
+            - weighted_index: ${[0, 1, 2].filter(i, vars.cumulative_weights[i] > vars.weighted_chance)[0]}
+            - weighted_url: ${vars.urls[vars.weighted_index].url}
+  - actions:
+      - type: forward-internal
+        config:
+          url: ${vars.weighted_url}
+          on_error: continue
+      - type: custom-response
+        config:
+          status_code: 503
+          body: "No upstream tunnel available."
+```
+
+Apply the weighted policy to your Cloud Endpoint:
+
+```bash
+curl \
+  -X PATCH "https://api.ngrok.com/endpoints/${ENDPOINT_ID}" \
+  -H "Authorization: Bearer ${NGROK_API_KEY}" \
+  -H "Content-Type: application/json" \
+  -H "Ngrok-Version: 2" \
+  --data "$(jq -n \
+    --rawfile policy policy-weighted.yaml \
+    '{traffic_policy:$policy}'
+  )"
+```
+
 ## What's next?
 
-You now have a globally load-balanced API deployment using three DigitalOcean VMs, three ngrok agents, three secure tunnels, one ngrok Edge, and a single convenient endpoint for your users.
+You now have a globally load-balanced API deployment using three DigitalOcean VMs, three ngrok agents, three secure tunnels, and a single convenient endpoint for your users.
 
 From here, you have many options for extending your use of ngrok's GSLB:
 
-- Spread the load from user requests further by creating additional deployments in more regions, adding a new Tunnel Group backend for each, and [patching](/api-reference/weightedbackends/update) your Weighted Backend configuration.
-- Add more VMs to a region with existing deployments and add them to the relevant Tunnel Group backend. 
-	ngrok will then load-balance between those specific VMs equally after weighting requests on the Backend level.
+- Spread the load further by deploying additional VMs in more regions and connecting each agent to `https://gslb-demo.internal`—ngrok will automatically include them in load balancing.
+- Add more VMs in an existing region and connect them to the same internal domain; ngrok will equally distribute traffic among all connected agents for that domain.
 - Provision a Kubernetes cluster with the same workload and the ngrok [Kubernetes Operator](/k8s/) to load-balance between VM- and Kubernetes-based deployments of the same API or application.
-- Use your Weighted Backend for A/B tests by changing your deployments between different regions and VMs.
+- Use the [weighted distribution](#configure-weighted-distribution) Traffic Policy for A/B tests by adjusting weights between regions.
 
 To learn more about ngrok's GSLB, see:
 

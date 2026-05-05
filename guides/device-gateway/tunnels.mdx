@@ -1,0 +1,53 @@
+---
+title: Secure Tunnels for Devices
+sidebarTitle: Secure Tunnels
+description: Learn how ngrok creates outbound-only encrypted tunnels from devices in remote networks to the cloud.
+---
+
+ngrok establishes secure tunnels between devices in remote networks and the ngrok cloud.
+These tunnels allow your devices to be reachable from the internet without opening inbound ports, changing firewall rules, or configuring VPNs.
+
+## How tunnels work
+
+When you run `ngrok http <port>` on a device, the ngrok agent opens an outbound TLS connection on port `443` to the ngrok cloud service.
+ngrok assigns a public URL and routes incoming requests to this url through the encrypted tunnel to the device.
+
+- **Outbound-only connections:** The agent connects outbound on port 443. No firewall changes or port forwarding required on the remote network.
+- **TLS encryption:** All traffic between the ngrok cloud and the agent is encrypted with TLS.
+- **Automatic HTTPS:** ngrok provisions and manages TLS certificates for your endpoints automatically.
+
+## How this differs from a VPN
+
+With a VPN, the network owner at the remote site must configure and maintain a VPN server, open inbound firewall ports, and grant the connecting party access to the entire network segment—not just the service they need.
+Across many customer sites, that's a per-site IT coordination problem that scales badly.
+
+ngrok flips this model.
+The agent at the remote site connects outbound, requiring no firewall changes, no IT coordination at the remote network, and no broad network access.
+Each endpoint exposes exactly one service, so a compromised credential reaches one device, not your customer's entire network.
+
+## Supported protocols
+
+| Protocol | Command | Use case |
+|----------|---------|----------|
+| HTTP/S | `ngrok http <port>` | Web dashboards, REST APIs, webhooks |
+| TLS | `ngrok tls <port>` | TLS passthrough for custom certificates |
+| TCP | `ngrok tcp <port>` | SSH, RDP, databases, industrial protocols |
+
+Your technicians keep using their existing RDP clients, SSH terminals, and thick-client apps.
+Protocols like Modbus and other proprietary protocols work through TCP tunnels.
+
+## One agent per gateway
+
+You don't need an agent on every sensor or controller.
+Run one agent on a single gateway to reach every device on the local network through [internal endpoints](/universal-gateway/internal-endpoints/). See [the Remote Access docs](/guides/device-gateway/remote-access#one-gateway-for-an-entire-network) for a full example.
+
+## Embed tunnels with the SDK
+
+For tighter integration, embed tunnels directly into your software with the [ngrok SDK](/agent-sdks/).
+Ship connectivity inside your product rather than alongside it.
+
+## Next steps
+
+- [Quickstart](/guides/device-gateway/quickstart): create your first device tunnel in minutes
+- [Cloud-to-device](/guides/device-gateway/cloud-to-device): connect cloud services to devices through internal and cloud endpoints
+- [Installation guides](/guides/device-gateway/linux): platform-specific setup for Linux, ARM64, Raspberry Pi, and Windows
