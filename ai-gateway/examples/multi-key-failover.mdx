@@ -1,12 +1,12 @@
 ---
 title: Multi-Key Failover
-description: Configure multiple provider API keys for automatic failover.
+description: Configure multiple provider keys for automatic failover across rate limits and errors.
 ---
 
-Configure multiple provider API keys per provider to automatically failover when keys hit rate limits or encounter errors.
+Configure multiple provider keys per provider to automatically failover when keys hit rate limits or encounter errors. This works with both [attached provider keys](/ai-gateway/guides/attaching-provider-keys) (recommended) and Traffic Policy keys (custom providers only).
 
 <Tip>
-This example uses [Bring Your Own Keys (BYOK)](/ai-gateway/concepts/bring-your-own-keys) with your own provider keys. If you're using [AI Gateway API Keys](/ai-gateway/concepts/api-keys), ngrok manages provider key failover automatically.
+For standard providers (such as OpenAI, Anthropic, and Google), use [attached provider keys](/ai-gateway/guides/attaching-provider-keys): attach multiple keys to your AI Gateway API Key and the most recently attached key is tried first, falling back to older keys on failure. Traffic Policy `api_keys` is deprecated for standard providers.
 </Tip>
 
 ## Basic example
@@ -123,89 +123,6 @@ on_http_request:
             - value: ${secrets.get('openai', 'emergency-key')}
 ```
 
-## Advanced key selection
-
-For smarter key selection based on runtime metrics, use `api_key_selection`:
-
-```yaml
-on_http_request:
-  - type: ai-gateway
-    config:
-      providers:
-        - id: openai
-          api_keys:
-            - value: ${secrets.get('openai', 'key-one')}
-            - value: ${secrets.get('openai', 'key-two')}
-            - value: ${secrets.get('openai', 'key-three')}
-      
-      api_key_selection:
-        strategy:
-          # Prefer keys with remaining quota
-          - "ai.keys.filter(k, k.quota.remaining_requests > 100)"
-          # Fall back to all keys
-          - "ai.keys"
-```
-
-### Quota-aware selection
-
-Route to keys with the most remaining capacity:
-
-```yaml
-api_key_selection:
-  strategy:
-    # Keys with plenty of quota
-    - "ai.keys.filter(k, k.quota.remaining_requests > 500)"
-    # Keys with some quota
-    - "ai.keys.filter(k, k.quota.remaining_requests > 50)"
-    # Fall back to all keys
-    - "ai.keys"
-```
-
-### Error rate-aware selection
-
-Avoid keys that are hitting rate limits:
-
-```yaml
-api_key_selection:
-  strategy:
-    # Keys with low rate limit errors
-    - "ai.keys.filter(k, k.error_rate.rate_limit < 0.05)"
-    # Keys with acceptable overall error rates
-    - "ai.keys.filter(k, k.error_rate.total < 0.2)"
-    # Fall back to all keys
-    - "ai.keys"
-```
-
-### Combined strategy
-
-Use both quota and error rate for optimal selection:
-
-```yaml
-api_key_selection:
-  strategy:
-    # Best keys: high quota AND low errors
-    - "ai.keys.filter(k, k.quota.remaining_requests > 500 && k.error_rate.rate_limit < 0.05)"
-    # Good keys: decent quota
-    - "ai.keys.filter(k, k.quota.remaining_requests > 100)"
-    # Acceptable keys: low errors
-    - "ai.keys.filter(k, k.error_rate.total < 0.3)"
-    # Fall back to all keys
-    - "ai.keys"
-```
-
-### Load distribution
-
-Randomize selection to spread load across keys:
-
-```yaml
-api_key_selection:
-  strategy:
-    # Randomly select from healthy keys
-    - "ai.keys.filter(k, k.quota.remaining_requests > 100).randomize()"
-    # Fall back to any key
-    - "ai.keys.randomize()"
-```
-
 ## Best practices
 
 1. **Use at least 2-3 keys** per provider for reliability
@@ -217,6 +134,6 @@ api_key_selection:
 ## See also
 
 - [Multi-Provider Failover](/ai-gateway/examples/multi-provider-failover) - Failover across providers
-- [Managing Provider API Keys](/ai-gateway/guides/managing-provider-keys) - Key rotation and secrets
-- [Configuring Providers](/ai-gateway/guides/configuring-providers) - Full provider setup
-- [CEL Functions Reference](/ai-gateway/reference/cel-functions#api-key-selection) - Complete API key selection reference
+- [Attaching Provider Keys](/ai-gateway/guides/attaching-provider-keys): Attach and manage provider keys on your AI Gateway API Key
+- [Managing Provider API Keys](/ai-gateway/guides/managing-provider-keys): Key rotation and secrets for custom providers
+- [Configuring Providers](/ai-gateway/guides/configuring-providers): Full provider setup

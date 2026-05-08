@@ -1,0 +1,77 @@
+---
+title: Device Gateway Quickstart
+sidebarTitle: Quickstart
+icon: rocket
+description: Get a device securely reachable from the internet in minutes using the ngrok agent.
+---
+
+This quickstart shows you how to make a service running on a remote device accessible from the internet using ngrok.
+
+## What you'll need
+
+- An [ngrok account](https://dashboard.ngrok.com/signup)
+- A device with network access (Linux, Windows, Raspberry Pi, or any system with a CPU and network connection)
+- A service running on the device (for example, an HTTP server on port 8080 or SSH on port 22)
+
+## 1. Install the ngrok agent
+
+[Download ngrok](https://ngrok.com/download) on your device and authenticate:
+
+```bash
+ngrok config add-authtoken <YOUR_AUTHTOKEN>
+```
+
+## 2. Start a tunnel
+
+Use the following command to start a tunnel with the ngrok agent. When the command runs, the agent reaches the ngrok cloud using a single outbound TLS connection on port 443, creating a secure tunnel to the service on your device. No inbound firewall rules or port forwarding are required on the remote network
+
+<Tabs>
+  <Tab title="HTTP">
+    Expose an HTTP service running on the device.
+    Replace `8080` with any port where your service is running:
+
+    ```bash
+    ngrok http 8080
+    ```
+  </Tab>
+  <Tab title="SSH">
+    Expose SSH access on a remote Linux device:
+
+    ```bash
+    ngrok tcp 22
+    ```
+  </Tab>
+  <Tab title="RDP">
+    Expose RDP access on a remote Windows device:
+
+    ```bash
+    ngrok tcp 3389
+    ```
+  </Tab>
+</Tabs>
+
+## 3. Connect to your device
+
+Copy the public URL from the agent console and use it to reach your device from anywhere.
+
+For HTTP endpoints, open the URL in a browser. For TCP endpoints (like SSH), connect using the provided host and port:
+
+```bash
+ssh -p <PORT> user@<HOST>
+```
+
+## 4. Run ngrok as a service
+
+For production deployments, install ngrok as a background service so it starts automatically and recovers from crashes:
+
+```bash
+ngrok service install --config /path/to/ngrok.yml
+ngrok service start
+```
+
+## Next steps
+
+- [Full walkthrough](/guides/device-gateway/agent): follow a detailed example configuring a smart factory with internal and cloud endpoints
+- [Installation guides](/guides/device-gateway/linux): platform-specific setup for Linux, ARM64, Raspberry Pi, and Windows
+- [Fleet management](/guides/device-gateway/fleet-management): manage credentials and multi-tenancy across thousands of devices
+- [Traffic Policy](/guides/device-gateway/traffic-policy): add authentication, rate limiting, and access control at ngrok's edge
