@@ -34,6 +34,8 @@ The [Traffic Policy](/traffic-policy/) configuration reference for this action.
 
 <ConfigField title="auth_id" type="string" required={false}>
 	Unique authentication identifier for this provider.
+	Used to scope the session cookie and to target this provider in login and logout paths.
+	See [Special paths](#special-paths).
 </ConfigField>
 
 <ConfigField title="client_id" type="string" required={false} cel={true}>
@@ -79,38 +81,48 @@ The [Traffic Policy](/traffic-policy/) configuration reference for this action.
 
 ### Special paths
 
-Upstream applications behind endpoints with this module enabled do not receive
-any requests to paths beginning with `/auth/`. Your application may redirect
-clients to the following paths to invoke different behaviors.
+Requests to paths beginning with `/auth/` are handled by ngrok and are not
+forwarded to your upstream application.
 
-#### `/ngrok/login`
+#### Logging users in
 
-Redirect users to this path to explicitly begin an authentication flow. After 
-authentication, users will be redirected to `/`. If the IdP supports it, ngrok 
-will attempt to instruct the IdP to force re-authentication which will force 
-users to re-enter their credentials with the IdP even if they were already 
-logged in.                                                                                                                                                                                                                                                 |
+To start an OIDC authentication flow explicitly—for example, from a "Log in" button or link—redirect users to `/ngrok/login`.
+After a successful authentication, ngrok redirects the user to `/`.
 
-#### `/ngrok/logout` 
+If you've configured `auth_id` to identify this provider, include it in the URL:
 
-Logs the user out by clearing their session cookie. Redirect users to this path 
-to log them out.<br /><br />**Note:** When using the Google OAuth 2.0/OIDC 
-provider in Chrome with a [managed profile](https://support.google.com/chrome/a/answer/188446), 
-`/ngrok/logout` only clears the ngrok session cookie; it does not end the 
-Google/IdP session maintained by the browser. Users may be silently 
-re-authenticated on the next request. To fully sign out, sign out of 
-Chrome/Google (or use a non-managed profile or Incognito) in addition to 
-calling `/ngrok/logout`.
+```
+/ngrok/login?auth_id=my-provider
+```
+
+If the IdP supports it, ngrok instructs it to force re-authentication—users must re-enter their credentials even if they already have an active IdP session.
+
+#### Logging users out
+
+To end a user's session—for example, from a "Log out" button or link—redirect users to `/ngrok/logout`.
+This clears the ngrok session cookie.
+
+If you've configured `auth_id`, include it in the URL to target the correct provider:
+
+```
+/ngrok/logout?auth_id=my-provider
+```
+
+<Note>
+	When using the Google OAuth 2.0/OIDC provider in Chrome with a [managed profile](https://support.google.com/chrome/a/answer/188446), `/ngrok/logout` only clears the ngrok session cookie; it does not end the Google/IdP session maintained by the browser.
+	Users may be silently re-authenticated on the next request.
+	To fully sign out, sign out of Chrome or Google (or use a non-managed profile or Incognito) in addition to calling `/ngrok/logout`.
+</Note>
 
 ### Events
 
 When this module is enabled, it populates the following fields in the
 [http_request_complete.v0](/obs/events/reference/#http-request-complete) event:
 
-- `oauth.app_client_id` 
-- `oauth.decision`      
-- `oauth.user.id`       
-- `oauth.user.name`     
+- `oauth.app_client_id`
+- `oauth.decision`
+- `oauth.user.id`
+- `oauth.user.name`
 
 ### Supported providers
 
