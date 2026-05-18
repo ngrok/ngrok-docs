@@ -17,27 +17,33 @@ By integrating ngrok with Kinesis, you can:
 ## 1. Obtain Kinesis data stream ARN
 
 For ngrok to send events to Kinesis, a data stream ARN is required.
-To create the AWS Kinesis Data Stream and retrieve the ARN, see the AWS documentation for creating a Kinesis Data Stream.
+To create the AWS Kinesis Data Stream and retrieve the ARN, see the [AWS documentation for creating a Kinesis Data Stream](https://docs.aws.amazon.com/streams/latest/dev/amazon-kinesis-streams.html).
 
 ## 2. Create a log export
 
-- In a browser, go to the ngrok dashboard and navigate to **Events Stream** under **Traffic Observability** in the left navigation.
-- Select **Create Subscription**.
-- In the Log Exporting configuration, provide a description for the export.
-- In the **Sources** tab, select **Add Source** to choose which events to send to Kinesis.
-- Select **Add Event Sources** to confirm your selections.
+- In a browser, go to [**Log Exporting**](https://dashboard.ngrok.com/log-exporting) in the ngrok dashboard.
+- Click **+ New Log Export**.
+- Enter a description in the **Description** field.
+- In the **Sources** tab, click **Add Source** to choose which events to send to Kinesis.
+- Make your selections from the list, then click **Add Event Sources** to confirm.
+
+<Tip>
+To capture traffic events only from specific endpoints or tunnels, add a CEL filter expression when configuring the source.
+For example, to filter by hostname: `ev.conn.server_name == "your-tunnel.ngrok.app"`.
+See [Log Sources filters](/obs/events#filters) for more examples and filter syntax.
+</Tip>
 
 ## 3. Create event destination
 
 To send events to Kinesis, assign an Event Destination to the Log Export.
 
-- In the Log Exporting configuration **Destination** tab, select **Add Destination**.
+- In the **Destinations** tab, click **Add Destination**.
 - Choose AWS Kinesis as the target and fill in the required information:
   - **Stream ARN**
   - **Description** (optional)
 - **Create IAM Role:** An IAM role is required so ngrok can stream logs to Kinesis.
-Using the information from your preferred method (**API** or **CLI Script**), create the IAM role and provide the role ARN.
-For the fastest integration or proof of concept, use the **CLI Script**.
+The dashboard provides two options: download and run the **CLI Script** to create the role automatically (the fastest option), or use the **API** tab's displayed policy JSON to create it manually via the AWS console or tools like Terraform or Pulumi.
+Enter the resulting role ARN to complete the destination setup.
 
 <Note>
 **Security best practice:** If configuring your IAM role manually, ensure that you configure the Trust Policy with a condition that includes the ExternalId.
@@ -45,6 +51,6 @@ This ensures that the only data AWS can ingest is from your ngrok account.
 If you configure the IAM role with the CLI script, this is done automatically.
 </Note>
 
-- When all required inputs have values, select **Send Test Event**.
+- When all required inputs have values, click **Send Test Event**.
 - You should see a Success message.
-- Select **Done** to complete the Kinesis Event Destination setup.
+- Click **Done** to complete the Kinesis Event Destination setup.
