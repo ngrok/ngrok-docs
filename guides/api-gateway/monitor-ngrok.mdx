@@ -43,7 +43,7 @@ In this section, you'll learn the basics of the Traffic Inspector and work throu
 
   The list of recent requests provides you with basic information such as the time, origin, destination, duration, and response code of calls to your API.
 
-  ![Traffic Inspector](./img/monitor-ngrok/trafficInspector.png)
+  ![ngrok Traffic Inspector showing a list of captured HTTP requests with status codes and response times](./img/monitor-ngrok/ngrok-traffic-inspector-request-list.png)
 
 - You can filter requests by these fields—for instance, to show only server error responses and not successes.
 
@@ -51,11 +51,11 @@ To see more details about a request or to replay it, you need to enable full cap
 
 - Click a request in the Traffic Inspector list, then click **Enable full capture** in the sidebar.
 
-  ![Enable full capture](./img/monitor-ngrok/enableFullCapture.png)
+  ![ngrok Traffic Inspector with the Enable Full Capture toggle highlighted](./img/monitor-ngrok/traffic-inspector-enable-full-capture-toggle.png)
 
 - This button takes you to your account settings, where you can enable full capture under **Observability**.
 
-  ![Enable full capture settings](./img/monitor-ngrok/enableFullCaptureAccount.png)
+  ![ngrok account settings page with the Enable Full Capture option enabled](./img/monitor-ngrok/account-settings-enable-full-capture.png)
 
 - Then, return to your published API URL and refresh the browser page a few times to send fresh requests through ngrok.
 - In the ngrok Traffic Inspector, click the event at the top of the list.
@@ -65,11 +65,11 @@ To see more details about a request or to replay it, you need to enable full cap
 
 - Click the **Replay** button and notice that the request is replayed from the ngrok host.
 
-  ![Replay request](./img/monitor-ngrok/replay.png)
+  ![ngrok Traffic Inspector replay button for resending a captured HTTP request](./img/monitor-ngrok/traffic-inspector-replay-request.png)
 
 - You can also replay a request with changes to alter any of the headers or POST data.
 
-  ![Replay with changes](./img/monitor-ngrok/replayChanges2.png)
+  ![ngrok Traffic Inspector replay editor with modified request headers](./img/monitor-ngrok/traffic-inspector-replay-modified-request.png)
 
 Replaying requests is useful for debugging.
 For example, you could find the request that caused an error in your API, deploy a fix for the API, and replay the request to confirm you've fixed the issue.
@@ -92,14 +92,14 @@ Now you can observe what happens to rate-limited requests and also use Traffic I
 
 - In Traffic Inspector, note that ngrok returned the error code `429` (rate limit) and that the duration of the request was instant, meaning it created no load on your API.
 
-  ![Rate limit](./img/monitor-ngrok/rateLimit.png)
+  ![ngrok traffic policy rate limit configuration using a sliding window algorithm on POST and PUT requests](./img/monitor-ngrok/traffic-policy-rate-limit-config.png)
 
 - Edit the `policy.yml` file and change `capacity` to `100` or another threshold you deem appropriate and restart your agent based on your form factor.
 
 - In the Traffic Inspector, click one of the `429` events, then click **Replay**.
   Note that the request now responds without error because you increased the rate limit for the given IP address of that request.
 
-  ![Replay after rate limit adjustment](./img/monitor-ngrok/replayLimit.png)
+  ![ngrok Traffic Inspector replaying a request after adjusting the rate limit policy](./img/monitor-ngrok/traffic-inspector-replay-after-rate-limit.png)
 
 ## Monitor your API gateway traffic with Datadog
 
@@ -110,12 +110,12 @@ For this simple example, you'll monitor a traffic event.
 
 - In the ngrok dashboard, browse to [**Log Exporting**](https://dashboard.ngrok.com/log-exporting) and add a new Log Export.
 
-  ![Add event subscription](./img/monitor-ngrok/makeSubscription.png)
+  ![ngrok dashboard event subscription creation form with destination and description fields](./img/monitor-ngrok/ngrok-event-subscription-create-form.png)
 
 - In the **New Log Export** sidebar, enter `traffic` as the **Description** and then **Add** a new log source.
   Choose `http_request_complete`.
 
-  ![Add log source](./img/monitor-ngrok/addEventType.png)
+  ![ngrok event subscription form adding an HTTP request log source type](./img/monitor-ngrok/ngrok-event-subscription-add-log-source.png)
 
 - Add Datadog as a destination, add the Datadog site and API key you noted earlier, and send a test log.
 
@@ -123,7 +123,7 @@ For this simple example, you'll monitor a traffic event.
   Enable logs.
   You should see that the log from ngrok has appeared.
 
-  ![Datadog logs](./img/monitor-ngrok/datadogLog.png)
+  ![Datadog Log Explorer showing incoming ngrok HTTP request events](./img/monitor-ngrok/datadog-ngrok-event-logs.png)
 
 - In ngrok, click **Done** and **Save**.
 
@@ -136,17 +136,17 @@ Now that events are being sent to Datadog, you can set up visualizations and not
 - In the Datadog site, browse to the **Dashboards > Dashboard List** page from the navigation panel.
   Click the **ngrok HTTP Events** item to view the default dashboard.
 
-  ![Datadog dashboard list](./img/monitor-ngrok/datadogDashboardList.png)
+  ![Datadog dashboard list showing available monitoring dashboards](./img/monitor-ngrok/datadog-dashboard-list.png)
 
 You need to clone the default dashboard to add a new widget to the dashboard.
 
 - Click **Clone** at the top right of the page.
 
-  ![Datadog default dashboard](./img/monitor-ngrok/datadogDefaultDashboard.png)
+  ![Datadog default ngrok monitoring dashboard with request metrics and status code graphs](./img/monitor-ngrok/datadog-default-ngrok-dashboard.png)
 
 - In the cloned dashboard, click **Add widgets**.
 
-  ![Datadog add widget](./img/monitor-ngrok/datadogAddWidget.png)
+  ![Datadog dashboard in edit mode with the add widget panel open](./img/monitor-ngrok/datadog-add-widget-panel.png)
 
 Configure the widget as follows.
 
@@ -155,11 +155,11 @@ Configure the widget as follows.
 - 3. Set the time preference to **Past 1 Hour**.
 - 4. Name the widget `Errors in the last hour`.
 
-  ![Datadog edit widget](./img/monitor-ngrok/datadogWidgetDetails.png)
+  ![Datadog widget editor showing query configuration for graphing ngrok request metrics](./img/monitor-ngrok/datadog-widget-query-editor.png)
 
 Your new widget will be available in the dashboard, allowing your support staff to see instantly whether any errors have occurred in your API.
 
-![Datadog custom dashboard](./img/monitor-ngrok/datadogCustomDashboard.png)
+![Datadog custom dashboard displaying ngrok request rates and error metrics](./img/monitor-ngrok/datadog-custom-ngrok-dashboard.png)
 
 Since the sample API never returns errors, an easy way to test the `Errors in the last hour` widget is to stop the sample API Docker container and then try to browse to the site on the public ngrok endpoint.
 
@@ -175,12 +175,12 @@ For production workloads, consider using email, Slack, mobile push notifications
 
 - In Datadog, browse to **Integrations > Add integration > Webhooks**.
 
-  ![Datadog add integration](./img/monitor-ngrok/datadogAddIntegration.png)
+  ![Datadog webhook integration settings page for forwarding ngrok events](./img/monitor-ngrok/datadog-add-webhook-integration.png)
 
 - Under **Webhooks**, at the bottom of the configuration page, click **New**.
   Set the **Name** to `ntfy`, the **URL** to `https://ntfy.sh/$YOUR_COMPANY`, and the **Payload** to **Blank**. Click **Save**.
 
-  ![Datadog add webhook](./img/monitor-ngrok/datadogAddWebhook.png)
+  ![Datadog webhook configuration form with URL and name fields for ngrok event delivery](./img/monitor-ngrok/datadog-webhook-url-configuration.png)
 
 - In the Datadog navigation panel, browse to the **Monitors > New monitor**. Choose **Logs**.
 
@@ -190,7 +190,7 @@ For production workloads, consider using email, Slack, mobile push notifications
   @webhook-ntfy Your API has errors. Investigate at https://app.datadoghq.eu/dashboard.
   ```
 
-  ![Datadog add webhook](./img/monitor-ngrok/datadogConfigureMonitor.png)
+  ![Datadog Logs monitor configuration with an HTTP 500 status code query and notification message](./img/monitor-ngrok/datadog-logs-monitor-http500-configuration.png)
 
   It's important that the `@webhook` name matches the webhook integration you created earlier.
   If the names don't match, the notification won't arrive.
@@ -202,7 +202,7 @@ For production workloads, consider using email, Slack, mobile push notifications
 - Notice that the alert appears on the ntfy page.
   You can install ntfy as a mobile app so that you are always aware of whether your API has errors.
 
-  ![Datadog notify](./img/monitor-ngrok/datadogNotify.png)
+  ![Datadog monitor notification settings showing a webhook notification channel](./img/monitor-ngrok/datadog-monitor-notification-settings.png)
 
 - Save the monitor.
   Now, after a delay and once you've refreshed the ngrok endpoint for your API, you will receive a notification if an error occurs.
