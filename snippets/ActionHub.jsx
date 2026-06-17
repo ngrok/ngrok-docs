@@ -268,8 +268,10 @@ const Protocols = {
 	// Sort actions alphabetically by type
 	const sortedFilteredActions = filteredActions.sort((a, b) => a.type.localeCompare(b.type));
 
+	// Reserve vertical space to prevent CLS on page load.
+	// 3000px covers ~26 action cards in a 2-column grid.
 	return (
-		<>
+		<div style={{ minHeight: 3000 }}>
 			<div className="mb-4 flex flex-wrap justify-between place-items-end gap-4">
 				<div className="relative max-w-64">
 					<input
@@ -367,6 +369,6 @@ const Protocols = {
 					</div>
 				</div>
 			)}
-		</>
+		</div>
 	);
 };
