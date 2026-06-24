@@ -64,9 +64,9 @@ Pages will not be automatically added to the sidebar. You'll need to edit the `"
 
 In general, find the `"pages"` array of the nav section you want to add your page to, and put the path to your page there.
 
-To add `/example/page1.mdx` to the Universal Gateway sidebar:
+To add `/example/page1.mdx` to the Gateway sidebar:
 
-1. Search for `"item": "Universal Gateway"`
+1. Search for `"item": "Gateway"`
 2. Add the path to the `"pages"` array there, excluding the file extension and leading slash: `"example/page1"`.
 
 ## Metadata and frontmatter
