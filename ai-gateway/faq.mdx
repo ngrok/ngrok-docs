@@ -4,61 +4,65 @@ icon: circle-question
 description: Frequently asked questions about AI Gateway.
 ---
 
-## AI Gateway API Keys
+## Access keys
 
-### What are AI Gateway API Keys?
+### What are access keys?
 
-AI Gateway API Keys are keys you create to authenticate requests to your AI Gateway. When you use one, ngrok handles the provider API keys for you—you don't need accounts with OpenAI or Anthropic. See [AI Gateway API Keys](/ai-gateway/concepts/api-keys) for details.
-
----
-
-### How are AI Gateway API Keys different from ngrok API keys?
-
-**AI Gateway API Keys** authenticate requests to AI Gateway endpoints—they're used by your application to make AI requests. **ngrok API Keys** authenticate to the ngrok management API (`api.ngrok.com`)—they're used for managing ngrok resources like endpoints, domains, and secrets.
+Access keys authenticate requests to `https://gateway.ngrok.ai`. When you use one with built-in OpenAI or Anthropic providers, the AI Gateway can supply upstream credentials—you aren't required to have your own provider account or provider API keys. See [Access keys](/ai-gateway/concepts/api-keys).
 
 ---
 
-### Can I create multiple AI Gateway API Keys?
+### How are access keys different from ngrok API keys?
+
+**Access keys** authenticate your app's LLM requests to `gateway.ngrok.ai`. **ngrok API keys** authenticate to the ngrok platform API (`api.ngrok.com`) for managing tunnels, domains, and other ngrok resources. **AI Gateway API keys** authenticate to the AI Gateway API at `api.ngrok.ai` (`/access-keys`, `/provider-keys`, etc.) for automation.
+
+---
+
+### Can I create multiple access keys?
 
 Yes. Create separate keys for each client or application. This enables independent revocation and per-client usage tracking.
 
 ---
 
-### What happens if I lose my API key?
+### What happens if I lose my access key?
 
 The token is only shown once at creation time. If you lose it, delete the old key and create a new one.
 
 ---
 
-### Are AI Gateway API Keys scoped to specific endpoints?
+### Are access keys scoped to endpoints?
 
-Yes. Each key is scoped to a specific AI Gateway endpoint via the required `endpoint_id` field. A key can only be used with the endpoint it was created for.
+No. Access keys are account-scoped and work with `https://gateway.ngrok.ai`. You do not need a custom endpoint URL.
 
 ---
 
-### Which providers work with AI Gateway API Keys?
+### Which providers work with access keys?
 
-Currently, OpenAI and Anthropic are supported with ngrok-managed keys. For other providers (such Google or DeepSeek), [attach your own provider keys](/ai-gateway/guides/attaching-provider-keys).
+OpenAI and Anthropic support ngrok.ai inference without a provider key. For other built-in providers (such as Google or DeepSeek), add a provider key in app.ngrok.ai to bring your own key. See [Attaching provider keys](/ai-gateway/guides/attaching-provider-keys).
 
 ---
 
 ## Credits & billing
 
-### Which plans support AI Gateway?
+### Do I need a ngrok subscription plan?
 
-AI Gateway requires the **Pay-as-you-go** plan. Free and Hobbyist plans cannot use it.
+No—not to use the AI Gateway itself. Sign in at [app.ngrok.ai](https://app.ngrok.ai), purchase AI Gateway credits, and send traffic to `https://gateway.ngrok.ai`.
+
+If you want ngrok platform features on the same account—team members, or internal endpoints for [custom providers](/ai-gateway/concepts/custom-providers)—manage those through [dashboard.ngrok.com](https://dashboard.ngrok.com). That typically requires a plan such as [Pay-as-you-go](https://ngrok.com/pricing). See [Credits](/ai-gateway/concepts/credits).
 
 ---
 
 ### What are AI Gateway credits?
 
-AI Gateway credits are a prepaid balance that funds AI Gateway API Key usage. Credits cover both the processing fee and upstream provider costs. BYOK does not require credits—you pay providers directly. See [Credits](/ai-gateway/concepts/credits).
+AI Gateway credits are a prepaid balance you purchase in [app.ngrok.ai](https://app.ngrok.ai). They are separate from billing on [dashboard.ngrok.com](https://dashboard.ngrok.com).
+
+Every request consumes credits for the AI Gateway's processing fee. When the AI Gateway supplies the upstream key (OpenAI and Anthropic), credits also cover model cost. With [provider keys](/ai-gateway/guides/attaching-provider-keys), upstream costs go to your provider—credits still cover the processing fee. See [Credits](/ai-gateway/concepts/credits).
 
 ---
 
 ### What's the minimum credit purchase?
 
-$5.00. [Purchase credits](https://dashboard.ngrok.com/ai-gateways/credit/add) directly from the dashboard.
+$5.00. Purchase credits from the [Credits page](https://app.ngrok.ai/credits).
 
 ---
 
@@ -70,15 +74,17 @@ Yes. Credits expire **365 days** after purchase.
 
 ### What happens when credits run out?
 
-AI Gateway API Key requests stop working. Clients receive HTTP 403 with error [`ERR_NGROK_4026`](/errors/err_ngrok_4026). BYOK requests are not affected. [Purchase more credits](https://dashboard.ngrok.com/ai-gateways/credit/add) to restore access.
+The gateway rejects new requests until you purchase more credits from the [Credits page](https://app.ngrok.ai/credits).
 
 ---
 
 ## General
 
-### Does ngrok provide AI provider API keys?
+### Does ngrok.ai provide AI provider API keys?
 
-Yes. When you use [AI Gateway API Keys](/ai-gateway/concepts/api-keys), ngrok manages the provider keys for you—no provider accounts needed. Currently supported for OpenAI and Anthropic. For other providers, [attach your own provider keys](/ai-gateway/guides/attaching-provider-keys).
+No. ngrok.ai does not provision or hand out provider API keys. However, with an [access key](/ai-gateway/concepts/api-keys) and [credits](/ai-gateway/concepts/credits), you can use certain built-in providers (OpenAI and Anthropic) directly through us without needing your own provider account or provider API keys. 
+
+Those providers' charges are deducted from your AI Gateway credits, on top of the gateway's processing fee. For other providers, you must bring your own  provider API keys.
 
 ---
 
@@ -86,43 +92,14 @@ Yes. When you use [AI Gateway API Keys](/ai-gateway/concepts/api-keys), ngrok ma
 
 ### Why am I getting "provider not allowed"?
 
-This error occurs when `only_allow_configured_providers: true` is set and you're trying to use a provider that isn't explicitly configured.
-
-**Solution:**
-
-```yaml
-only_allow_configured_providers: true
-providers:
-  - id: openai      # Add your provider here
-    api_keys:
-      - value: ${secrets.get('openai', 'key')}
-```
-
-Or set `only_allow_configured_providers: false` to allow all providers.
+The provider falls outside the access scope of the access key's [configuration](/ai-gateway/guides/access-key-configurations). Add the provider to the configuration's allowed providers, or send the request with an access key whose configuration allows it. See [Error Codes](/ai-gateway/reference/error-codes).
 
 ---
 
 ### Why am I getting "model unknown"?
 
-This error can occur for several reasons:
+Either the model falls outside the configuration's access scope, or it's a non-catalog model sent without a provider prefix. Add the model to your [access key configuration](/ai-gateway/guides/access-key-configurations)'s allowed models, or prefix unknown models with their provider:
 
-1. **Model restrictions enabled** - `only_allow_configured_models: true` is set and the model isn't explicitly listed
-2. **Missing provider prefix** - For unknown models (not in catalog), you must include a provider prefix like `openai:new-model`
-3. **Provider not configured** - The provider for the unknown model isn't configured or allowed
-
-**Solutions:**
-
-Add the model to your configuration:
-```yaml
-only_allow_configured_models: true
-providers:
-  - id: openai
-    models:
-      - id: "gpt-4o"      # Add your model here
-      - id: "gpt-4o-mini"
-```
-
-Or use a provider prefix for unknown models:
 ```json
 {
   "model": "openai:gpt-5-preview",
@@ -130,21 +107,11 @@ Or use a provider prefix for unknown models:
 }
 ```
 
-Or set `only_allow_configured_models: false` to allow all models.
-
 ---
 
 ### How do I limit which models users can access?
 
-Use model restrictions:
-
-```yaml
-only_allow_configured_models: true
-providers:
-  - id: openai
-    models:
-      - id: "gpt-4o-mini"  # Only allow specific models
-```
+Set the access scope on the access key's [configuration](/ai-gateway/guides/access-key-configurations) to allow only the models you want. See [Create a configuration](/ai-gateway/guides/access-key-configurations#create-a-configuration).
 
 ---
 
@@ -156,7 +123,7 @@ Yes:
 import { createOpenAI } from "@ai-sdk/openai"
 
 const openai = createOpenAI({
-  baseURL: "https://your-ai-gateway.ngrok.app/v1",
+  baseURL: "https://gateway.ngrok.ai/v1",
 })
 ```
 
@@ -186,25 +153,13 @@ See [Error Handling](/ai-gateway/guides/error-handling) for details.
 
 ### How long does the gateway try before giving up?
 
-Controlled by `total_timeout` (default: 6 minutes):
-
-```yaml
-total_timeout: "3m"  # Allow up to 3 minutes for all attempts
-```
+Set the **Total timeout** in [Account Settings](/ai-gateway/guides/account-settings). It caps the time spent across all failover attempts for a request.
 
 ---
 
 ### Can I disable automatic failover?
 
-Not directly, but you can limit the attempts by:
-- Configuring only one API key per provider
-- Having clients specify a single model
-- Setting short timeouts:
-
-```yaml
-per_request_timeout: "5s"
-total_timeout: "10s"
-```
+Not directly, but you can narrow the candidates: attach a single provider key per provider, have clients request a single model, and set short timeouts in [Account Settings](/ai-gateway/guides/account-settings).
 
 ---
 
@@ -215,7 +170,7 @@ Yes, if the client specifies multiple models that span different providers:
 1. Using the `models` array: `"models": ["openai:gpt-4o", "anthropic:claude-3-5-sonnet-20241022"]`
 2. Or using just the model name (like `"model": "gpt-4o"`) when selection strategies return candidates from multiple providers
 
-The gateway automatically tries alternative providers when the primary fails. You can also specify fallback models in the request body:
+The gateway automatically tries alternative providers when the primary fails. Specify fallback models in the request body:
 
 ```json
 {
@@ -231,37 +186,33 @@ The gateway automatically tries alternative providers when the primary fails. Yo
 
 ### What's the easiest way to authenticate requests?
 
-Use [AI Gateway API Keys](/ai-gateway/concepts/api-keys). Create a key, use it in your SDK—authorization is built-in—no Traffic Policy configuration needed. See [Securing Your Gateway](/ai-gateway/guides/securing-endpoints).
+Send an [access key](/ai-gateway/concepts/api-keys) with every request. The AI Gateway supplies the upstream provider credentials server-side. See [Securing Your Gateway](/ai-gateway/guides/securing-endpoints).
 
 ---
 
 ### Do I need to configure provider API keys in the gateway?
 
-Not if you're using AI Gateway API Keys—ngrok handles provider keys for you. If you want to use your own provider keys, [attach them to your AI Gateway API Key](/ai-gateway/guides/attaching-provider-keys)—no Traffic Policy configuration needed.
+Every request uses an [access key](/ai-gateway/concepts/api-keys). For built-in OpenAI and Anthropic, ngrok.ai inference works with [credits](/ai-gateway/concepts/credits) and no stored provider keys. For other providers—or to use your own OpenAI/Anthropic accounts—store [provider keys](/ai-gateway/guides/attaching-provider-keys) and attach them in an [access key configuration](/ai-gateway/guides/access-key-configurations).
 
 ---
 
 ### How do I secure my gateway when using my own provider keys?
 
-With [attached provider keys](/ai-gateway/guides/attaching-provider-keys), your endpoint is already secured—clients must present a valid AI Gateway API Key. No additional authorization layer needed.
-
-If you configure provider keys directly in Traffic Policy (required only for custom or self-hosted providers), the endpoint becomes publicly accessible and you must add your own authorization layer. See [Securing Endpoints](/ai-gateway/guides/protecting-byok-endpoints) for complete examples.
+Every request to `https://gateway.ngrok.ai` presents a valid access key. The AI Gateway stores provider keys in app.ngrok.ai and injects them server-side, so they stay out of your client code. See [Securing Your Gateway](/ai-gateway/guides/securing-endpoints).
 
 ---
 
 ### Can I use different keys for different teams?
 
-Yes. Create separate [AI Gateway API Keys](/ai-gateway/concepts/api-keys) for each team or client. Each key has its own description, metadata, and `last_used` tracking.
-
-Each AI Gateway API Key can have its own set of attached provider keys, so teams can use isolated provider accounts without sharing credentials.
+Yes. Create separate [access keys](/ai-gateway/concepts/api-keys) for each team or client. Assign different [configurations](/ai-gateway/guides/access-key-configurations) to scope providers, models, and credentials per team.
 
 ---
 
 ### How do I rotate API keys?
 
-**AI Gateway API Keys**: Delete the old key and create a new one. Update your clients with the new key.
+**Access keys**: Delete the old key and create a new one. Update your clients.
 
-**Attached provider keys**: Attach the new key, confirm it's working, then delete the old one—no redeployment needed. See [Attaching Provider Keys](/ai-gateway/guides/attaching-provider-keys#rotating-attached-keys) for details.
+**Provider keys**: Add the replacement, update the configuration routing rule, verify traffic, then delete the old key. See [Provider Keys](/ai-gateway/guides/attaching-provider-keys#rotating-provider-keys).
 
 ---
 
@@ -269,7 +220,7 @@ Each AI Gateway API Key can have its own set of attached provider keys, so teams
 
 ### Does the gateway add latency?
 
-Yes, minimal overhead (~10-15ms) for parsing, token counting, and routing.
+Yes, a small amount for parsing, token counting, and routing—typically ~10-15ms, though it varies with your region and network path to the gateway.
 
 Provider response time dominates total latency.
 
@@ -279,13 +230,13 @@ Provider response time dominates total latency.
 
 Using **tiktoken** (OpenAI's tokenizer) for estimation, with provider-reported counts used when available.
 
-Token counts are available in metrics and event destinations.
+Token counts appear in [usage events](/ai-gateway/observability#usage-api).
 
 ---
 
 ### Does the gateway charge for token usage?
 
-When using [AI Gateway API Keys](/ai-gateway/concepts/api-keys), usage is deducted from your [prepaid credits](/ai-gateway/concepts/credits). Credits cover both ngrok's processing fee and the upstream provider cost (ngrok pays OpenAI/Anthropic on your behalf). When using BYOK, there are no credit charges—you pay providers directly.
+Every request through the gateway consumes [credits](/ai-gateway/concepts/credits). Credits cover the AI Gateway's processing fee on each request. When the AI Gateway supplies the upstream key (OpenAI and Anthropic), credits also cover model cost. With [provider keys](/ai-gateway/guides/attaching-provider-keys), upstream costs go to your provider accounts.
 
 ---
 
@@ -299,44 +250,25 @@ Currently no. Caching may be added in future versions.
 
 ### Is my data stored by ngrok?
 
-No, unless Traffic Inspector is enabled. By default:
+The AI Gateway doesn't retain your full request and response bodies—they're processed in memory. It does store some request details for usage events and debugging:
 
-- Request/response bodies processed in-memory only
-- Data immediately discarded after processing
-- Only metadata (token counts, latencies) retained
-
-See [Traffic Inspector](/ai-gateway/observability/traffic-inspector) for details.
+- Request and response bodies are processed in memory, not persisted by default.
+- The AI Gateway records request details such as token counts, latencies, and other metadata for usage events and debugging.
 
 ---
 
 ### Can I use the gateway for sensitive data?
 
-Yes, with considerations:
+Yes, with a few considerations:
 
-- Disable Traffic Inspector in production
-- Review your compliance requirements
-- Understand that data still goes to AI providers
+- Review your compliance requirements.
+- Remember that requests still reach your upstream AI providers.
 
 ---
 
 ### How do I redact PII automatically?
 
-Use Traffic Policy's find-and-replace actions before the AI Gateway action:
-
-```yaml
-on_http_request:
-  - actions:
-      - type: request-body-find-replace
-        config:
-          replacements:
-            - from: "\\b\\d{3}-\\d{2}-\\d{4}\\b"  # SSN pattern
-              to: "[REDACTED]"
-      - type: ai-gateway
-        config:
-          # …
-```
-
-For streaming responses, use `sse-find-replace` in `on_event_stream_message`. See [Modifying Requests](/ai-gateway/guides/modifying-requests) and [Modifying Responses](/ai-gateway/guides/modifying-responses) for details.
+Automatic request and response modification isn't available on `https://gateway.ngrok.ai` today. Redact or transform sensitive data in your application before sending it to the gateway.
 
 ---
 
@@ -362,54 +294,21 @@ Plus any self-hosted OpenAI or Anthropic Claude API compatible endpoint. See the
 
 ### Can I use self-hosted models?
 
-Yes, you can configure a custom provider:
-
-```yaml
-providers:
-  - id: ollama
-    base_url: "https://ollama.internal"
-    models:
-      - id: "llama3"
-```
-
-See [Custom Providers](/ai-gateway/concepts/custom-providers) for details.
+Yes. See [Create a custom provider](/ai-gateway/concepts/custom-providers#create-a-custom-provider).
 
 ---
 
 ### How do I know which models are available?
 
-Built-in providers have pre-configured model catalogs. For custom providers, you must specify models manually.
-
----
-
-### What is `ngrok/auto`?
-
-`ngrok/auto` is a special model name that tells the gateway to choose the model based on your [model selection strategy](/ai-gateway/guides/model-selection-strategies):
-
-```json
-{
-  "model": "ngrok/auto",
-  "messages": [{"role": "user", "content": "Hello"}]
-}
-```
-
-This is equivalent to omitting the model field. Use it when you want the gateway to select the best model based on latency, cost, or other criteria you've configured.
+Built-in providers are listed in the [model catalog](/ai-gateway/reference/model-catalog). Custom providers declare models when you create them.
 
 ---
 
 ### Can clients use models not in the catalog?
 
-Yes, if a client includes a provider prefix (like `openai:new-model`), the gateway passes the request through to that provider even if the model isn't in the catalog. This lets clients use new models immediately.
+Yes, if the client includes a provider prefix (like `openai:new-model`), the gateway passes the request through when the provider is allowed by the access key's configuration.
 
-To restrict this behavior, use a model selection strategy:
-
-```yaml
-model_selection:
-  strategy:
-    - "ai.models.filter(m, m.known)"  # Only allow catalog models
-```
-
-The `m.known` field is `false` for pass-through models not in the catalog.
+To restrict to catalog models only, set an allowlist in the [access key configuration](/ai-gateway/guides/access-key-configurations).
 
 ---
 
@@ -417,9 +316,9 @@ The `m.known` field is `false` for pass-through models not in the catalog.
 
 Ensure:
 
-1. Your endpoint is OpenAI or Anthropic Claude API compatible
-2. The model name is configured correctly
-3. Authentication is set up
+1. The upstream is OpenAI or Anthropic Claude API compatible
+2. The custom provider is created with the correct model IDs and base URL
+3. The access key's configuration allows the provider and has routing credentials attached
 4. The endpoint is reachable from ngrok
 
 ---
@@ -428,34 +327,25 @@ Ensure:
 
 ### How do I view request metrics?
 
-View in the ngrok dashboard:
-
-1. Navigate to your AI Gateway endpoint
-2. Click "Metrics" tab
-
-Or export to external systems via [Log Exporting](/ai-gateway/observability/log-exporting).
+Query usage with the AI Gateway API, or check the **Usage** page in app.ngrok.ai when available. See [Observability](/ai-gateway/observability).
 
 ---
 
 ### Why are my requests failing silently?
 
-Check:
-
-1. Traffic Inspector (if enabled) for error details
-2. Event destinations for error logs
-3. Provider-level error metrics
+Start with the error code and message in the response body, then review usage in [Observability](/ai-gateway/observability) and confirm your [access key configuration](/ai-gateway/guides/access-key-configurations) allows the provider and model you requested. See [Debugging](/ai-gateway/guides/debugging) and [Error Codes](/ai-gateway/reference/error-codes).
 
 ---
 
 ### How do I debug which provider was used?
 
-Enable event destinations at the endpoint level to stream detailed request logs. Configure event destinations in your ngrok endpoint configuration (not in the ai-gateway action config).
+View [usage events](/ai-gateway/observability#usage-api) in [app.ngrok.ai](https://app.ngrok.ai) or query them with the AI Gateway API. Per-provider and retry detail in usage events is on the [roadmap](/ai-gateway/observability#roadmap).
 
 ---
 
 ### Can I see individual request/response bodies?
 
-Yes, enable Traffic Inspector in development (not recommended for production with sensitive data).
+The AI Gateway records usage metadata such as token counts—not full request or response bodies. See [Observability](/ai-gateway/observability) for what's captured.
 
 ---
 
@@ -463,62 +353,31 @@ Yes, enable Traffic Inspector in development (not recommended for production wit
 
 ### Can I implement custom routing logic?
 
-Yes, using CEL expressions in model selection strategies:
+Use [access key configurations](/ai-gateway/guides/access-key-configurations) to set provider and model allowlists and routing rules per access key. Use the `models` array in requests for failover between models.
 
-```yaml
-model_selection:
-  strategy:
-    - "ai.models.filter(m, m.metrics.global.latency.upstream_ms_avg < 1000)"
-    - "ai.models.random()"
-```
-
-See [Model Selection Strategies](/ai-gateway/guides/model-selection-strategies).
+See [Model selection](/ai-gateway/guides/model-selection-strategies).
 
 ---
 
 ### How do I prioritize certain models or providers?
 
-Use selection strategies to define preference order:
+List models in preference order in the request body:
 
-```yaml
-model_selection:
-  strategy:
-    - "ai.models.filter(m, m.provider_id == 'openai')"
-    - "ai.models.filter(m, m.provider_id == 'anthropic')"
-    - "ai.models"
+```json
+{
+  "model": "openai:gpt-4o",
+  "models": ["anthropic:claude-sonnet-4-6"],
+  "messages": [{"role": "user", "content": "Hello"}]
+}
 ```
 
-The first strategy that returns models wins. If OpenAI models exist, only those are tried. Anthropic is only considered if no OpenAI models match.
-
-<Note>
-Strategies control which models are considered, not failover order. For cross-provider failover when requests fail, have clients specify multiple models: `models: ["openai:gpt-4o", "anthropic:claude-3-5-sonnet-20241022"]`.
-</Note>
-
-See [Model Selection Strategies](/ai-gateway/guides/model-selection-strategies).
+Or create separate access keys with different configurations for different clients.
 
 ---
 
 ### Can I route based on request content?
 
-Model selection is based on model/provider, but you can use Traffic Policy expressions to route different requests to different configurations:
-
-```yaml
-on_http_request:
-  - expressions:
-      - req.headers['x-priority'][0] == 'high'
-    actions:
-      - type: ai-gateway
-        config:
-          model_selection:
-            strategy:
-              - "ai.models.filter(m, m.provider_id == 'openai')"
-  - actions:
-      - type: ai-gateway
-        config:
-          # Default configuration
-```
-
-You cannot currently route based on the message content itself.
+Not at the gateway layer today. Use separate access keys and configurations per client or route in your application before calling the gateway.
 
 ---
 
@@ -532,12 +391,7 @@ Yes, streaming is fully supported. The gateway forwards SSE streams transparentl
 
 ### The gateway is timing out
 
-Increase timeout values:
-
-```yaml
-per_request_timeout: "60s"
-total_timeout: "5m"
-```
+Increase timeouts in [Account Settings](/ai-gateway/guides/account-settings).
 
 Or check provider health metrics.
 
@@ -545,17 +399,7 @@ Or check provider health metrics.
 
 ### I'm getting rate limited even with multiple keys
 
-Ensure keys are properly configured with multiple keys for automatic failover:
-
-```yaml
-providers:
-  - id: openai
-    api_keys:
-      - value: ${secrets.get('openai', 'key-one')}
-      - value: ${secrets.get('openai', 'key-two')}
-```
-
-Keys are tried in order when the previous key fails.
+[Add multiple provider keys](/ai-gateway/guides/attaching-provider-keys#add-a-provider-key) for the provider and attach them in your [access key configuration](/ai-gateway/guides/access-key-configurations). The gateway tries them in order when one fails. See [Key selection and failover](/ai-gateway/guides/key-selection-failover).
 
 ---
 
@@ -594,6 +438,6 @@ For **model selection failover**:
 ## See also
 
 - [Quickstart](/ai-gateway/quickstart) - Get started quickly
-- [Configuration Schema](/ai-gateway/reference/configuration-schema) - All configuration options
+- [How It Works](/ai-gateway/how-it-works) - Request flow and failover
 - [Error Handling](/ai-gateway/guides/error-handling) - Understanding failures
 - [Examples](/ai-gateway/examples/multi-key-failover) - Common use cases
