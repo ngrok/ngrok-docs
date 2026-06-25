@@ -98,6 +98,31 @@ status:
       value: abc123.def456.ngrok-cname.com
 ```
 
+## Wait for the TLS certificate to provision
+
+Once you've reserved a custom domain and pointed your CNAME at the value above, ngrok provisions a TLS certificate from an ACME provider such as Let's Encrypt.
+This typically completes within a few minutes after your CNAME is resolvable, but DNS propagation or a slow DNS challenge can push it longer.
+
+While the certificate is still being provisioned, ngrok terminates HTTPS with a default ngrok wildcard certificate that does **not** match your custom hostname.
+If you send traffic to your endpoint over HTTPS during this window, clients will see a certificate name-mismatch warning (for example, `NET::ERR_CERT_COMMON_NAME_INVALID` in Chrome).
+This is expected during provisioning and clears as soon as the certificate is issued.
+
+The Domain CRD surfaces provisioning state through its [status conditions](/k8s/crds/domain#status-fields).
+Check `CertificateReady`, `DNSConfigured`, and `Progressing` to see whether the certificate is still being issued or blocked on a DNS configuration error:
+
+```shell
+kubectl get domain <name> -o jsonpath='{.status.conditions}'
+```
+
+You can also watch for the domain to become ready:
+
+```shell
+kubectl wait --for=condition=Ready domain/<name> --timeout=10m
+```
+
+If `CertificateReady` stays `False` with reason `ProvisioningError`, recheck the CNAME records you configured against the `status.cnameTarget` value on the domain.
+For wildcard custom domains, both CNAME records described in [TLS certificate provisioning](/gateway/tls-certificates/#wildcard-domains) must exist before the certificate can be issued.
+
 ## Externally managed
 
 Domains can also be created in the dashboard, or via the ngrok API or Terraform provider.

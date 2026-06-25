@@ -64,12 +64,19 @@ ngrok is a [Let's Encrypt sponsor](https://letsencrypt.org/sponsors/).
 
 ### Status
 
-TLS certificates are provisioned asynchronously. Depending on the speed of the
-ACME certificate authority, it can take anywhere between a few seconds to 10
-minutes for your certificate to be provisioned. The domain's
-`certificate_management_status` field on the [TLS Certificate API
-Resource](/api-reference/tlscertificates/list/) contains the status of the
-provisioning job.
+TLS certificates are provisioned asynchronously.
+Depending on DNS propagation and the speed of the ACME certificate authority, provisioning typically takes from a few seconds up to several minutes, and occasionally longer if a DNS challenge is slow to validate.
+The domain's `certificate_management_status` field on the [Reserved Domain API Resource](/api-reference/reserveddomains/get) contains the status of the provisioning job, including the current job state, the time it started, and when ngrok will next retry if it has hit a recoverable error.
+
+You can also see this status on the [Domains page](https://dashboard.ngrok.com/domains) of your dashboard.
+
+### Expected behavior while a certificate is provisioning
+
+While a certificate is still being provisioned, ngrok terminates HTTPS connections to the domain using a default ngrok wildcard certificate.
+Because that certificate is not issued for your hostname, browsers and other TLS clients will show a certificate name-mismatch warning (for example, `NET::ERR_CERT_COMMON_NAME_INVALID` in Chrome) if they connect to your endpoint before provisioning finishes.
+
+This is expected, and clears automatically as soon as the certificate is issued — usually within a few minutes.
+If the warning persists, check `certificate_management_status.provisioning_job` on the reserved domain (or the cert status panel on the dashboard) to see whether the job is still in progress or has hit an error that requires action, such as a missing or misconfigured CNAME record.
 
 ### Bring your own domain
 
