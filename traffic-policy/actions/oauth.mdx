@@ -5,8 +5,9 @@ description: The OAuth action restricts access to only authorized users by enfor
 ---
 
 import CustomProviders from "/snippets/traffic-policy/actions/oauth/examples/custom-providers.mdx";
+import ManagedProvider from "/snippets/traffic-policy/actions/oauth/managed-provider.mdx";
 import NonTerminatingExplanation from "/snippets/traffic-policy/common/non-terminating-explanation.mdx";
-import TrafficIdentities from "/snippets/universal-gateway/shared/traffic-identities.mdx"
+import TrafficIdentities from "/snippets/gateway/shared/traffic-identities.mdx"
 import { ConfigField } from "/snippets/ConfigTable.jsx";
 import { ConfigChildren } from "/snippets/ConfigChildren.jsx";
 import ActionVariablesDescription from "/snippets/traffic-policy/common/action-variables-description.mdx";
@@ -41,12 +42,8 @@ The [Traffic Policy](/traffic-policy/) configuration reference for this action.
 
 <ConfigField title="auth_id" type="string" required={false}>
 	Unique authentication identifier for this provider.
-	This value is used for the cookie, redirect, authentication, and logout purposes.
-
-	<Note>
-		To log in a user you must use `/ngrok/login?auth_id={auth_id}`.
-		If you're using path-based auth you must include the path to be redirected back to: `?redirect_path=/foo`
-	</Note>
+	Used to scope the session cookie and to target this provider in login and logout paths.
+	See [Special paths](#special-paths).
 </ConfigField>
 
 <ConfigField title="client_id" type="string" required={false} cel={true}>
@@ -94,21 +91,40 @@ The [Traffic Policy](/traffic-policy/) configuration reference for this action.
 
 ### Special paths
 
-#### `/ngrok/login`
+#### Logging users in
 
-Redirect users to this path to explicitly begin an authentication flow.
-After authentication, users will be redirected to `/`.
-If the IdP supports it, ngrok will attempt to instruct the IdP to force re-authentication which will force users to re-enter their credentials with the IdP even if they were already logged in.
+To start an OAuth authentication flow explicitly—for example, from a "Log in" button or link—redirect users to `/ngrok/login`.
+After a successful authentication, ngrok redirects the user to `/`.
 
-#### `/ngrok/logout`
+To send the user to a specific path after login, include the `redirect_path` parameter:
 
-Logs the user out by clearing their session cookie.
-Redirect users to this path to log them out.
+```
+/ngrok/login?redirect_path=/dashboard
+```
+
+If you've configured `auth_id` to identify this provider, include it in the URL:
+
+```
+/ngrok/login?auth_id=my-provider&redirect_path=/dashboard
+```
+
+If the IdP supports it, ngrok instructs it to force re-authentication—users must re-enter their credentials even if they already have an active IdP session.
+
+#### Logging users out
+
+To end a user's session—for example, from a "Log out" button or link—redirect users to `/ngrok/logout`.
+This clears the ngrok session cookie.
+
+If you've configured `auth_id`, include it in the URL to target the correct provider:
+
+```
+/ngrok/logout?auth_id=my-provider
+```
 
 <Note>
 	When using the Google OAuth 2.0/OIDC provider in Chrome with a [managed profile](https://support.google.com/chrome/a/answer/188446), `/ngrok/logout` only clears the ngrok session cookie; it does not end the Google/IdP session maintained by the browser.
 	Users may be silently re-authenticated on the next request.
-	To fully sign out, sign out of Chrome/Google (or use a non-managed profile or Incognito) in addition to calling `/ngrok/logout`.
+	To fully sign out, sign out of Chrome or Google (or use a non-managed profile or Incognito) in addition to calling `/ngrok/logout`.
 </Note>
 
 ### Events
@@ -205,7 +221,7 @@ Managed applications are great for getting started but they have some limitation
 
 - They are [only available for some identity providers](#supported-providers).
 - You may not pass custom scopes when using a managed application.
-- The [upstream headers](/universal-gateway/http/#upstream-headers) `ngrok-auth-oauth-access-token` and `ngrok-auth-oauth-refresh-token` are not sent to your application.
+- The [upstream headers](/gateway/http/#upstream-headers) `ngrok-auth-oauth-access-token` and `ngrok-auth-oauth-refresh-token` are not sent to your application.
 
 ### Traffic identities
 
@@ -229,37 +245,7 @@ Cookie values are opaque to the upstream service and must not be modified.
 
 ### Using a managed provider
 
-The following [Traffic Policy](/traffic-policy/) configuration will provide your app with a Google authentication step.
-
-<CodeGroup>
-```yaml policy.yml
-on_http_request:
-  - actions:
-      - type: oauth
-        config:
-          provider: google
-```
-
-```json policy.json
-{
-  "on_http_request": [
-    {
-      "actions": [
-        {
-          "type": "oauth",
-          "config": {
-            "provider": "google"
-          }
-        }
-      ]
-    }
-  ]
-}
-```
-</CodeGroup>
-
-You can replace the `provider` value with any of the [supported providers](/traffic-policy/actions/oauth/#supported-providers) that have a managed app available.
-
+<ManagedProvider />
 
 ### Restricting access to certain users
 
@@ -271,54 +257,56 @@ See [this authentication example](/traffic-policy/examples/add-authentication/#c
 
 <ActionVariablesDescription />
 
-<ConfigField title="actions.ngrok.oauth.error.code" type="string">
-	Code for an error that occurred during the invocation of an action.
+<ConfigField title="actions.ngrok.oauth.error" type="object">
+	<ConfigChildren>
+		<ConfigField title="actions.ngrok.oauth.error.code" type="string">
+			Code for an error that occurred during the invocation of an action.
+		</ConfigField>
+		<ConfigField title="actions.ngrok.oauth.error.message" type="string">
+			Message for an error that occurred during the invocation of an action.
+		</ConfigField>
+	</ConfigChildren>
 </ConfigField>
 
-<ConfigField title="actions.ngrok.oauth.error.message" type="string">
-	Message for an error that occurred during the invocation of an action.
+<ConfigField title="actions.ngrok.oauth.identity" type="object">
+	<ConfigChildren>
+		<ConfigField title="actions.ngrok.oauth.identity.id" type="string">
+			Unique identifier for the ngrok Identity entity.
+		</ConfigField>
+		<ConfigField title="actions.ngrok.oauth.identity.email" type="string">
+			Email address of the authorized user from the provider.
+		</ConfigField>
+		<ConfigField title="actions.ngrok.oauth.identity.name" type="string">
+			Name for the authorized user from the provider.
+		</ConfigField>
+		<ConfigField title="actions.ngrok.oauth.identity.provider_user_id" type="string">
+			Identifier for the authorized user from the provider.
+		</ConfigField>
+		<ConfigField title="actions.ngrok.oauth.identity.current_provider_session_id" type="string">
+			The current Identity session identifier for this request.
+		</ConfigField>
+	</ConfigChildren>
 </ConfigField>
 
-<ConfigField title="actions.ngrok.oauth.identity.id" type="string">
-	Unique identifier for the ngrok Identity entity.
-</ConfigField>
-
-<ConfigField title="actions.ngrok.oauth.identity.email" type="string">
-	Email address of the authorized user from the provider.
-</ConfigField>
-
-<ConfigField title="actions.ngrok.oauth.identity.name" type="string">
-	Name for the authorized user from the provider.
-</ConfigField>
-
-<ConfigField title="actions.ngrok.oauth.identity.provider_user_id" type="string">
-	Identifier for the authorized user from the provider.
-</ConfigField>
-
-<ConfigField title="actions.ngrok.oauth.identity.current_provider_session_id" type="string">
-	The current Identity session identifier for this request.
-</ConfigField>
-
-<ConfigField title="actions.ngrok.oauth.access_token" type="string">
-	The access token from the provider.
-</ConfigField>
-
-<ConfigField title="actions.ngrok.oauth.refresh_token" type="string">
-	The refresh token from the provider.
-</ConfigField>
-
-<ConfigField title="actions.ngrok.oauth.expires_at" type="string">
-	Timestamp when the current session will expire.
-</ConfigField>
-
-<ConfigField title="actions.ngrok.oauth.session_timed_out" type="boolean">
-	Returns true when the session timed out.
-</ConfigField>
-
-<ConfigField title="actions.ngrok.oauth.session_max_duration_reached" type="boolean">
-	Returns true when the current session reached the max duration.
-</ConfigField>
-
-<ConfigField title="actions.ngrok.oauth.userinfo_refreshed" type="boolean">
-	Returns true when ngrok updates the user information on the identity.
+<ConfigField title="actions.ngrok.oauth" type="object">
+	<ConfigChildren>
+		<ConfigField title="actions.ngrok.oauth.access_token" type="string">
+			The access token from the provider.
+		</ConfigField>
+		<ConfigField title="actions.ngrok.oauth.refresh_token" type="string">
+			The refresh token from the provider.
+		</ConfigField>
+		<ConfigField title="actions.ngrok.oauth.expires_at" type="string">
+			Timestamp when the current session will expire.
+		</ConfigField>
+		<ConfigField title="actions.ngrok.oauth.session_timed_out" type="boolean">
+			Returns true when the session timed out.
+		</ConfigField>
+		<ConfigField title="actions.ngrok.oauth.session_max_duration_reached" type="boolean">
+			Returns true when the current session reached the max duration.
+		</ConfigField>
+		<ConfigField title="actions.ngrok.oauth.userinfo_refreshed" type="boolean">
+			Returns true when ngrok updates the user information on the identity.
+		</ConfigField>
+	</ConfigChildren>
 </ConfigField>

@@ -47,7 +47,7 @@ spec:
 
 The public binding and URL for the above `CloudEndpoint` make it accessible on the public internet at `https://example-cloud-endpoint.ngrok.io`
 
-[Learn more about Public Endpoints](/universal-gateway/public-endpoints/).
+[Learn more about Public Endpoints](/gateway/public-endpoints/).
 
 ## Internal binding
 
@@ -78,9 +78,20 @@ The internal binding and URL on the above internal `AgentEndpoint` make it not a
 It can be accessed by using the `forward-internal` action from a Traffic Policy on other endpoints.
 This is not limited to the Kubernetes cluster that you installed the Operator in, and you could, for example, create a public endpoint using the ngrok dashboard/API/CLI that forwards to this endpoint.
 
-[Learn more about Internal Endpoints](/universal-gateway/internal-endpoints/).
+[Learn more about Internal Endpoints](/gateway/internal-endpoints/).
 
 ## Kubernetes binding
+
+<Warning title="The target namespace must exist before the bound endpoint is created">
+	The ngrok Operator does not create the target namespace for you. Before
+	creating a Kubernetes-bound endpoint, ensure the namespace referenced in the
+	URL (the `<namespace>` in `<scheme>://<service-name>.<namespace>`) already
+	exists in the cluster — otherwise the `BoundEndpoint` will fail to project
+	with [`ERR_NGROK_20003`](/errors/err_ngrok_20003) and a
+	`namespaces "<name>" not found` message in its status.
+
+	You can create the namespace with `kubectl create ns <namespace>`.
+</Warning>
 
 Endpoints with a kubernetes binding are private endpoints that are only available inside of Kubernetes clusters where you installed the ngrok Kubernetes Operator.
 

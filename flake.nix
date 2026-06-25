@@ -10,8 +10,14 @@
     };
   };
 
-  outputs = { self, nixpkgs, flake-utils }:
-    flake-utils.lib.eachDefaultSystem (system:
+  outputs =
+    {
+      self,
+      nixpkgs,
+      flake-utils,
+    }:
+    flake-utils.lib.eachDefaultSystem (
+      system:
       let
         pkgs = import nixpkgs {
           inherit system;
@@ -27,10 +33,14 @@
             export PATH="$PATH:$(git rev-parse --show-toplevel)/node_modules/.bin"
           '';
           buildInputs = with pkgs; [
+            bc
             nodejs_24
             corepack_24
             pnpm-shim
+            nixfmt
+            vale
           ];
         };
-      });
+      }
+    );
 }

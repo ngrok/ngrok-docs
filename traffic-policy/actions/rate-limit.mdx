@@ -6,6 +6,7 @@ description: Limit the rate of traffic that successfully reaches your endpoint.
 
 import ActionVariablesDescription from "/snippets/traffic-policy/common/action-variables-description.mdx";
 import NonTerminatingExplanation from "/snippets/traffic-policy/common/non-terminating-explanation.mdx";
+import RateLimitByHostHeader from "/snippets/traffic-policy/actions/rate-limit/rate-limit-by-host-header.mdx";
 
 import { ConfigField } from "/snippets/ConfigTable.jsx";
 import { ConfigChildren } from "/snippets/ConfigChildren.jsx";
@@ -110,67 +111,7 @@ and enforces the rate limits accordingly.
 ## Examples
 ### Rate limit by host header
 
-The following [Traffic Policy](/traffic-policy/)
-configuration demonstrates how to use the `rate-limit` action to rate limit
-all incoming requests by the `Host` header.
-
-#### Example Traffic Policy document
-
-<CodeGroup>
-```yaml policy.yml {10}
-on_http_request:
-  - actions:
-      - type: rate-limit
-        config:
-          name: Only allow 30 requests per minute
-          algorithm: sliding_window
-          capacity: 30
-          rate: 60s
-          bucket_key:
-            - 'hasReqHeader(''host'') ? getReqHeader(''host'')[0] : ''unknown'''
-```
-
-```json policy.json {13}
-{
-  "on_http_request": [
-    {
-      "actions": [
-        {
-          "type": "rate-limit",
-          "config": {
-            "name": "Only allow 30 requests per minute",
-            "algorithm": "sliding_window",
-            "capacity": 30,
-            "rate": "60s",
-            "bucket_key": [
-              "hasReqHeader('host') ? getReqHeader('host')[0] : 'unknown'"
-            ]
-          }
-        }
-      ]
-    }
-  ]
-}
-```
-</CodeGroup>
-
-For this example, assume that ngrok is pointing at the upstream service
-https://httpbin.org.
-
-#### Example request
-
-```bash
-$ curl https://httpbin.ngrok.app/get
-```
-
-```http
-HTTP/2 429
-retry-after: 24
-```
-
-In this example, a connection attempt to `httpbin.ngrok.app` using the `curl`
-command returns a `429` status code with a `retry-after` header indicating
-the number of seconds to wait before retrying the request.
+<RateLimitByHostHeader />
 
 ## Action result variables
 

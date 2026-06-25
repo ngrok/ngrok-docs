@@ -53,6 +53,7 @@ Additional keys can be created through 'ngrok api api-key create' subcommand.
 | [ip-policy-rules](#ngrok-api-ip-policy-rules)    | IP Policy Rules are the IPv4 or IPv6 CIDRs entries that make up an IP Policy.                                          |
 | [ip-restrictions](#ngrok-api-ip-restrictions)    | An IP restriction is a restriction placed on the CIDRs that are allowed to initiate...                                          |
 | [kubernetes-operators](#ngrok-api-kubernetes-operators)    | KubernetesOperators is used by the Kubernetes Operator to register and manage its own...                                          |
+| [personal-access-tokens](#ngrok-api-personal-access-tokens)    | Personal Access Tokens (PATs) are bearer credentials that authenticate the ngrok agent...                                          |
 | [pointcfg-module](#ngrok-api-pointcfg-module)    |                                           |
 | [reserved-addrs](#ngrok-api-reserved-addrs)    | Reserved Addresses are TCP addresses that can be used to listen for traffic                                          |
 | [reserved-domains](#ngrok-api-reserved-domains)    | Reserved Domains are hostnames that you can listen for traffic on                                          |
@@ -326,6 +327,7 @@ ngrok api ai-gateway-api-keys create [flags]
 |  `--description` | human-readable description of this API key |
 |  `--endpoint-id` | unique identifier of the AI Gateway endpoint this key is associated with |
 |  `--metadata` | arbitrary user-defined metadata for this API key |
+|  `--provider-keys` | optional list of provider keys to attach to this managed key at create time |
 |  `--api-key` | API key to use |
 |  `--config` | path to config files; they are merged if multiple |
 |  `--log` | path to log file, 'stdout', 'stderr' or 'false' |
@@ -433,7 +435,7 @@ AIGatewayProviderKeys is an api service for managing provider keys attached to a
 | [create](#ngrok-api-ai-gateway-provider-keys-create)    | Create a new AI Gateway Provider Key                                          |
 | [delete](#ngrok-api-ai-gateway-provider-keys-delete)    | Delete an AI Gateway Provider Key                                          |
 | [get](#ngrok-api-ai-gateway-provider-keys-get)    | Get an AI Gateway Provider Key by ID                                          |
-| [list](#ngrok-api-ai-gateway-provider-keys-list)    | List AI Gateway Provider Keys, ...                                          |
+| [list](#ngrok-api-ai-gateway-provider-keys-list)    | List AI Gateway Provider Keys                                          |
 | [update](#ngrok-api-ai-gateway-provider-keys-update)    | Update an existing AI Gateway Provider Key by ID                                          |
 
 ### Flags
@@ -464,7 +466,6 @@ ngrok api ai-gateway-provider-keys create [flags]
 |  `--ai-gateway-api-key-id` | unique identifier of the AI Gateway API Key this provider key is attached to |
 |  `--description` | human-readable description of this provider key |
 |  `--metadata` | arbitrary user-defined metadata for this provider key |
-|  `--name` | user-friendly label for this key |
 |  `--provider-id` | which AI provider this key is for, e.g. "openai", "anthropic" |
 |  `--value` | plaintext provider key value — write-only input |
 |  `--api-key` | API key to use |
@@ -518,7 +519,7 @@ ngrok api ai-gateway-provider-keys get <id> [flags]
 
 ## ngrok api ai-gateway-provider-keys list
 
-List AI Gateway Provider Keys, optionally filtered by AI Gateway API Key
+List AI Gateway Provider Keys
 
 ### Usage
 
@@ -530,9 +531,9 @@ ngrok api ai-gateway-provider-keys list [flags]
 
 | Flag              | Description                             |
 | ----------------- | --------------------------------------- |
-|  `--ai-gateway-api-key-id` | optional: unique identifier of the AI Gateway API Key to filter provider keys by |
-|  `--before-id` |  |
-|  `--limit` |  |
+|  `--ai-gateway-api-key-id` | Filter by the AI Gateway API Key ID this provider key is attached to. |
+|  `--before-id` | Expects a resource ID as its input. Returns earlier entries in the result set, sorted by ID. |
+|  `--limit` | Constrains the number of results in the dataset. |
 |  `--api-key` | API key to use |
 |  `--config` | path to config files; they are merged if multiple |
 |  `--log` | path to log file, 'stdout', 'stderr' or 'false' |
@@ -556,7 +557,6 @@ ngrok api ai-gateway-provider-keys update <id> [flags]
 | ----------------- | --------------------------------------- |
 |  `--description` | human-readable description of this provider key |
 |  `--metadata` | arbitrary user-defined metadata for this provider key |
-|  `--name` | user-friendly label for this key |
 |  `--api-key` | API key to use |
 |  `--config` | path to config files; they are merged if multiple |
 |  `--log` | path to log file, 'stdout', 'stderr' or 'false' |
@@ -1651,8 +1651,8 @@ ngrok api bot-users create [flags]
 
 | Flag              | Description                             |
 | ----------------- | --------------------------------------- |
-|  `--active` | whether or not the bot is active |
-|  `--name` | human-readable name used to identify the bot |
+|  `--active` | whether or not the service user is active |
+|  `--name` | human-readable name used to identify the service user |
 |  `--api-key` | API key to use |
 |  `--config` | path to config files; they are merged if multiple |
 |  `--log` | path to log file, 'stdout', 'stderr' or 'false' |
@@ -1739,8 +1739,8 @@ ngrok api bot-users update <id> [flags]
 
 | Flag              | Description                             |
 | ----------------- | --------------------------------------- |
-|  `--active` | whether or not the bot is active |
-|  `--name` | human-readable name used to identify the bot |
+|  `--active` | whether or not the service user is active |
+|  `--name` | human-readable name used to identify the service user |
 |  `--api-key` | API key to use |
 |  `--config` | path to config files; they are merged if multiple |
 |  `--log` | path to log file, 'stdout', 'stderr' or 'false' |
@@ -5404,9 +5404,7 @@ ngrok api endpoints list [flags]
 | ----------------- | --------------------------------------- |
 |  `--before-id` | Expects a resource ID as its input. Returns earlier entries in the result set, sorted by ID. |
 |  `--filter` | A CEL expression to filter the list results. Supports logical and comparison operators to match on fields such as id, metadata, created_at, and more. See ngrok API Filtering for syntax and field details: https://ngrok.com/docs/api/api-filtering (https://ngrok.com/docs/api/api-filtering). |
-|  `--id` | Filter results by endpoint IDs. Deprecated: use filter instead. |
 |  `--limit` | Constrains the number of results in the dataset. See the API Overview (https://ngrok.com/docs/api/index#pagination) for details. |
-|  `--url` | Filter results by endpoint URLs. Deprecated: use filter instead. |
 |  `--api-key` | API key to use |
 |  `--config` | path to config files; they are merged if multiple |
 |  `--log` | path to log file, 'stdout', 'stderr' or 'false' |
@@ -6536,6 +6534,145 @@ ngrok api kubernetes-operators update <id> [flags]
 |  `--enabled-features` | features enabled for this Kubernetes Operator. a subset of "bindings", "ingress", and "gateway" |
 |  `--metadata` | arbitrary user-defined machine-readable data of this Kubernetes Operator. optional, max 4096 bytes. |
 |  `--region` | the ngrok region in which the ingress for this operator is served. defaults to "global" |
+|  `--api-key` | API key to use |
+|  `--config` | path to config files; they are merged if multiple |
+|  `--log` | path to log file, 'stdout', 'stderr' or 'false' |
+|  `--log-format` | log record format: 'term', 'logfmt', 'json' |
+|  `--log-level` | logging level: 'debug', 'info', 'warn', 'error', 'crit' |
+
+
+## ngrok api personal-access-tokens
+
+Personal Access Tokens (PATs) are bearer credentials that authenticate the
+ngrok agent as the issuing principal. The token secret is only returned at
+creation time; save it securely. The effective permissions of a PAT are
+derived from the principal's membership in the account at authentication
+time.
+
+### SubCommands
+
+| Command                         | Description                                                   |
+| ------------------------------- | ------------------------------------------------------------- |
+| [create](#ngrok-api-personal-access-tokens-create)    | Create a new Personal Access Token                                          |
+| [delete](#ngrok-api-personal-access-tokens-delete)    | Revoke a Personal Access Token by ID.                                          |
+| [get](#ngrok-api-personal-access-tokens-get)    | Get a Personal Access Token by ID.                                          |
+| [list](#ngrok-api-personal-access-tokens-list)    | List all Personal Access Tokens for this account                                          |
+| [update](#ngrok-api-personal-access-tokens-update)    | Update attributes of a Personal Access Token...                                          |
+
+### Flags
+
+| Flag              | Description                             |
+| ----------------- | --------------------------------------- |
+|  `--api-key` | API key to use |
+|  `--config` | path to config files; they are merged if multiple |
+|  `--log` | path to log file, 'stdout', 'stderr' or 'false' |
+|  `--log-format` | log record format: 'term', 'logfmt', 'json' |
+|  `--log-level` | logging level: 'debug', 'info', 'warn', 'error', 'crit' |
+
+
+## ngrok api personal-access-tokens create
+
+Create a new Personal Access Token. The token secret is only returned in this response and cannot be retrieved later. If lost, you must create a new token.
+
+### Usage
+
+```sh
+ngrok api personal-access-tokens create [flags]
+```
+
+### Flags
+
+| Flag              | Description                             |
+| ----------------- | --------------------------------------- |
+|  `--description` | human-readable description of this token. Optional, max 255 bytes. |
+|  `--expires-at` | optional expiration time for this token. If unset the token does not expire. |
+|  `--api-key` | API key to use |
+|  `--config` | path to config files; they are merged if multiple |
+|  `--log` | path to log file, 'stdout', 'stderr' or 'false' |
+|  `--log-format` | log record format: 'term', 'logfmt', 'json' |
+|  `--log-level` | logging level: 'debug', 'info', 'warn', 'error', 'crit' |
+
+
+## ngrok api personal-access-tokens delete
+
+Revoke a Personal Access Token by ID.
+
+### Usage
+
+```sh
+ngrok api personal-access-tokens delete <id> [flags]
+```
+
+### Flags
+
+| Flag              | Description                             |
+| ----------------- | --------------------------------------- |
+|  `--api-key` | API key to use |
+|  `--config` | path to config files; they are merged if multiple |
+|  `--log` | path to log file, 'stdout', 'stderr' or 'false' |
+|  `--log-format` | log record format: 'term', 'logfmt', 'json' |
+|  `--log-level` | logging level: 'debug', 'info', 'warn', 'error', 'crit' |
+
+
+## ngrok api personal-access-tokens get
+
+Get a Personal Access Token by ID.
+
+### Usage
+
+```sh
+ngrok api personal-access-tokens get <id> [flags]
+```
+
+### Flags
+
+| Flag              | Description                             |
+| ----------------- | --------------------------------------- |
+|  `--api-key` | API key to use |
+|  `--config` | path to config files; they are merged if multiple |
+|  `--log` | path to log file, 'stdout', 'stderr' or 'false' |
+|  `--log-format` | log record format: 'term', 'logfmt', 'json' |
+|  `--log-level` | logging level: 'debug', 'info', 'warn', 'error', 'crit' |
+
+
+## ngrok api personal-access-tokens list
+
+List all Personal Access Tokens for this account
+
+### Usage
+
+```sh
+ngrok api personal-access-tokens list [flags]
+```
+
+### Flags
+
+| Flag              | Description                             |
+| ----------------- | --------------------------------------- |
+|  `--before-id` |  |
+|  `--limit` |  |
+|  `--api-key` | API key to use |
+|  `--config` | path to config files; they are merged if multiple |
+|  `--log` | path to log file, 'stdout', 'stderr' or 'false' |
+|  `--log-format` | log record format: 'term', 'logfmt', 'json' |
+|  `--log-level` | logging level: 'debug', 'info', 'warn', 'error', 'crit' |
+
+
+## ngrok api personal-access-tokens update
+
+Update attributes of a Personal Access Token by ID.
+
+### Usage
+
+```sh
+ngrok api personal-access-tokens update <id> [flags]
+```
+
+### Flags
+
+| Flag              | Description                             |
+| ----------------- | --------------------------------------- |
+|  `--description` | human-readable description of this token. Optional, max 255 bytes. |
 |  `--api-key` | API key to use |
 |  `--config` | path to config files; they are merged if multiple |
 |  `--log` | path to log file, 'stdout', 'stderr' or 'false' |

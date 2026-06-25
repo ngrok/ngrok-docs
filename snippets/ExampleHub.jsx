@@ -156,8 +156,11 @@ export const ExampleHub = ({ parentDir }) => {
 		groupedExamples.set(example.primaryCategoryId, group);
 	}
 
+	// Reserve vertical space to prevent CLS (Cumulative Layout Shift) on page load.
+	// 2400px is large enough to accommodate all example cards (~12 cards in 2-column grid)
+	// to prevent footer from shifting down as content renders.
 	return (
-		<>
+		<div style={{ minHeight: 2400 }}>
 			<div className="mb-4 flex flex-wrap justify-between place-items-end gap-4">
 				<div className="relative max-w-64">
 					<input
@@ -242,6 +245,6 @@ export const ExampleHub = ({ parentDir }) => {
 					</div>
 				</div>
 			)}
-		</>
+		</div>
 	);
 }

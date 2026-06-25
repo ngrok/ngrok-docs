@@ -1,21 +1,23 @@
 Region & IP resolution lets you restrict (or "pin") which ngrok regions will handle traffic for a domain. 
 
-Configure your [domain](/universal-gateway/domains) to resolve to the IP addresses of one (or several) of ngrok's globally distributed physical points of presence (PoPs). 
+Configure your [domain](/gateway/domains) to resolve to the IP addresses of one (or several) of ngrok's globally distributed physical points of presence (PoPs). 
 
 This feature is designed for customers with data residency and compliance requirements who need to ensure traffic is processed only within specific geographic boundaries.
 
 <Info>
-The same configuration will soon support [dedicated IP addresses](/universal-gateway/dedicated-ips/) [preview feature], in addition to Points of Presence.
+The same configuration will soon support [dedicated IP addresses](/gateway/dedicated-ips/) [preview feature], in addition to Points of Presence.
 </Info>
 
 ## How it works
 
 1. Choose which ngrok points of presence your domain can use. 
-2. All requests to [endpoints](/universal-gateway/endpoints) on that domain will *only* be routed through your chosen PoPs. 
+2. All requests to [endpoints](/gateway/endpoints) on that domain will *only* be routed through your chosen PoPs. 
 
 <img 
-  src="../img/docs/region_pinning_diagram_how_it_works.png" 
-  alt="Region Pinning diagram -- how it works"
+  src="../img/docs/region-pinning-how-it-works-diagram.png" 
+  alt="Flowchart showing users in US, EU, and Asia all routing through a domain to the nearest allowed ngrok Point of Presence from a pinned set of regions"
+  width={1371}
+  height={1901}
   style={{height: "auto", width: "50%"}}
 />
 
@@ -27,7 +29,7 @@ You can do this through the API or the dashboard, both of which are described be
 ### Using the API
 
 The `resolves_to` property tells your domain how to resolve requests.
-You can specify a list of ngrok physical PoPs (like "Frankfurt" or "California"), [dedicated IPs](/universal-gateway/dedicated-ips/), or both.
+You can specify a list of ngrok physical PoPs (like "Frankfurt" or "California"), [dedicated IPs](/gateway/dedicated-ips/), or both.
 
 The following sections describe how to create, update, and un-pin a domain.
 
@@ -86,7 +88,7 @@ curl --request PATCH \
 
 #### Un-pin a domain
 
-You can "un-pin" a domain. Removing Regional Resolution settings restores the domain to its *default* IP resolution behavior: [global load balancing](https://ngrok.com/docs/universal-gateway/global-load-balancer) across *all* ngrok points of presence.
+You can "un-pin" a domain. Removing Regional Resolution settings restores the domain to its *default* IP resolution behavior: [global load balancing](https://ngrok.com/docs/gateway/global-load-balancer) across *all* ngrok points of presence.
 
 Use `PATCH` to [remove the list of pinned regions](/api-reference/reserveddomains/update), by setting the `resolves_to` property to an empty list.
 
@@ -139,13 +141,13 @@ This guide provides forward-looking context for evaluation and feedback.
 </Warning>
 
 Dedicated IPs let you configure a domain to receive traffic on static IP addresses that are exclusively dedicated to your account (instead of ngrok's shared multi-tenant IPs).
-When a domain uses dedicated IPs, you can create matching [endpoints](/universal-gateway/endpoints/) on any inbound port.
+When a domain uses dedicated IPs, you can create matching [endpoints](/gateway/endpoints/) on any inbound port.
 Today, you are [restricted](/faq/#can-i-choose-a-different-port-to-receive-traffic-on-my-ngrok-domains) to ports 80 and 443.
 
 ### How to use dedicated IPs
 
 Dedicated IPs and Regional Resolution ("region pinning") share the same `resolves_to` field on the domain.
-See the [Dedicated IPs](/universal-gateway/dedicated-ips/) documentation for configuration examples, use cases, and pricing:
+See the [Dedicated IPs](/gateway/dedicated-ips/) documentation for configuration examples, use cases, and pricing:
 
 - Region pinning: `resolves_to: [{ "value": "<region-shortcode>" }]`
 - Dedicated IPs: `resolves_to: [{ "value": "<ip-address>" }]`
@@ -167,7 +169,7 @@ You can include both, as shown in the example below.
 ### Does this affect TCP endpoints?
 Slightly different answer for each sub-feature:
 - Region pinning: no, since this feature applies only to matching HTTP/HTTPS endpoints. TCP uses [reserved addresses](/api-reference/reservedaddrs), which already include a region.
-- Dedicated IPs: yes, dedicated IPs are available for any [ngrok-supported protocol](/universal-gateway/protocols), including HTTP/S, TCP, and TLS.
+- Dedicated IPs: yes, dedicated IPs are available for any [ngrok-supported protocol](/gateway/protocols), including HTTP/S, TCP, and TLS.
 
 ### What happens if the `resolves_to` field isn't added when creating a domain?
 
