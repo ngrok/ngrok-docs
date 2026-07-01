@@ -3,6 +3,8 @@ title: Error Codes Reference
 description: When the AI Gateway encounters an error, it returns an ngrok error code and message to help identify the issue. The full list of AI Gateway error codes and their meanings are listed on this page.
 ---
 
+These errors apply to requests sent to `https://gateway.ngrok.ai` with an [access key](/ai-gateway/concepts/access-keys). Errors related to endpoint-based Traffic Policy setup are listed under [Legacy endpoint errors](#legacy-endpoint-errors) at the bottom.
+
 ## Error codes
 
 ### ERR_NGROK_3800
@@ -63,14 +65,14 @@ No API key found. Check your SDK / AI Gateway configuration, or add API keys to 
 
 
 **Causes**
-- No `Authorization` header in the client request
-- No API keys configured for the provider in the gateway
-- API key selection strategy filtered out all keys
+- No access key in the request (`Authorization: Bearer` or `x-api-key`)
+- The access key's configuration has no routing credentials for the requested provider
+- Provider keys referenced in the configuration were deleted
 
 **Solutions**
-- Include an API key in your request: `Authorization: Bearer sk-xxx`
-- Configure API keys in your gateway's provider configuration
-- Review your `api_key_selection` strategy if configured
+- Send your [access key](/ai-gateway/concepts/access-keys): `Authorization: Bearer ng-xxxxx-g1-xxxxx`
+- Add a routing rule in the key's [access key configuration](/ai-gateway/guides/access-key-configurations)—ngrok.ai inference for OpenAI/Anthropic, or attached provider keys for other providers
+- Verify stored [provider keys](/ai-gateway/guides/attaching-provider-keys) exist and are attached in the configuration
 
 ---
 
@@ -86,15 +88,14 @@ Model selection failed: `ERR`
 
 
 **Causes**
-- CEL expression syntax error in `model_selection.strategy`
-- Runtime error evaluating the strategy expression
-- Reference to undefined variable in strategy
+- The requested model or provider is not allowed by the access key's configuration
+- No routing rule matches the requested provider
+- Invalid model name with no resolvable provider
 
 **Solutions**
-- Check variable names and ensure they are [available](/ai-gateway/guides/model-selection-strategies#available-model-variables) and correctly referenced.
-- Check for typos in variable names (for example, `ai.models` not `ai.model`)
-- Review [CEL Functions Reference](/ai-gateway/reference/cel-functions) for available functions.
-- Try and validate your CEL expressions using the [CEL playground](https://playcel.undistro.io/).
+- Check the `model` field in your request
+- Review the access key's [configuration](/ai-gateway/guides/access-key-configurations) access scope and routing rules
+- See [Choose a model](/ai-gateway/guides/model-selection-strategies)
 
 ---
 
@@ -211,7 +212,7 @@ API key selection strategy failed: `ERR`
 
 **Message**
 
-AI Gateway action can only be used on HTTP endpoints. This endpoint is using `PROTOCOL`. See https://ngrok.com/docs/ai-gateway/guides/creating-endpoints for help creating an endpoint.
+AI Gateway action can only be used on HTTP endpoints. This endpoint is using `PROTOCOL`. See https://ngrok.com/docs/ai-gateway/guides/migrating-from-endpoints for help.
 
 **HTTP Status**
 
@@ -285,7 +286,7 @@ Your account has run out of credit.
 - Credits have expired
 
 **Solutions**
-- [Purchase additional credits](https://dashboard.ngrok.com/ai-gateways/credit/add) to restore access
+- [Purchase additional credits](https://app.ngrok.ai/credits) to restore access
 - See [Credits](/ai-gateway/concepts/credits) for details on credit management
 
 ---
@@ -305,7 +306,7 @@ This feature requires a prepaid account. Buy credits to use this feature.
 - You haven't purchased credits yet
 
 **Solutions**
-- [Purchase credits](https://dashboard.ngrok.com/ai-gateways/credit/add) (minimum $5.00)
+- [Purchase credits](https://app.ngrok.ai/credits) (minimum $5.00)
 - See [Credits](/ai-gateway/concepts/credits) for details
 
 ---
@@ -314,21 +315,25 @@ This feature requires a prepaid account. Buy credits to use this feature.
 
 **Message**
 
-This account does not have access to AI Gateway API Keys.
+This account does not have access to AI Gateway access keys.
 
 **HTTP Status**
 
 403 Forbidden
 
 **Causes**
-- Your account plan does not support AI Gateway API Keys
-- The AI Gateway API Keys feature is not enabled for your account
+- Your account does not have AI Gateway credits
+- The AI Gateway feature is not enabled for your account
 
 **Solutions**
-- Upgrade to the Pay-as-you-go plan
+- [Purchase credits](https://app.ngrok.ai/credits) (minimum $5.00)
 - Contact ngrok support if you believe this is an error
 
 ---
+
+## Legacy endpoint errors
+
+The following errors apply to the deprecated endpoint-based AI Gateway (Traffic Policy on a custom endpoint URL). If you use `https://gateway.ngrok.ai`, see the errors above. To migrate, see [Migrating from endpoints](/ai-gateway/guides/migrating-from-endpoints).
 
 ### ERR_NGROK_27002
 
@@ -365,7 +370,7 @@ The specified endpoint does not have AI Gateway action enabled.
 
 **Solutions**
 - Add the `ai-gateway` action to the endpoint's Traffic Policy
-- See [Creating Endpoints](/ai-gateway/guides/creating-endpoints) for setup instructions
+- See [Migrating from endpoints](/ai-gateway/guides/migrating-from-endpoints) for the current setup
 
 ---
 
@@ -490,14 +495,14 @@ Failed to validate API key. Please try again later.
 
 ## SDK error handling
 
-Here are some ways you can handle ngrok errors in your SDK:
+Handle ngrok errors in your SDK:
 
 <CodeGroup>
 ```python OpenAI Python SDK
 from openai import OpenAI, APIError
 
 client = OpenAI(
-    base_url="https://your-ai-gateway.ngrok.app/v1",
+    base_url="https://gateway.ngrok.ai/v1",
     api_key="ng-xxxxx-g1-xxxxx"
 )
 
@@ -517,7 +522,7 @@ except APIError as e:
 import OpenAI from 'openai';
 
 const client = new OpenAI({
-  baseURL: 'https://your-ai-gateway.ngrok.app/v1',
+  baseURL: 'https://gateway.ngrok.ai/v1',
   apiKey: 'ng-xxxxx-g1-xxxxx',
 });
 

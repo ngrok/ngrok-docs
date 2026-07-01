@@ -3,183 +3,82 @@ title: OpenAI
 description: Use OpenAI models through the ngrok AI Gateway.
 ---
 
-[OpenAI](https://openai.com) provides GPT and o-series models. The AI Gateway supports OpenAI as a **managed provider**—no OpenAI account needed—and also works with your own OpenAI API key.
+This guide walks through using [OpenAI](https://openai.com) models with the AI Gateway. OpenAI is a **built-in provider**, so ngrok.ai offers managed inference for it—you can use OpenAI models without an OpenAI account of your own, or bring your own key.
 
-## Managed keys setup
+## Use ngrok.ai inference (no OpenAI account)
 
-No OpenAI account needed. Follow the [quickstart](/ai-gateway/quickstart) to create your gateway and API key, then point your SDK at the gateway:
-
-<CodeGroup>
-```python Python
-from openai import OpenAI
-
-client = OpenAI(
-    base_url="https://your-ai-gateway.ngrok.app/v1",
-    api_key="ng-xxxxx-g1-xxxxx"  # Your AI Gateway API Key
-)
-
-response = client.chat.completions.create(
-    model="gpt-4o",
-    messages=[{"role": "user", "content": "Hello!"}]
-)
-
-print(response.choices[0].message.content)
-```
-
-```typescript TypeScript
-import OpenAI from "openai";
-
-const client = new OpenAI({
-  baseURL: "https://your-ai-gateway.ngrok.app/v1",
-  apiKey: "ng-xxxxx-g1-xxxxx",  // Your AI Gateway API Key
-});
-
-const response = await client.chat.completions.create({
-  model: "gpt-4o",
-  messages: [{ role: "user", content: "Hello!" }],
-});
-
-console.log(response.choices[0].message.content);
-```
-
-```typescript Vercel AI SDK
-import { generateText } from "ai";
-import { createOpenAI } from "@ai-sdk/openai";
-
-const gateway = createOpenAI({
-  baseURL: "https://your-ai-gateway.ngrok.app/v1",
-  apiKey: "ng-xxxxx-g1-xxxxx",  // Your AI Gateway API Key
-});
-
-const { text } = await generateText({
-  model: gateway("gpt-4o"),
-  prompt: "Hello!",
-});
-
-console.log(text);
-```
-
-```bash cURL
-curl https://your-ai-gateway.ngrok.app/v1/chat/completions \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer ng-xxxxx-g1-xxxxx" \
-  -d '{
-    "model": "gpt-4o",
-    "messages": [{"role": "user", "content": "Hello!"}]
-  }'
-```
-</CodeGroup>
-
-<Prompt description="Try using this prompt on your agent to verify your managed key setup is routing correctly: 'State your exact model name and provider.'" actions={["copy", "cursor"]}>
-  State your exact model name and provider.
-</Prompt>
-
-## Attach your own key
-
-Attach your OpenAI key to your AI Gateway API Key. ngrok encrypts and stores it server-side, so clients only ever send your AI Gateway API Key.
+You can use OpenAI models without your own OpenAI account—ngrok.ai inference supplies the upstream credentials and bills the model cost through credits.
 
 <Steps>
-  <Step title="Get an OpenAI API key">
-    Create an account at [platform.openai.com](https://platform.openai.com) and generate an API key. Keys start with `sk-proj-`.
+  <Step title="Create an access key and add credits">
+    Follow the [quickstart](/ai-gateway/quickstart) to create an [access key](/ai-gateway/concepts/access-keys) and purchase [credits](/ai-gateway/concepts/credits) in [app.ngrok.ai](https://app.ngrok.ai).
   </Step>
 
-  <Step title="Attach the key">
-    ```bash
-    ngrok api ai-gateway-provider-keys create \
-      --ai-gateway-api-key-id aigk_xxxxx \
-      --provider-id openai \
-      --description "My OpenAI Key" \
-      --value sk-proj-...
-    ```
-  </Step>
-
-  <Step title="Make a request">
-    Use your AI Gateway API Key—the gateway resolves the OpenAI key server-side.
+  <Step title="Send requests">
+    Point your SDK at the gateway with your access key:
 
     <CodeGroup>
     ```python Python
     from openai import OpenAI
 
     client = OpenAI(
-        base_url="https://your-ai-gateway.ngrok.app/v1",
-        api_key="ng-xxxxx-g1-xxxxx"  # Your AI Gateway API Key
+        base_url="https://gateway.ngrok.ai/v1",
+        api_key="ng-xxxxx-g1-xxxxx"  # Access key
     )
 
     response = client.chat.completions.create(
         model="gpt-4o",
         messages=[{"role": "user", "content": "Hello!"}]
     )
-
-    print(response.choices[0].message.content)
-    ```
-
-    ```typescript TypeScript
-    import OpenAI from "openai";
-
-    const client = new OpenAI({
-      baseURL: "https://your-ai-gateway.ngrok.app/v1",
-      apiKey: "ng-xxxxx-g1-xxxxx",  // Your AI Gateway API Key
-    });
-
-    const response = await client.chat.completions.create({
-      model: "gpt-4o",
-      messages: [{ role: "user", content: "Hello!" }],
-    });
-
-    console.log(response.choices[0].message.content);
-    ```
-
-    ```typescript Vercel AI SDK
-    import { generateText } from "ai";
-    import { createOpenAI } from "@ai-sdk/openai";
-
-    const gateway = createOpenAI({
-      baseURL: "https://your-ai-gateway.ngrok.app/v1",
-      apiKey: "ng-xxxxx-g1-xxxxx",  // Your AI Gateway API Key
-    });
-
-    const { text } = await generateText({
-      model: gateway("gpt-4o"),
-      prompt: "Hello!",
-    });
-
-    console.log(text);
     ```
 
     ```bash cURL
-    curl https://your-ai-gateway.ngrok.app/v1/chat/completions \
+    curl https://gateway.ngrok.ai/v1/chat/completions \
       -H "Content-Type: application/json" \
       -H "Authorization: Bearer ng-xxxxx-g1-xxxxx" \
-      -d '{
-        "model": "gpt-4o",
-        "messages": [{"role": "user", "content": "Hello!"}]
-      }'
+      -d '{"model": "gpt-4o", "messages": [{"role": "user", "content": "Hello!"}]}'
     ```
     </CodeGroup>
   </Step>
 </Steps>
 
-See [Attaching Provider Keys](/ai-gateway/guides/attaching-provider-keys) for key rotation, listing, and removing attached keys.
+## Bring your own OpenAI key
+
+Want requests billed to your own OpenAI account instead of through credits? Store your OpenAI key once—the gateway attaches it for you on every request.
+
+<Steps>
+  <Step title="Create an access key">
+    Follow the [quickstart](/ai-gateway/quickstart) to create an [access key](/ai-gateway/concepts/access-keys) in [app.ngrok.ai](https://app.ngrok.ai) if you don't have one yet.
+  </Step>
+
+  <Step title="Add your OpenAI key">
+    [Add a provider key](/ai-gateway/guides/attaching-provider-keys#add-a-provider-key) for OpenAI. ngrok stores it encrypted, so it never has to live in your application or get shared around—and you can reuse it across as many access keys as you need.
+  </Step>
+
+  <Step title="Route to it with a configuration">
+    [Create an access key configuration](/ai-gateway/guides/access-key-configurations#create-a-configuration) with an OpenAI routing rule set to **Bring your own API key**, then assign it to your access key.
+  </Step>
+
+  <Step title="Keep sending your access key">
+    Your code doesn't change. Send the same access key as before—the gateway swaps in your OpenAI key before the request leaves for OpenAI.
+  </Step>
+</Steps>
 
 ## Explicit provider routing
 
-Use the `openai:` prefix to force routing to OpenAI specifically:
-
 ```python
 response = client.chat.completions.create(
-    model="openai:gpt-4o",  # Always routes to OpenAI, not another provider
+    model="openai:gpt-4o",
     messages=[{"role": "user", "content": "Hello!"}]
 )
 ```
 
-This is useful in multi-provider setups where the same model name might exist on multiple providers.
-
 ## Available models
 
-See the [model catalog](/ai-gateway/reference/model-catalog#openai) for the full list of supported models and their context windows.
+Browse the [model catalog](/ai-gateway/reference/model-catalog#openai) for the full list of OpenAI models you can call through the gateway.
 
 ## Next steps
 
-- [AI Gateway API Keys](/ai-gateway/concepts/api-keys): use ngrok-managed keys for the simplest setup
-- [Attaching Provider Keys](/ai-gateway/guides/attaching-provider-keys): attach, rotate, and manage your own OpenAI keys
-- [Multi-provider failover](/ai-gateway/examples/multi-provider-failover): automatic failover to other providers
+- [Access Keys](/ai-gateway/concepts/access-keys)
+- [Access Key Configurations](/ai-gateway/guides/access-key-configurations)
+- [Provider Keys](/ai-gateway/guides/attaching-provider-keys)

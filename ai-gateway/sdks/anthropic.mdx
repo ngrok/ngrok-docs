@@ -5,10 +5,10 @@ description: Use the ngrok AI Gateway with Anthropic's official SDKs.
 ---
 
 <Note>
-**Prerequisite**: You need an AI Gateway endpoint before continuing. Create one using the [dashboard quickstart](/ai-gateway/quickstart) or follow the [manual setup guide](/ai-gateway/guides/creating-endpoints).
+**Prerequisite**: Complete the [Quickstart](/ai-gateway/quickstart) to get an [access key](/ai-gateway/concepts/access-keys). All requests go to `https://gateway.ngrok.ai`.
 </Note>
 
-The AI Gateway is compatible with Anthropic's official SDKs. Change the base URL to route requests through your gateway. In passthrough mode, the gateway forwards Anthropic SDK requests unchanged, so new Anthropic features are immediately available without gateway updates.
+The AI Gateway is compatible with Anthropic's official SDKs. Set the base URL to `https://gateway.ngrok.ai` and authenticate with your [access key](/ai-gateway/concepts/access-keys).
 
 <Note>
 Anthropic models also work through OpenAI-compatible SDKs (OpenAI SDK, Vercel AI SDK, LangChain, etc.)—just use the model name directly, for example `model: "claude-opus-4-6"`. You don't need the Anthropic SDK to access Anthropic models.
@@ -35,8 +35,8 @@ Point the SDK at your AI Gateway endpoint:
 import anthropic
 
 client = anthropic.Anthropic(
-    base_url="https://your-ai-gateway.ngrok.app",
-    api_key="ng-xxxxx-g1-xxxxx"  # Your AI Gateway API Key
+    base_url="https://gateway.ngrok.ai",
+    api_key="ng-xxxxx-g1-xxxxx"  # Your access key
 )
 
 message = client.messages.create(
@@ -52,8 +52,8 @@ print(message.content)
 import Anthropic from "@anthropic-ai/sdk";
 
 const client = new Anthropic({
-  baseURL: "https://your-ai-gateway.ngrok.app",
-  apiKey: "ng-xxxxx-g1-xxxxx",  // Your AI Gateway API Key
+  baseURL: "https://gateway.ngrok.ai",
+  apiKey: "ng-xxxxx-g1-xxxxx",  // Your access key
 });
 
 const message = await client.messages.create({
@@ -71,7 +71,7 @@ console.log(message.content);
 </Prompt>
 
 <Note>
-The Anthropic SDK sends the API key via the `x-api-key` header. AI Gateway API Keys work with both `x-api-key` and `Authorization: Bearer` headers.
+The Anthropic SDK sends the API key via the `x-api-key` header. Access keys work with both `x-api-key` and `Authorization: Bearer` headers.
 </Note>
 
 ## Streaming
@@ -83,8 +83,8 @@ The AI Gateway supports streaming responses with the Anthropic SDK:
 import anthropic
 
 client = anthropic.Anthropic(
-    base_url="https://your-ai-gateway.ngrok.app",
-    api_key="ng-xxxxx-g1-xxxxx"  # Your AI Gateway API Key
+    base_url="https://gateway.ngrok.ai",
+    api_key="ng-xxxxx-g1-xxxxx"  # Your access key
 )
 
 with client.messages.stream(
@@ -100,8 +100,8 @@ with client.messages.stream(
 import Anthropic from "@anthropic-ai/sdk";
 
 const client = new Anthropic({
-  baseURL: "https://your-ai-gateway.ngrok.app",
-  apiKey: "ng-xxxxx-g1-xxxxx",  // Your AI Gateway API Key
+  baseURL: "https://gateway.ngrok.ai",
+  apiKey: "ng-xxxxx-g1-xxxxx",  // Your access key
 });
 
 const stream = await client.messages.create({
@@ -120,45 +120,9 @@ for await (const messageStreamEvent of stream) {
   Write a haiku about APIs
 </Prompt>
 
-## Automatic model selection
+## Model failover
 
-Let the gateway choose the best model:
-
-<CodeGroup>
-```python Python highlight={9}
-import anthropic
-
-client = anthropic.Anthropic(
-    base_url="https://your-ai-gateway.ngrok.app",
-    api_key="ng-xxxxx-g1-xxxxx"  # Your AI Gateway API Key
-)
-
-message = client.messages.create(
-    model="ngrok/auto",  # Gateway selects based on your strategy
-    max_tokens=1024,
-    messages=[{"role": "user", "content": "Hello!"}]
-)
-
-print(message.content)
-```
-
-```typescript TypeScript highlight={8}
-import Anthropic from "@anthropic-ai/sdk";
-
-const client = new Anthropic({
-  baseURL: "https://your-ai-gateway.ngrok.app",
-  apiKey: "ng-xxxxx-g1-xxxxx",  // Your AI Gateway API Key
-});
-
-const message = await client.messages.create({
-  model: "ngrok/auto", // Gateway selects based on your strategy
-  max_tokens: 1024,
-  messages: [{ role: "user", content: "Hello!" }],
-});
-
-console.log(message.content);
-```
-</CodeGroup>
+Specify fallback models in the request body. See [Configure fallback models](/ai-gateway/guides/configure-fallback-models).
 
 <Warning>
 When using Anthropic SDKs with the gateway, model selection is limited to providers that support the Anthropic Claude API.  Currently in the ngrok model catalog Anthropic is the only provider that supports this format.
@@ -173,8 +137,8 @@ Tool calling works as documented by Anthropic:
 import anthropic
 
 client = anthropic.Anthropic(
-    base_url="https://your-ai-gateway.ngrok.app",
-    api_key="ng-xxxxx-g1-xxxxx"  # Your AI Gateway API Key
+    base_url="https://gateway.ngrok.ai",
+    api_key="ng-xxxxx-g1-xxxxx"  # Your access key
 )
 
 message = client.messages.create(
@@ -201,8 +165,8 @@ print(message)
 import Anthropic from "@anthropic-ai/sdk";
 
 const client = new Anthropic({
-  baseURL: "https://your-ai-gateway.ngrok.app",
-  apiKey: "ng-xxxxx-g1-xxxxx",  // Your AI Gateway API Key
+  baseURL: "https://gateway.ngrok.ai",
+  apiKey: "ng-xxxxx-g1-xxxxx",  // Your access key
 });
 
 const message = await client.messages.create({
@@ -237,8 +201,8 @@ The gateway handles many errors automatically through failover. For errors that 
 import anthropic
 
 client = anthropic.Anthropic(
-    base_url="https://your-ai-gateway.ngrok.app",
-    api_key="ng-xxxxx-g1-xxxxx"  # Your AI Gateway API Key
+    base_url="https://gateway.ngrok.ai",
+    api_key="ng-xxxxx-g1-xxxxx"  # Your access key
 )
 
 try:
@@ -257,8 +221,8 @@ except anthropic.APIError as e:
 import Anthropic from "@anthropic-ai/sdk";
 
 const client = new Anthropic({
-  baseURL: "https://your-ai-gateway.ngrok.app",
-  apiKey: "ng-xxxxx-g1-xxxxx",  // Your AI Gateway API Key
+  baseURL: "https://gateway.ngrok.ai",
+  apiKey: "ng-xxxxx-g1-xxxxx",  // Your access key
 });
 
 try {
@@ -287,6 +251,6 @@ The AI Gateway supports these Anthropic Claude API endpoints:
 
 ## Next steps
 
-- [Model Selection Strategies](/ai-gateway/guides/model-selection-strategies) - Configure routing logic
-- [Configuring Providers](/ai-gateway/guides/configuring-providers) - Set up providers and keys
-- [Multi-Provider Failover](/ai-gateway/examples/multi-provider-failover) - Failover examples
+- [Choose a model](/ai-gateway/guides/model-selection-strategies): Model IDs and provider prefixes
+- [Configure fallback models](/ai-gateway/guides/configure-fallback-models): Try another model when the first one fails
+- [Choose how to reach providers](/ai-gateway/guides/configuring-providers): Credits, provider keys, and self-run models

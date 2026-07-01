@@ -3,104 +3,51 @@ title: Google
 description: Use Google Gemini models through the ngrok AI Gateway.
 ---
 
-[Google AI Studio](https://aistudio.google.com) provides Gemini models. Google requires you to bring your own key—ngrok-managed keys are not available for Google.
+[Google AI Studio](https://aistudio.google.com) provides Gemini models.
 
-## Attach your key
+<Note>
+Even though Google is a **built-in provider**, it still requires you to **bring your own key** because ngrok.ai inference is not available for it at this time.
+</Note>
 
-Attach your Google key to your AI Gateway API Key. ngrok encrypts and stores it server-side, so clients only ever send your AI Gateway API Key.
+## Setup
 
 <Steps>
-  <Step title="Create an AI Gateway endpoint">
-    If you don't have one yet, follow the [quickstart](/ai-gateway/quickstart) to create your AI Gateway endpoint with an AI Gateway API Key.
+  <Step title="Create an access key">
+    Follow the [quickstart](/ai-gateway/quickstart) to create an access key in [app.ngrok.ai](https://app.ngrok.ai).
   </Step>
 
-  <Step title="Get a Google AI API key">
-    Generate an API key at [aistudio.google.com](https://aistudio.google.com). Keys are available on the free tier.
+  <Step title="Store your Google API key">
+    Generate a key at [aistudio.google.com](https://aistudio.google.com), then [add a provider key](/ai-gateway/guides/attaching-provider-keys#add-a-provider-key).
   </Step>
 
-  <Step title="Attach the key">
-    ```bash
-    ngrok api ai-gateway-provider-keys create \
-      --ai-gateway-api-key-id aigk_xxxxx \
-      --provider-id google \
-      --description "My Google Key" \
-      --value AIza...
-    ```
+  <Step title="Create a configuration">
+    [Create an access key configuration](/ai-gateway/guides/access-key-configurations#create-a-configuration) with a `google` routing rule and allow Google in the access scope.
   </Step>
 
-  <Step title="Make a request">
-    Use your AI Gateway API Key—the gateway resolves the Google key server-side.
+  <Step title="Assign and send requests">
+    Assign the configuration to your access key and send requests with your access key:
 
-    <CodeGroup>
-    ```python Python
+    ```python
     from openai import OpenAI
 
     client = OpenAI(
-        base_url="https://your-ai-gateway.ngrok.app/v1",
-        api_key="ng-xxxxx-g1-xxxxx"  # Your AI Gateway API Key
+        base_url="https://gateway.ngrok.ai/v1",
+        api_key="ng-xxxxx-g1-xxxxx",
     )
 
     response = client.chat.completions.create(
         model="gemini-2.5-flash",
         messages=[{"role": "user", "content": "Hello!"}]
     )
-
-    print(response.choices[0].message.content)
     ```
-
-    ```typescript TypeScript
-    import OpenAI from "openai";
-
-    const client = new OpenAI({
-      baseURL: "https://your-ai-gateway.ngrok.app/v1",
-      apiKey: "ng-xxxxx-g1-xxxxx",  // Your AI Gateway API Key
-    });
-
-    const response = await client.chat.completions.create({
-      model: "gemini-2.5-flash",
-      messages: [{ role: "user", content: "Hello!" }],
-    });
-
-    console.log(response.choices[0].message.content);
-    ```
-
-    ```typescript Vercel AI SDK
-    import { generateText } from "ai";
-    import { createOpenAI } from "@ai-sdk/openai";
-
-    const gateway = createOpenAI({
-      baseURL: "https://your-ai-gateway.ngrok.app/v1",
-      apiKey: "ng-xxxxx-g1-xxxxx",  // Your AI Gateway API Key
-    });
-
-    const { text } = await generateText({
-      model: gateway("gemini-2.5-flash"),
-      prompt: "Hello!",
-    });
-
-    console.log(text);
-    ```
-
-    ```bash cURL
-    curl https://your-ai-gateway.ngrok.app/v1/chat/completions \
-      -H "Content-Type: application/json" \
-      -H "Authorization: Bearer ng-xxxxx-g1-xxxxx" \
-      -d '{
-        "model": "gemini-2.5-flash",
-        "messages": [{"role": "user", "content": "Hello!"}]
-      }'
-    ```
-    </CodeGroup>
   </Step>
 </Steps>
 
-See [Attaching Provider Keys](/ai-gateway/guides/attaching-provider-keys) for key rotation, listing, and removing attached keys.
-
 ## Available models
 
-See the [model catalog](/ai-gateway/reference/model-catalog#google) for the full list of supported Gemini models.
+See the [model catalog](/ai-gateway/reference/model-catalog#google).
 
 ## Next steps
 
-- [Attaching Provider Keys](/ai-gateway/guides/attaching-provider-keys): attach, rotate, and manage your Google keys
-- [Multi-provider failover](/ai-gateway/examples/multi-provider-failover): failover patterns
+- [Provider Keys](/ai-gateway/guides/attaching-provider-keys)
+- [Access Key Configurations](/ai-gateway/guides/access-key-configurations)

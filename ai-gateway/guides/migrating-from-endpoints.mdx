@@ -1,0 +1,55 @@
+---
+title: Migrate from endpoint-based setup
+sidebarTitle: Migrate from endpoint-based setup
+description: Move from the old endpoint-based AI Gateway to app.ngrok.ai and gateway.ngrok.ai.
+---
+
+Earlier versions of the AI Gateway ran as a Traffic Policy `ai-gateway` action on a Cloud or Agent endpoint, with a custom `*.ngrok.app` URL and provider keys defined in your policy. The AI Gateway now runs on a shared URL you manage from [app.ngrok.ai](https://app.ngrok.ai).
+
+If you're starting fresh, follow the [Quickstart](/ai-gateway/quickstart) instead.
+
+## What changed
+
+| Old setup | New setup |
+|-----------|-----------|
+| Custom endpoint URL (`https://*.ngrok.app`) | `https://gateway.ngrok.ai` |
+| Endpoint-bound gateway key | [Access key](/ai-gateway/concepts/access-keys) (account-scoped) |
+| Provider keys in Traffic Policy | [Provider keys](/ai-gateway/guides/attaching-provider-keys) in app.ngrok.ai |
+| Traffic Policy `model_selection` (CEL) | Model in the request body and [access key configurations](/ai-gateway/guides/access-key-configurations) |
+| Provider and model allowlists in Traffic Policy | Access scope on configurations |
+| Traffic Policy request/response modification | Not available on `gateway.ngrok.ai` |
+
+## Migration steps
+
+<Steps>
+  <Step title="Add provider keys in app.ngrok.ai">
+    For each upstream credential in your Traffic Policy, [add a provider key](/ai-gateway/guides/attaching-provider-keys#add-a-provider-key). For OpenAI and Anthropic you can use [credits](/ai-gateway/concepts/credits) with ngrok.ai inference instead.
+  </Step>
+
+  <Step title="Create access key configurations">
+    Recreate allowlists and routing rules as [access key configurations](/ai-gateway/guides/access-key-configurations). Attach stored provider keys in routing rules.
+  </Step>
+
+  <Step title="Create access keys">
+    Create an [access key](/ai-gateway/concepts/access-keys) for each client and assign the appropriate configuration.
+  </Step>
+
+  <Step title="Update your applications">
+    Point `baseURL` / `base_url` at `https://gateway.ngrok.ai` and use the new access key. Remove any provider API keys from client code.
+  </Step>
+
+  <Step title="Decommission old endpoints">
+    Remove the Traffic Policy `ai-gateway` action from your endpoints once traffic has moved.
+  </Step>
+</Steps>
+
+## What isn't available on gateway.ngrok.ai
+
+- CEL `model_selection` and `api_key_selection` in Traffic Policy—use request models and access key configurations instead
+- Traffic Policy request and response modification
+
+## Next steps
+
+- [Quickstart](/ai-gateway/quickstart)
+- [Access Key Configurations](/ai-gateway/guides/access-key-configurations)
+- [Provider Keys](/ai-gateway/guides/attaching-provider-keys)

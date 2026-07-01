@@ -5,7 +5,7 @@ description: Use the ngrok AI Gateway with TanStack AI.
 ---
 
 <Note>
-**Prerequisite**: You need an AI Gateway endpoint before continuing. Create one using the [dashboard quickstart](/ai-gateway/quickstart) or follow the [manual setup guide](/ai-gateway/guides/creating-endpoints).
+**Prerequisite**: Complete the [Quickstart](/ai-gateway/quickstart) to get an [access key](/ai-gateway/concepts/access-keys). All requests go to `https://gateway.ngrok.ai`.
 </Note>
 
 [TanStack AI](https://tanstack.com/ai) is a type-safe library for building AI applications with React, Solid, and other frameworks. It works with the ngrok AI Gateway through its OpenAI adapter.
@@ -25,8 +25,8 @@ import { chat } from "@tanstack/ai";
 import { openai } from "@tanstack/ai-openai";
 
 const adapter = openai({
-  baseURL: "https://your-ai-gateway.ngrok.app/v1",
-  apiKey: "ng-xxxxx-g1-xxxxx",  // Your AI Gateway API Key
+  baseURL: "https://gateway.ngrok.ai/v1",
+  apiKey: "ng-xxxxx-g1-xxxxx",  // Your access key
 });
 
 const stream = chat({
@@ -45,8 +45,8 @@ import { chat } from "@tanstack/ai";
 import { openai } from "@tanstack/ai-openai";
 
 const adapter = openai({
-  baseURL: "https://your-ai-gateway.ngrok.app/v1",
-  apiKey: "ng-xxxxx-g1-xxxxx",  // Your AI Gateway API Key
+  baseURL: "https://gateway.ngrok.ai/v1",
+  apiKey: "ng-xxxxx-g1-xxxxx",  // Your access key
 });
 
 const stream = chat({
@@ -70,8 +70,8 @@ import { chat, toStreamResponse } from "@tanstack/ai";
 import { openai } from "@tanstack/ai-openai";
 
 const adapter = openai({
-  baseURL: "https://your-ai-gateway.ngrok.app/v1",
-  apiKey: "ng-xxxxx-g1-xxxxx",  // Your AI Gateway API Key
+  baseURL: "https://gateway.ngrok.ai/v1",
+  apiKey: "ng-xxxxx-g1-xxxxx",  // Your access key
 });
 
 export async function POST(request: Request) {
@@ -96,8 +96,8 @@ import { chat } from "@tanstack/ai";
 import { openai } from "@tanstack/ai-openai";
 
 const gateway = openai({
-  baseURL: "https://your-ai-gateway.ngrok.app/v1",
-  apiKey: "unused", // Gateway handles auth
+  baseURL: "https://gateway.ngrok.ai/v1",
+  apiKey: "ng-xxxxx-g1-xxxxx",  // Your access key // Gateway handles auth
 });
 
 // Use different providers through the same gateway
@@ -105,43 +105,9 @@ const openaiStream = chat({ adapter: gateway, model: "openai:gpt-4o", messages }
 const anthropicStream = chat({ adapter: gateway, model: "anthropic:claude-3-5-sonnet-latest", messages });
 ```
 
-## Automatic model selection
+## Model failover
 
-Let the gateway choose the best model with `ngrok/auto`:
-
-```typescript highlight={11}
-import { chat } from "@tanstack/ai";
-import { openai } from "@tanstack/ai-openai";
-
-const gateway = openai({
-  baseURL: "https://your-ai-gateway.ngrok.app/v1",
-  apiKey: "unused",
-});
-
-const stream = chat({
-  adapter: gateway,
-  model: "ngrok/auto", // Gateway selects based on your strategy
-  messages: [{ role: "user", content: "Explain quantum computing" }],
-});
-```
-
-Configure your selection strategy in the Traffic Policy:
-
-```yaml title="traffic-policy.yaml" highlight={11-13}
-on_http_request:
-  - type: ai-gateway
-    config:
-      providers:
-        - id: openai
-          api_keys:
-            - value: ${secrets.get('openai', 'api-key')}
-        - id: anthropic
-          api_keys:
-            - value: ${secrets.get('anthropic', 'api-key')}
-      model_selection:
-        strategy:
-          - "ai.models.sortBy(m, m.pricing.input)" # Cheapest first
-```
+To try another model when the first one fails, see [Configure fallback models](/ai-gateway/guides/configure-fallback-models).
 
 ## Tool calling
 
@@ -153,8 +119,8 @@ import { openai } from "@tanstack/ai-openai";
 import { z } from "zod";
 
 const adapter = openai({
-  baseURL: "https://your-ai-gateway.ngrok.app/v1",
-  apiKey: "ng-xxxxx-g1-xxxxx",  // Your AI Gateway API Key
+  baseURL: "https://gateway.ngrok.ai/v1",
+  apiKey: "ng-xxxxx-g1-xxxxx",  // Your access key
 });
 
 const getWeatherDef = toolDefinition({
@@ -186,8 +152,8 @@ import { chat } from "@tanstack/ai";
 import { openai } from "@tanstack/ai-openai";
 
 const adapter = openai({
-  baseURL: "https://your-ai-gateway.ngrok.app/v1",
-  apiKey: "ng-xxxxx-g1-xxxxx",  // Your AI Gateway API Key
+  baseURL: "https://gateway.ngrok.ai/v1",
+  apiKey: "ng-xxxxx-g1-xxxxx",  // Your access key
 });
 
 const stream = chat({
@@ -239,11 +205,8 @@ export default function Chat() {
 Set up your environment:
 
 ```bash title=".env.local"
-# Your AI Gateway endpoint
-AI_GATEWAY_URL=https://your-ai-gateway.ngrok.app/v1
-
-# Optional: API key if using passthrough mode
-OPENAI_API_KEY=sk-...
+AI_GATEWAY_URL=https://gateway.ngrok.ai/v1
+AI_GATEWAY_ACCESS_KEY=ng-xxxxx-g1-xxxxx
 ```
 
 ```typescript
@@ -251,13 +214,14 @@ import { openai } from "@tanstack/ai-openai";
 
 const adapter = openai({
   baseURL: process.env.AI_GATEWAY_URL,
-  apiKey: process.env.OPENAI_API_KEY ?? "unused",
+  apiKey: process.env.AI_GATEWAY_ACCESS_KEY!,
 });
 ```
 
 ## Next steps
 
-- [TanStack AI Documentation](https://tanstack.com/ai/latest/docs) - Full SDK reference
-- [Model Selection Strategies](/ai-gateway/guides/model-selection-strategies) - Configure routing logic
-- [Configuring Providers](/ai-gateway/guides/configuring-providers) - Set up providers and keys
+- [TanStack AI Documentation](https://tanstack.com/ai/latest/docs)
+- [Choose a model](/ai-gateway/guides/model-selection-strategies)
+- [Configure fallback models](/ai-gateway/guides/configure-fallback-models)
+- [Access key configurations](/ai-gateway/guides/access-key-configurations)
 

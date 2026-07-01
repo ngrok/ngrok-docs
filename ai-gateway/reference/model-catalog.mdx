@@ -1,27 +1,43 @@
 ---
 title: Model Catalog
 icon: book
-description: Built-in providers and models in the AI Gateway.
+description: Built-in providers and models available on ngrok.ai.
 ---
 
-The AI Gateway maintains a catalog of known providers and models. This catalog enables automatic provider inference, model validation, and rich metadata for selection strategies.
+ngrok.ai maintains a catalog of known providers and models. This catalog enables automatic model resolution, routing, model validation, and rich metadata for selection strategies.
 
 ## How the catalog works
 
-When you send a request with a model name like `gpt-4o`, the gateway:
+When you send a request with a model name like `gpt-4o`, the gateway automatically:
 
-1. Looks up the model in the catalog
-2. Identifies the provider (OpenAI)
-3. Routes the request to the appropriate provider endpoint and injects the API key
-4. Applies any configured selection strategies
+1. Resolves the model using the catalog
+2. Determines the correct provider (for example, OpenAI) and applies the appropriate upstream credentials
+3. Routes the request to the provider’s endpoint
 
-You can also explicitly specify providers using the `provider:model` format (for example, `openai:gpt-4o`).
+If you want to explicitly select a provider, use the `provider:model` format in the model string. For example:
 
-## Providers
+```json
+{
+  "model": "openai:gpt-4o",
+  "messages": [{"role": "user", "content": "Hello"}]
+}
+```
 
-<Note>
-**OpenAI** and **Anthropic** are available with [AI Gateway API Keys](/ai-gateway/concepts/api-keys)—no provider account needed. All other providers require you to [bring your own key](/ai-gateway/concepts/bring-your-own-keys).
-</Note>
+## Built-in providers
+
+The catalog includes built-in providers—public AI APIs with known models and routing metadata. You can manage them on the [Providers page](https://app.ngrok.ai/providers).
+
+### Authentication
+
+Send traffic using an [access key](/ai-gateway/concepts/access-keys). This key authenticates your requests to the gateway, not to the upstream provider.
+
+### Billing and provider credentials
+
+The AI Gateway splits billing into two parts: using the gateway and paying the model provider.
+
+Some built-in providers don’t need a provider key. You can spot them in the tables above—if “Provider key required” says “No,” you can start using them right away as long as you have credits. The gateway takes care of authentication and charges your credits.
+
+Other providers do need a key. For those, add your provider key in app.ngrok.ai. The provider will bill you directly for model usage, and your credits will cover the gateway fee. This is often called BYOK (bring your own key).
 
 ### OpenAI
 
@@ -31,7 +47,7 @@ You can also explicitly specify providers using the `provider:model` format (for
 | **Aliases** | `openAI`, `open-ai`, `open-AI` |
 | **Base URL** | `https://api.openai.com/v1/` |
 | **Website** | [openai.com](https://openai.com/) |
-| **BYOK Required** | No |
+| **Provider key required** | No |
 
 [How to use OpenAI →](/ai-gateway/providers/openai)
 
@@ -79,7 +95,7 @@ You can also explicitly specify providers using the `provider:model` format (for
 | **Aliases** | `Anthropic` |
 | **Base URL** | `https://api.anthropic.com/v1/` |
 | **Website** | [anthropic.com](https://anthropic.com/) |
-| **BYOK Required** | No |
+| **Provider key required** | No |
 
 [How to use Anthropic →](/ai-gateway/providers/anthropic)
 
@@ -107,7 +123,7 @@ You can also explicitly specify providers using the `provider:model` format (for
 | **Aliases** | `Google`, `gemini` |
 | **Base URL** | `https://generativelanguage.googleapis.com/v1beta/openai/` |
 | **Website** | [aistudio.google.com](https://aistudio.google.com/) |
-| **BYOK Required** | Yes |
+| **Provider key required** | Yes |
 
 [How to use Google →](/ai-gateway/providers/google)
 
@@ -132,7 +148,7 @@ You can also explicitly specify providers using the `provider:model` format (for
 | **Aliases** | `DeepSeek`, `deep-seek` |
 | **Base URL** | `https://api.deepseek.com` |
 | **Website** | [deepseek.com](https://www.deepseek.com/) |
-| **BYOK Required** | Yes |
+| **Provider key required** | Yes |
 
 [How to use DeepSeek →](/ai-gateway/providers/deepseek)
 
@@ -152,7 +168,7 @@ You can also explicitly specify providers using the `provider:model` format (for
 | **Provider ID** | `groq` |
 | **Base URL** | `https://api.groq.com/openai/v1` |
 | **Website** | [groq.com](https://groq.com/) |
-| **BYOK Required** | Yes |
+| **Provider key required** | Yes |
 
 [How to use Groq →](/ai-gateway/providers/groq)
 
@@ -184,7 +200,7 @@ Groq provides AI inference powered by their custom LPU (Language Processing Unit
 | **Provider ID** | `openrouter` |
 | **Base URL** | `https://openrouter.ai/api/v1/` |
 | **Website** | [openrouter.ai](https://openrouter.ai/) |
-| **BYOK Required** | Yes |
+| **Provider key required** | Yes |
 
 [How to use OpenRouter →](/ai-gateway/providers/openrouter)
 
@@ -199,7 +215,7 @@ OpenRouter is a unified API that provides access to multiple AI models from vari
 | **Provider ID** | `hyperbolic` |
 | **Base URL** | `https://api.hyperbolic.xyz/v1/` |
 | **Website** | [hyperbolic.xyz](https://hyperbolic.xyz/) |
-| **BYOK Required** | Yes |
+| **Provider key required** | Yes |
 
 [How to use Hyperbolic →](/ai-gateway/providers/hyperbolic)
 
@@ -213,7 +229,7 @@ Hyperbolic provides high-performance inference for open-source models.
 |-------|-------|
 | **Provider ID** | `inceptionlabs` |
 | **Website** | [inceptionlabs.ai](https://www.inceptionlabs.ai/) |
-| **BYOK Required** | Yes |
+| **Provider key required** | Yes |
 
 [How to use InceptionLabs →](/ai-gateway/providers/inceptionlabs)
 
@@ -228,7 +244,7 @@ InceptionLabs develops diffusion-based language models for fast, efficient text 
 | **Provider ID** | `inference-net` |
 | **Base URL** | `https://api.inference.net/v1/` |
 | **Website** | [inference.net](https://inference.net/) |
-| **BYOK Required** | Yes |
+| **Provider key required** | Yes |
 
 [How to use Inference.net →](/ai-gateway/providers/inference-net)
 
@@ -260,18 +276,11 @@ Use the `provider:model` format for explicit routing:
 }
 ```
 
-## Custom providers and models
+## Custom providers
 
-You can extend the catalog by configuring custom providers in your Traffic Policy. See [Custom Providers](/ai-gateway/concepts/custom-providers) for configuration details.
+Built-in providers cover major public APIs. For self-hosted models (Ollama, vLLM, LM Studio) or other endpoints, create a **custom provider** in the **Custom** tab in app.ngrok.ai. Custom providers always require a provider key when the upstream needs authentication.
 
-```yaml
-providers:
-  - id: "custom-ollama"
-    base_url: "https://ollama.internal"
-    models:
-      - id: "llama3"
-      - id: "mistral"
-```
+See [Custom providers](/ai-gateway/concepts/custom-providers) to add one.
 
 ## Catalog updates
 
