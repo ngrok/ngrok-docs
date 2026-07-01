@@ -1,54 +1,74 @@
 ---
-title: Model Selection
-sidebarTitle: Model Selection
-description: Choose models in requests and restrict routing with access key configurations.
+title: Choose a model
+sidebarTitle: Choose a model
+description: Choose a model by ID or route to a specific provider.
 ---
 
-On `https://gateway.ngrok.ai`, you choose models in each request. [Access key configurations](/ai-gateway/guides/access-key-configurations) restrict which providers and models an access key may call.
+When you send a request to `https://gateway.ngrok.ai`, the `model` field tells the AI Gateway which model to call.
 
-## Choosing a model in requests
+Use a model ID when you want the gateway to resolve the provider from the [model catalog](/ai-gateway/reference/model-catalog). Use `provider:model` when you want to choose the provider yourself.
 
-| Approach | Example | Use when |
-|----------|---------|----------|
-| Explicit model | `"model": "gpt-4o"` | You know which model to use |
-| Provider prefix | `"model": "openai:gpt-4o"` | Force a specific provider |
-| Multiple models | `"models": ["gpt-4o-mini", "claude-sonnet-4-6"]` | Fail over if the primary model fails |
+## Use a model ID
 
-See [Models](/ai-gateway/concepts/models) and the [model catalog](/ai-gateway/reference/model-catalog).
-
-### Example
+Use a model ID when you know which model you want to call and don't need to force a specific provider.
 
 ```json
 {
   "model": "gpt-4o",
-  "models": ["gpt-4o-mini", "anthropic:claude-sonnet-4-6"],
   "messages": [{"role": "user", "content": "Hello"}]
 }
 ```
 
-The gateway tries `gpt-4o` first, then each entry in `models` in order, until one succeeds.
+The gateway looks up `gpt-4o` in the [model catalog](/ai-gateway/reference/model-catalog), selects the matching provider, and routes the request upstream.
 
-## Restricting providers and models
+## Route to a specific provider
 
-Use an [access key configuration](/ai-gateway/guides/access-key-configurations) to limit what each access key can reach:
+Use `provider:model` when you want predictable routing or need to avoid ambiguity between model names.
 
 ```json
 {
-  "access": {
-    "providers": { "allow": ["openai", "anthropic"] },
-    "models": { "allow": ["openai/gpt-4o", "anthropic/claude-sonnet-4-6"] }
-  }
+  "model": "openai:gpt-4o",
+  "messages": [{"role": "user", "content": "Hello"}]
 }
 ```
 
-Requests outside the allowlist are rejected before they reach a provider.
+In this example:
 
-## Routing credentials per provider
+- `openai` is the provider ID.
+- `gpt-4o` is the model ID.
 
-Within a configuration, **routing rules** decide whether ngrok.ai inference or your [provider keys](/ai-gateway/guides/attaching-provider-keys) authenticate to each provider. See [Access Key Configurations](/ai-gateway/guides/access-key-configurations#routing-rules).
+Use this format when you have more than one provider configured, want to call a custom provider, or want the request to go to one specific upstream.
+
+## Use a custom provider model
+
+```json
+{
+  "model": "my-ollama:llama3.2",
+  "messages": [{"role": "user", "content": "Hello"}]
+}
+```
+
+Custom providers use the same `provider:model` format. In this example, `my-ollama` is your custom provider ID and `llama3.2` is the model ID configured on that provider.
+
+## Check model capabilities
+
+Before choosing a model, check the [model catalog](/ai-gateway/reference/model-catalog) for:
+
+| Field | Use it to check |
+|-------|-----------------|
+| Context window | How much input the model can accept |
+| Output tokens | How much output the model can return |
+| Modalities | Whether the model supports text, image, audio, video, or files |
+| Provider key required | Whether you need to bring your own provider key |
+
+## Keep access rules in mind
+
+The request can only use providers and models allowed by the [access key configuration](/ai-gateway/guides/access-key-configurations) assigned to the access key.
+
+If you need to limit what a client can call, see [Restrict providers and models](/ai-gateway/guides/restrict-providers-and-models).
 
 ## Next steps
 
-- [Models](/ai-gateway/concepts/models): Model naming and pass-through
-- [Multi-key failover](/ai-gateway/guides/key-selection-failover): Fail over between provider keys
-- [How It Works](/ai-gateway/how-it-works): Full request flow
+- [Model catalog](/ai-gateway/reference/model-catalog): Built-in providers and models
+- [Configure fallback models](/ai-gateway/guides/configure-fallback-models): Try another model if the first one fails
+- [Use a model you run yourself](/ai-gateway/guides/use-a-model-you-run-yourself): Connect Ollama, vLLM, LM Studio, or another private model

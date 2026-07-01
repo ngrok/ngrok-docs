@@ -1,15 +1,15 @@
 ---
-title: Provider Keys
-sidebarTitle: Provider Keys
-description: Add your own OpenAI, Anthropic, and other provider API keys to the AI Gateway.
+title: Bring your own provider key
+sidebarTitle: Bring your own provider key
+description: Add an upstream provider key and use it through the AI Gateway.
 ---
 
-Provider keys are the API keys you already have with OpenAI, Google, Anthropic, and other providers. You add them to the AI Gateway once, and it uses them to call those providers for you—the keys stay on the gateway instead of in your app.
+Use provider keys to let ngrok.ai call an upstream provider with your own credentials.
 
-Your app talks to the gateway with an [access key](/ai-gateway/concepts/api-keys). Which provider key the gateway uses for a given request comes from that access key's [configuration](/ai-gateway/guides/access-key-configurations). See [Access keys vs provider keys](/ai-gateway/concepts/api-keys#access-keys-vs-provider-keys) for how the two differ.
+Provider keys are the API keys you already use with OpenAI, Google, Anthropic, and others. You can add them to ngrok.ai once, and it uses them to call those providers on your behalf, keeping keys out of your app.
 
 <Note>
-For built-in **OpenAI** and **Anthropic**, you can skip provider keys and use [ngrok.ai inference](/ai-gateway/providers/openai) on your [credits](/ai-gateway/concepts/credits) instead.
+  For [certain providers](/ai-gateway/reference/model-catalog#billing-and-provider-credentials), like OpenAI and Anthropic, you can skip provider keys and use [ngrok.ai inference](/ai-gateway/guides/use-ngrok-ai-inference) on your [credits](/ai-gateway/concepts/credits) instead.
 </Note>
 
 ## Add a provider key
@@ -18,11 +18,11 @@ For built-in **OpenAI** and **Anthropic**, you can skip provider keys and use [n
 
 <Steps>
   <Step title="Open Providers">
-    Go to [Providers](https://app.ngrok.ai/providers) and pick the provider from the **Built-in** or **Custom** tab.
+    Head over to the [Providers](https://app.ngrok.ai/providers) page and choose the provider you want from either the **Built-in** or **Custom** tab.
   </Step>
 
   <Step title="Add a key">
-    On the provider's detail page, add a key under **API keys**.
+    Once you're on the provider's page, scroll down to **API keys** and add your key there.
   </Step>
 </Steps>
 
@@ -41,25 +41,29 @@ curl -X POST https://api.ngrok.ai/provider-keys \
   }'
 ```
 
-After you add a key, the dashboard only shows it redacted (`first10***last4`)—keep your own copy from the provider. Provider keys are account-wide, so you can associate one key with many access keys.
+After you add a key, the dashboard only shows a redacted version (`first10***last4`). Make sure you keep a copy of the full key from your provider, since you won’t be able to see it again here. Provider keys are shared across your account, so you can use the same key with multiple access keys.
 
 <Note>
-Adding a key stores it but doesn't route any traffic to it. To make it active, [attach it to an access key configuration](#using-provider-keys).
+  When a key does not have an access configuration attached, the gateway begins using this provider key immediately. To select specific keys, define failover order, or restrict providers and models, use an access key configuration.
 </Note>
 
-## Using provider keys
+## Control access with a configuration
 
-A provider key does nothing on its own. The gateway only uses it once it's attached to an access key configuration and that configuration is assigned to an access key. Here's the full flow, from key to working request.
+An access key without a configuration uses any provider keys you've added, so it works out of the box.
+
+If you need more control, you can attach an [access key configuration](/ai-gateway/guides/access-key-configurations). This lets you choose which key to use, set a fallback order, or limit which providers and models are available.
 
 <Steps>
   <Step title="Add the provider key">
-    [Add a key](#add-a-provider-key) for the provider if you haven't already.
+    First, make sure you've already [added a key](#add-a-provider-key) for the provider.
   </Step>
 
   <Step title="Attach the key in an access key configuration">
-    In an [access key configuration](/ai-gateway/guides/access-key-configurations#create-a-configuration), add a routing rule for the provider, choose **Bring your own API key**, and select your key. Attach more than one key to the same provider and the gateway tries them in the order you list, failing over when one is rate-limited or rejected—see [Key selection and failover](/ai-gateway/guides/key-selection-failover).
+    Next, go to your [access key configuration](/ai-gateway/guides/access-key-configurations#create-a-configuration). Then add a routing rule for the provider, choose **Bring your own API key**, and pick the key you added in the previous step. 
+    
+    You can add more than one key for the same provider—if one fails or hits a limit, the gateway will automatically try the next one in your list. For more details, see [key selection and failover](/ai-gateway/guides/key-selection-failover).
 
-    With the AI Gateway API, reference the key's ID in the configuration's router rules:
+    When using the ngrok.ai API, reference the key's ID in the configuration's router rules:
 
     ```json
     {
@@ -79,14 +83,15 @@ A provider key does nothing on its own. The gateway only uses it once it's attac
       }
     }
     ```
+
   </Step>
 
   <Step title="Assign the configuration to an access key">
-    On the [Access Keys](https://app.ngrok.ai/keys) page, assign the configuration to the [access key](/ai-gateway/concepts/api-keys) your app uses.
+    Navigate to the [Access Keys](https://app.ngrok.ai/keys) page, and assign the configuration to the [access key](/ai-gateway/concepts/access-keys) your app uses.
   </Step>
 
   <Step title="Send a request">
-    Your app sends only the access key. The gateway matches it to the configuration, picks the provider key, and calls the provider:
+    Your app only needs to send the access key. The gateway uses it to find the right configuration, chooses the provider key, and makes the request for you:
 
     ```python
     from openai import OpenAI
@@ -101,16 +106,17 @@ A provider key does nothing on its own. The gateway only uses it once it's attac
         messages=[{"role": "user", "content": "Hello!"}]
     )
     ```
+
   </Step>
 </Steps>
 
 ## Rotating provider keys
 
-[Rotating a key](/api-reference/provider-keys/rotate) updates its value in place and keeps the same key ID, so every access key configuration that points to it keeps working—no configuration changes needed.
+[Rotating provider keys](/api-reference/provider-keys/rotate) lets you update its value without changing its ID, so anything already using it keeps working. This means you can keep your existing configurations as they are.
 
 <Steps>
   <Step title="Rotate the key">
-    Send the new value to the [Provider Keys API](/api-reference/provider-keys/rotate), authorized with your [AI Gateway API key](/ai-gateway/concepts/api-keys#credentials-overview):
+    Update the key by sending its new value to the [Provider Keys API](/api-reference/provider-keys/rotate), using your [ngrok.ai API key](/ai-gateway/concepts/access-keys#credentials-overview):
 
     ```bash
     curl -X POST https://api.ngrok.ai/provider-keys/aigpk_xxxxx/rotate \
@@ -121,6 +127,7 @@ A provider key does nothing on its own. The gateway only uses it once it's attac
         "value": "sk-proj-..."
       }'
     ```
+
   </Step>
 
   <Step title="Verify traffic">
@@ -128,8 +135,16 @@ A provider key does nothing on its own. The gateway only uses it once it's attac
   </Step>
 </Steps>
 
+## Common issues
+
+| Problem                                    | What to check                                                                            |
+| ------------------------------------------ | ---------------------------------------------------------------------------------------- |
+| Request is rejected before routing         | The access key configuration may not allow the provider or model                         |
+| Provider returns an auth error             | The provider key may be missing, invalid, expired, or unable to call the requested model |
+| Usage is not appearing in provider billing | The request may be using ngrok.ai inference instead of your provider key                 |
+
 ## Next steps
 
-- [Access Key Configurations](/ai-gateway/guides/access-key-configurations): Attach keys and set scope
-- [Bring Your Own Keys](/ai-gateway/concepts/bring-your-own-keys): Built-in vs custom providers
-- [Key selection and failover](/ai-gateway/guides/key-selection-failover): Ordered key failover
+* [Access Key Configurations](/ai-gateway/guides/access-key-configurations): Attach keys and set scope
+* [Bring Your Own Keys](/ai-gateway/concepts/bring-your-own-keys): Built-in vs custom providers
+* [Key selection and failover](/ai-gateway/guides/key-selection-failover): Ordered key failover

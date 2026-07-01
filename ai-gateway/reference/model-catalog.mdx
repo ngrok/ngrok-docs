@@ -1,33 +1,43 @@
 ---
 title: Model Catalog
 icon: book
-description: Built-in providers and models in the AI Gateway.
+description: Built-in providers and models available on ngrok.ai.
 ---
 
-The AI Gateway maintains a catalog of known providers and models. This catalog enables automatic provider inference, model validation, and rich metadata for selection strategies.
+ngrok.ai maintains a catalog of known providers and models. This catalog enables automatic model resolution, routing, model validation, and rich metadata for selection strategies.
 
 ## How the catalog works
 
-When you send a request with a model name like `gpt-4o`, the gateway:
+When you send a request with a model name like `gpt-4o`, the gateway automatically:
 
-1. Looks up the model in the catalog
-2. Identifies the provider (OpenAI)
-3. Routes the request to the appropriate provider endpoint and injects the API key
-4. Applies any configured selection strategies
+1. Resolves the model using the catalog
+2. Determines the correct provider (for example, OpenAI) and applies the appropriate upstream credentials
+3. Routes the request to the provider’s endpoint
 
-Explicitly specify a provider with the `provider:model` format (for example, `openai:gpt-4o`).
+If you want to explicitly select a provider, use the `provider:model` format in the model string. For example:
+
+```json
+{
+  "model": "openai:gpt-4o",
+  "messages": [{"role": "user", "content": "Hello"}]
+}
+```
 
 ## Built-in providers
 
-The catalog lists **built-in providers**—public AI APIs with known models and routing metadata. Manage them on the [Providers page](https://app.ngrok.ai/providers).
+The catalog includes built-in providers—public AI APIs with known models and routing metadata. You can manage them on the [Providers page](https://app.ngrok.ai/providers).
 
-Send traffic with an [access key](/ai-gateway/concepts/api-keys). Your access key authenticates you to the gateway, not to the upstream provider.
+### Authentication
 
-For **OpenAI** and **Anthropic**, the AI Gateway can supply upstream credentials when you have [credits](/ai-gateway/concepts/credits). You aren't required to have your own provider account or provider API keys—the AI Gateway handles upstream authentication and bills model cost through credits.
+Send traffic using an [access key](/ai-gateway/concepts/access-keys). This key authenticates your requests to the gateway, not to the upstream provider.
 
-For other built-in providers below, add a provider key in app.ngrok.ai to bring your own key. Upstream costs go to your provider account; credits still cover the gateway processing fee. Other products sometimes call this BYOK (bring your own key).
+### Billing and provider credentials
 
-The **Provider key required** column marks whether you must add a provider key before the gateway can route traffic to that built-in provider.
+The AI Gateway splits billing into two parts: using the gateway and paying the model provider.
+
+Some built-in providers don’t need a provider key. You can spot them in the tables above—if “Provider key required” says “No,” you can start using them right away as long as you have credits. The gateway takes care of authentication and charges your credits.
+
+Other providers do need a key. For those, add your provider key in app.ngrok.ai. The provider will bill you directly for model usage, and your credits will cover the gateway fee. This is often called BYOK (bring your own key).
 
 ### OpenAI
 

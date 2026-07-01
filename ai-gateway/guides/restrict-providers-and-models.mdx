@@ -1,0 +1,96 @@
+---
+title: Restrict providers and models
+sidebarTitle: Restrict providers and models
+description: Limit which providers and models an access key can call.
+---
+
+Use access key configurations to control which providers and models an access key can call.
+
+Restrictions are checked before the gateway routes a request upstream. That means a request can fail fast if a client asks for a provider or model the key shouldn't use.
+
+## What you'll need
+
+- An [access key](/ai-gateway/concepts/access-keys).
+- An [access key configuration](/ai-gateway/guides/access-key-configurations).
+- The provider IDs and model IDs you want to allow.
+
+## Allow specific providers
+
+Use provider restrictions when an access key should only call certain providers.
+
+```json
+{
+  "access": {
+    "providers": {
+      "allow": ["openai", "anthropic"]
+    }
+  }
+}
+```
+
+With this configuration, requests can only route to OpenAI or Anthropic.
+
+## Allow specific models
+
+Use model restrictions when an access key should only call certain models.
+
+```json
+{
+  "access": {
+    "models": {
+      "allow": ["openai/gpt-4o", "anthropic/claude-sonnet-4-6"]
+    }
+  }
+}
+```
+
+Use the provider and model in the access rule so the gateway knows exactly which upstream model is allowed.
+
+## Allow providers and models together
+
+Combine provider and model restrictions when you want a key to stay within a small set of approved providers and models.
+
+```json
+{
+  "access": {
+    "providers": {
+      "allow": ["openai", "anthropic"]
+    },
+    "models": {
+      "allow": ["openai/gpt-4o", "anthropic/claude-sonnet-4-6"]
+    }
+  }
+}
+```
+
+Requests outside the allowed providers or models are rejected before they reach an upstream provider.
+
+## How this works with fallback
+
+Every model in a fallback request must be allowed.
+
+```json
+{
+  "model": "openai:gpt-4o",
+  "models": ["anthropic:claude-sonnet-4-6"],
+  "messages": [{"role": "user", "content": "Hello"}]
+}
+```
+
+If the primary model is allowed but the fallback model is not, the fallback model can't be used.
+
+## Common patterns
+
+| Goal | Configuration |
+|------|---------------|
+| Allow only OpenAI | Allow provider `openai` |
+| Allow only Claude Sonnet | Allow model `anthropic/claude-sonnet-4-6` |
+| Give a team access to two providers | Allow both provider IDs |
+| Block expensive models | Allow only approved model IDs |
+| Limit a custom provider | Allow the custom provider ID and model IDs |
+
+## Next steps
+
+- [Access key configurations](/ai-gateway/guides/access-key-configurations): Full configuration flow
+- [Choose a model](/ai-gateway/guides/model-selection-strategies): Use model IDs in requests
+- [Configure fallback models](/ai-gateway/guides/configure-fallback-models): Use allowed fallback models
