@@ -5,10 +5,10 @@ description: Use the ngrok AI Gateway with OpenAI's official SDKs.
 ---
 
 <Note>
-**Prerequisite**: You need an AI Gateway endpoint before continuing. Create one using the [dashboard quickstart](/ai-gateway/quickstart) or follow the [manual setup guide](/ai-gateway/guides/creating-endpoints).
+**Prerequisite**: Complete the [Quickstart](/ai-gateway/quickstart) to create an access key on app.ngrok.ai before continuing.
 </Note>
 
-The AI Gateway is compatible with OpenAI's official SDKs. Change the base URL to route requests through your gateway.
+The AI Gateway is compatible with OpenAI's official SDKs. Set the base URL to `https://gateway.ngrok.ai/v1` and use your [access key](/ai-gateway/concepts/access-keys).
 
 ## Installation
 
@@ -24,19 +24,15 @@ npm install openai
 
 ## Basic usage
 
-Point the SDK at your AI Gateway endpoint.
-
-**Which API key do I use?**
-- **AI Gateway API Keys** (recommended): Use your [AI Gateway API Key](/ai-gateway/concepts/api-keys) (format: `ng-xxxxx-g1-xxxxx`). ngrok handles provider keys for you.
-- **BYOK (passthrough mode)**: Use your provider API key (for example, `sk-...` from OpenAI). See [Bring Your Own Keys](/ai-gateway/concepts/bring-your-own-keys).
+Point the SDK at your AI Gateway endpoint and pass your [access key](/ai-gateway/concepts/access-keys) as `api_key`. See [Access keys vs provider keys](/ai-gateway/concepts/access-keys#access-keys-vs-provider-keys) for how credentials flow through the gateway.
 
 <CodeGroup>
 ```python Python highlight={4}
 from openai import OpenAI
 
 client = OpenAI(
-    base_url="https://your-ai-gateway.ngrok.app/v1",
-    api_key="ng-xxxxx-g1-xxxxx"  # Your AI Gateway API Key
+    base_url="https://gateway.ngrok.ai/v1",
+    api_key="ng-xxxxx-g1-xxxxx"  # Your access key
 )
 
 response = client.chat.completions.create(
@@ -51,8 +47,8 @@ print(response.choices[0].message.content)
 import OpenAI from "openai";
 
 const client = new OpenAI({
-  baseURL: "https://your-ai-gateway.ngrok.app/v1",
-  apiKey: "ng-xxxxx-g1-xxxxx",  // Your AI Gateway API Key
+  baseURL: "https://gateway.ngrok.ai/v1",
+  apiKey: "ng-xxxxx-g1-xxxxx",  // Your access key
 });
 
 const response = await client.chat.completions.create({
@@ -78,8 +74,8 @@ The AI Gateway supports streaming responses:
 from openai import OpenAI
 
 client = OpenAI(
-    base_url="https://your-ai-gateway.ngrok.app/v1",
-    api_key="ng-xxxxx-g1-xxxxx"  # Your AI Gateway API Key
+    base_url="https://gateway.ngrok.ai/v1",
+    api_key="ng-xxxxx-g1-xxxxx"  # Your access key
 )
 
 stream = client.chat.completions.create(
@@ -97,8 +93,8 @@ for chunk in stream:
 import OpenAI from "openai";
 
 const client = new OpenAI({
-  baseURL: "https://your-ai-gateway.ngrok.app/v1",
-  apiKey: "ng-xxxxx-g1-xxxxx",  // Your AI Gateway API Key
+  baseURL: "https://gateway.ngrok.ai/v1",
+  apiKey: "ng-xxxxx-g1-xxxxx",  // Your access key
 });
 
 const stream = await client.chat.completions.create({
@@ -126,8 +122,8 @@ Route to different providers using model prefixes:
 from openai import OpenAI
 
 client = OpenAI(
-    base_url="https://your-ai-gateway.ngrok.app/v1",
-    api_key="unused"  # Gateway handles auth
+    base_url="https://gateway.ngrok.ai/v1",
+    api_key="ng-xxxxx-g1-xxxxx"  # Your access key
 )
 
 # OpenAI
@@ -144,8 +140,8 @@ response = client.chat.completions.create(model="ollama:llama3.2", messages=[...
 import OpenAI from "openai";
 
 const client = new OpenAI({
-  baseURL: "https://your-ai-gateway.ngrok.app/v1",
-  apiKey: "unused",  // Gateway handles auth
+  baseURL: "https://gateway.ngrok.ai/v1",
+  apiKey: "ng-xxxxx-g1-xxxxx",  // Your access key
 });
 
 // OpenAI
@@ -159,39 +155,19 @@ const ollamaRes = await client.chat.completions.create({ model: "ollama:llama3.2
 ```
 </CodeGroup>
 
-## Automatic model selection
+## Model failover
 
-Let the gateway choose the best model:
+List fallback models in the request:
 
-<CodeGroup>
-```python Python highlight={9}
-from openai import OpenAI
-
-client = OpenAI(
-    base_url="https://your-ai-gateway.ngrok.app/v1",
-    api_key="unused"
-)
-
+```python
 response = client.chat.completions.create(
-    model="ngrok/auto",  # Gateway selects based on your strategy
-    messages=[{"role": "user", "content": "Hello!"}]
+    model="gpt-4o",
+    extra_body={"models": ["gpt-4o-mini"]},
+    messages=[{"role": "user", "content": "Hello!"}],
 )
 ```
 
-```typescript TypeScript highlight={9}
-import OpenAI from "openai";
-
-const client = new OpenAI({
-  baseURL: "https://your-ai-gateway.ngrok.app/v1",
-  apiKey: "ng-xxxxx-g1-xxxxx",  // Your AI Gateway API Key
-});
-
-const response = await client.chat.completions.create({
-  model: "ngrok/auto", // Gateway selects based on your strategy
-  messages: [{ role: "user", content: "Hello!" }],
-});
-```
-</CodeGroup>
+To try another model when the first one fails, see [Configure fallback models](/ai-gateway/guides/configure-fallback-models).
 
 ## Embeddings
 
@@ -225,8 +201,8 @@ Tool/function calling works exactly as documented by OpenAI:
 from openai import OpenAI
 
 client = OpenAI(
-    base_url="https://your-ai-gateway.ngrok.app/v1",
-    api_key="ng-xxxxx-g1-xxxxx"  # Your AI Gateway API Key
+    base_url="https://gateway.ngrok.ai/v1",
+    api_key="ng-xxxxx-g1-xxxxx"  # Your access key
 )
 
 response = client.chat.completions.create(
@@ -262,8 +238,8 @@ import asyncio
 from openai import AsyncOpenAI
 
 client = AsyncOpenAI(
-    base_url="https://your-ai-gateway.ngrok.app/v1",
-    api_key="ng-xxxxx-g1-xxxxx"  # Your AI Gateway API Key
+    base_url="https://gateway.ngrok.ai/v1",
+    api_key="ng-xxxxx-g1-xxxxx"  # Your access key
 )
 
 async def main():
@@ -280,8 +256,8 @@ asyncio.run(main())
 import OpenAI from "openai";
 
 const client = new OpenAI({
-  baseURL: "https://your-ai-gateway.ngrok.app/v1",
-  apiKey: "ng-xxxxx-g1-xxxxx",  // Your AI Gateway API Key
+  baseURL: "https://gateway.ngrok.ai/v1",
+  apiKey: "ng-xxxxx-g1-xxxxx",  // Your access key
 });
 
 // TypeScript client is async by default
@@ -301,8 +277,8 @@ The gateway handles many errors automatically through failover. For errors that 
 from openai import OpenAI, APIError, RateLimitError
 
 client = OpenAI(
-    base_url="https://your-ai-gateway.ngrok.app/v1",
-    api_key="ng-xxxxx-g1-xxxxx"  # Your AI Gateway API Key
+    base_url="https://gateway.ngrok.ai/v1",
+    api_key="ng-xxxxx-g1-xxxxx"  # Your access key
 )
 
 try:
@@ -321,8 +297,8 @@ except APIError as e:
 import OpenAI, { APIError, RateLimitError } from "openai";
 
 const client = new OpenAI({
-  baseURL: "https://your-ai-gateway.ngrok.app/v1",
-  apiKey: "ng-xxxxx-g1-xxxxx",  // Your AI Gateway API Key
+  baseURL: "https://gateway.ngrok.ai/v1",
+  apiKey: "ng-xxxxx-g1-xxxxx",  // Your access key
 });
 
 try {
@@ -354,6 +330,6 @@ The AI Gateway supports these OpenAI API endpoints:
 
 ## Next steps
 
-- [Model Selection Strategies](/ai-gateway/guides/model-selection-strategies) - Configure routing logic
-- [Configuring Providers](/ai-gateway/guides/configuring-providers) - Set up providers and keys
-- [Multi-Provider Failover](/ai-gateway/examples/multi-provider-failover) - Failover examples
+- [Choose a model](/ai-gateway/guides/model-selection-strategies)
+- [Configure fallback models](/ai-gateway/guides/configure-fallback-models)
+- [Access key configurations](/ai-gateway/guides/access-key-configurations)

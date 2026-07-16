@@ -1,23 +1,24 @@
 ---
-title: Securing Your Gateway
-description: How AI Gateway API Keys provide built-in authorization for your gateway.
+title: Secure your gateway
+sidebarTitle: Secure your gateway
+description: How access keys provide built-in authorization for the AI Gateway.
 ---
 
-AI Gateway API Keys provide built-in authorization for your gateway. Each key is validated by ngrok before any request reaches a provider—no additional Traffic Policy configuration needed.
+[Access keys](/ai-gateway/concepts/access-keys) authenticate every request to `https://gateway.ngrok.ai`. The AI Gateway validates each key before forwarding traffic. Upstream provider credentials are managed separately—see [Access keys vs provider keys](/ai-gateway/concepts/access-keys#access-keys-vs-provider-keys).
 
 ## How it works
 
-1. [Create an AI Gateway API Key](/ai-gateway/concepts/api-keys) via the dashboard, CLI, or API
-2. Use the key as the `apiKey` in your SDK or `Authorization: Bearer` header
-3. ngrok validates the key on every request
-4. Invalid or missing keys are rejected—requests do not fall through to passthrough mode
+1. [Create an access key](/ai-gateway/concepts/access-keys) in [app.ngrok.ai](https://app.ngrok.ai) or via the AI Gateway API
+2. Send the key as `Authorization: Bearer ng-xxxxx-g1-xxxxx` (OpenAI-compatible APIs) or `x-api-key` (Anthropic native API)
+3. The gateway validates the key on every request
+4. Invalid or missing keys are rejected—requests do not reach providers
 
 ```python
 from openai import OpenAI
 
 client = OpenAI(
-    base_url="https://your-ai-gateway.ngrok.app/v1",
-    api_key="ng-xxxxx-g1-xxxxx"  # Your AI Gateway API Key
+    base_url="https://gateway.ngrok.ai/v1",
+    api_key="ng-xxxxx-g1-xxxxx"  # Your access key
 )
 
 response = client.chat.completions.create(
@@ -26,89 +27,46 @@ response = client.chat.completions.create(
 )
 ```
 
-<Note>
-Your AI Gateway API Key token is never sent to the provider—ngrok strips it and injects its own managed provider keys.
-</Note>
+The AI Gateway replaces your access key with provider credentials from your configuration before forwarding to the upstream provider.
 
 ## Per-client keys
 
-Create separate AI Gateway API Keys for each client or application. This enables:
+Create separate access keys for each client or application:
 
-- **Independent revocation**: disable one client without affecting others
-- **Usage tracking per client**: each key tracks `last_used` so you can see activity
-- **Organization**: use different descriptions and metadata to identify each client
+- Revoke one client without affecting others
+- Track usage per key
+- Assign different [configurations](/ai-gateway/guides/access-key-configurations) to limit scope per client
 
-```bash
-# Create keys for different clients
-ngrok api ai-gateway-api-keys create \
-  --endpoint-id ep_xxxxx \
-  --description "Production web app"
-
-ngrok api ai-gateway-api-keys create \
-  --endpoint-id ep_xxxxx \
-  --description "Internal analytics pipeline"
-```
-
-## Revoking access
-
-Delete the key via the dashboard, CLI, or API. The key immediately stops working.
+Create access keys with the [Access Keys API](/ai-gateway/api-reference/access-keys/create). Authorize the request with your [AI Gateway API key](/ai-gateway/concepts/access-keys#credentials-overview).
 
 ```bash
-ngrok api ai-gateway-api-keys delete <id>
+curl -X POST https://api.ngrok.ai/access-keys \
+  -H "Authorization: Bearer $AI_GATEWAY_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{ "name": "Production web app" }'
 ```
 
-Or via the API:
+Delete access keys with the [Access Keys API](/ai-gateway/api-reference/access-keys/delete). Authorize the request with your [AI Gateway API key](/ai-gateway/concepts/access-keys#credentials-overview).
 
+```bash
+curl -X DELETE https://api.ngrok.ai/access-keys/aigk_xxxxx \
+  -H "Authorization: Bearer $AI_GATEWAY_API_KEY"
 ```
-DELETE /ai_gateway_api_keys/{id}
-```
+
+See the [Access Keys API reference](/ai-gateway/api-reference/access-keys/delete).
 
 <Warning>
-Deletion is permanent. Any client using the revoked key will immediately receive authentication errors.
+Deletion is permanent. Clients using the revoked key receive authentication errors immediately.
 </Warning>
 
-## Additional security layers
+## Protecting provider keys
 
-You can layer additional protections on top of AI Gateway API Keys using Traffic Policy.
+Store provider keys in app.ngrok.ai and reference them in configurations. Clients only ever hold the access key.
 
-### Rate limiting
-
-Limit requests per key to prevent abuse:
-
-```yaml
-on_http_request:
-  - actions:
-      - type: rate-limit
-        config:
-          name: ai-gateway-limit
-          algorithm: sliding_window
-          capacity: 100
-          rate: 100/min
-          bucket_key:
-            - req.headers['authorization']
-```
-
-### IP restrictions
-
-Restrict access to specific IP ranges for an additional layer of defense. See [Securing Endpoints (BYOK)](/ai-gateway/guides/protecting-byok-endpoints#combining-with-ip-restrictions) for full configuration examples.
-
-## Using BYOK?
-
-If you're managing your own provider keys, you'll need to add your own authorization layer. See [Securing Endpoints (BYOK)](/ai-gateway/guides/protecting-byok-endpoints) for complete examples including secret-based auth, JWT validation, and IP restrictions.
+See [Provider Keys](/ai-gateway/guides/attaching-provider-keys).
 
 ## Next steps
 
-<CardGroup cols={2}>
-  <Card title="AI Gateway API Keys" icon="key" href="/ai-gateway/concepts/api-keys">
-    Learn how API keys work and how to manage them.
-  </Card>
-  <Card title="Securing Endpoints (BYOK)" icon="shield-halved" href="/ai-gateway/guides/protecting-byok-endpoints">
-    Add authorization when managing your own provider keys.
-  </Card>
-  <Card title="Rate Limiting" icon="gauge-high" href="/traffic-policy/actions/rate-limit">
-    Add rate limiting to your gateway.
-  </Card>
-  <Card title="Restricting Model Access" icon="filter" href="/ai-gateway/guides/restricting-access">
-    Control which providers and models clients can use.
-  </Card>
-</CardGroup>
+- [Access Keys](/ai-gateway/concepts/access-keys): Create and manage keys
+- [Access Key Configurations](/ai-gateway/guides/access-key-configurations): Scope and credentials per key
+- [Error Codes](/ai-gateway/reference/error-codes): Authentication errors

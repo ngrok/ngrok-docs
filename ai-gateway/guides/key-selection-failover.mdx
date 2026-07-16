@@ -1,67 +1,69 @@
 ---
-title: Multi-Key Failover
-description: Automatic failover across multiple provider keys for resilience and capacity.
+title: Configure provider key failover
+sidebarTitle: Configure provider key failover
+description: Try another provider key when one hits a rate limit, quota limit, or auth error.
 ---
 
-<Warning>
-CEL-based `api_key_selection` strategies are deprecated. Attached provider keys use simple ordered failover: the most recently attached key is tried first. For advanced routing logic, use [model selection strategies](/ai-gateway/guides/model-selection-strategies) instead.
-</Warning>
+Configure multiple provider keys in an [access key configuration](/ai-gateway/guides/access-key-configurations) routing rule. The gateway tries keys in order when one hits a rate limit, runs out of quota, or fails authentication.
 
-When multiple keys are configured for a provider, the gateway automatically fails over between them:
+## How failover works
 
-1. Keys are tried in **reverse order of attachment**—the most recently attached key first.
-2. If a key fails, the next key is tried automatically.
-3. Failover triggers include:
-   - **Rate limit errors** (HTTP 429)
-   - **Quota exceeded** responses from the provider
-   - **Timeout or server errors** (HTTP 5xx)
+When a routing rule step lists multiple provider keys:
 
-## With attached provider keys
+1. The gateway tries the first key.
+2. On rate limit (429), auth failure, or certain upstream errors, it tries the next key.
+3. If all keys in the step fail, the gateway tries the next step in the rule (if any), or returns an error.
 
-Attach multiple keys for the same provider to your AI Gateway API Key. The most recently attached key is tried first, then the gateway falls back to older keys in reverse order of attachment:
+Failover is configured per provider in the access key configuration—not in your application code.
+
+## Via dashboard
+
+1. [Add multiple provider keys](/ai-gateway/guides/attaching-provider-keys#add-a-provider-key) for the same provider.
+2. [Edit an access key configuration](/ai-gateway/guides/access-key-configurations#create-a-configuration).
+3. Add or edit a routing rule for the provider.
+4. Attach multiple keys to the **Bring your own API key** step in the order you want them tried.
+
+## Via the AI Gateway API
 
 ```bash
-# Attach backup key first (tried last)
-ngrok api ai-gateway-provider-keys create \
-  --ai-gateway-api-key-id aigk_xxxxx \
-  --provider-id openai \
-  --description "OpenAI Backup" \
-  --value sk-proj-backup...
-
-# Attach primary key last (tried first)
-ngrok api ai-gateway-provider-keys create \
-  --ai-gateway-api-key-id aigk_xxxxx \
-  --provider-id openai \
-  --description "OpenAI Primary" \
-  --value sk-proj-primary...
+curl -X POST https://api.ngrok.ai/access-key-configurations \
+  -H "Authorization: Bearer $AI_GATEWAY_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "OpenAI with failover",
+    "router": {
+      "rules": [
+        {
+          "provider": "openai",
+          "steps": [
+            {
+              "type": "user",
+              "keySelectionStrategy": "ordered",
+              "keys": [
+                { "id": "aigpk_primary" },
+                { "id": "aigpk_backup" }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }'
 ```
 
-<Tip>
-Attach your highest-capacity or most reliable key **last**—the most recently attached key is tried first.
-</Tip>
+See the [Access Key Configurations API reference](/ai-gateway/api-reference/access-key-configurations/create).
 
-## With Traffic Policy keys (custom providers only)
+Assign the configuration to your access key. Your app sends only the access key:
 
-For custom or self-hosted providers, configure multiple keys in Traffic Policy:
-
-```yaml
-on_http_request:
-  - type: ai-gateway
-    config:
-      providers:
-        - id: openai
-          api_keys:
-            - value: ${secrets.get('openai', 'key-one')}    # tried first
-            - value: ${secrets.get('openai', 'key-two')}    # failover
-            - value: ${secrets.get('openai', 'key-three')}  # last resort
+```python
+client = OpenAI(
+    base_url="https://gateway.ngrok.ai/v1",
+    api_key="ng-xxxxx-g1-xxxxx",
+)
 ```
-
-<Note>
-`providers[].api_keys` is deprecated for standard providers. Use [attached provider keys](/ai-gateway/guides/attaching-provider-keys) instead. 
-</Note>
 
 ## Next steps
 
-- [Attaching Provider Keys](/ai-gateway/guides/attaching-provider-keys): attach and manage provider keys on your AI Gateway API Key
-- [Managing Provider Keys](/ai-gateway/guides/managing-provider-keys): storing and rotating Traffic Policy keys for custom providers
-- [Bring Your Own Keys](/ai-gateway/concepts/bring-your-own-keys): overview of provider key options
+- [Bring your own provider key](/ai-gateway/guides/attaching-provider-keys): Store upstream credentials
+- [Access Key Configurations](/ai-gateway/guides/access-key-configurations): Routing rules and scope
+- [How It Works](/ai-gateway/how-it-works): Full request flow

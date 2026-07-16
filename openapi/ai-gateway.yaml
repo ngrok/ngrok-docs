@@ -1,0 +1,2310 @@
+openapi: 3.0.3
+info:
+  title: AI Gateway APIs
+  version: 0.1.0
+  description: |
+    Control-plane HTTP APIs served by the ai-gateway-control service.
+servers:
+  - url: https://api.ngrok.ai
+security:
+  - bearerAuth: []
+tags:
+  - name: AI Gateway Access Key Configurations
+    description: Manage reusable access key configurations (scope and routing rules).
+  - name: AI Gateway Access Keys
+    description: Manage ngrok-managed access keys associated with AI Gateway endpoints.
+  - name: AI Gateway Configuration
+    description: Manage per-account AI Gateway configuration (timeouts, token caps, metadata).
+  - name: AI Gateway API Keys
+    description: Manage customer-facing AI Gateway API Keys.
+  - name: AI Gateway Credits
+    description: Purchase AI Gateway credits via Stripe Checkout.
+  - name: AI Gateway Providers
+    description: Manage AI Gateway providers and the models they expose.
+  - name: AI Gateway Custom Providers
+    description: Manage custom AI Gateway providers and the models they expose.
+  - name: AI Gateway Provider Keys
+    description: Manage provider keys attached to AI Gateway managed access keys.
+  - name: AI Gateway Usage
+    description: Read-only AI Gateway usage events and aggregated usage overview for the authenticated account.
+paths:
+  /access-key-configurations:
+    get:
+      tags:
+        - AI Gateway Access Key Configurations
+      summary: List AI Gateway access key configurations
+      description: List all AI Gateway access key configurations owned by the authenticated account.
+      operationId: ListAIGatewayAccessKeyConfigurations
+      parameters:
+        - $ref: '#/components/parameters/BeforeID'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: A page of AI Gateway access key configurations.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIGatewayAccessKeyConfigurationList'
+        default:
+          $ref: '#/components/responses/Error'
+    head:
+      tags:
+        - AI Gateway Access Key Configurations
+      summary: Check AI Gateway access key configurations collection availability
+      description: HEAD variant of list AI Gateway access key configurations.
+      operationId: HeadAIGatewayAccessKeyConfigurations
+      parameters:
+        - $ref: '#/components/parameters/BeforeID'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: The AI Gateway access key configurations collection is available.
+        default:
+          $ref: '#/components/responses/Error'
+    post:
+      tags:
+        - AI Gateway Access Key Configurations
+      summary: Create an AI Gateway access key configuration
+      description: |
+        Create a reusable access key configuration with provider/model scope
+        and routing rules. Attach it to access keys to control which providers
+        and models each key may call and with what credentials.
+      operationId: CreateAIGatewayAccessKeyConfiguration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AIGatewayAccessKeyConfigurationCreate'
+      responses:
+        '201':
+          description: The created AI Gateway access key configuration.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIGatewayAccessKeyConfiguration'
+        default:
+          $ref: '#/components/responses/Error'
+  /access-key-configurations/{id}:
+    parameters:
+      - $ref: '#/components/parameters/AIGatewayAccessKeyConfigurationID'
+    get:
+      tags:
+        - AI Gateway Access Key Configurations
+      summary: Get an AI Gateway access key configuration
+      description: Get a single AI Gateway access key configuration by ID.
+      operationId: GetAIGatewayAccessKeyConfiguration
+      responses:
+        '200':
+          description: The AI Gateway access key configuration.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIGatewayAccessKeyConfiguration'
+        default:
+          $ref: '#/components/responses/Error'
+    head:
+      tags:
+        - AI Gateway Access Key Configurations
+      summary: Check AI Gateway access key configuration availability
+      description: HEAD variant of get AI Gateway access key configuration.
+      operationId: HeadAIGatewayAccessKeyConfiguration
+      responses:
+        '200':
+          description: The AI Gateway access key configuration exists.
+        default:
+          $ref: '#/components/responses/Error'
+    patch:
+      tags:
+        - AI Gateway Access Key Configurations
+      summary: Update an AI Gateway access key configuration
+      description: |
+        Apply a partial update to an AI Gateway access key configuration.
+        Omit a field to leave it unchanged; send null to clear it.
+      operationId: UpdateAIGatewayAccessKeyConfiguration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AIGatewayAccessKeyConfigurationUpdate'
+      responses:
+        '200':
+          description: The updated AI Gateway access key configuration.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIGatewayAccessKeyConfiguration'
+        default:
+          $ref: '#/components/responses/Error'
+    delete:
+      tags:
+        - AI Gateway Access Key Configurations
+      summary: Delete an AI Gateway access key configuration
+      description: |
+        Delete an AI Gateway access key configuration by ID.
+        Fails when the configuration is still referenced by an access key.
+      operationId: DeleteAIGatewayAccessKeyConfiguration
+      responses:
+        '204':
+          description: The AI Gateway access key configuration was deleted.
+        default:
+          $ref: '#/components/responses/Error'
+  /access-keys:
+    get:
+      tags:
+        - AI Gateway Access Keys
+      summary: List AI Gateway access keys
+      description: List all AI Gateway access keys owned by the authenticated account.
+      operationId: ListAIGatewayAccessKeys
+      parameters:
+        - $ref: '#/components/parameters/BeforeID'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: A page of AI Gateway access keys.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIGatewayAccessKeyList'
+        default:
+          $ref: '#/components/responses/Error'
+    head:
+      tags:
+        - AI Gateway Access Keys
+      summary: Check AI Gateway access keys collection availability
+      description: HEAD variant of list AI Gateway access keys.
+      operationId: HeadAIGatewayAccessKeys
+      parameters:
+        - $ref: '#/components/parameters/BeforeID'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: The AI Gateway access keys collection is available.
+        default:
+          $ref: '#/components/responses/Error'
+    post:
+      tags:
+        - AI Gateway Access Keys
+      summary: Create an AI Gateway access key
+      description: Create a new ngrok-managed access key for AI Gateway traffic.
+      operationId: CreateAIGatewayAccessKey
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AIGatewayAccessKeyCreate'
+      responses:
+        '201':
+          description: The created AI Gateway access key.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIGatewayAccessKey'
+        default:
+          $ref: '#/components/responses/Error'
+  /access-keys/{id}:
+    parameters:
+      - $ref: '#/components/parameters/AIGatewayAccessKeyID'
+    get:
+      tags:
+        - AI Gateway Access Keys
+      summary: Get an AI Gateway access key
+      description: Get a single AI Gateway access key by ID.
+      operationId: GetAIGatewayAccessKey
+      responses:
+        '200':
+          description: The AI Gateway access key.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIGatewayAccessKey'
+        default:
+          $ref: '#/components/responses/Error'
+    head:
+      tags:
+        - AI Gateway Access Keys
+      summary: Check AI Gateway access key availability
+      description: HEAD variant of get AI Gateway access key.
+      operationId: HeadAIGatewayAccessKey
+      responses:
+        '200':
+          description: The AI Gateway access key exists.
+        default:
+          $ref: '#/components/responses/Error'
+    patch:
+      tags:
+        - AI Gateway Access Keys
+      summary: Update an AI Gateway access key
+      description: Update mutable fields on an existing AI Gateway access key.
+      operationId: UpdateAIGatewayAccessKey
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AIGatewayAccessKeyUpdate'
+      responses:
+        '200':
+          description: The updated AI Gateway access key.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIGatewayAccessKey'
+        default:
+          $ref: '#/components/responses/Error'
+    delete:
+      tags:
+        - AI Gateway Access Keys
+      summary: Delete an AI Gateway access key
+      description: Delete an AI Gateway access key by ID.
+      operationId: DeleteAIGatewayAccessKey
+      responses:
+        '204':
+          description: The AI Gateway access key was deleted.
+        default:
+          $ref: '#/components/responses/Error'
+  /api-keys:
+    get:
+      tags:
+        - AI Gateway API Keys
+      summary: List AI Gateway API keys
+      description: List all AI Gateway API keys owned by the authenticated account.
+      operationId: ListAIGatewayAPIKeys
+      parameters:
+        - $ref: '#/components/parameters/BeforeID'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: A page of AI Gateway API keys.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIGatewayAPIKeyList'
+        default:
+          $ref: '#/components/responses/Error'
+    head:
+      tags:
+        - AI Gateway API Keys
+      summary: Check AI Gateway API keys collection availability
+      description: HEAD variant of list AI Gateway API keys.
+      operationId: HeadAIGatewayAPIKeys
+      parameters:
+        - $ref: '#/components/parameters/BeforeID'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: The AI Gateway API keys collection is available.
+        default:
+          $ref: '#/components/responses/Error'
+    post:
+      tags:
+        - AI Gateway API Keys
+      summary: Create an AI Gateway API key
+      description: Create a new AI Gateway API key for the authenticated account.
+      operationId: CreateAIGatewayAPIKey
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AIGatewayAPIKeyCreate'
+      responses:
+        '201':
+          description: The created AI Gateway API key.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIGatewayAPIKey'
+        default:
+          $ref: '#/components/responses/Error'
+  /api-keys/{id}:
+    parameters:
+      - $ref: '#/components/parameters/AIGatewayAPIKeyID'
+    get:
+      tags:
+        - AI Gateway API Keys
+      summary: Get an AI Gateway API key
+      description: Get a single AI Gateway API key by ID.
+      operationId: GetAIGatewayAPIKey
+      responses:
+        '200':
+          description: The AI Gateway API key.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIGatewayAPIKey'
+        default:
+          $ref: '#/components/responses/Error'
+    head:
+      tags:
+        - AI Gateway API Keys
+      summary: Check AI Gateway API key availability
+      description: HEAD variant of get AI Gateway API key.
+      operationId: HeadAIGatewayAPIKey
+      responses:
+        '200':
+          description: The AI Gateway API key exists.
+        default:
+          $ref: '#/components/responses/Error'
+    patch:
+      tags:
+        - AI Gateway API Keys
+      summary: Update an AI Gateway API key
+      description: Update mutable fields on an existing AI Gateway API key.
+      operationId: UpdateAIGatewayAPIKey
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AIGatewayAPIKeyUpdate'
+      responses:
+        '200':
+          description: The updated AI Gateway API key.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIGatewayAPIKey'
+        default:
+          $ref: '#/components/responses/Error'
+    delete:
+      tags:
+        - AI Gateway API Keys
+      summary: Delete an AI Gateway API key
+      description: Delete an AI Gateway API key by ID.
+      operationId: DeleteAIGatewayAPIKey
+      responses:
+        '204':
+          description: The AI Gateway API key was deleted.
+        default:
+          $ref: '#/components/responses/Error'
+  /provider-keys:
+    get:
+      tags:
+        - AI Gateway Provider Keys
+      summary: List AI Gateway provider keys
+      description: List all AI Gateway provider keys owned by the authenticated account.
+      operationId: ListAIGatewayProviderAPIKeys
+      parameters:
+        - $ref: '#/components/parameters/BeforeID'
+        - $ref: '#/components/parameters/Limit'
+        - name: provider
+          in: query
+          required: false
+          description: Only returns keys matching the provider.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A page of AI Gateway provider keys.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIGatewayProviderAPIKeyList'
+        default:
+          $ref: '#/components/responses/Error'
+    head:
+      tags:
+        - AI Gateway Provider Keys
+      summary: Check AI Gateway provider keys collection availability
+      description: HEAD variant of list AI Gateway provider keys.
+      operationId: HeadAIGatewayProviderAPIKeys
+      parameters:
+        - $ref: '#/components/parameters/BeforeID'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: The AI Gateway provider keys collection is available.
+        default:
+          $ref: '#/components/responses/Error'
+    post:
+      tags:
+        - AI Gateway Provider Keys
+      summary: Create an AI Gateway provider key
+      description: Create a new AI Gateway provider key attached to a managed access key.
+      operationId: CreateAIGatewayProviderAPIKey
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AIGatewayProviderAPIKeyCreate'
+      responses:
+        '201':
+          description: The created AI Gateway provider key.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIGatewayProviderAPIKeyDetail'
+        default:
+          $ref: '#/components/responses/Error'
+  /provider-keys/{id}:
+    parameters:
+      - $ref: '#/components/parameters/AIGatewayProviderAPIKeyID'
+    get:
+      tags:
+        - AI Gateway Provider Keys
+      summary: Get an AI Gateway provider key
+      description: Get a single AI Gateway provider key by ID.
+      operationId: GetAIGatewayProviderAPIKey
+      responses:
+        '200':
+          description: The AI Gateway provider key.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIGatewayProviderAPIKeyDetail'
+        default:
+          $ref: '#/components/responses/Error'
+    head:
+      tags:
+        - AI Gateway Provider Keys
+      summary: Check AI Gateway provider key availability
+      description: HEAD variant of get AI Gateway provider key.
+      operationId: HeadAIGatewayProviderAPIKey
+      responses:
+        '200':
+          description: The AI Gateway provider key exists.
+        default:
+          $ref: '#/components/responses/Error'
+    patch:
+      tags:
+        - AI Gateway Provider Keys
+      summary: Update an AI Gateway provider key
+      description: Update mutable fields on an existing AI Gateway provider key.
+      operationId: UpdateAIGatewayProviderAPIKey
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AIGatewayProviderAPIKeyUpdate'
+      responses:
+        '200':
+          description: The updated AI Gateway provider key.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIGatewayProviderAPIKeyDetail'
+        default:
+          $ref: '#/components/responses/Error'
+    delete:
+      tags:
+        - AI Gateway Provider Keys
+      summary: Delete an AI Gateway provider key
+      description: Delete an AI Gateway provider key by ID.
+      operationId: DeleteAIGatewayProviderAPIKey
+      responses:
+        '204':
+          description: The AI Gateway provider key was deleted.
+        default:
+          $ref: '#/components/responses/Error'
+  /provider-keys/{id}/rotate:
+    parameters:
+      - $ref: '#/components/parameters/AIGatewayProviderAPIKeyID'
+    post:
+      tags:
+        - AI Gateway Provider Keys
+      summary: Rotate an AI Gateway provider key
+      description: Update an AI Gateway provider key by ID to a new value.
+      operationId: RotateAIGatewayProviderAPIKey
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AIGatewayProviderAPIKeyRotate'
+      responses:
+        '200':
+          description: The updated AI Gateway provider key.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIGatewayProviderAPIKeyDetail'
+        default:
+          $ref: '#/components/responses/Error'
+  /providers:
+    get:
+      tags:
+        - AI Gateway Providers
+      summary: List AI Gateway providers
+      description: |
+        List all user-defined AI Gateway providers for the authenticated account. Built-in
+        providers come from the ngrok catalog, not this resource.
+      operationId: ListAIGatewayProviders
+      parameters:
+        - $ref: '#/components/parameters/BeforeID'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: A page of AI Gateway providers.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIGatewayProviderList'
+        default:
+          $ref: '#/components/responses/Error'
+    head:
+      tags:
+        - AI Gateway Providers
+      summary: Check AI Gateway providers collection availability
+      description: HEAD variant of list AI Gateway providers.
+      operationId: HeadAIGatewayProviders
+      parameters:
+        - $ref: '#/components/parameters/BeforeID'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: The AI Gateway providers collection is available.
+        default:
+          $ref: '#/components/responses/Error'
+    post:
+      tags:
+        - AI Gateway Providers
+      summary: Create an AI Gateway provider
+      description: |
+        Create a new user-defined AI Gateway provider for routing requests to a self-hosted
+        or third-party LLM endpoint. Built-in ngrok providers come from the catalog and are
+        not created here.
+      operationId: CreateAIGatewayProvider
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AIGatewayProviderCreate'
+      responses:
+        '201':
+          description: The created AI Gateway provider.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIGatewayProvider'
+        default:
+          $ref: '#/components/responses/Error'
+  /providers/{id}:
+    parameters:
+      - $ref: '#/components/parameters/AIGatewayProviderID'
+    get:
+      tags:
+        - AI Gateway Providers
+      summary: Get an AI Gateway provider
+      description: Get a single AI Gateway provider by ID.
+      operationId: GetAIGatewayProvider
+      responses:
+        '200':
+          description: The AI Gateway provider.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIGatewayProvider'
+        default:
+          $ref: '#/components/responses/Error'
+    head:
+      tags:
+        - AI Gateway Providers
+      summary: Check AI Gateway provider availability
+      description: HEAD variant of get AI Gateway provider.
+      operationId: HeadAIGatewayProvider
+      responses:
+        '200':
+          description: The AI Gateway provider exists.
+        default:
+          $ref: '#/components/responses/Error'
+    patch:
+      tags:
+        - AI Gateway Providers
+      summary: Update an AI Gateway provider
+      description: |
+        Apply a partial update to an AI Gateway provider. The providerId is immutable after
+        creation. Models follow REST PATCH-array semantics: omit the field to leave existing
+        models alone, send an empty array to clear all models, or send a full list to replace
+        the existing set.
+      operationId: UpdateAIGatewayProvider
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AIGatewayProviderUpdate'
+      responses:
+        '200':
+          description: The updated AI Gateway provider.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIGatewayProvider'
+        default:
+          $ref: '#/components/responses/Error'
+    delete:
+      tags:
+        - AI Gateway Providers
+      summary: Delete an AI Gateway provider
+      description: |
+        Delete an AI Gateway provider and all of its models. Deletion is blocked while the
+        provider is referenced by a provider key or an access key configuration entry; detach
+        or delete those references first.
+      operationId: DeleteAIGatewayProvider
+      responses:
+        '204':
+          description: The AI Gateway provider was deleted.
+        '409':
+          description: The provider is referenced by a provider key or an access key configuration entry and cannot be deleted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          $ref: '#/components/responses/Error'
+  /credits/transactions:
+    get:
+      tags:
+        - AI Gateway Credits
+      summary: List credit transactions
+      description: Returns a merged, date-descending list of credit purchases and metered usage invoices for the account. Queried from Stripe in real time.
+      operationId: GetCreditTransactions
+      responses:
+        '200':
+          description: The credit transaction history.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreditTransactionList'
+        default:
+          $ref: '#/components/responses/Error'
+  /credits/balance:
+    get:
+      tags:
+        - AI Gateway Credits
+      summary: Get credit balance
+      description: Get the account's current AI Gateway credit balance. Eventually consistent with usage events.
+      operationId: GetCreditBalance
+      responses:
+        '200':
+          description: The current credit balance.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreditBalance'
+        default:
+          $ref: '#/components/responses/Error'
+  /credits/checkout-session:
+    post:
+      tags:
+        - AI Gateway Credits
+      summary: Create a Stripe checkout session
+      description: Create a Stripe-hosted checkout session to purchase AI Gateway credits.
+      operationId: CreateCheckoutSession
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CheckoutSessionCreate'
+      responses:
+        '200':
+          description: The created checkout session.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CheckoutSession'
+        default:
+          $ref: '#/components/responses/Error'
+  /gateway-config:
+    get:
+      tags:
+        - AI Gateway Configuration
+      summary: Get AI Gateway configuration
+      description: Get the AI Gateway configuration for the authenticated account.
+      operationId: GetAIGatewayConfig
+      responses:
+        '200':
+          description: The AI Gateway configuration.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIGatewayConfig'
+        default:
+          $ref: '#/components/responses/Error'
+    head:
+      tags:
+        - AI Gateway Configuration
+      summary: Check AI Gateway configuration availability
+      description: HEAD variant of get AI Gateway configuration.
+      operationId: HeadAIGatewayConfig
+      responses:
+        '200':
+          description: The AI Gateway configuration is available.
+        default:
+          $ref: '#/components/responses/Error'
+    patch:
+      tags:
+        - AI Gateway Configuration
+      summary: Update AI Gateway configuration
+      description: Update the AI Gateway configuration for the authenticated account. Omitted fields preserve their existing stored value.
+      operationId: UpdateAIGatewayConfig
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AIGatewayConfigUpdate'
+      responses:
+        '200':
+          description: The updated AI Gateway configuration.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIGatewayConfig'
+        default:
+          $ref: '#/components/responses/Error'
+  /usage:
+    get:
+      tags:
+        - AI Gateway Usage
+      summary: List AI Gateway usage events
+      description: |
+        List per-attempt AI Gateway usage events for the authenticated account.
+        Read-only and account-scoped. Filterable by time range and optionally
+        by access key. Paged with an opaque cursor.
+      operationId: ListAIGatewayUsage
+      parameters:
+        - name: startTime
+          in: query
+          required: true
+          description: Only return events with `eventTime` >= this RFC3339 timestamp.
+          schema:
+            type: string
+            format: date-time
+        - name: endTime
+          in: query
+          required: false
+          description: Only return events with `eventTime` <= this RFC3339 timestamp. Defaults to now.
+          schema:
+            type: string
+            format: date-time
+        - name: accessKeyId
+          in: query
+          required: false
+          description: Filter results to a single AI Gateway access key.
+          schema:
+            type: string
+        - name: includeRetries
+          in: query
+          required: false
+          description: When true, include retry attempts in addition to the request-level terminal attempt. Defaults to false.
+          schema:
+            type: boolean
+            default: false
+        - name: cursor
+          in: query
+          required: false
+          description: Cursor from a previous response's `nextPageUri`. Pass to fetch the next page.
+          schema:
+            type: string
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: A page of AI Gateway usage events.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIGatewayUsageList'
+        default:
+          $ref: '#/components/responses/Error'
+  /usage/overview:
+    get:
+      tags:
+        - AI Gateway Usage
+      summary: AI Gateway usage overview
+      description: |
+        Aggregated daily cost, request, and error series for the authenticated
+        account over a time window, plus window-wide totals. Grouped by provider
+        or access key. Read-only and account-scoped.
+      operationId: GetAIGatewayUsageOverview
+      parameters:
+        - name: startTime
+          in: query
+          required: true
+          description: Start of the window as an RFC3339 timestamp. Inclusive.
+          schema:
+            type: string
+            format: date-time
+        - name: endTime
+          in: query
+          required: false
+          description: End of the window as an RFC3339 timestamp. Defaults to now.
+          schema:
+            type: string
+            format: date-time
+        - name: groupBy
+          in: query
+          required: false
+          description: Dimension to break the series down by. Defaults to provider.
+          schema:
+            type: string
+            enum:
+              - provider
+              - accessKey
+            default: provider
+      responses:
+        '200':
+          description: The usage overview series and window totals.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIGatewayUsageOverview'
+        default:
+          $ref: '#/components/responses/Error'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+  parameters:
+    BeforeID:
+      name: beforeId
+      in: query
+      required: false
+      description: Returns items before this resource identifier in descending ID order.
+      schema:
+        type: string
+    Limit:
+      name: limit
+      in: query
+      required: false
+      description: Maximum number of items to return. Defaults to 100 and may not exceed 100.
+      schema:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 100
+    AIGatewayAccessKeyConfigurationID:
+      name: id
+      in: path
+      required: true
+      description: Unique identifier for an AI Gateway access key configuration.
+      schema:
+        type: string
+    AIGatewayAccessKeyID:
+      name: id
+      in: path
+      required: true
+      description: Unique identifier for an AI Gateway access key.
+      schema:
+        type: string
+    AIGatewayAPIKeyID:
+      name: id
+      in: path
+      required: true
+      description: Unique identifier for an AI Gateway API key.
+      schema:
+        type: string
+    AIGatewayProviderAPIKeyID:
+      name: id
+      in: path
+      required: true
+      description: Unique identifier for an AI Gateway provider key.
+      schema:
+        type: string
+    AIGatewayProviderID:
+      name: id
+      in: path
+      required: true
+      description: Unique identifier for an AI Gateway provider.
+      schema:
+        type: string
+  schemas:
+    Error:
+      type: object
+      additionalProperties: false
+      required:
+        - statusCode
+        - msg
+        - details
+      properties:
+        errorCode:
+          type: string
+          description: Stable ngrok error code when available.
+        statusCode:
+          type: integer
+          format: int32
+          description: HTTP status code for this error.
+        msg:
+          type: string
+          description: Human-readable error message.
+        details:
+          type: object
+          description: Structured error details.
+          additionalProperties:
+            type: string
+    Ref:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - uri
+      properties:
+        id:
+          type: string
+          description: Resource identifier.
+        uri:
+          type: string
+          description: URI for locating the resource.
+    AccessDimension:
+      type: object
+      additionalProperties: false
+      properties:
+        allow:
+          type: array
+          description: |
+            Allowed entries (exact strings in MVP; no wildcards). Omit to
+            impose no restriction on this dimension; empty array means
+            nothing is allowed.
+          items:
+            type: string
+    AccessScope:
+      type: object
+      additionalProperties: false
+      description: |
+        Scope controlling which providers and models are reachable.
+        Omit the entire object for allow-all. Each dimension is
+        independently optional.
+      properties:
+        providers:
+          allOf:
+            - $ref: '#/components/schemas/AccessDimension'
+          description: Provider scope. Entries are provider references (catalog providerId or user-defined providerId / aigp_… id).
+        models:
+          allOf:
+            - $ref: '#/components/schemas/AccessDimension'
+          description: Model scope. Entries are model ids (e.g. `openai:openai/gpt-4o`, `openai/gpt-4.1`).
+    RouterStepKey:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - name
+        - keyRedacted
+      properties:
+        id:
+          type: string
+          description: Provider key ID.
+        name:
+          type: string
+          description: User-defined label.
+        keyRedacted:
+          type: string
+          description: Redacted display form of the key value.
+    RouterStep:
+      type: object
+      additionalProperties: false
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          enum:
+            - user
+            - ngrok
+        keys:
+          type: array
+          items:
+            $ref: '#/components/schemas/RouterStepKey'
+        keySelectionStrategy:
+          type: string
+          enum:
+            - ordered
+    RouterRule:
+      type: object
+      additionalProperties: false
+      required:
+        - steps
+      properties:
+        provider:
+          type: string
+        model:
+          type: string
+        steps:
+          type: array
+          items:
+            $ref: '#/components/schemas/RouterStep'
+    Router:
+      type: object
+      additionalProperties: false
+      properties:
+        rules:
+          type: array
+          items:
+            $ref: '#/components/schemas/RouterRule'
+    AIGatewayAccessKeyConfiguration:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - uri
+        - name
+        - createdAt
+        - updatedAt
+        - createdBy
+        - lastUpdatedBy
+      properties:
+        id:
+          type: string
+          description: Unique identifier for this configuration.
+        uri:
+          type: string
+          description: URI of this AI Gateway Access Key Configuration API resource.
+        name:
+          type: string
+          description: User-defined label for this configuration.
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp when the configuration was created.
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp when the configuration was last updated.
+        createdBy:
+          $ref: '#/components/schemas/Ref'
+        lastUpdatedBy:
+          $ref: '#/components/schemas/Ref'
+        description:
+          type: string
+          description: Human-readable description.
+        metadata:
+          type: string
+          description: Arbitrary user-defined metadata.
+        access:
+          $ref: '#/components/schemas/AccessScope'
+        router:
+          $ref: '#/components/schemas/Router'
+    AIGatewayAccessKeyConfigurationList:
+      type: object
+      additionalProperties: false
+      required:
+        - aiGatewayAccessKeyConfigurations
+        - uri
+      properties:
+        aiGatewayAccessKeyConfigurations:
+          type: array
+          description: The AI Gateway access key configurations for this account.
+          items:
+            $ref: '#/components/schemas/AIGatewayAccessKeyConfiguration'
+        uri:
+          type: string
+          description: URI of this list resource.
+        nextPageUri:
+          type: string
+          nullable: true
+          description: URI of the next page of results, or null if there is no next page.
+    RouterStepKeyWrite:
+      type: object
+      additionalProperties: false
+      description: |
+        Key attachment on write. Either attach an existing /provider-keys
+        row by `id`, or inline-create a new key with `name` + `value`.
+      properties:
+        id:
+          type: string
+          description: ID of an existing /provider-keys row to attach.
+        name:
+          type: string
+          maxLength: 255
+          description: Label for a new inline-created key. Required with `value`.
+        value:
+          type: string
+          description: Plaintext key value for inline create. Write-only; never returned on read.
+    RouterStepWrite:
+      type: object
+      additionalProperties: false
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          enum:
+            - user
+            - ngrok
+          description: |
+            Step type. `user` for BYOK credentials via /provider-keys;
+            `ngrok` for ngrok-subsidized inference (built-in providers only).
+        keys:
+          type: array
+          description: Provider keys for this step. Required when type is `user`.
+          items:
+            $ref: '#/components/schemas/RouterStepKeyWrite'
+        keySelectionStrategy:
+          type: string
+          enum:
+            - ordered
+          description: How to select among `keys`. MVP supports `ordered` only (try keys in list order).
+    RouterRuleWrite:
+      type: object
+      additionalProperties: false
+      required:
+        - steps
+      description: |
+        A routing rule. Scope it by `provider`, `model`, or both.
+        Model rules take precedence over provider rules for the same upstream.
+      properties:
+        provider:
+          type: string
+          description: |
+            Provider reference for this rule. At most one provider rule per
+            upstream in MVP.
+        model:
+          type: string
+          description: |
+            Provider-qualified model id (e.g. `openai:openai/gpt-5.5`).
+            Open-provider ids (e.g. `openai/gpt-5.5`) are post-MVP.
+        steps:
+          type: array
+          minItems: 1
+          description: Fallback chain. Steps run in order.
+          items:
+            $ref: '#/components/schemas/RouterStepWrite'
+    RouterWrite:
+      type: object
+      additionalProperties: false
+      description: |
+        Routing configuration. Omit to use defaults: built-in providers
+        get an implicit ngrok step; user-defined providers fail until a
+        rule with user keys exists.
+      properties:
+        rules:
+          type: array
+          items:
+            $ref: '#/components/schemas/RouterRuleWrite'
+    AIGatewayAccessKeyConfigurationCreate:
+      type: object
+      additionalProperties: false
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          maxLength: 255
+          description: User-defined label for this configuration.
+        description:
+          type: string
+          maxLength: 255
+          description: Human-readable description.
+        metadata:
+          type: string
+          maxLength: 4096
+          description: Arbitrary user-defined metadata.
+        access:
+          $ref: '#/components/schemas/AccessScope'
+        router:
+          $ref: '#/components/schemas/RouterWrite'
+    AIGatewayAccessKeyConfigurationUpdate:
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+          nullable: true
+          maxLength: 255
+          description: User-defined label for this configuration.
+        description:
+          type: string
+          nullable: true
+          maxLength: 255
+          description: Human-readable description.
+        metadata:
+          type: string
+          nullable: true
+          maxLength: 4096
+          description: Arbitrary user-defined metadata.
+        access:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/AccessScope'
+        router:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/RouterWrite'
+    AIGatewayAccessKey:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - uri
+        - createdAt
+        - updatedAt
+        - createdBy
+        - lastUpdatedBy
+        - keyRedacted
+      properties:
+        id:
+          type: string
+          description: Unique identifier for this access key.
+        name:
+          type: string
+          description: User-friendly label for this access key.
+        uri:
+          type: string
+          description: URI of this AI Gateway Access Key API resource.
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp when the access key was created.
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp when the access key was last updated.
+        description:
+          type: string
+          description: Human-readable description of this access key.
+        metadata:
+          type: string
+          description: Arbitrary user-defined metadata for this access key.
+        createdBy:
+          $ref: '#/components/schemas/Ref'
+        lastUpdatedBy:
+          $ref: '#/components/schemas/Ref'
+        token:
+          type: string
+          description: Plaintext access key token. Only returned when the key is first created.
+        keyRedacted:
+          type: string
+          description: Redacted display form of the access key token.
+        lastUsed:
+          type: string
+          format: date-time
+          nullable: true
+          description: Timestamp when the access key was last used.
+        accessKeyConfiguration:
+          type: object
+          nullable: true
+          additionalProperties: false
+          description: Linked access key configuration, or null for allow-all scope.
+          required:
+            - id
+            - uri
+            - name
+          properties:
+            id:
+              type: string
+              description: Configuration ID.
+            uri:
+              type: string
+              description: URI of the linked configuration resource.
+            name:
+              type: string
+              description: Configuration name.
+    AIGatewayAccessKeyList:
+      type: object
+      additionalProperties: false
+      required:
+        - aiGatewayAccessKeys
+        - uri
+      properties:
+        aiGatewayAccessKeys:
+          type: array
+          description: The AI Gateway access keys for this account.
+          items:
+            $ref: '#/components/schemas/AIGatewayAccessKey'
+        uri:
+          type: string
+          description: URI of this list resource.
+        nextPageUri:
+          type: string
+          nullable: true
+          description: URI of the next page of results, or null if there is no next page.
+    AIGatewayAccessKeyCreate:
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+          maxLength: 255
+          description: User-friendly label for this access key.
+        description:
+          type: string
+          maxLength: 255
+          description: Human-readable description of this access key.
+        metadata:
+          type: string
+          maxLength: 4096
+          description: Arbitrary user-defined metadata for this access key.
+        accessKeyConfigurationId:
+          type: string
+          description: ID of an access key configuration to link. Omit for allow-all scope.
+    AIGatewayAccessKeyUpdate:
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+          nullable: true
+          maxLength: 255
+          description: User-friendly label for this access key.
+        description:
+          type: string
+          nullable: true
+          maxLength: 255
+          description: Human-readable description of this access key.
+        metadata:
+          type: string
+          nullable: true
+          maxLength: 4096
+          description: Arbitrary user-defined metadata for this access key.
+        accessKeyConfigurationId:
+          type: string
+          nullable: true
+          description: ID of an access key configuration. Set to null to revert to allow-all scope.
+    AIGatewayAPIKey:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - uri
+        - createdAt
+        - updatedAt
+        - createdBy
+        - lastUpdatedBy
+        - keyRedacted
+      properties:
+        id:
+          type: string
+          description: Unique identifier for this API key.
+        uri:
+          type: string
+          description: URI of this AI Gateway API Key API resource.
+        name:
+          type: string
+          description: User-friendly label for this API key.
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp when the API key was created.
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp when the API key was last updated.
+        description:
+          type: string
+          description: Human-readable description of this API key.
+        metadata:
+          type: string
+          description: Arbitrary user-defined metadata for this API key.
+        createdBy:
+          $ref: '#/components/schemas/Ref'
+        lastUpdatedBy:
+          $ref: '#/components/schemas/Ref'
+        token:
+          type: string
+          description: Plaintext API key token. Only returned when the key is first created.
+        keyRedacted:
+          type: string
+          description: Redacted display form of the API key token.
+        lastUsed:
+          type: string
+          format: date-time
+          nullable: true
+          description: Timestamp when the API key was last used.
+    AIGatewayAPIKeyList:
+      type: object
+      additionalProperties: false
+      required:
+        - aiGatewayApiKeys
+        - uri
+      properties:
+        aiGatewayApiKeys:
+          type: array
+          description: The AI Gateway API keys for this account.
+          items:
+            $ref: '#/components/schemas/AIGatewayAPIKey'
+        uri:
+          type: string
+          description: URI of this list resource.
+        nextPageUri:
+          type: string
+          nullable: true
+          description: URI of the next page of results, or null if there is no next page.
+    AIGatewayAPIKeyCreate:
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+          maxLength: 255
+          description: User-friendly label for this API key.
+        description:
+          type: string
+          maxLength: 255
+          description: Human-readable description of this API key.
+        metadata:
+          type: string
+          maxLength: 4096
+          description: Arbitrary user-defined metadata for this API key.
+    AIGatewayAPIKeyUpdate:
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+          nullable: true
+          maxLength: 255
+          description: User-friendly label for this API key.
+        description:
+          type: string
+          nullable: true
+          maxLength: 255
+          description: Human-readable description of this API key.
+        metadata:
+          type: string
+          nullable: true
+          maxLength: 4096
+          description: Arbitrary user-defined metadata for this API key.
+    AIGatewayProviderAPIKeyDetail:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - uri
+        - createdAt
+        - updatedAt
+        - providerId
+        - name
+        - keyRedacted
+        - createdBy
+        - lastUpdatedBy
+      properties:
+        id:
+          type: string
+          description: Unique identifier for this provider key.
+        uri:
+          type: string
+          description: URI of this AI Gateway Provider Key API resource.
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp when the provider key was created.
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp when the provider key was last updated.
+        providerId:
+          type: string
+          description: Which AI provider this key is for, for example `openai` or `anthropic`.
+        name:
+          type: string
+          description: User-defined label for this provider key.
+        keyRedacted:
+          type: string
+          description: Redacted display form of the key value.
+        description:
+          type: string
+          description: Human-readable description of this provider key.
+        metadata:
+          type: string
+          description: Arbitrary user-defined metadata for this provider key.
+        createdBy:
+          $ref: '#/components/schemas/Ref'
+        lastUpdatedBy:
+          $ref: '#/components/schemas/Ref'
+        lastUsed:
+          type: string
+          format: date-time
+          nullable: true
+          description: Timestamp when the provider key was last used.
+    AIGatewayProviderAPIKeyList:
+      type: object
+      additionalProperties: false
+      required:
+        - aiGatewayProviderKeys
+        - uri
+      properties:
+        aiGatewayProviderKeys:
+          type: array
+          description: The AI Gateway provider keys for this account.
+          items:
+            $ref: '#/components/schemas/AIGatewayProviderAPIKeyDetail'
+        uri:
+          type: string
+          description: URI of this list resource.
+        nextPageUri:
+          type: string
+          nullable: true
+          description: URI of the next page of results, or null if there is no next page.
+    AIGatewayProviderAPIKeyCreate:
+      type: object
+      additionalProperties: false
+      required:
+        - providerId
+        - name
+        - value
+      properties:
+        providerId:
+          type: string
+          description: Which AI provider this key is for, for example `openai` or `anthropic`.
+        value:
+          type: string
+          description: Plaintext provider key value. Write-only; never returned in responses.
+        name:
+          type: string
+          maxLength: 255
+          description: User-defined label for this provider key.
+        description:
+          type: string
+          maxLength: 255
+          description: Human-readable description of this provider key.
+        metadata:
+          type: string
+          maxLength: 4096
+          description: Arbitrary user-defined metadata for this provider key.
+    AIGatewayProviderAPIKeyUpdate:
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+          nullable: true
+          maxLength: 255
+          description: User-defined label for this provider key.
+        description:
+          type: string
+          nullable: true
+          maxLength: 255
+          description: Human-readable description of this provider key.
+        metadata:
+          type: string
+          nullable: true
+          maxLength: 4096
+          description: Arbitrary user-defined metadata for this provider key.
+    AIGatewayProviderAPIKeyRotate:
+      type: object
+      additionalProperties: false
+      required:
+        - name
+        - value
+      properties:
+        value:
+          type: string
+          description: Plaintext provider key value. Write-only; never returned in responses.
+        name:
+          type: string
+          maxLength: 255
+          description: User-defined label for this provider key.
+    SupportedAPISurfaceParam:
+      type: object
+      additionalProperties: false
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: Name of a supported top-level request body parameter.
+    SupportedAPISurface:
+      type: object
+      additionalProperties: false
+      required:
+        - format
+      properties:
+        format:
+          type: string
+          description: |
+            The API format this surface conforms to (for example "openai" or
+            "anthropic"). Validated against ngrok's known formats at runtime.
+        surface:
+          type: string
+          description: |
+            The specific API surface within the format (for example
+            "chat-completions", "responses", or "messages"). Validated against
+            ngrok's known surfaces at runtime.
+        supportedParams:
+          type: array
+          description: Top-level request body parameters supported by this surface.
+          items:
+            $ref: '#/components/schemas/SupportedAPISurfaceParam'
+    AIGatewayProviderModel:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - modelId
+      properties:
+        id:
+          type: string
+          description: Unique identifier for this model.
+        modelId:
+          type: string
+          description: Model identifier (for example "llama-3").
+    AIGatewayProvider:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - uri
+        - providerId
+        - name
+        - baseUrl
+        - createdAt
+        - updatedAt
+        - createdBy
+        - lastUpdatedBy
+      properties:
+        id:
+          type: string
+          description: Unique identifier for this provider.
+        uri:
+          type: string
+          description: URI of this AI Gateway Provider API resource.
+        providerId:
+          type: string
+          description: Provider identifier used as the address segment in model strings (for example "internal-vllm").
+        name:
+          type: string
+          description: User-friendly label for this provider.
+        baseUrl:
+          type: string
+          description: Base URL of the provider's API endpoint.
+        metadata:
+          type: string
+          description: Arbitrary user-defined metadata for this provider.
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp when the provider was created.
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp when the provider was last updated.
+        createdBy:
+          $ref: '#/components/schemas/Ref'
+        lastUpdatedBy:
+          $ref: '#/components/schemas/Ref'
+        supportedApiSurfaces:
+          type: array
+          description: API surfaces supported by this provider.
+          items:
+            $ref: '#/components/schemas/SupportedAPISurface'
+        models:
+          type: array
+          description: Models exposed by this provider.
+          items:
+            $ref: '#/components/schemas/AIGatewayProviderModel'
+    AIGatewayProviderList:
+      type: object
+      additionalProperties: false
+      required:
+        - aiGatewayProviders
+        - uri
+      properties:
+        aiGatewayProviders:
+          type: array
+          description: The AI Gateway providers for this account.
+          items:
+            $ref: '#/components/schemas/AIGatewayProvider'
+        uri:
+          type: string
+          description: URI of this list resource.
+        nextPageUri:
+          type: string
+          nullable: true
+          description: URI of the next page of results, or null if there is no next page.
+    AIGatewayProviderModelCreate:
+      type: object
+      additionalProperties: false
+      required:
+        - modelId
+      properties:
+        modelId:
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: Model identifier (for example "llama-3").
+    AIGatewayProviderCreate:
+      type: object
+      additionalProperties: false
+      required:
+        - providerId
+        - name
+        - baseUrl
+      properties:
+        providerId:
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: |
+            Provider identifier used as the address segment in model strings (for example
+            "internal-vllm"). Unique within the account; must not collide with a built-in
+            catalog providerId.
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: User-friendly label for this provider.
+        baseUrl:
+          type: string
+          minLength: 1
+          maxLength: 2048
+          description: Base URL of the provider's API endpoint. Required — every provider has one.
+        metadata:
+          type: string
+          maxLength: 4096
+          description: Arbitrary user-defined metadata for this provider.
+        supportedApiSurfaces:
+          type: array
+          description: API surfaces supported by this provider.
+          items:
+            $ref: '#/components/schemas/SupportedAPISurface'
+        models:
+          type: array
+          description: Initial set of models exposed by this provider.
+          items:
+            $ref: '#/components/schemas/AIGatewayProviderModelCreate'
+    AIGatewayProviderUpdate:
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+          nullable: true
+          minLength: 1
+          maxLength: 255
+          description: User-friendly label for this provider.
+        baseUrl:
+          type: string
+          minLength: 1
+          maxLength: 2048
+          description: Base URL of the provider's API endpoint. Cannot be cleared (every provider has one).
+        metadata:
+          type: string
+          nullable: true
+          maxLength: 4096
+          description: Arbitrary user-defined metadata for this provider.
+        supportedApiSurfaces:
+          type: array
+          nullable: true
+          description: API surfaces supported by this provider.
+          items:
+            $ref: '#/components/schemas/SupportedAPISurface'
+        models:
+          type: array
+          nullable: true
+          description: |
+            Full replacement set for the models attached to this provider. Omit the field to
+            leave existing models alone, send an empty array to clear all models, or send a
+            full list to replace the existing set.
+          items:
+            $ref: '#/components/schemas/AIGatewayProviderModelCreate'
+    CreditTransactionCredits:
+      type: object
+      additionalProperties: false
+      required:
+        - type
+        - createdAt
+        - category
+        - amountCents
+      properties:
+        type:
+          type: string
+          enum:
+            - credits
+          description: The type of transaction.
+        amountCents:
+          type: integer
+          format: int64
+          minimum: 0
+          description: Amount of credits granted in cents.
+        category:
+          type: string
+          enum:
+            - purchase
+            - promotional
+          description: Credit grant category.
+        expiresAt:
+          type: string
+          format: date-time
+          nullable: true
+          description: When the credit grant expires. Null if the grant does not expire.
+        createdAt:
+          type: string
+          format: date-time
+          description: When this transaction occurred.
+    CreditTransactionUsageInvoice:
+      type: object
+      additionalProperties: false
+      required:
+        - type
+        - createdAt
+        - periodStart
+        - periodEnd
+        - invoiceUrl
+        - totalCents
+        - appliedCreditsCents
+        - amountDueCents
+        - amountPaidCents
+        - amountRemainingCents
+      properties:
+        type:
+          type: string
+          enum:
+            - usageInvoice
+          description: The type of transaction.
+        createdAt:
+          type: string
+          format: date-time
+          description: When this transaction occurred.
+        periodStart:
+          type: string
+          format: date-time
+          description: Start of the billing period.
+        periodEnd:
+          type: string
+          format: date-time
+          description: End of the billing period.
+        invoiceUrl:
+          type: string
+          format: uri
+          nullable: true
+          description: Stripe-hosted invoice URL.
+        totalCents:
+          type: integer
+          format: int64
+          description: Invoice total before customer balance is applied.
+        appliedCreditsCents:
+          type: integer
+          format: int64
+          description: Amount of credits applied to this invoice (total minus amount_due).
+        amountDueCents:
+          type: integer
+          format: int64
+          description: Final amount due after credits are applied.
+        amountPaidCents:
+          type: integer
+          format: int64
+          description: Amount already paid.
+        amountRemainingCents:
+          type: integer
+          format: int64
+          description: Amount still owed.
+    CreditTransactionUsageInvoicePreview:
+      type: object
+      additionalProperties: false
+      required:
+        - type
+        - createdAt
+        - periodStart
+        - periodEnd
+        - totalCents
+        - appliedCreditsCents
+        - amountDueCents
+        - amountPaidCents
+        - amountRemainingCents
+      properties:
+        type:
+          type: string
+          enum:
+            - usageInvoicePreview
+          description: The type of transaction.
+        createdAt:
+          type: string
+          format: date-time
+          description: When this transaction occurred.
+        periodStart:
+          type: string
+          format: date-time
+          description: Start of the billing period.
+        periodEnd:
+          type: string
+          format: date-time
+          description: End of the billing period.
+        totalCents:
+          type: integer
+          format: int64
+          description: Invoice total before customer balance is applied.
+        appliedCreditsCents:
+          type: integer
+          format: int64
+          description: Amount of credits applied to this invoice (total minus amount_due).
+        amountDueCents:
+          type: integer
+          format: int64
+          description: Final amount due after credits are applied.
+        amountPaidCents:
+          type: integer
+          format: int64
+          description: Amount already paid.
+        amountRemainingCents:
+          type: integer
+          format: int64
+          description: Amount still owed.
+    CreditTransactionItem:
+      oneOf:
+        - $ref: '#/components/schemas/CreditTransactionCredits'
+        - $ref: '#/components/schemas/CreditTransactionUsageInvoice'
+        - $ref: '#/components/schemas/CreditTransactionUsageInvoicePreview'
+      discriminator:
+        propertyName: type
+        mapping:
+          credits: '#/components/schemas/CreditTransactionCredits'
+          usageInvoice: '#/components/schemas/CreditTransactionUsageInvoice'
+          usageInvoicePreview: '#/components/schemas/CreditTransactionUsageInvoicePreview'
+    CreditTransactionList:
+      type: object
+      additionalProperties: false
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          description: Credit transactions, ordered newest first.
+          items:
+            $ref: '#/components/schemas/CreditTransactionItem'
+    CreditBalance:
+      type: object
+      additionalProperties: false
+      required:
+        - balanceCents
+      properties:
+        balanceCents:
+          type: integer
+          format: int64
+          description: Current credit balance in cents.
+    CheckoutSessionCreate:
+      type: object
+      additionalProperties: false
+      required:
+        - amount
+      properties:
+        amount:
+          type: integer
+          format: int64
+          minimum: 1
+          description: Amount in cents to purchase. Must be a positive integer.
+    CheckoutSession:
+      type: object
+      additionalProperties: false
+      required:
+        - sessionId
+        - sessionUrl
+      properties:
+        sessionId:
+          type: string
+          description: The Stripe checkout session ID.
+        sessionUrl:
+          type: string
+          format: uri
+          description: The hosted Stripe checkout URL to redirect the user to.
+    AIGatewayConfig:
+      type: object
+      additionalProperties: false
+      required:
+        - accountId
+        - uri
+        - totalTimeout
+        - perRequestTimeout
+      properties:
+        accountId:
+          type: string
+          description: Unique identifier of the account this configuration belongs to.
+        uri:
+          type: string
+          description: URI of this AI Gateway Configuration API resource.
+        totalTimeout:
+          type: string
+          description: Total timeout duration for a request through the AI Gateway (Go duration string, e.g. `30s`, `1m`).
+        perRequestTimeout:
+          type: string
+          description: Per-request timeout duration for individual upstream requests (Go duration string, e.g. `30s`, `1m`).
+        maxInputTokens:
+          type: integer
+          format: int64
+          nullable: true
+          description: |
+            Maximum number of input tokens allowed per request.
+            PATCH: omit to preserve, send `null` to clear the cap (no
+            limit), or send a number to set it. Accounts that have not
+            written a value read back the per-account default; once
+            cleared with `null`, GET returns `null` until a new value is
+            written.
+          x-go-type: gatewayconfig.NullableInt64
+          x-go-type-import:
+            name: gatewayconfig
+            path: go.ngrok.com/svc/ai-gateway-control/gatewayconfig
+          x-go-type-skip-optional-pointer: true
+        maxOutputTokens:
+          type: integer
+          format: int64
+          nullable: true
+          description: |
+            Maximum number of output tokens allowed per request.
+            PATCH: omit to preserve, send `null` to clear the cap (no
+            limit), or send a number to set it. Accounts that have not
+            written a value read back the per-account default; once
+            cleared with `null`, GET returns `null` until a new value is
+            written.
+          x-go-type: gatewayconfig.NullableInt64
+          x-go-type-import:
+            name: gatewayconfig
+            path: go.ngrok.com/svc/ai-gateway-control/gatewayconfig
+          x-go-type-skip-optional-pointer: true
+        metadata:
+          type: string
+          maxLength: 4096
+          nullable: true
+          description: |
+            Arbitrary user-defined metadata for the AI Gateway configuration.
+            PATCH: omit to preserve, send `null` to clear, or send a string
+            to set it. GET returns `null` when no value is stored.
+          x-go-type: gatewayconfig.NullableString
+          x-go-type-import:
+            name: gatewayconfig
+            path: go.ngrok.com/svc/ai-gateway-control/gatewayconfig
+          x-go-type-skip-optional-pointer: true
+    AIGatewayConfigUpdate:
+      type: object
+      additionalProperties: false
+      properties:
+        totalTimeout:
+          type: string
+          description: Total timeout duration for a request through the AI Gateway (Go duration string, e.g. `30s`, `1m`).
+        perRequestTimeout:
+          type: string
+          description: Per-request timeout duration for individual upstream requests (Go duration string, e.g. `30s`, `1m`).
+        maxInputTokens:
+          type: integer
+          format: int64
+          nullable: true
+          description: |
+            Maximum number of input tokens allowed per request.
+            PATCH: omit to preserve, send `null` to clear the cap (no
+            limit), or send a number to set it. Accounts that have not
+            written a value read back the per-account default; once
+            cleared with `null`, GET returns `null` until a new value is
+            written.
+          x-go-type: gatewayconfig.NullableInt64
+          x-go-type-import:
+            name: gatewayconfig
+            path: go.ngrok.com/svc/ai-gateway-control/gatewayconfig
+          x-go-type-skip-optional-pointer: true
+        maxOutputTokens:
+          type: integer
+          format: int64
+          nullable: true
+          description: |
+            Maximum number of output tokens allowed per request.
+            PATCH: omit to preserve, send `null` to clear the cap (no
+            limit), or send a number to set it. Accounts that have not
+            written a value read back the per-account default; once
+            cleared with `null`, GET returns `null` until a new value is
+            written.
+          x-go-type: gatewayconfig.NullableInt64
+          x-go-type-import:
+            name: gatewayconfig
+            path: go.ngrok.com/svc/ai-gateway-control/gatewayconfig
+          x-go-type-skip-optional-pointer: true
+        metadata:
+          type: string
+          maxLength: 4096
+          nullable: true
+          description: |
+            Arbitrary user-defined metadata for the AI Gateway configuration.
+            PATCH: omit to preserve, send `null` to clear, or send a string
+            to set it. GET returns `null` when no value is stored.
+          x-go-type: gatewayconfig.NullableString
+          x-go-type-import:
+            name: gatewayconfig
+            path: go.ngrok.com/svc/ai-gateway-control/gatewayconfig
+          x-go-type-skip-optional-pointer: true
+    AIGatewayUsageEvent:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - eventTime
+        - requestId
+        - accessKeyId
+        - provider
+        - providerDisplayName
+        - model
+        - modelDisplayName
+        - attemptNumber
+        - isFinalAttempt
+        - statusCode
+        - timedOut
+        - isError
+        - isStreaming
+        - stopReason
+        - inputTokens
+        - outputTokens
+        - cacheReadTokens
+        - reasoningTokens
+        - totalCost
+        - keySource
+      properties:
+        id:
+          type: string
+          description: Unique identifier for this attempt event.
+        eventTime:
+          type: string
+          format: date-time
+          description: Timestamp at which the upstream attempt completed.
+        requestId:
+          type: string
+          description: ID linking attempts that belong to the same client request.
+        accessKeyId:
+          type: string
+          description: The AI Gateway access key that originated the request.
+        provider:
+          type: string
+          description: AI provider canonical ID, for example `openai`.
+        providerDisplayName:
+          type: string
+          description: Human-readable provider name.
+        model:
+          type: string
+          description: Model canonical ID, for example `gpt-4o-mini`.
+        modelDisplayName:
+          type: string
+          description: Human-readable model name.
+        attemptNumber:
+          type: integer
+          format: int32
+          description: 1-based attempt index in the retry chain.
+        isFinalAttempt:
+          type: boolean
+          description: True if this was the terminal attempt for the request.
+        statusCode:
+          type: integer
+          format: int32
+          description: HTTP status code returned by the upstream provider.
+        timedOut:
+          type: boolean
+          description: True if the attempt timed out.
+        isError:
+          type: boolean
+          description: True if this attempt was an error (timed out or HTTP 4xx/5xx).
+        isStreaming:
+          type: boolean
+          description: True if the request was a streaming response.
+        stopReason:
+          type: string
+          description: Provider-reported finish reason.
+        inputTokens:
+          type: integer
+          format: int64
+          description: Provider-reported input tokens.
+        outputTokens:
+          type: integer
+          format: int64
+          description: Provider-reported output tokens.
+        cacheReadTokens:
+          type: integer
+          format: int64
+          description: Tokens read from the provider cache.
+        reasoningTokens:
+          type: integer
+          format: int64
+          description: Reasoning tokens reported by the provider.
+        totalCost:
+          type: string
+          description: Total cost in US dollars as a decimal string (5-place fractional precision).
+        keySource:
+          type: string
+          description: Source of the provider credential. `ngrok` for managed keys, `user` for BYOK provider keys.
+        providerKeyId:
+          type: string
+          description: The provider key used, when `keySource` is `user`. Absent otherwise.
+        providerKeyDisplayName:
+          type: string
+          description: Redacted display form of the provider key, when `keySource` is `user`. Absent otherwise.
+    AIGatewayUsageList:
+      type: object
+      additionalProperties: false
+      required:
+        - aiGatewayUsage
+        - uri
+      properties:
+        aiGatewayUsage:
+          type: array
+          description: A page of AI Gateway usage events, ordered newest first.
+          items:
+            $ref: '#/components/schemas/AIGatewayUsageEvent'
+        uri:
+          type: string
+          description: URI of this list resource.
+        nextPageUri:
+          type: string
+          nullable: true
+          description: URI of the next page of results, or null if there is no next page.
+    AIGatewayUsageOverviewBucket:
+      type: object
+      additionalProperties: false
+      required:
+        - bucketStart
+        - groupKey
+        - cost
+        - requests
+        - errors
+      properties:
+        bucketStart:
+          type: string
+          format: date-time
+          description: Start of the UTC day bucket.
+        groupKey:
+          type: string
+          description: Provider ID or access key ID, depending on groupBy.
+        cost:
+          type: string
+          description: Cost in US dollars as a decimal string, summed over all attempts.
+        requests:
+          type: integer
+          format: int64
+          description: Final-attempt request count.
+        errors:
+          type: integer
+          format: int64
+          description: Errored final-attempt count.
+    AIGatewayUsageOverviewTotals:
+      type: object
+      additionalProperties: false
+      required:
+        - cost
+        - requests
+        - errors
+      properties:
+        cost:
+          type: string
+          description: Total cost over the window in US dollars as a decimal string.
+        requests:
+          type: integer
+          format: int64
+          description: Total final-attempt request count over the window.
+        errors:
+          type: integer
+          format: int64
+          description: Total errored final-attempt count over the window.
+    AIGatewayUsageOverview:
+      type: object
+      additionalProperties: false
+      required:
+        - uri
+        - buckets
+        - totals
+      properties:
+        uri:
+          type: string
+          description: URI of this overview resource.
+        buckets:
+          type: array
+          description: Daily series ordered by day then group key.
+          items:
+            $ref: '#/components/schemas/AIGatewayUsageOverviewBucket'
+        totals:
+          $ref: '#/components/schemas/AIGatewayUsageOverviewTotals'
+  responses:
+    Error:
+      description: API error response.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
