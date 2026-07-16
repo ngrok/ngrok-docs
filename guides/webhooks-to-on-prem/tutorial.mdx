@@ -15,7 +15,7 @@ This guide sets up a single entry point where webhooks access your internal serv
 
 ## How it works
 
-Webhooks hit one public address that you configure for your cloud endpoint. A single Traffic Policy on that address checks the signature on every request, rejects anything that fails, and only forwards verified requests. The internal service that receives webhooks connects outbound to ngrok; it never accepts inbound connections and is never publicly addressable.
+Webhooks hit one public address that you configure for your Cloud Endpoint. A single Traffic Policy on that address checks the signature on every request, rejects anything that fails, and only forwards verified requests. The internal service that receives webhooks connects outbound to ngrok; it never accepts inbound connections and is never publicly addressable.
 
 <img
   src="./img/webhook-architecture.png"
@@ -43,7 +43,7 @@ In this tutorial, you'll build the shared front door in steps 1–4, then apply 
 
 ### 1. Give the receiving service a private address
 
-Each service that handles webhooks gets an internal [agent endpoint](/gateway/agent-endpoints/): a private address that only receives traffic when it's forwarded through the [`forward-internal`](/traffic-policy/actions/forward-internal/) action. That's what keeps the service off the public internet. Internal endpoint hostnames must end with `.internal`.
+Each service that handles webhooks gets an internal [Agent Endpoint](/gateway/agent-endpoints/): a private address that only receives traffic when it's forwarded through the [`forward-internal`](/traffic-policy/actions/forward-internal/) action. That's what keeps the service off the public internet. Internal endpoint hostnames must end with `.internal`.
 
 How you create it depends on where the service runs.
 
@@ -84,7 +84,7 @@ How you create it depends on where the service runs.
   </Tab>
 </Tabs>
 
-Repeat for every service that will receive webhook, e.g., `notification-service.internal` and `deployment-service.internal`.
+Repeat for every service that will receive webhook, for example, `notification-service.internal` and `deployment-service.internal`.
 
 ### 2. Reserve a public address
 
@@ -114,7 +114,7 @@ ngrok api secrets create --name "stripe-secret" --value "your_stripe_secret_here
 
 ### 5. Verify the sender and route it inward
 
-On your cloud endpoint's Traffic Policy, each rule matches a provider by request path, verifies the signature with [`verify-webhook`](/traffic-policy/actions/verify-webhook), and forwards verified requests to the matching internal service with [`forward-internal`](/traffic-policy/actions/forward-internal/). A request with a bad or missing signature is rejected with a `403`.
+On your Cloud Endpoint's Traffic Policy, each rule matches a provider by request path, verifies the signature with [`verify-webhook`](/traffic-policy/actions/verify-webhook), and forwards verified requests to the matching internal service with [`forward-internal`](/traffic-policy/actions/forward-internal/). A request with a bad or missing signature is rejected with a `403`.
 
 <Tabs>
   <Tab title="Using vaults and secrets">
