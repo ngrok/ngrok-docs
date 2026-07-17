@@ -1,0 +1,102 @@
+Use [expressions](/traffic-policy/how-it-works#expressions) to restrict access based on the authenticated user's email, allowing only users from a specific organization.
+
+<CodeGroup>
+
+```yaml policy.yml
+on_http_request:
+  # Authenticate with Google OAuth
+  - actions:
+      - type: oauth
+        config:
+          provider: google
+  # Only allow users with a company email address
+  - expressions:
+      - "!actions.ngrok.oauth.identity.email.endsWith('@your-company.com')"
+    actions:
+      - type: deny
+        config:
+          status_code: 403
+```
+
+```json policy.json
+{
+  "on_http_request": [
+    {
+      "actions": [
+        {
+          "type": "oauth",
+          "config": {
+            "provider": "google"
+          }
+        }
+      ]
+    },
+    {
+      "expressions": [
+        "!actions.ngrok.oauth.identity.email.endsWith('@your-company.com')"
+      ],
+      "actions": [
+        {
+          "type": "deny",
+          "config": {
+            "status_code": 403
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+</CodeGroup>
+
+To allow only an explicit list of addresses instead of a whole domain, match against a list:
+
+<CodeGroup>
+
+```yaml policy.yml
+on_http_request:
+  - actions:
+      - type: oauth
+        config:
+          provider: google
+  # Only allow specific email addresses
+  - expressions:
+      - "!(actions.ngrok.oauth.identity.email in ['alice@example.com', 'bob@example.com'])"
+    actions:
+      - type: deny
+        config:
+          status_code: 403
+```
+
+```json policy.json
+{
+  "on_http_request": [
+    {
+      "actions": [
+        {
+          "type": "oauth",
+          "config": {
+            "provider": "google"
+          }
+        }
+      ]
+    },
+    {
+      "expressions": [
+        "!(actions.ngrok.oauth.identity.email in ['alice@example.com', 'bob@example.com'])"
+      ],
+      "actions": [
+        {
+          "type": "deny",
+          "config": {
+            "status_code": 403
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+</CodeGroup>
