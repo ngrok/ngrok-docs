@@ -15,7 +15,7 @@ This guide sets up a single entry point where webhooks access your internal serv
 
 ## How it works
 
-Webhooks hit one public address that you configure for your Cloud Endpoint. A single Traffic Policy on that address checks the signature on every request, rejects anything that fails, and only forwards verified requests. The ngrok agent opens an outbound connection to ngrok and forwards webhook traffic to your internal service, so you never have to open an inbound port or touch your firewall.
+Webhooks hit one public address that you configure for your Cloud Endpoint. A single Traffic Policy on that address checks the signature on every request, rejects anything that fails, and only forwards verified requests. The ngrok agent opens an outbound connection to ngrok and forwards webhook traffic to your internal service, so you never have to open an inbound port or tap your firewall.
 
 <img
   src="./img/webhook-architecture.png"
@@ -43,7 +43,7 @@ In this tutorial, you'll build the shared front door in steps 1–4, then apply 
 
 ### 1. Give the receiving service a private address
 
-Each service that handles webhooks gets an internal [Agent Endpoint](/gateway/agent-endpoints/): a private address that only receives traffic when it's forwarded through the [`forward-internal`](/traffic-policy/actions/forward-internal/) action. That's what keeps the service off the public internet. Internal endpoint hostnames must end with `.internal`.
+Each service that handles webhooks gets an internal [Agent Endpoint](/gateway/agent-endpoints/): a private address that only receives traffic when it's forwarded through the [`forward-internal`](/traffic-policy/actions/forward-internal/) action. Internal endpoint hostnames must end with `.internal`.
 
 How you create it depends on where the service runs.
 
@@ -84,19 +84,13 @@ How you create it depends on where the service runs.
   </Tab>
 </Tabs>
 
-Repeat for every service that will receive webhook, for example, `notification-service.internal` and `deployment-service.internal`.
+Repeat for every service that will receive webhook, for example, `notif-service.internal` and `deploy-service.internal`.
 
-### 2. Reserve a public address
+### 2. Create the front door
 
-Webhook providers need a stable URL to deliver to. Navigate to the [**Domains**](https://dashboard.ngrok.com/domains) section of the dashboard and click **New +** to reserve a free static domain like `https://your-service.ngrok.app` or bring a [custom domain](/gateway/custom-domains/) you already own.
+Navigate to the [**Endpoints**](https://dashboard.ngrok.com/endpoints) section of the dashboard, click **New +**, then **Cloud Endpoint**, and enter the domain you want to use for your public URL. (In Kubernetes, you can create this as a [`CloudEndpoint`](/k8s/crds/cloudendpoint/) resource instead.)
 
-This tutorial will refer to your public address as `$NGROK_DOMAIN` from here on out.
-
-### 3. Create the front door
-
-Navigate to the [**Endpoints**](https://dashboard.ngrok.com/endpoints) section of the dashboard, click **New +**, then **Cloud Endpoint**, and enter the domain you reserved. (In Kubernetes, you can create this as a [`CloudEndpoint`](/k8s/crds/cloudendpoint/) resource instead—see step 5.)
-
-### 4. (Optional) Store your signing secrets in a vault
+### 3. (Optional) Store your signing secrets in a vault
 
 Each route verifies a provider's signature using that provider's signing secret. For production, keep those secrets in [Secrets for Traffic Policy](/traffic-policy/secrets) so they're encrypted and referenced by name rather than pasted in plaintext. This step is optional, but a vault keeps secrets out of your policy source and lets you rotate them without editing routes.
 
@@ -112,7 +106,7 @@ ngrok api secrets create --name "twilio-secret" --value "your_twilio_auth_token_
 ngrok api secrets create --name "stripe-secret" --value "your_stripe_secret_here"        --vault-id "$VAULT_ID"
 ```
 
-### 5. Verify the sender and route it inward
+### 4. Verify the sender and route inward
 
 On your Cloud Endpoint's Traffic Policy, each rule matches a provider by request path, verifies the signature with [`verify-webhook`](/traffic-policy/actions/verify-webhook), and forwards verified requests to the matching internal service with [`forward-internal`](/traffic-policy/actions/forward-internal/). A request with a bad or missing signature is rejected with a `403`.
 
@@ -129,7 +123,7 @@ On your Cloud Endpoint's Traffic Policy, each rule matches a provider by request
               secret: "${secrets.get('webhook-secrets', 'github-secret')}"
           - type: forward-internal
             config:
-              url: https://deployment-service.internal
+              url: https://deploy-service.internal
 
       - expressions:
           - "req.url.path.startsWith('/twilio')"
@@ -140,7 +134,7 @@ On your Cloud Endpoint's Traffic Policy, each rule matches a provider by request
               secret: "${secrets.get('webhook-secrets', 'twilio-secret')}"
           - type: forward-internal
             config:
-              url: https://notification-service.internal
+              url: https://notif-service.internal
 
       - expressions:
           - "req.url.path.startsWith('/stripe')"
@@ -168,7 +162,7 @@ On your Cloud Endpoint's Traffic Policy, each rule matches a provider by request
               secret: "your_github_webhook_secret_here"
           - type: forward-internal
             config:
-              url: https://deployment-service.internal
+              url: https://deploy-service.internal
 
       - expressions:
           - "req.url.path.startsWith('/twilio')"
@@ -179,7 +173,7 @@ On your Cloud Endpoint's Traffic Policy, each rule matches a provider by request
               secret: "your_twilio_auth_token_here"
           - type: forward-internal
             config:
-              url: https://notification-service.internal
+              url: https://notif-service.internal
 
       - expressions:
           - "req.url.path.startsWith('/stripe')"
@@ -196,7 +190,7 @@ On your Cloud Endpoint's Traffic Policy, each rule matches a provider by request
   </Tab>
 </Tabs>
 
-### 6. Add the guardrail your use case needs
+### 5. Add the guardrail your use case needs
 
 The front door verifies and routes for everyone. Layer on additional security depending on what you need most.
 
@@ -221,14 +215,14 @@ The front door verifies and routes for everyone. Layer on additional security de
     - **Scope the agent's authtoken with an ACL** so you define what endpoints that agent can start. See [Authtoken ACLs](/agent/cli-api) for the full syntax, but as an example:
 
     ```
-    bind:deployment-service.internal
+    bind:deploy-service.internal
     ```
 
     - **Declare endpoints and policy as version-controlled resources**.
   </Tab>
 </Tabs>
 
-### 7. Configure your webhook URL at each provider and test
+### 6. Configure your webhook URL at each provider and test
 
 Add your ngrok URL and provider-specific webhook path within each provider's dashboard:
 
