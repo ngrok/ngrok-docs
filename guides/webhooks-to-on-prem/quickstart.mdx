@@ -1,0 +1,110 @@
+---
+title: "Webhooks to On-Prem Quickstart"
+sidebarTitle: Quickstart
+icon: rocket
+description: Verify webhooks and route them to a private service.
+---
+
+<Tip>
+  Not sure which setup fits you? The [full
+  tutorial](/guides/webhooks-to-on-prem/tutorial) covers three variants: behind
+  a firewall, regulated workloads, and platform-governed exposure.
+</Tip>
+
+This quickstart walks you through the fastest path to a working webhook gateway using ngrok.
+You'll learn how to:
+
+- Run an internal endpoint in your network alongside the service that will receive webhooks
+- Create a Cloud Endpoint that verifies each webhook's signature and forwards it to the internal endpoint
+- Confirm that a genuine webhook reaches your service and a forged one is rejected
+
+This example verifies GitHub webhooks, but the shape is identical for any [supported provider](/traffic-policy/actions/verify-webhook/#supported-providers).
+
+## What you'll need
+
+- An [ngrok account](https://dashboard.ngrok.com/signup).
+- The [ngrok agent](/getting-started/) installed on the machine where your service runs.
+- A service running locally that should receive webhooks (this quickstart uses port `8080` as an example).
+- The webhook signing secret for your provider. In GitHub, you'll set the secret at the repository level: **Settings** → **Webhooks** → **Secret**.
+
+## 1. Configure an internal endpoint
+
+Open the ngrok configuration file on the machine running your service and add an internal endpoint that points to it.
+
+You can do so by editing your config file with the `ngrok config edit` terminal command. Update yours to resemble the following snippet.
+
+```yaml title="ngrok.yml" highlight={6-10}
+version: 3
+
+agent:
+  authtoken: YOUR_AUTHTOKEN
+
+endpoints:
+  - name: my-service
+    url: https://my-service.internal
+    upstream:
+      url: 8080
+```
+
+Replace `YOUR_AUTHTOKEN` with the authtoken from your [ngrok dashboard](https://dashboard.ngrok.com/get-started/your-authtoken).
+
+Next, start the agent:
+
+<Tabs>
+  <Tab title="Using ngrok.yml">
+  ```bash
+  ngrok start --all
+  ```
+  </Tab>
+  <Tab title="Using a different config file">
+  ```bash
+  ngrok start --config /path/to/ngrok.yml --all
+  ```
+  </Tab>
+</Tabs>
+
+Webhooks still can't reach your service until you create a Cloud Endpoint.
+
+## 2. Create a Cloud Endpoint
+
+Cloud Endpoints are persistent, always-on endpoints managed from the dashboard or API.
+They use an attached Traffic Policy to handle incoming connections. This is where webhook verification and request routing happen.
+
+[Create a new Cloud Endpoint](https://dashboard.ngrok.com/endpoints/new/cloud) in the dashboard.
+Replace the default Traffic Policy with the following:
+
+```yaml
+on_http_request:
+  - actions:
+      - type: verify-webhook
+        config:
+          provider: github
+          secret: "YOUR_GITHUB_WEBHOOK_SECRET"
+      - type: forward-internal
+        config:
+          url: https://my-service.internal
+```
+
+This block of YAML uses the `verify-webhook` Traffic Policy Action to check the signature on every incoming request and forward only genuine GitHub webhooks to the internal endpoint you configured in step 1. A request that fails verification is rejected with a `403` before it ever reaches your service.
+
+## 3. Test it
+
+Paste the URL of your ngrok Cloud Endpoint into your GitHub webhook settings at **Settings** → **Webhooks** → **Payload URL**. Make sure that the webhook secret matches the one in your Traffic Policy. 
+
+Use GitHub's **Recent Deliveries** → **Redeliver** to send a signed event to your Cloud Endpoint.
+
+You should receive a verified, signed webhook on your service on port `8080`. 
+
+Make a curl request to confirm that unsigned webhooks are rejected:
+```bash
+curl -i https://<your-cloud-endpoint-url>
+```
+
+You should get a `403 Forbidden` since the request has no valid signature.
+
+## What's next
+
+- [Follow the full tutorial](/guides/webhooks-to-on-prem/tutorial) for a complete setup with multiple providers, vaulted secrets, and authtoken ACLs.
+- [Store your signing secrets in a vault](/traffic-policy/secrets) instead of pasting them into your policy.
+- [Verify webhooks from a provider that isn't on the supported list](/guides/webhooks-to-on-prem/tutorial#verifying-a-provider-that-isnt-on-the-supported-list) using a shared-secret check or upstream verification.
+- Read how [signature verification](/traffic-policy/actions/verify-webhook) works and review security best practices.
