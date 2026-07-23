@@ -53,6 +53,34 @@ endpoints:
 You can run `ngrok config edit` to open the configuration file in your default text editor. [Learn more about the `ngrok config` command](/agent/cli/#ngrok-config).
 </Tip>
 
+### Optional: require client certificates (mTLS) at the agent
+
+To make the agent authenticate clients as part of the TLS handshake, add one or more Certificate Authorities to the `agent_tls_termination` block with `mutual_tls_certificate_authorities`.
+The agent will reject any client whose certificate isn't signed by one of the listed CAs.
+
+```yaml
+version: 3
+agent:
+  authtoken: your-authtoken
+endpoints:
+  - name: demo-tls
+    url: tls://your-domain.ngrok.app
+    upstream:
+      url: 12345
+    agent_tls_termination:
+      server_certificate: /path/to/your-cert.crt
+      server_private_key: /path/to/your-key.key
+      mutual_tls_certificate_authorities:
+        - /path/to/your-ca-cert.crt
+```
+
+See [`agent_tls_termination.mutual_tls_certificate_authorities`](/agent/config/v3#agent_tls_termination-mutual_tls_certificate_authorities) for the full reference.
+
+<Note>
+This is different from mTLS terminated at the ngrok edge via [the `terminate-tls` Traffic Policy action](/gateway/mtls-termination).
+Agent-side mTLS validates the client at your agent, so the connection between the ngrok edge and your agent is unauthenticated at the TLS layer.
+</Note>
+
 ## 3. Start your endpoint
 
 Next, use `ngrok start endpoint_name_here` in the terminal to start an endpoint using the settings in your agent configuration file, as shown below:
