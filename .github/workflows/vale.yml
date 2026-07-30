@@ -37,13 +37,21 @@ jobs:
 
       - name: Get changed files
         id: changed-files
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Ensure we have the base ref so git diff can run (fixes empty file list on PRs)
-          git fetch origin ${{ github.event.pull_request.base.ref }}
-          # Get changed markdown files, excluding specific directories and files
-          git diff --name-only --diff-filter=ACMR \
-            ${{ github.event.pull_request.base.sha }} ${{ github.sha }} \
-            | grep -E '\.(mdx|md)$' \
+          # Ask the API for the PR's file list rather than diffing base.sha against
+          # github.sha. github.sha is the ephemeral merge commit of the PR head into
+          # main's *current* tip, so that diff also picks up every change main gained
+          # since the PR branched. Those extra files are outside the PR diff, which
+          # reviewdog cannot comment on (see filter_mode below).
+          gh api --paginate \
+            "repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files" \
+            --jq '.[] | select(.status != "removed") | .filename' \
+            > pr_files.txt
+
+          # Keep markdown only, excluding specific directories and files
+          grep -E '\.(mdx|md)$' pr_files.txt \
             | grep -v '^snippets/' \
             | grep -v '^errors/' \
             | grep -v '^\.skills/' \
@@ -68,7 +76,11 @@ jobs:
           reporter: github-pr-review
           # Report all issues in changed files, not only newly added lines.
           # Vale line numbers can differ from diff positions after MDX parsing.
-          filter_mode: nofilter
+          # Must be `file`, not `nofilter`: the review API cannot comment on files
+          # outside the PR diff, so reviewdog silently downgrades those findings to
+          # GitHub Actions log annotations, which are capped at 10 per step and error
+          # the run past that -- a red check with no review comments.
+          filter_mode: file
           fail_on_error: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
