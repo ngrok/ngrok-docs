@@ -1,0 +1,185 @@
+---
+title: Connect a coding agent to custom models
+sidebarTitle: Connect a coding agent
+description: Point OpenCode, Zed, Pi, or another OpenAI-compatible coding agent at the AI Gateway to reach a model you run on your own machine.
+---
+
+Some coding agents let you replace their built-in model with any OpenAI-compatible endpoint.
+Point one at `https://gateway.ngrok.ai/v1` and it can call a self-hosted model on your own machine, a hosted GPU, or anywhere else it can run.
+
+## What you'll need
+
+- The [ngrok agent](https://ngrok.com/download) installed on the machine where your model runs
+- An [access key](/ai-gateway/concepts/access-keys) from [app.ngrok.ai](https://app.ngrok.ai)
+- A model server such as [Ollama](/ai-gateway/custom-providers/ollama), [LM Studio](/ai-gateway/custom-providers/lm-studio), or [vLLM](/ai-gateway/custom-providers/vllm)
+
+## 1. Register your model with the gateway
+
+Expose your model server with an ngrok internal endpoint.
+For a server listening on port `11434`:
+
+```bash
+ngrok http 11434 --url https://my-ollama.internal
+```
+
+Create a [custom provider](/ai-gateway/concepts/custom-providers) in [app.ngrok.ai](https://app.ngrok.ai):
+
+1. Go to **Providers** and open the **Custom** tab.
+2. Select **Add provider**.
+3. Enter a provider ID, the base URL, the API format, and your model IDs.
+4. Add a provider key if the upstream requires authentication.
+
+For the full setup, including the API method and URL requirements, see [Use a model you run yourself](/ai-gateway/guides/use-a-model-you-run-yourself) or the specific [Ollama](/ai-gateway/custom-providers/ollama), [LM Studio](/ai-gateway/custom-providers/lm-studio), and [vLLM](/ai-gateway/custom-providers/vllm) guides.
+
+## 2. Connect your agent
+
+Every agent below needs the same three values:
+
+| Value | What to enter |
+|-------|---------------|
+| Base URL | `https://gateway.ngrok.ai/v1` |
+| API key | Your [access key](https://app.ngrok.ai/keys), such as `ng-xxxxx-g1-xxxxx` |
+| Model | Your `provider:model` name, such as `ollama:llama3.2` |
+
+<Tabs>
+  <Tab title="OpenCode">
+    [OpenCode](https://opencode.ai) is a terminal coding agent.
+
+    Add the gateway as a provider in `~/.config/opencode/opencode.json`, or in an `opencode.json` beside your project:
+
+    ```json
+    {
+      "$schema": "https://opencode.ai/config.json",
+      "provider": {
+        "ngrok": {
+          "npm": "@ai-sdk/openai-compatible",
+          "name": "ngrok AI Gateway",
+          "options": {
+            "baseURL": "https://gateway.ngrok.ai/v1",
+            "apiKey": "ng-xxxxx-g1-xxxxx"
+          },
+          "models": {
+            "ollama:llama3.2": { "name": "Llama 3.2 (via ngrok)" }
+          }
+        }
+      }
+    }
+    ```
+
+    Replace these required fields:
+
+    - `apiKey` with your ngrok.ai access key
+    - Keys in the `models` field with your full `provider:model` name and display-friendly name
+
+    Then test it with a prompt, replacing `ngrok/ollama:llama3.2` with your model:
+
+    ```bash
+    opencode run -m "ngrok/ollama:llama3.2" "Explain quantum entanglement like I'm 10."
+    ```
+  </Tab>
+
+  <Tab title="Zed">
+    [Zed](https://zed.dev) is a code editor with a built-in agent panel.
+
+    Add the provider to your `settings.json`:
+
+    ```json
+    {
+      "language_models": {
+        "openai_compatible": {
+          "ngrok": {
+            "api_url": "https://gateway.ngrok.ai/v1",
+            "available_models": [
+              {
+                "name": "ollama:llama3.2",
+                "max_tokens": 131072
+              }
+            ]
+          }
+        }
+      }
+    }
+    ```
+
+    Replace these required fields:
+
+    - `name` with your `provider:model` name
+    - `max_tokens` with your model's context window
+
+    Next, add your ngrok.ai access key through the Zed UI. Open the command palette, run **agent: open settings**, select **LLM Providers**, then **Configure**, find **ngrok** in the provider list, paste your access key, and hit **Enter**.
+
+    Create a new Zed Agent Thread, pick your custom model from the selector at the bottom of the agent panel's message editor, and test it:
+
+    <Prompt description="Explain quantum entanglement like I'm 10." actions={["copy"]}>
+      Explain quantum entanglement like I'm 10.
+    </Prompt>
+
+  </Tab>
+
+  <Tab title="Pi">
+    [Pi](https://pi.dev) is a terminal coding agent.
+
+    Add the gateway as a provider in `~/.pi/agent/models.json`:
+
+    ```json
+    {
+      "providers": {
+        "ngrok": {
+          "baseUrl": "https://gateway.ngrok.ai/v1",
+          "apiKey": "ng-xxxxx-g1-xxxxx",
+          "api": "openai-completions",
+          "models": [
+            { "id": "ollama:llama3.2" }
+          ]
+        }
+      }
+    }
+    ```
+
+    Replace these required fields:
+
+    - `apiKey` with your ngrok.ai access key
+    - `id` with your full `provider:model` name
+
+    `id` is the only field a model entry needs, though you can add `name`, `contextWindow`, and `maxTokens` to label it and track context accurately.
+
+    Then test it with a prompt:
+
+    ```bash
+    pi --provider ngrok --model "ollama:llama3.2" -p "Explain quantum entanglement like I'm 10."
+    ```
+
+  </Tab>
+
+  <Tab title="Anything else">
+    <Info>
+    Want us to add instructions for a specific coding agent?
+    Log in to [app.ngrok.ai](https://app.ngrok.ai), click **Give feedback**, and let us know what you'd like to see.
+    </Info>
+
+    Any tool that accepts an OpenAI base URL and key theoretically works the same way.
+    Set the base URL to `https://gateway.ngrok.ai/v1`, the key to your access key, and the model to your `provider:model` name.
+
+    Name the model yourself rather than picking it from a list.
+    A tool that populates its model picker by calling the gateway won't find your models.
+
+    The gateway serves these endpoints, so tools that use the Responses API or the legacy completions endpoint work too:
+
+    | Endpoint | Format |
+    |----------|--------|
+    | `/v1/chat/completions` | OpenAI |
+    | `/v1/responses` | OpenAI |
+    | `/v1/completions` | OpenAI |
+    | `/v1/embeddings` | OpenAI |
+
+    For SDK-level examples, see [Use with other SDKs](/ai-gateway/sdks/other).
+  </Tab>
+</Tabs>
+
+Double-check that your self-hosted model served the request with AI Gateway [observability](/ai-gateway/observability) in [app.ngrok.ai](https://app.ngrok.ai).
+
+## Next steps
+
+- [Restrict providers and models](/ai-gateway/guides/restrict-providers-and-models): Scope what an access key can call
+- [Observability](/ai-gateway/observability): See which model served each request
+- [Configure fallback models](/ai-gateway/guides/configure-fallback-models): Try another model when the first one fails
