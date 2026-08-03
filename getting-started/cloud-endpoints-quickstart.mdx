@@ -28,266 +28,264 @@ This doc assumes you've already completed the [Agent CLI Quickstart](/endpoints/
 
 The best way to familiarize yourself with Cloud Endpoints is to create one in your ngrok dashboard.
 
-<Steps>
-  <Step title="Install the ngrok Agent CLI">
-    If this is your first time using ngrok, run the command that corresponds to your operating system to install the Agent CLI:
+### 1. Install the ngrok Agent CLI
 
-    <Tabs>
-    <Tab title="Mac OS">
+If this is your first time using ngrok, run the command that corresponds to your operating system to install the Agent CLI:
 
-    ```bash
-    brew install ngrok
-    ```
+<Tabs>
+<Tab title="Mac OS">
 
-    </Tab>
-    <Tab title="Debian Linux">
+```bash
+brew install ngrok
+```
 
-    ```bash
-    curl -sSL https://ngrok-agent.s3.amazonaws.com/ngrok.asc \
-      | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null \
-      && echo "deb https://ngrok-agent.s3.amazonaws.com buster main" \
-      | sudo tee /etc/apt/sources.list.d/ngrok.list \
-      && sudo apt update \
-      && sudo apt install ngrok
-    ```
+</Tab>
+<Tab title="Debian Linux">
 
-    </Tab>
-    <Tab title="Windows">
+```bash
+curl -sSL https://ngrok-agent.s3.amazonaws.com/ngrok.asc \
+  | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null \
+  && echo "deb https://ngrok-agent.s3.amazonaws.com buster main" \
+  | sudo tee /etc/apt/sources.list.d/ngrok.list \
+  && sudo apt update \
+  && sudo apt install ngrok
+```
 
-    Install via the <a href="ms-windows-store://pdp/?ProductId=9mvs1j51gmk6">Windows App Store</a>
+</Tab>
+<Tab title="Windows">
 
-    </Tab>
-    </Tabs>
+Install via the <a href="ms-windows-store://pdp/?ProductId=9mvs1j51gmk6">Windows App Store</a>
 
-    Or [follow the direct installation guide](https://download.ngrok.com?tab=download) if you can't use one of the options above.
+</Tab>
+</Tabs>
 
-    To test that it's been installed correctly, run the following command in your terminal and confirm that ngrok prints its help text.
+Or [follow the direct installation guide](https://download.ngrok.com?tab=download) if you can't use one of the options above.
 
-    ```bash
-    ngrok help
-    ```
-  </Step>
+To test that it's been installed correctly, run the following command in your terminal and confirm that ngrok prints its help text.
 
-  <Step title="Connect your account">
-    Connect your agent to your ngrok account by providing your auth token as shown below—replace `$YOUR_TOKEN` with the string given to you [in the dashboard](https://dashboard.ngrok.com/get-started/your-authtoken).
+```bash
+ngrok help
+```
 
-    ```bash
-    ngrok config add-authtoken $YOUR_TOKEN
-    ```
-  </Step>
+### 2. Connect your account
 
-  <Step title="Create your Cloud Endpoint in the dashboard">
-    [Click here to create a new Cloud Endpoint](https://dashboard.ngrok.com/endpoints/new/cloud) in your dashboard.
+Connect your agent to your ngrok account by providing your auth token as shown below—replace `$YOUR_TOKEN` with the string given to you [in the dashboard](https://dashboard.ngrok.com/get-started/your-authtoken).
 
-    There are three bindings to choose from: for this example, select **Public**.
-    In the **URL** field, enter the domain you reserved in step 1.
-    Then click **Create Cloud Endpoint**.
+```bash
+ngrok config add-authtoken $YOUR_TOKEN
+```
 
-    This takes you to a page where you can manage your new endpoint's [Traffic Policy](/traffic-policy/).
-    You can leave all of the default settings in place for now.
+### 3. Create your Cloud Endpoint in the dashboard
 
-    <Info>
-    Traffic policies are optional for Agent Endpoints but required for Cloud Endpoints, which is why the dashboard generates one for you automatically.
-    </Info>
+[Click here to create a new Cloud Endpoint](https://dashboard.ngrok.com/endpoints/new/cloud) in your dashboard.
 
-    Visit the URL you specified to confirm that it's online.
-    You should see a default landing page that says "This is your new Cloud Endpoint!"
+There are three bindings to choose from: for this example, select **Public**.
+In the **URL** field, enter the domain you reserved in step 1.
+Then click **Create Cloud Endpoint**.
 
-    There are many different things you could do with this endpoint from here.
-    Now you can put it to work forwarding traffic to an app running on your local device.
-  </Step>
+This takes you to a page where you can manage your new endpoint's [Traffic Policy](/traffic-policy/).
+You can leave all of the default settings in place for now.
 
-  <Step title="Start your app or service">
-    Start up the app or service you'd like to put online.
+<Info>
+Traffic policies are optional for Agent Endpoints but required for Cloud Endpoints, which is why the dashboard generates one for you automatically.
+</Info>
 
-    If you don't have an app to work with, you can create a minimal app in your language of choice using the following code to set up a basic HTTP server at port `8080`.
+Visit the URL you specified to confirm that it's online.
+You should see a default landing page that says "This is your new Cloud Endpoint!"
 
-    <Tabs>
-    <Tab title="JavaScript">
-    ```javascript
-    const http = require('http');
+There are many different things you could do with this endpoint from here.
+Now you can put it to work forwarding traffic to an app running on your local device.
 
-    const server = http.createServer((req, res) => {
-    res.writeHead(200, { 'Content-Type': 'text/html' });
-    const html = `     <html>
+### 4. Start your app or service
+
+Start up the app or service you'd like to put online.
+
+If you don't have an app to work with, you can create a minimal app in your language of choice using the following code to set up a basic HTTP server at port `8080`.
+
+<Tabs>
+<Tab title="JavaScript">
+```javascript
+const http = require('http');
+
+const server = http.createServer((req, res) => {
+res.writeHead(200, { 'Content-Type': 'text/html' });
+const html = `     <html>
+    <head><title>Test Page</title></head>
+    <body><h1>Hello from Node.js HTTP Server!</h1></body>
+    </html>
+    `;
+res.end(html);
+});
+
+const port = 8080;
+server.listen(port, () => {
+console.log(`Serving custom HTML at http://localhost:${port}`);
+});
+
+````
+
+Navigate to the directory where this file is located and run the following command to start the server:
+
+```bash
+node service.js
+````
+
+</Tab>
+<Tab title="Go">
+
+```go title="service.go"
+package main
+
+import (
+	"fmt"
+	"net/http"
+)
+
+func handler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "Hello from Go HTTP Server!")
+}
+
+func main() {
+	http.HandleFunc("/", handler)
+
+	fmt.Println("Starting server at http://localhost:8080")
+	err := http.ListenAndServe(":8080", nil)
+	if err != nil {
+		fmt.Println("Server failed:", err)
+	}
+}
+
+```
+
+Navigate to the directory where this file is located and run the following command to start the server:
+
+```bash
+go run service.go
+```
+
+</Tab>
+<Tab title="Python">
+
+```python title="service.py"
+from http.server import BaseHTTPRequestHandler, HTTPServer
+
+class MyHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.send_header("Content-type", "text/html")
+        self.end_headers()
+        html = b"""
+        <html>
         <head><title>Test Page</title></head>
-        <body><h1>Hello from Node.js HTTP Server!</h1></body>
+        <body><h1>Hello from Python HTTP Server!</h1></body>
         </html>
-        `;
-    res.end(html);
-    });
+        """
+        self.wfile.write(html)
 
-    const port = 8080;
-    server.listen(port, () => {
-    console.log(`Serving custom HTML at http://localhost:${port}`);
-    });
+def run(server_class=HTTPServer, handler_class=MyHandler, port=8080):
+    server_address = ('', port)
+    httpd = server_class(server_address, handler_class)
+    print(f"Serving custom HTML at http://localhost:{port}")
+    httpd.serve_forever()
 
-    ````
+if __name__ == "__main__":
+    run()
+```
 
-    Navigate to the directory where this file is located and run the following command to start the server:
+Navigate to the directory where this file is located and run the following command to start the server:
 
-    ```bash
-    node service.js
-    ````
+```bash
+python service.py
+```
 
-    </Tab>
-    <Tab title="Go">
+</Tab>
+<Tab title="Rust">
 
-    ```go title="service.go"
-    package main
+First, create a directory for your Rust project and navigate into it:
 
-    import (
-    	"fmt"
-    	"net/http"
-    )
+```bash
+mkdir ngrok-rust-server
+cd ngrok-rust-server
+```
 
-    func handler(w http.ResponseWriter, r *http.Request) {
-    	fmt.Fprintf(w, "Hello from Go HTTP Server!")
+Next, create a new Rust project:
+
+```bash
+cargo init
+```
+
+Then, replace the contents of `src/main.rs` with the following code to set up a basic HTTP server:
+
+```rust title="ngrok-rust-server/src/main.rs"
+use std::io::{Read, Write};
+use std::net::{TcpListener, TcpStream};
+
+fn handle_connection(mut stream: TcpStream) {
+    let mut buffer = [0; 512];
+
+    // Read from the stream
+    if let Ok(_) = stream.read(&mut buffer) {
+        let body = "Hello from Rust HTTP Server!";
+        let response = format!(
+            "HTTP/1.1 200 OK\r\n\
+             Content-Length: {}\r\n\
+             Content-Type: text/plain\r\n\
+             Connection: close\r\n\r\n\
+             {}",
+            body.len(),
+            body
+        );
+
+        if let Err(e) = stream.write_all(response.as_bytes()) {
+            eprintln!("Write error: {}", e);
+        }
+
+        // Flush to make sure the response is sent
+        if let Err(e) = stream.flush() {
+            eprintln!("Flush error: {}", e);
+        }
     }
+}
 
-    func main() {
-    	http.HandleFunc("/", handler)
+fn main() -> std::io::Result<()> {
+    let listener = TcpListener::bind("127.0.0.1:8080")?;
+    println!("Server running at http://127.0.0.1:8080");
 
-    	fmt.Println("Starting server at http://localhost:8080")
-    	err := http.ListenAndServe(":8080", nil)
-    	if err != nil {
-    		fmt.Println("Server failed:", err)
-    	}
-    }
-
-    ```
-
-    Navigate to the directory where this file is located and run the following command to start the server:
-
-    ```bash
-    go run service.go
-    ```
-
-    </Tab>
-    <Tab title="Python">
-
-    ```python title="service.py"
-    from http.server import BaseHTTPRequestHandler, HTTPServer
-
-    class MyHandler(BaseHTTPRequestHandler):
-        def do_GET(self):
-            self.send_response(200)
-            self.send_header("Content-type", "text/html")
-            self.end_headers()
-            html = b"""
-            <html>
-            <head><title>Test Page</title></head>
-            <body><h1>Hello from Python HTTP Server!</h1></body>
-            </html>
-            """
-            self.wfile.write(html)
-
-    def run(server_class=HTTPServer, handler_class=MyHandler, port=8080):
-        server_address = ('', port)
-        httpd = server_class(server_address, handler_class)
-        print(f"Serving custom HTML at http://localhost:{port}")
-        httpd.serve_forever()
-
-    if __name__ == "__main__":
-        run()
-    ```
-
-    Navigate to the directory where this file is located and run the following command to start the server:
-
-    ```bash
-    python service.py
-    ```
-
-    </Tab>
-    <Tab title="Rust">
-
-    First, create a directory for your Rust project and navigate into it:
-
-    ```bash
-    mkdir ngrok-rust-server
-    cd ngrok-rust-server
-    ```
-
-    Next, create a new Rust project:
-
-    ```bash
-    cargo init
-    ```
-
-    Then, replace the contents of `src/main.rs` with the following code to set up a basic HTTP server:
-
-    ```rust title="ngrok-rust-server/src/main.rs"
-    use std::io::{Read, Write};
-    use std::net::{TcpListener, TcpStream};
-
-    fn handle_connection(mut stream: TcpStream) {
-        let mut buffer = [0; 512];
-
-        // Read from the stream
-        if let Ok(_) = stream.read(&mut buffer) {
-            let body = "Hello from Rust HTTP Server!";
-            let response = format!(
-                "HTTP/1.1 200 OK\r\n\
-                 Content-Length: {}\r\n\
-                 Content-Type: text/plain\r\n\
-                 Connection: close\r\n\r\n\
-                 {}",
-                body.len(),
-                body
-            );
-
-            if let Err(e) = stream.write_all(response.as_bytes()) {
-                eprintln!("Write error: {}", e);
-            }
-
-            // Flush to make sure the response is sent
-            if let Err(e) = stream.flush() {
-                eprintln!("Flush error: {}", e);
-            }
+    for stream in listener.incoming() {
+        match stream {
+            Ok(stream) => handle_connection(stream),
+            Err(e) => eprintln!("Connection failed: {}", e),
         }
     }
 
-    fn main() -> std::io::Result<()> {
-        let listener = TcpListener::bind("127.0.0.1:8080")?;
-        println!("Server running at http://127.0.0.1:8080");
+    Ok(())
+}
+```
 
-        for stream in listener.incoming() {
-            match stream {
-                Ok(stream) => handle_connection(stream),
-                Err(e) => eprintln!("Connection failed: {}", e),
-            }
-        }
+To run the server, navigate to the root directory of the project (where the `Cargo.toml` file is located) and run the following command:
 
-        Ok(())
-    }
-    ```
+```bash
+cargo run
+```
 
-    To run the server, navigate to the root directory of the project (where the `Cargo.toml` file is located) and run the following command:
+</Tab>
+</Tabs>
 
-    ```bash
-    cargo run
-    ```
+### 5. Start your Agent endpoint
 
-    </Tab>
-    </Tabs>
-  </Step>
+Start the ngrok agent by running the following command (replace `8080` if your app is running on a different port):
 
-  <Step title="Start your Agent endpoint">
-    Start the ngrok agent by running the following command (replace `8080` if your app is running on a different port):
+```bash
+ngrok http 8080 --url https://default.internal
+```
 
-    ```bash
-    ngrok http 8080 --url https://default.internal
-    ```
+The `--url` flag connects your Agent Endpoint to your Cloud Endpoint, so when requests are made to your domain they'll be routed here.
+The default URL for this is `https://default.internal`, which was defined in the Traffic Policy when you created the Cloud Endpoint in step 4.
 
-    The `--url` flag connects your Agent Endpoint to your Cloud Endpoint, so when requests are made to your domain they'll be routed here.
-    The default URL for this is `https://default.internal`, which was defined in the Traffic Policy when you created the Cloud Endpoint in step 4.
-  </Step>
+### 6. Test your Cloud Endpoint
 
-  <Step title="Test your Cloud Endpoint">
-    Your endpoint should now be online.
-    Visit your domain URL to see the app that's running on your local device.
-  </Step>
-</Steps>
+Your endpoint should now be online.
+Visit your domain URL to see the app that's running on your local device.
 
 ## Part two: creating Cloud Endpoints via the ngrok API
 
@@ -297,54 +295,52 @@ Now that you're familiar with the key concepts necessary to work with Cloud Endp
 Keep your local app and Agent Endpoint from part one running.
 If you only have one domain to work with, delete the Cloud Endpoint you created in the dashboard before continuing so you can reuse the domain in the steps below.
 
-<Steps>
-  <Step title="Create your Traffic Policy">
-    Create a `policy.yml` on your local machine and add the code snippet below.
-    This policy states that incoming HTTP requests should be forwarded to your internal Agent Endpoint at `https://default.internal`; if that endpoint's not reachable, then it falls back on a custom response to indicate that the app is offline.
+### 1. Create your Traffic Policy
 
-    ```yaml title="policy.yml"
-    on_http_request:
-      - actions:
-          - type: "forward-internal"
-            config:
-              url: "https://default.internal"
-             on_error: continue
-          - type: custom-response
-            config:
-              status_code: 200
-              headers:
-                content-type: text/html
-              body: |
-                 <b>Agent offline!</b>
-                 <p>Run <code>ngrok http 80 --url https://default.internal</code> to put your application online!</p>
+Create a `policy.yml` on your local machine and add the code snippet below.
+This policy states that incoming HTTP requests should be forwarded to your internal Agent Endpoint at `https://default.internal`; if that endpoint's not reachable, then it falls back on a custom response to indicate that the app is offline.
 
-    ```
-  </Step>
+```yaml title="policy.yml"
+on_http_request:
+  - actions:
+      - type: "forward-internal"
+        config:
+          url: "https://default.internal"
+         on_error: continue
+      - type: custom-response
+        config:
+          status_code: 200
+          headers:
+            content-type: text/html
+          body: |
+             <b>Agent offline!</b>
+             <p>Run <code>ngrok http 80 --url https://default.internal</code> to put your application online!</p>
 
-  <Step title="Create your Cloud Endpoint">
-    Create your Cloud Endpoint by running the following command—replace `$YOUR_API_KEY` and `$YOUR_DOMAIN` with their respective values:
+```
 
-    ```bash
-    ngrok api endpoints create \
-     --api-key $YOUR_API_KEY \
-     --description "Cloud endpoint for my API" \
-     --type cloud \
-     --bindings public \
-     --url `$YOUR_DOMAIN` \
-     --traffic-policy-file policy.yml
-    ```
+### 2. Create your Cloud Endpoint
 
-    This command contains all of the configuration steps you worked through in the dashboard to create a Cloud Endpoint in part one.
-  </Step>
+Create your Cloud Endpoint by running the following command—replace `$YOUR_API_KEY` and `$YOUR_DOMAIN` with their respective values:
 
-  <Step title="Test your endpoint">
-    Your endpoint should now be online.
-    Visit your reserved domain URL to see the app that's running on your local device.
+```bash
+ngrok api endpoints create \
+ --api-key $YOUR_API_KEY \
+ --description "Cloud endpoint for my API" \
+ --type cloud \
+ --bindings public \
+ --url `$YOUR_DOMAIN` \
+ --traffic-policy-file policy.yml
+```
 
-    To see the fallback response, terminate your local app or Agent Endpoint and then visit your Cloud Endpoint URL again.
-    You should see the custom message defined in `policy.yml.`
-  </Step>
-</Steps>
+This command contains all of the configuration steps you worked through in the dashboard to create a Cloud Endpoint in part one.
+
+### 3. Test your endpoint
+
+Your endpoint should now be online.
+Visit your reserved domain URL to see the app that's running on your local device.
+
+To see the fallback response, terminate your local app or Agent Endpoint and then visit your Cloud Endpoint URL again.
+You should see the custom message defined in `policy.yml.`
 
 ## What's next?
 

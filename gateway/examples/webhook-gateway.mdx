@@ -22,177 +22,175 @@ With this setup, you can:
 
 <RequestWebhookProvider />
 
-<Steps>
-  <Step title="Create endpoints for your services">
-    Start internal [Agent Endpoints](/endpoints/agent-endpoints/) for the services that will handle webhooks from different providers.
-    You can also use one of the [SDKs](/agent-sdks) or the [Kubernetes Operator](/k8s).
+## 1. Create endpoints for your services
 
-    For a payment service handling Stripe webhooks:
+Start internal [Agent Endpoints](/endpoints/agent-endpoints/) for the services that will handle webhooks from different providers.
+You can also use one of the [SDKs](/agent-sdks) or the [Kubernetes Operator](/k8s).
 
-    ```bash
-    ngrok http $PAYMENT_SERVICE_PORT --url https://payment-service.internal
-    ```
+For a payment service handling Stripe webhooks:
 
-    For a notification service handling Slack webhooks:
+```bash
+ngrok http $PAYMENT_SERVICE_PORT --url https://payment-service.internal
+```
 
-    ```bash
-    ngrok http $NOTIFICATION_SERVICE_PORT --url https://notification-service.internal
-    ```
+For a notification service handling Slack webhooks:
 
-    For a deployment service handling GitHub webhooks:
+```bash
+ngrok http $NOTIFICATION_SERVICE_PORT --url https://notification-service.internal
+```
 
-    ```bash
-    ngrok http $DEPLOYMENT_SERVICE_PORT --url https://deployment-service.internal
-    ```
-  </Step>
+For a deployment service handling GitHub webhooks:
 
-  <Step title="Reserve a domain">
-    <ReserveDomain />
-  </Step>
+```bash
+ngrok http $DEPLOYMENT_SERVICE_PORT --url https://deployment-service.internal
+```
 
-  <Step title="Create a Cloud Endpoint">
-    <CloudEndpoint />
-  </Step>
+## 2. Reserve a domain
 
-  <Step title="(Optional) Create a vault and secrets">
-    For production environments, store your webhook secrets securely using [Secrets for Traffic Policy](/traffic-policy/secrets). This step is optional—you can also use plaintext secrets directly in your policy.
+<ReserveDomain />
 
-    Create a vault to store your webhook secrets:
+## 3. Create a Cloud Endpoint
 
-    ```bash
-    ngrok api vaults create --name "webhook-secrets" --description "Webhook validation secrets"
-    ```
+<CloudEndpoint />
 
-    Add your credentials to the vault, replacing the names and values, plus changing `$VAULT_ID` to match the vault ID from the response:
+## 4. (Optional) Create a vault and secrets
 
-    ```bash
-    # Add Stripe webhook secret
-    ngrok api secrets create \
-      --name "stripe-secret" \
-      --value "your_stripe_secret_here" \
-      --vault-id "vault_2yNPzuk6GjHrx3mlOCkJK42RsdR"
+For production environments, store your webhook secrets securely using [Secrets for Traffic Policy](/traffic-policy/secrets). This step is optional—you can also use plaintext secrets directly in your policy.
 
-    # Add Slack webhook secret
-    ngrok api secrets create \
-      --name "slack-secret" \
-      --value "your_slack_verification_token_here" \
-      --vault-id "vault_2yNPzuk6GjHrx3mlOCkJK42RsdR"
+Create a vault to store your webhook secrets:
 
-    # Add GitHub webhook secret
-    ngrok api secrets create \
-      --name "github-secret" \
-      --value "your_github_webhook_secret_here" \
-      --vault-id "vault_2yNPzuk6GjHrx3mlOCkJK42RsdR"
-    ```
-  </Step>
+```bash
+ngrok api vaults create --name "webhook-secrets" --description "Webhook validation secrets"
+```
 
-  <Step title="Apply Traffic Policy to your Cloud Endpoint">
-    While viewing your new Cloud Endpoint in the dashboard, copy one of the policies below and paste it into the Traffic Policy editor.
+Add your credentials to the vault, replacing the names and values, plus changing `$VAULT_ID` to match the vault ID from the response:
 
-    <Tabs>
-    <Tab title="Using Secrets (Recommended)">
+```bash
+# Add Stripe webhook secret
+ngrok api secrets create \
+  --name "stripe-secret" \
+  --value "your_stripe_secret_here" \
+  --vault-id "vault_2yNPzuk6GjHrx3mlOCkJK42RsdR"
 
-    ```yaml
-    on_http_request:
-      - expressions:
-          # Route Stripe webhooks to payment service
-          - "req.url.path.startsWith('/stripe')"
-        actions:
-          - type: verify-webhook
-            config:
-              provider: stripe
-              secret: "${secrets.get('webhook-secrets', 'stripe-secret')}"
-          - type: forward-internal
-            config:
-              url: https://payment-service.internal
+# Add Slack webhook secret
+ngrok api secrets create \
+  --name "slack-secret" \
+  --value "your_slack_verification_token_here" \
+  --vault-id "vault_2yNPzuk6GjHrx3mlOCkJK42RsdR"
 
-      - expressions:
-          # Route Slack webhooks to notification service
-          - "req.url.path.startsWith('/slack')"
-        actions:
-          - type: verify-webhook
-            config:
-              provider: slack
-              secret: "${secrets.get('webhook-secrets', 'slack-secret')}"
-          - type: forward-internal
-            config:
-              url: https://notification-service.internal
+# Add GitHub webhook secret
+ngrok api secrets create \
+  --name "github-secret" \
+  --value "your_github_webhook_secret_here" \
+  --vault-id "vault_2yNPzuk6GjHrx3mlOCkJK42RsdR"
+```
 
-      - expressions:
-          # Route GitHub webhooks to deployment service
-          - "req.url.path.startsWith('/github')"
-        actions:
-          - type: verify-webhook
-            config:
-              provider: github
-              secret: "${secrets.get('webhook-secrets', 'github-secret')}"
-          - type: forward-internal
-            config:
-              url: https://deployment-service.internal
-    ```
+## 5. Apply Traffic Policy to your Cloud Endpoint
 
-    **What's happening here?** This policy routes incoming webhook requests based on their URL path. Each route first validates the webhook signature using secrets stored in your encrypted vault, then forwards authenticated requests to the appropriate internal service. If signature verification fails, the request is automatically rejected, protecting your services from spoofed or tampered webhooks.
+While viewing your new Cloud Endpoint in the dashboard, copy one of the policies below and paste it into the Traffic Policy editor.
 
-    </Tab>
-    <Tab title="Using plaintext secrets">
+<Tabs>
+<Tab title="Using Secrets (Recommended)">
 
-    ```yaml
-    on_http_request:
-      - expressions:
-          # Route Stripe webhooks to payment service
-          - "req.url.path.startsWith('/stripe')"
-        actions:
-          - type: verify-webhook
-            config:
-              provider: stripe
-              secret: "whsec_your_stripe_secret_here"
-          - type: forward-internal
-            config:
-              url: https://payment-service.internal
+```yaml
+on_http_request:
+  - expressions:
+      # Route Stripe webhooks to payment service
+      - "req.url.path.startsWith('/stripe')"
+    actions:
+      - type: verify-webhook
+        config:
+          provider: stripe
+          secret: "${secrets.get('webhook-secrets', 'stripe-secret')}"
+      - type: forward-internal
+        config:
+          url: https://payment-service.internal
 
-      - expressions:
-          # Route Slack webhooks to notification service
-          - "req.url.path.startsWith('/slack')"
-        actions:
-          - type: verify-webhook
-            config:
-              provider: slack
-              secret: "your_slack_verification_token_here"
-          - type: forward-internal
-            config:
-              url: https://notification-service.internal
+  - expressions:
+      # Route Slack webhooks to notification service
+      - "req.url.path.startsWith('/slack')"
+    actions:
+      - type: verify-webhook
+        config:
+          provider: slack
+          secret: "${secrets.get('webhook-secrets', 'slack-secret')}"
+      - type: forward-internal
+        config:
+          url: https://notification-service.internal
 
-      - expressions:
-          # Route GitHub webhooks to deployment service
-          - "req.url.path.startsWith('/github')"
-        actions:
-          - type: verify-webhook
-            config:
-              provider: github
-              secret: "your_github_webhook_secret_here"
-          - type: forward-internal
-            config:
-              url: https://deployment-service.internal
-    ```
+  - expressions:
+      # Route GitHub webhooks to deployment service
+      - "req.url.path.startsWith('/github')"
+    actions:
+      - type: verify-webhook
+        config:
+          provider: github
+          secret: "${secrets.get('webhook-secrets', 'github-secret')}"
+      - type: forward-internal
+        config:
+          url: https://deployment-service.internal
+```
 
-    **What's happening here?** This policy routes incoming webhook requests based on their URL path. Each route first validates the webhook signature using plaintext secrets, then forwards authenticated requests to the appropriate internal service. If signature verification fails, the request is automatically rejected, protecting your services from spoofed or tampered webhooks.
+**What's happening here?** This policy routes incoming webhook requests based on their URL path. Each route first validates the webhook signature using secrets stored in your encrypted vault, then forwards authenticated requests to the appropriate internal service. If signature verification fails, the request is automatically rejected, protecting your services from spoofed or tampered webhooks.
 
-    </Tab>
-    </Tabs>
-  </Step>
+</Tab>
+<Tab title="Using plaintext secrets">
 
-  <Step title="Try out your endpoint">
-    <TryOut />
+```yaml
+on_http_request:
+  - expressions:
+      # Route Stripe webhooks to payment service
+      - "req.url.path.startsWith('/stripe')"
+    actions:
+      - type: verify-webhook
+        config:
+          provider: stripe
+          secret: "whsec_your_stripe_secret_here"
+      - type: forward-internal
+        config:
+          url: https://payment-service.internal
 
-    Configure your webhook endpoints in each provider's dashboard:
+  - expressions:
+      # Route Slack webhooks to notification service
+      - "req.url.path.startsWith('/slack')"
+    actions:
+      - type: verify-webhook
+        config:
+          provider: slack
+          secret: "your_slack_verification_token_here"
+      - type: forward-internal
+        config:
+          url: https://notification-service.internal
 
-    - **Stripe**: `https://$NGROK_DOMAIN/stripe`
-    - **Slack**: `https://$NGROK_DOMAIN/slack`
-    - **GitHub**: `https://$NGROK_DOMAIN/github`
+  - expressions:
+      # Route GitHub webhooks to deployment service
+      - "req.url.path.startsWith('/github')"
+    actions:
+      - type: verify-webhook
+        config:
+          provider: github
+          secret: "your_github_webhook_secret_here"
+      - type: forward-internal
+        config:
+          url: https://deployment-service.internal
+```
 
-    When webhooks are sent from these providers, they'll be validated and routed to your internal services automatically.
-  </Step>
-</Steps>
+**What's happening here?** This policy routes incoming webhook requests based on their URL path. Each route first validates the webhook signature using plaintext secrets, then forwards authenticated requests to the appropriate internal service. If signature verification fails, the request is automatically rejected, protecting your services from spoofed or tampered webhooks.
+
+</Tab>
+</Tabs>
+
+## 6. Try out your endpoint
+
+<TryOut />
+
+Configure your webhook endpoints in each provider's dashboard:
+
+- **Stripe**: `https://$NGROK_DOMAIN/stripe`
+- **Slack**: `https://$NGROK_DOMAIN/slack`
+- **GitHub**: `https://$NGROK_DOMAIN/github`
+
+When webhooks are sent from these providers, they'll be validated and routed to your internal services automatically.
 
 ## What's next?
 

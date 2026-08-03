@@ -14,58 +14,56 @@ Whenever you're making infrastructure changes, a major upgrade to your services 
 
 With ngrok, you can use Traffic Policy and the [`custom-response`](/traffic-policy/actions/custom-response/) action to immediately deploy a consistent maintenance message without needing to spin up a new backend service or change DNS records to point to a third-party app.
 
-<Steps>
-  <Step title="Create an endpoint for your service">
-    Start an internal [Agent Endpoint](/endpoints/agent-endpoints/), replacing `$PORT` based on where your service listens.
-    You can also use one of the [SDKs](/agent-sdks) or the [Kubernetes Operator](/k8s).
+## 1. Create an endpoint for your service
 
-    ```bash
-    ngrok http $PORT --url https://service.internal
-    ```
-  </Step>
+Start an internal [Agent Endpoint](/endpoints/agent-endpoints/), replacing `$PORT` based on where your service listens.
+You can also use one of the [SDKs](/agent-sdks) or the [Kubernetes Operator](/k8s).
 
-  <Step title="Reserve a domain">
-    <ReserveDomain />
-  </Step>
+```bash
+ngrok http $PORT --url https://service.internal
+```
 
-  <Step title="Create a Cloud Endpoint">
-    <CloudEndpoint />
-  </Step>
+## 2. Reserve a domain
 
-  <Step title="Create a maintenance page on your Cloud Endpoint with Traffic Policy">
-    While viewing your new Cloud Endpoint in the dashboard, copy the policy below and paste it into the Traffic Policy editor.
+<ReserveDomain />
 
-    ```yaml
-    on_http_request:
-      - actions:
-          - type: custom-response
-            config:
-              body: "We're currently undergoing maintenance. Please check back later!"
-          - type: forward-internal
-            config:
-              url: https://service.internal
-    ```
+## 3. Create a Cloud Endpoint
 
-    **What's happening here?** This policy "interrupts" every request by providing a custom response containing your maintenance message.
+<CloudEndpoint />
 
-    When your maintenance window is over and you're ready to route traffic to your upstream service, you can remove or comment out the `custom-response` action.
+## 4. Create a maintenance page on your Cloud Endpoint with Traffic Policy
 
-    ```yaml
-    on_http_request:
-      - actions:
-      #    - type: custom-response
-      #      config:
-      #        body: "We're currently undergoing maintenance. Please check back later!"
-          - type: forward-internal
-            config:
-              url: https://service.internal
-    ```
-  </Step>
+While viewing your new Cloud Endpoint in the dashboard, copy the policy below and paste it into the Traffic Policy editor.
 
-  <Step title="Try out your endpoint">
-    <TryOut />
-  </Step>
-</Steps>
+```yaml
+on_http_request:
+  - actions:
+      - type: custom-response
+        config:
+          body: "We're currently undergoing maintenance. Please check back later!"
+      - type: forward-internal
+        config:
+          url: https://service.internal
+```
+
+**What's happening here?** This policy "interrupts" every request by providing a custom response containing your maintenance message.
+
+When your maintenance window is over and you're ready to route traffic to your upstream service, you can remove or comment out the `custom-response` action.
+
+```yaml
+on_http_request:
+  - actions:
+  #    - type: custom-response
+  #      config:
+  #        body: "We're currently undergoing maintenance. Please check back later!"
+      - type: forward-internal
+        config:
+          url: https://service.internal
+```
+
+## 5. Try out your endpoint
+
+<TryOut />
 
 ## What's next?
 
