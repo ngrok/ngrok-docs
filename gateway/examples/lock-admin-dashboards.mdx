@@ -15,61 +15,63 @@ Even if your admin dashboards and internal tools already have built-in authentic
 You can restrict access to specific IP addresses, block traffic from problematic sources, restrict requests to only your geographical area, or all the above.
 In this example, this guide assumes that your admin tool is part of your public-facing service, available on a path like `/admin`.
 
-## 1. Start an endpoint for your service
+<Steps>
+  <Step title="Start an endpoint for your service">
+    Start an internal [Agent Endpoint](/endpoints/agent-endpoints/), replacing `$PORT` based on where your service listens.
+    You can also use one of the [SDKs](/agent-sdks) or the [Kubernetes Operator](/k8s).
 
-Start an internal [Agent Endpoint](/endpoints/agent-endpoints/), replacing `$PORT` based on where your service listens.
-You can also use one of the [SDKs](/agent-sdks) or the [Kubernetes Operator](/k8s).
+    ```bash
+    ngrok http $PORT --url https://service.internal
+    ```
+  </Step>
 
-```bash
-ngrok http $PORT --url https://service.internal
-```
+  <Step title="Reserve a domain">
+    <ReserveDomain />
+  </Step>
 
-## 2. Reserve a domain
+  <Step title="Create a Cloud Endpoint">
+    <CloudEndpoint />
+  </Step>
 
-<ReserveDomain />
+  <Step title="Restrict access to your admin path with Traffic Policy">
+    While viewing your new Cloud Endpoint in the dashboard, copy the policy below and paste it into the Traffic Policy editor.
+    You may need to change:
 
-## 3. Create a Cloud Endpoint
+    - `/admin`: Replace with the path of your admin tools.
+    - `1.2.3.4/5.6.7.8`: Replace with public IPs of your admins.
+    - `US`: Replace with the country code where your admins would log in to.
 
-<CloudEndpoint />
+    ```yaml
+    on_http_request:
+      - expressions:
+          - "req.url.path.includes('/admin')"
+          - "conn.client_ip.geo.location.country_code != 'US' || req.user_agent.is_bot || 'proxy.anonymous.tor' in conn.client_ip.categories || 'blocklist.greensnow_co' in conn.client_ip.categories"
+        actions:
+          - type: deny
+      - expressions:
+          - "req.url.path.includes('/admin')"
+        actions:
+          - type: restrict-ips
+            config:
+              allow:
+                - 1.2.3.4/32
+                - 5.6.7.8/32
+      - actions:
+          - type: forward-internal
+            config:
+              url: https://service.internal
+    ```
 
-## 4. Restrict access to your admin path with Traffic Policy
+    **What's happening here?** Your policy checks every HTTP request and filters out only those to the `/admin` path, first denying all requests from non-U.S. traffic, bot traffic, Tor networks, and all IPs on the GreenSnow blocklist.
+    For all requests not immediately denied, ngrok then also restricts access to only specific and trusted IP addresses before forwarding to your upstream service.
 
-While viewing your new Cloud Endpoint in the dashboard, copy the policy below and paste it into the Traffic Policy editor.
-You may need to change:
+    ngrok forwards all requests to paths other than `/admin` without these filters or actions.
+  </Step>
 
-- `/admin`: Replace with the path of your admin tools.
-- `1.2.3.4/5.6.7.8`: Replace with public IPs of your admins.
-- `US`: Replace with the country code where your admins would log in to.
-
-```yaml
-on_http_request:
-  - expressions:
-      - "req.url.path.includes('/admin')"
-      - "conn.client_ip.geo.location.country_code != 'US' || req.user_agent.is_bot || 'proxy.anonymous.tor' in conn.client_ip.categories || 'blocklist.greensnow_co' in conn.client_ip.categories"
-    actions:
-      - type: deny
-  - expressions:
-      - "req.url.path.includes('/admin')"
-    actions:
-      - type: restrict-ips
-        config:
-          allow:
-            - 1.2.3.4/32
-            - 5.6.7.8/32
-  - actions:
-      - type: forward-internal
-        config:
-          url: https://service.internal
-```
-
-**What's happening here?** Your policy checks every HTTP request and filters out only those to the `/admin` path, first denying all requests from non-U.S. traffic, bot traffic, Tor networks, and all IPs on the GreenSnow blocklist.
-For all requests not immediately denied, ngrok then also restricts access to only specific and trusted IP addresses before forwarding to your upstream service.
-
-ngrok forwards all requests to paths other than `/admin` without these filters or actions.
-
-## 5. Try out your restricted admin tools
-
-<TryOut />
+  <Step title="Try out your restricted admin tools">
+    <TryOut />
+  </Step>
+</Steps>
 
 ## What's next?
 

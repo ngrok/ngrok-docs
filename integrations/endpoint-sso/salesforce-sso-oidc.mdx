@@ -27,65 +27,67 @@ Your organization’s personnel in charge of security and administration can man
 - A Salesforce developer account with administrative rights to create apps.
 - An ngrok Pay-as-you-go account with an authtoken or admin access to configure an endpoint with Traffic Policy and OpenID Connect.
 
-## 1. Create a Salesforce external client app
+<Steps>
+  <Step title="Create a Salesforce external client app">
+    Navigate to the **App Manager** in Salesforce.
+    Click **New External Client App**.
+  </Step>
 
-Navigate to the **App Manager** in Salesforce.
-Click **New External Client App**.
+  <Step title="Configure the external client app">
+    In your Salesforce dashboard, go to **Policies** > **App Policies**.
+    Set the start page to OAuth.
+  </Step>
 
-## 2. Configure the external client app
+  <Step title="Configure OAuth settings">
+    - In the **Basic Information** section:
+       - Set the external client app name to `ngrok` or whatever you would like.
+    - Go to the **OAuth Settings** section:
+       - Under **App Settings > OAuth Policies**:
+         - Set the Callback URL to `https://idp.ngrok.com/oauth2/callback`.
+         - Make sure "All Users can self authorize" is checked.
+         - Make sure the following scopes are selected.
+         - Use the Cloud Endpoint URL you create in the next step as your **OAuth Start URL**.
+         - Under **Permitted Users**, make sure all users can self authorize.
+       - Under **Flow Enablement**:
+         - Enable Authorization Code and credentials flow.
+       - Under **Security**:
+         - Check require secret for Web Server flow.
+         - Require secret for Refresh Token Flow.
+         - Make sure Require Proof Key for Code Exchange (PKCE) is not enabled, as this will throw an error when you log in to your endpoint.
+  </Step>
 
-In your Salesforce dashboard, go to **Policies** > **App Policies**.
-Set the start page to OAuth.
+  <Step title="Obtain the client ID and client secret">
+    After saving your external client app, go to **Settings** and then under **OAuth Settings** click the following button to see your Client ID and Client Secret.
+  </Step>
 
-## 3. Configure OAuth settings
+  <Step title="Create a Cloud Endpoint and configure OIDC Traffic Policy action">
+    Log in to your ngrok dashboard and navigate to the **Endpoints** section.
+    Click **Create Endpoint**, then select **Cloud Endpoint**.
+    Follow the steps in [this guide](/getting-started/cloud-endpoints-quickstart/#dashboard) to create your Cloud Endpoint.
 
-- In the **Basic Information** section:
-   - Set the external client app name to `ngrok` or whatever you would like.
-- Go to the **OAuth Settings** section:
-   - Under **App Settings > OAuth Policies**:
-     - Set the Callback URL to `https://idp.ngrok.com/oauth2/callback`.
-     - Make sure "All Users can self authorize" is checked.
-     - Make sure the following scopes are selected.
-     - Use the Cloud Endpoint URL you create in the next step as your **OAuth Start URL**.
-     - Under **Permitted Users**, make sure all users can self authorize.
-   - Under **Flow Enablement**:
-     - Enable Authorization Code and credentials flow.
-   - Under **Security**:
-     - Check require secret for Web Server flow.
-     - Require secret for Refresh Token Flow.
-     - Make sure Require Proof Key for Code Exchange (PKCE) is not enabled, as this will throw an error when you log in to your endpoint.
+    Add the following Traffic Policy to your endpoint:
 
-## 4. Obtain the client ID and client secret
+    ```yaml
+    traffic_policy:
+      actions:
+        - type: oidc
+          issuer_url: <your-salesforce-issuer-url>
+          client_id: <your-salesforce-client-id>
+          client_secret: <your-salesforce-client-secret>
+          scopes:
+            - openid
+            - profile
+            - email
+    ```
 
-After saving your external client app, go to **Settings** and then under **OAuth Settings** click the following button to see your Client ID and Client Secret.
+    Replace `<your-salesforce-issuer-url>`, `<your-salesforce-client-id>`, and `<your-salesforce-client-secret>` with the values you obtained from Salesforce in the previous steps.
 
-## 5. Create a Cloud Endpoint and configure OIDC Traffic Policy action
+    The issuer URL will follow the format: `https://[yourdomain]-dev-ed.develop.my.salesforce.com`.
 
-Log in to your ngrok dashboard and navigate to the **Endpoints** section.
-Click **Create Endpoint**, then select **Cloud Endpoint**.
-Follow the steps in [this guide](/getting-started/cloud-endpoints-quickstart/#dashboard) to create your Cloud Endpoint.
-
-Add the following Traffic Policy to your endpoint:
-
-```yaml
-traffic_policy:
-  actions:
-    - type: oidc
-      issuer_url: <your-salesforce-issuer-url>
-      client_id: <your-salesforce-client-id>
-      client_secret: <your-salesforce-client-secret>
-      scopes:
-        - openid
-        - profile
-        - email
-```
-
-Replace `<your-salesforce-issuer-url>`, `<your-salesforce-client-id>`, and `<your-salesforce-client-secret>` with the values you obtained from Salesforce in the previous steps.
-
-The issuer URL will follow the format: `https://[yourdomain]-dev-ed.develop.my.salesforce.com`.
-
-Click **Save**.
-You have now successfully created a Cloud Endpoint with OIDC Traffic Policy action using Salesforce as an IdP.
+    Click **Save**.
+    You have now successfully created a Cloud Endpoint with OIDC Traffic Policy action using Salesforce as an IdP.
+  </Step>
+</Steps>
 
 ## (Optional) Configure an Agent Endpoint with Salesforce OAuth from the CLI
 

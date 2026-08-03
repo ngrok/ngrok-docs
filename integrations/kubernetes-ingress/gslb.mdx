@@ -19,284 +19,286 @@ ngrok's GSLB works on top of DigitalOcean's internal load balancers for addition
   - Hostnames should be unique, ideally using the datacenter location (for example, `nyc`, `sydney`, and `frankfurt`).
   - Docker and Docker Compose installed on each VM.
 
-## 1. Reserve your ngrok domain
+<Steps>
+  <Step title="Reserve your ngrok domain">
+    First, [generate a new API key](https://dashboard.ngrok.com/api-keys) in the [ngrok dashboard](https://dashboard.ngrok.com/).
+    Save the API key before closing the modal; it won't be displayed again.
 
-First, [generate a new API key](https://dashboard.ngrok.com/api-keys) in the [ngrok dashboard](https://dashboard.ngrok.com/).
-Save the API key before closing the modal; it won't be displayed again.
+    To simplify authenticating your account with the ngrok API, export the API key on your local workstation.
 
-To simplify authenticating your account with the ngrok API, export the API key on your local workstation.
+    ```bash
+    export NGROK_API_KEY=<YOUR-API-KEY>
+    ```
 
-```bash
-export NGROK_API_KEY=<YOUR-API-KEY>
-```
+    Next, create a domain that is a subdomain of an [ngrok-managed domain](/domains/).
+    For an example deployment like this, `YOUR_COMPANY-digitalocean-gslb.ngrok.app` would work great.
 
-Next, create a domain that is a subdomain of an [ngrok-managed domain](/domains/).
-For an example deployment like this, `YOUR_COMPANY-digitalocean-gslb.ngrok.app` would work great.
+    You can reserve your domain in one of two ways: with the [ngrok API](/api/), or in the [ngrok dashboard](https://dashboard.ngrok.com/domains).
 
-You can reserve your domain in one of two ways: with the [ngrok API](/api/), or in the [ngrok dashboard](https://dashboard.ngrok.com/domains).
+    With the ngrok API, reserve your domain on the [`/reserved_domains` endpoint](/api-reference/reserveddomains/list) using the `NGROK_API_KEY` and `NGROK_DOMAIN` variables you exported.
 
-With the ngrok API, reserve your domain on the [`/reserved_domains` endpoint](/api-reference/reserveddomains/list) using the `NGROK_API_KEY` and `NGROK_DOMAIN` variables you exported.
+    Export a variable for your new domain, which will be used in following API calls.
 
-Export a variable for your new domain, which will be used in following API calls.
+    ```bash
+    export NGROK_DOMAIN=<YOUR-NGROK-DOMAIN>
+    ```
 
-```bash
-export NGROK_DOMAIN=<YOUR-NGROK-DOMAIN>
-```
+    ```bash
+    curl \
+      -X POST https://api.ngrok.com/reserved_domains \
+      -H "Authorization: Bearer ${NGROK_API_KEY}" \
+      -H "Content-Type: application/json" \
+      -H "Ngrok-Version: 2" \
+      -d '{"description":"DigitalOcean Load Balancing","domain":"'${NGROK_DOMAIN}'"}'
+    ```
 
-```bash
-curl \
-  -X POST https://api.ngrok.com/reserved_domains \
-  -H "Authorization: Bearer ${NGROK_API_KEY}" \
-  -H "Content-Type: application/json" \
-  -H "Ngrok-Version: 2" \
-  -d '{"description":"DigitalOcean Load Balancing","domain":"'${NGROK_DOMAIN}'"}'
-```
+    <Tip>
+    **Custom domains within ngrok:**
+    Using CNAMEs, ngrok can host an endpoint on your domain while also managing the complete TLS certificate lifecycle on your behalf.
+    If you'd prefer to use a custom domain rather than an ngrok-managed one, [follow the guide](/domains/custom-domains/) to set up your DNS and replace your custom domain in the `export` command above.
+    </Tip>
+  </Step>
 
-<Tip>
-**Custom domains within ngrok:**
-Using CNAMEs, ngrok can host an endpoint on your domain while also managing the complete TLS certificate lifecycle on your behalf.
-If you'd prefer to use a custom domain rather than an ngrok-managed one, [follow the guide](/domains/custom-domains/) to set up your DNS and replace your custom domain in the `export` command above.
-</Tip>
+  <Step title="Create a Cloud Endpoint">
+    Create a `policy.yaml` file on your local workstation with the Traffic Policy for your endpoint.
+    This policy forwards all incoming requests to `https://gslb-demo.internal`, a shared internal domain that all three of your VMs' ngrok agents will connect to.
+    ngrok automatically routes each request to the nearest connected agent, providing global load balancing without additional configuration.
 
-## 2. Create a Cloud Endpoint
+    ```yaml
+    on_http_request:
+      - actions:
+          - type: forward-internal
+            config:
+              url: https://gslb-demo.internal
+              on_error: continue
+          - type: custom-response
+            config:
+              status_code: 503
+              body: "No upstream tunnel available."
+    ```
 
-Create a `policy.yaml` file on your local workstation with the Traffic Policy for your endpoint.
-This policy forwards all incoming requests to `https://gslb-demo.internal`, a shared internal domain that all three of your VMs' ngrok agents will connect to.
-ngrok automatically routes each request to the nearest connected agent, providing global load balancing without additional configuration.
+    Use [`jq`](https://jqlang.org/download/) to safely embed the Traffic Policy YAML in the JSON payload and create your Cloud Endpoint:
 
-```yaml
-on_http_request:
-  - actions:
-      - type: forward-internal
-        config:
+    ```bash
+    curl \
+      -X POST https://api.ngrok.com/endpoints \
+      -H "Authorization: Bearer ${NGROK_API_KEY}" \
+      -H "Content-Type: application/json" \
+      -H "Ngrok-Version: 2" \
+      --data "$(jq -n \
+        --arg url "https://${NGROK_DOMAIN}" \
+        --rawfile policy policy.yaml \
+        '{type:"cloud",url:$url,description:"DigitalOcean GSLB",traffic_policy:$policy}'
+      )"
+    ```
+
+    Export the `id` from the response for use in optional step 5.
+
+    ```bash
+    export ENDPOINT_ID=ep_...
+    ```
+
+    If you open `https://<YOUR_NGROK_DOMAIN>` now, you'll see an error from ngrok: the domain and endpoint configuration exist, but there are no ngrok agents connected yet.
+    You can go to the [Endpoints dashboard](https://dashboard.ngrok.com/endpoints) to see your endpoint.
+  </Step>
+
+  <Step title="Install the ngrok Agent and an example workload on each VM">
+    To get some agents online and quickly see how ngrok's GSLB works, you'll use an [example API deployment](https://github.com/joelhans/ngrok-vps-gslb-demo).
+    This demo deployment has four parts:
+
+    - A straightforward Go-based API with a single endpoint at `/api`, which returns a randomly generated UUID and the machine's `hostname`, which should reflect the regions of your VMs.
+    - A `Dockerfile` for containerizing said Go-based API.
+    - A `docker-compose.yml` file for starting the API container and a containerized edition of the ngrok agent on the same network.
+    - A `ngrok.yml` [agent configuration file](/agent/config/v3/) to connect the agent to your ngrok account and the shared internal domain.
+
+    Repeat the following steps on each VM:
+
+    - Clone the demo repository.
+
+      ```bash
+      git clone https://github.com/joelhans/ngrok-vps-gslb-demo
+      cd ngrok-vps-gslb-demo
+      ```
+
+    - Edit the `ngrok.yml` [ngrok agent configuration file](/agent/config/) with your `<YOUR_NGROK_AUTHTOKEN>` (find it in the [ngrok dashboard](https://dashboard.ngrok.com/get-started/your-authtoken)); it's different from the API key you created in the first step.
+      All three VMs use the same `url` value—ngrok automatically routes each incoming request to the nearest connected agent.
+
+      ```yaml
+      version: 3
+      authtoken: <YOUR_NGROK_AUTHTOKEN>
+      log_level: debug
+      log: stdout
+      endpoints:
+        - name: vps-demo
           url: https://gslb-demo.internal
-          on_error: continue
-      - type: custom-response
-        config:
-          status_code: 503
-          body: "No upstream tunnel available."
-```
+          upstream:
+            url: http://localhost:5000
+      ```
 
-Use [`jq`](https://jqlang.org/download/) to safely embed the Traffic Policy YAML in the JSON payload and create your Cloud Endpoint:
+    - Build and start the containerized API deployment, passing the hostname of the VM to the hostname of the Docker container.
 
-```bash
-curl \
-  -X POST https://api.ngrok.com/endpoints \
-  -H "Authorization: Bearer ${NGROK_API_KEY}" \
-  -H "Content-Type: application/json" \
-  -H "Ngrok-Version: 2" \
-  --data "$(jq -n \
-    --arg url "https://${NGROK_DOMAIN}" \
-    --rawfile policy policy.yaml \
-    '{type:"cloud",url:$url,description:"DigitalOcean GSLB",traffic_policy:$policy}'
-  )"
-```
+      ```bash
+      HOSTNAME=$(hostname -f) docker compose up -d
+      ```
+  </Step>
 
-Export the `id` from the response for use in optional step 5.
+  <Step title="Test out ngrok's Global Server Load Balancing">
+    ngrok is now load-balancing your single API endpoint across all three distributed VMs.
 
-```bash
-export ENDPOINT_ID=ep_...
-```
+    You can now ping your demo API at `<YOUR_NGROK_DOMAIN>/api` to see which agent responds.
 
-If you open `https://<YOUR_NGROK_DOMAIN>` now, you'll see an error from ngrok: the domain and endpoint configuration exist, but there are no ngrok agents connected yet.
-You can go to the [Endpoints dashboard](https://dashboard.ngrok.com/endpoints) to see your endpoint.
+    ```bash
+    curl ${NGROK_DOMAIN}/api
+    [{"id":"1cf26269-ce8b-4f16-91f1-fdf7bc6d9e80","dc":"nyc"}]
+    ```
 
-## 3. Install the ngrok Agent and an example workload on each VM
+    To see the distribution in action, try a batch of `curl` requests.
 
-To get some agents online and quickly see how ngrok's GSLB works, you'll use an [example API deployment](https://github.com/joelhans/ngrok-vps-gslb-demo).
-This demo deployment has four parts:
+    ```bash
+    for i in `seq 1 20`; do \
+      curl  \
+        -X GET "${NGROK_DOMAIN}/api" ; \
+      done
+    ```
 
-- A straightforward Go-based API with a single endpoint at `/api`, which returns a randomly generated UUID and the machine's `hostname`, which should reflect the regions of your VMs.
-- A `Dockerfile` for containerizing said Go-based API.
-- A `docker-compose.yml` file for starting the API container and a containerized edition of the ngrok agent on the same network.
-- A `ngrok.yml` [agent configuration file](/agent/config/v3/) to connect the agent to your ngrok account and the shared internal domain.
+    You should see each VM respond with similar frequency:
 
-Repeat the following steps on each VM:
+    ```json skip-validation
+    [{"id":"c46bdbd9-b588-4ffa-8018-d299d0918bbc","dc":"sydney"}]
+    [{"id":"dce5a46e-15af-4479-a073-8fbc7f0097c5","dc":"nyc"}]
+    [{"id":"ecc6451c-bc25-43bd-8cb6-a162f019adf3","dc":"frankfurt"}]
+    [{"id":"ecc6451c-bc25-43bd-8cb6-a162f019adf3","dc":"frankfurt"}]
+    [{"id":"ecc6451c-bc25-43bd-8cb6-a162f019adf3","dc":"frankfurt"}]
+    [{"id":"c46bdbd9-b588-4ffa-8018-d299d0918bbc","dc":"sydney"}]
+    [{"id":"c46bdbd9-b588-4ffa-8018-d299d0918bbc","dc":"sydney"}]
+    [{"id":"ecc6451c-bc25-43bd-8cb6-a162f019adf3","dc":"frankfurt"}]
+    [{"id":"ecc6451c-bc25-43bd-8cb6-a162f019adf3","dc":"frankfurt"}]
+    [{"id":"dce5a46e-15af-4479-a073-8fbc7f0097c5","dc":"nyc"}]
+    [{"id":"ecc6451c-bc25-43bd-8cb6-a162f019adf3","dc":"frankfurt"}]
+    [{"id":"dce5a46e-15af-4479-a073-8fbc7f0097c5","dc":"nyc"}]
+    [{"id":"dce5a46e-15af-4479-a073-8fbc7f0097c5","dc":"nyc"}]
+    [{"id":"c46bdbd9-b588-4ffa-8018-d299d0918bbc","dc":"sydney"}]
+    [{"id":"ecc6451c-bc25-43bd-8cb6-a162f019adf3","dc":"frankfurt"}]
+    [{"id":"c46bdbd9-b588-4ffa-8018-d299d0918bbc","dc":"sydney"}]
+    [{"id":"c46bdbd9-b588-4ffa-8018-d299d0918bbc","dc":"sydney"}]
+    [{"id":"dce5a46e-15af-4479-a073-8fbc7f0097c5","dc":"nyc"}]
+    [{"id":"ecc6451c-bc25-43bd-8cb6-a162f019adf3","dc":"frankfurt"}]
+    [{"id":"dce5a46e-15af-4479-a073-8fbc7f0097c5","dc":"nyc"}]
+    ```
 
-- Clone the demo repository.
+    To confirm global load balancing, go to the [Endpoints dashboard](https://dashboard.ngrok.com/endpoints) and confirm all three agents are connected and traffic is flowing.
+  </Step>
 
-  ```bash
-  git clone https://github.com/joelhans/ngrok-vps-gslb-demo
-  cd ngrok-vps-gslb-demo
-  ```
+  <Step title="(Optional) Extend with Traffic Policy">
+    Your demo API is globally load-balanced with equal distribution across your three VMs.
+    You can extend your endpoint's Traffic Policy in two ways: adding API gateway features like header injection, or configuring custom weights for fine-grained traffic control.
 
-- Edit the `ngrok.yml` [ngrok agent configuration file](/agent/config/) with your `<YOUR_NGROK_AUTHTOKEN>` (find it in the [ngrok dashboard](https://dashboard.ngrok.com/get-started/your-authtoken)); it's different from the API key you created in the first step.
-  All three VMs use the same `url` value—ngrok automatically routes each incoming request to the nearest connected agent.
+    ### Add API gateway features
 
-  ```yaml
-  version: 3
-  authtoken: <YOUR_NGROK_AUTHTOKEN>
-  log_level: debug
-  log: stdout
-  endpoints:
-    - name: vps-demo
-      url: https://gslb-demo.internal
-      upstream:
-        url: http://localhost:5000
-  ```
+    Update your `policy.yaml` to include an `on_http_response` phase that adds headers to every response:
 
-- Build and start the containerized API deployment, passing the hostname of the VM to the hostname of the Docker container.
+    ```yaml
+    on_http_request:
+      - actions:
+          - type: forward-internal
+            config:
+              url: https://gslb-demo.internal
+              on_error: continue
+          - type: custom-response
+            config:
+              status_code: 503
+              body: "No upstream tunnel available."
+    on_http_response:
+      - name: Add ngrok headers
+        actions:
+          - type: add-headers
+            config:
+              headers:
+                country: ${conn.client_ip.geo.location.country_code}
+                is-ngrok: "1"
+    ```
 
-  ```bash
-  HOSTNAME=$(hostname -f) docker compose up -d
-  ```
+    Apply the updated policy to your Cloud Endpoint:
 
-## 4. Test out ngrok's Global Server Load Balancing
+    ```bash
+    curl \
+      -X PATCH "https://api.ngrok.com/endpoints/${ENDPOINT_ID}" \
+      -H "Authorization: Bearer ${NGROK_API_KEY}" \
+      -H "Content-Type: application/json" \
+      -H "Ngrok-Version: 2" \
+      --data "$(jq -n \
+        --rawfile policy policy.yaml \
+        '{traffic_policy:$policy}'
+      )"
+    ```
 
-ngrok is now load-balancing your single API endpoint across all three distributed VMs.
+    When you request your API again, the response includes the `country` (with the appropriate code for your request origin) and `is-ngrok` headers.
 
-You can now ping your demo API at `<YOUR_NGROK_DOMAIN>/api` to see which agent responds.
+    ```bash
+    curl -s -I -X GET https://<YOUR_NGROK_DOMAIN>/api
 
-```bash
-curl ${NGROK_DOMAIN}/api
-[{"id":"1cf26269-ce8b-4f16-91f1-fdf7bc6d9e80","dc":"nyc"}]
-```
+    HTTP/2 200
+    content-type: application/json
+    country: U.S.
+    date: Wed, 22 May 2024 14:53:42 GMT
+    is-ngrok: 1
+    content-length: 63
+    ```
 
-To see the distribution in action, try a batch of `curl` requests.
+    ### Configure weighted distribution
 
-```bash
-for i in `seq 1 20`; do \
-  curl  \
-    -X GET "${NGROK_DOMAIN}/api" ; \
-  done
-```
+    To route traffic by explicit weight across specific regions—for example, to run A/B tests or shift capacity—update each VM's `ngrok.yml` to use a unique per-region internal domain instead of the shared one:
 
-You should see each VM respond with similar frequency:
+    - NYC VM: `url: https://nyc.internal`
+    - Sydney VM: `url: https://sydney.internal`
+    - Frankfurt VM: `url: https://frankfurt.internal`
 
-```json skip-validation
-[{"id":"c46bdbd9-b588-4ffa-8018-d299d0918bbc","dc":"sydney"}]
-[{"id":"dce5a46e-15af-4479-a073-8fbc7f0097c5","dc":"nyc"}]
-[{"id":"ecc6451c-bc25-43bd-8cb6-a162f019adf3","dc":"frankfurt"}]
-[{"id":"ecc6451c-bc25-43bd-8cb6-a162f019adf3","dc":"frankfurt"}]
-[{"id":"ecc6451c-bc25-43bd-8cb6-a162f019adf3","dc":"frankfurt"}]
-[{"id":"c46bdbd9-b588-4ffa-8018-d299d0918bbc","dc":"sydney"}]
-[{"id":"c46bdbd9-b588-4ffa-8018-d299d0918bbc","dc":"sydney"}]
-[{"id":"ecc6451c-bc25-43bd-8cb6-a162f019adf3","dc":"frankfurt"}]
-[{"id":"ecc6451c-bc25-43bd-8cb6-a162f019adf3","dc":"frankfurt"}]
-[{"id":"dce5a46e-15af-4479-a073-8fbc7f0097c5","dc":"nyc"}]
-[{"id":"ecc6451c-bc25-43bd-8cb6-a162f019adf3","dc":"frankfurt"}]
-[{"id":"dce5a46e-15af-4479-a073-8fbc7f0097c5","dc":"nyc"}]
-[{"id":"dce5a46e-15af-4479-a073-8fbc7f0097c5","dc":"nyc"}]
-[{"id":"c46bdbd9-b588-4ffa-8018-d299d0918bbc","dc":"sydney"}]
-[{"id":"ecc6451c-bc25-43bd-8cb6-a162f019adf3","dc":"frankfurt"}]
-[{"id":"c46bdbd9-b588-4ffa-8018-d299d0918bbc","dc":"sydney"}]
-[{"id":"c46bdbd9-b588-4ffa-8018-d299d0918bbc","dc":"sydney"}]
-[{"id":"dce5a46e-15af-4479-a073-8fbc7f0097c5","dc":"nyc"}]
-[{"id":"ecc6451c-bc25-43bd-8cb6-a162f019adf3","dc":"frankfurt"}]
-[{"id":"dce5a46e-15af-4479-a073-8fbc7f0097c5","dc":"nyc"}]
-```
+    Then create a `policy-weighted.yaml` with a Traffic Policy that uses `set-vars` to select a backend by weight on each request.
+    Adjust the `weight` values as needed; the `cumulative_weights` list must be recomputed to match (each entry is the sum of all weights up to and including that index).
 
-To confirm global load balancing, go to the [Endpoints dashboard](https://dashboard.ngrok.com/endpoints) and confirm all three agents are connected and traffic is flowing.
+    ```yaml
+    on_http_request:
+      - actions:
+          - type: set-vars
+            config:
+              vars:
+                - urls:
+                    - weight: 33
+                      url: https://nyc.internal
+                    - weight: 33
+                      url: https://sydney.internal
+                    - weight: 34
+                      url: https://frankfurt.internal
+                - cumulative_weights: [33, 66, 100]
+                - weighted_chance: ${rand.int(0, 99)}
+                - weighted_index: ${[0, 1, 2].filter(i, vars.cumulative_weights[i] > vars.weighted_chance)[0]}
+                - weighted_url: ${vars.urls[vars.weighted_index].url}
+      - actions:
+          - type: forward-internal
+            config:
+              url: ${vars.weighted_url}
+              on_error: continue
+          - type: custom-response
+            config:
+              status_code: 503
+              body: "No upstream tunnel available."
+    ```
 
-## Step 5 (optional): Extend with Traffic Policy
+    Apply the weighted policy to your Cloud Endpoint:
 
-Your demo API is globally load-balanced with equal distribution across your three VMs.
-You can extend your endpoint's Traffic Policy in two ways: adding API gateway features like header injection, or configuring custom weights for fine-grained traffic control.
-
-### Add API gateway features
-
-Update your `policy.yaml` to include an `on_http_response` phase that adds headers to every response:
-
-```yaml
-on_http_request:
-  - actions:
-      - type: forward-internal
-        config:
-          url: https://gslb-demo.internal
-          on_error: continue
-      - type: custom-response
-        config:
-          status_code: 503
-          body: "No upstream tunnel available."
-on_http_response:
-  - name: Add ngrok headers
-    actions:
-      - type: add-headers
-        config:
-          headers:
-            country: ${conn.client_ip.geo.location.country_code}
-            is-ngrok: "1"
-```
-
-Apply the updated policy to your Cloud Endpoint:
-
-```bash
-curl \
-  -X PATCH "https://api.ngrok.com/endpoints/${ENDPOINT_ID}" \
-  -H "Authorization: Bearer ${NGROK_API_KEY}" \
-  -H "Content-Type: application/json" \
-  -H "Ngrok-Version: 2" \
-  --data "$(jq -n \
-    --rawfile policy policy.yaml \
-    '{traffic_policy:$policy}'
-  )"
-```
-
-When you request your API again, the response includes the `country` (with the appropriate code for your request origin) and `is-ngrok` headers.
-
-```bash
-curl -s -I -X GET https://<YOUR_NGROK_DOMAIN>/api
-
-HTTP/2 200
-content-type: application/json
-country: U.S.
-date: Wed, 22 May 2024 14:53:42 GMT
-is-ngrok: 1
-content-length: 63
-```
-
-### Configure weighted distribution
-
-To route traffic by explicit weight across specific regions—for example, to run A/B tests or shift capacity—update each VM's `ngrok.yml` to use a unique per-region internal domain instead of the shared one:
-
-- NYC VM: `url: https://nyc.internal`
-- Sydney VM: `url: https://sydney.internal`
-- Frankfurt VM: `url: https://frankfurt.internal`
-
-Then create a `policy-weighted.yaml` with a Traffic Policy that uses `set-vars` to select a backend by weight on each request.
-Adjust the `weight` values as needed; the `cumulative_weights` list must be recomputed to match (each entry is the sum of all weights up to and including that index).
-
-```yaml
-on_http_request:
-  - actions:
-      - type: set-vars
-        config:
-          vars:
-            - urls:
-                - weight: 33
-                  url: https://nyc.internal
-                - weight: 33
-                  url: https://sydney.internal
-                - weight: 34
-                  url: https://frankfurt.internal
-            - cumulative_weights: [33, 66, 100]
-            - weighted_chance: ${rand.int(0, 99)}
-            - weighted_index: ${[0, 1, 2].filter(i, vars.cumulative_weights[i] > vars.weighted_chance)[0]}
-            - weighted_url: ${vars.urls[vars.weighted_index].url}
-  - actions:
-      - type: forward-internal
-        config:
-          url: ${vars.weighted_url}
-          on_error: continue
-      - type: custom-response
-        config:
-          status_code: 503
-          body: "No upstream tunnel available."
-```
-
-Apply the weighted policy to your Cloud Endpoint:
-
-```bash
-curl \
-  -X PATCH "https://api.ngrok.com/endpoints/${ENDPOINT_ID}" \
-  -H "Authorization: Bearer ${NGROK_API_KEY}" \
-  -H "Content-Type: application/json" \
-  -H "Ngrok-Version: 2" \
-  --data "$(jq -n \
-    --rawfile policy policy-weighted.yaml \
-    '{traffic_policy:$policy}'
-  )"
-```
+    ```bash
+    curl \
+      -X PATCH "https://api.ngrok.com/endpoints/${ENDPOINT_ID}" \
+      -H "Authorization: Bearer ${NGROK_API_KEY}" \
+      -H "Content-Type: application/json" \
+      -H "Ngrok-Version: 2" \
+      --data "$(jq -n \
+        --rawfile policy policy-weighted.yaml \
+        '{traffic_policy:$policy}'
+      )"
+    ```
+  </Step>
+</Steps>
 
 ## What's next?
 

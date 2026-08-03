@@ -40,166 +40,168 @@ In that case, you'll just need to reserve a domain and add your auth token as de
 - Your [ngrok auth token](https://dashboard.ngrok.com/get-started/your-authtoken).
 - [Go installed](https://go.dev/doc/install) on your machine. You can check this by running `go version` in your terminal.
 
-## 1. Start your app or service
+<Steps>
+  <Step title="Start your app or service">
+    Start up the app or service you'd like to put online.
+    This is the app that your Agent Endpoint will forward online traffic to.
 
-Start up the app or service you'd like to put online.
-This is the app that your Agent Endpoint will forward online traffic to.
+    If you don't have an app to work with, you can create a minimal Go app using the following code to set up a basic HTTP server at port `8080`.
 
-If you don't have an app to work with, you can create a minimal Go app using the following code to set up a basic HTTP server at port `8080`.
+    ```go title="service.go"
+    package main
 
-```go title="service.go"
-package main
+    import (
+    	"fmt"
+    	"net/http"
+    )
 
-import (
-	"fmt"
-	"net/http"
-)
+    func handler(w http.ResponseWriter, r *http.Request) {
+    	fmt.Fprintf(w, "Hello from Go HTTP Server!")
+    }
 
-func handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello from Go HTTP Server!")
-}
+    func main() {
+    	http.HandleFunc("/", handler)
 
-func main() {
-	http.HandleFunc("/", handler)
+    	fmt.Println("Starting server at http://localhost:8080")
+    	err := http.ListenAndServe(":8080", nil)
+    	if err != nil {
+    		fmt.Println("Server failed:", err)
+    	}
+    }
+    ```
 
-	fmt.Println("Starting server at http://localhost:8080")
-	err := http.ListenAndServe(":8080", nil)
-	if err != nil {
-		fmt.Println("Server failed:", err)
-	}
-}
-```
+    Navigate to the directory where this file is located and run the following command to start the server:
 
-Navigate to the directory where this file is located and run the following command to start the server:
+    ```bash
+    go run service.go
+    ```
+  </Step>
 
-```bash
-go run service.go
-```
+  <Step title="Install the Go SDK">
+    Open a new terminal, then run the following commands to create a new Go module and install the SDK:
 
-## 2. Install the Go SDK
+    ```bash
+    mkdir ngrok-go-demo
+    cd ngrok-go-demo
+    go mod init ngrok-go-demo
+    go get golang.ngrok.com/ngrok/v2
+    ```
+  </Step>
 
-Open a new terminal, then run the following commands to create a new Go module and install the SDK:
+  <Step title="Create a .env file">
+    Create a `.env` file and add [your ngrok auth token](https://dashboard.ngrok.com/get-started/your-authtoken) and reserved domain to it.
+    This file needs to be in the same directory where you initialized your Go module in the previous step.
+    Run the following command to create the `.env` file:
 
-```bash
-mkdir ngrok-go-demo
-cd ngrok-go-demo
-go mod init ngrok-go-demo
-go get golang.ngrok.com/ngrok/v2
-```
+    ```bash
+    touch .env
+    ```
 
-## 3. Create a .env file
+    Add your ngrok auth token and reserved domain to this file:
 
-Create a `.env` file and add [your ngrok auth token](https://dashboard.ngrok.com/get-started/your-authtoken) and reserved domain to it.
-This file needs to be in the same directory where you initialized your Go module in the previous step.
-Run the following command to create the `.env` file:
+    ```txt title=".env"
+    NGROK_AUTHTOKEN=your_actual_auth_token_here
+    NGROK_DOMAIN=your_actual_domain_here
+    ```
 
-```bash
-touch .env
-```
+    Finally, you'll need to install [the `godotenv` package](https://github.com/joho/godotenv?tab=readme-ov-file#godotenv--) to access your environment variables from your code:
 
-Add your ngrok auth token and reserved domain to this file:
+    ```bash
+    go get github.com/joho/godotenv
+    ```
 
-```txt title=".env"
-NGROK_AUTHTOKEN=your_actual_auth_token_here
-NGROK_DOMAIN=your_actual_domain_here
-```
+    <Tip>
+    If you don't want to use a `.env` file, you can instead [export your auth token as an environment variable](https://support.apple.com/en-il/guide/terminal/apd382cc5fa-4f58-4449-b20a-41c53c006f8f/mac) in your terminal session, or [call `ngrok.WithAuthToken("your-token")`](https://pkg.go.dev/golang.ngrok.com/ngrok/v2#WithAuthtoken) in your code.
 
-Finally, you'll need to install [the `godotenv` package](https://github.com/joho/godotenv?tab=readme-ov-file#godotenv--) to access your environment variables from your code:
+    You can set your reserved domain directly in your endpoint file below using `ngrok.WithURL()`.
+    </Tip>
+  </Step>
 
-```bash
-go get github.com/joho/godotenv
-```
+  <Step title="Create your endpoint">
+    Create your Agent Endpoint, which will forward public traffic to your app.
 
-<Tip>
-If you don't want to use a `.env` file, you can instead [export your auth token as an environment variable](https://support.apple.com/en-il/guide/terminal/apd382cc5fa-4f58-4449-b20a-41c53c006f8f/mac) in your terminal session, or [call `ngrok.WithAuthToken("your-token")`](https://pkg.go.dev/golang.ngrok.com/ngrok/v2#WithAuthtoken) in your code.
+    Create a new file named `endpoint.go` in the same directory as your `.env` file and add the following code.
+    This example:
 
-You can set your reserved domain directly in your endpoint file below using `ngrok.WithURL()`.
-</Tip>
+    - Starts an Agent Endpoint that forwards from your reserved domain to your service running on port `8080`.
+    - Secures the endpoint with a Traffic Policy that requires authentication via Google OAuth.
 
-## 4. Create your endpoint
+    <Note>
+    This example uses ngrok's default Google OAuth application.
+    To use your own, see [the OAuth Traffic Policy Action documentation](/traffic-policy/actions/oauth/#google-example).
+    </Note>
 
-Create your Agent Endpoint, which will forward public traffic to your app.
+    ```go title="endpoint.go"
+    package main
 
-Create a new file named `endpoint.go` in the same directory as your `.env` file and add the following code.
-This example:
+    import (
+    	"context"
+    	"fmt"
+    	"log"
+    	"os"
 
-- Starts an Agent Endpoint that forwards from your reserved domain to your service running on port `8080`.
-- Secures the endpoint with a Traffic Policy that requires authentication via Google OAuth.
+    	"github.com/joho/godotenv"
+    	"golang.ngrok.com/ngrok/v2"
+    )
 
-<Note>
-This example uses ngrok's default Google OAuth application.
-To use your own, see [the OAuth Traffic Policy Action documentation](/traffic-policy/actions/oauth/#google-example).
-</Note>
+    func main() {
+    	if err := godotenv.Load(".env"); err != nil {
+    		log.Fatal("Error loading .env file", err)
+    	}
+    	if err := run(context.Background()); err != nil {
+    		log.Fatal(err)
+    	}
+    }
 
-```go title="endpoint.go"
-package main
+    const trafficPolicy = `
+    on_http_request:
+      - actions:
+          - type: oauth
+            config:
+              provider: google
+    `
+    const address = "http://localhost:8080"
 
-import (
-	"context"
-	"fmt"
-	"log"
-	"os"
+    func run(ctx context.Context) error {
+    	agent, err := ngrok.NewAgent(ngrok.WithAuthtoken(os.Getenv("NGROK_AUTHTOKEN")))
+    	if err != nil {
+    	    return err
+    	}
 
-	"github.com/joho/godotenv"
-	"golang.ngrok.com/ngrok/v2"
-)
+    	ln, err := agent.Forward(ctx,
+    		ngrok.WithUpstream(address),
+    		ngrok.WithURL(os.Getenv("NGROK_DOMAIN")),
+    		ngrok.WithTrafficPolicy(trafficPolicy),
+    	)
 
-func main() {
-	if err := godotenv.Load(".env"); err != nil {
-		log.Fatal("Error loading .env file", err)
-	}
-	if err := run(context.Background()); err != nil {
-		log.Fatal(err)
-	}
-}
+    	if err != nil {
+    		fmt.Println("Error", err)
+    		return err
+    	}
 
-const trafficPolicy = `
-on_http_request:
-  - actions:
-      - type: oauth
-        config:
-          provider: google
-`
-const address = "http://localhost:8080"
+    	fmt.Println("Endpoint online: forwarding from", ln.URL(), "to", address)
 
-func run(ctx context.Context) error {
-	agent, err := ngrok.NewAgent(ngrok.WithAuthtoken(os.Getenv("NGROK_AUTHTOKEN")))
-	if err != nil {
-	    return err
-	}
+    	// Explicitly stop forwarding; otherwise it runs indefinitely
+    	<-ln.Done()
+    	return nil
+    }
+    ```
+  </Step>
 
-	ln, err := agent.Forward(ctx,
-		ngrok.WithUpstream(address),
-		ngrok.WithURL(os.Getenv("NGROK_DOMAIN")),
-		ngrok.WithTrafficPolicy(trafficPolicy),
-	)
+  <Step title="Test your endpoint">
+    Test your endpoint by running the following terminal command:
 
-	if err != nil {
-		fmt.Println("Error", err)
-		return err
-	}
+    ```bash
+    go run endpoint.go
+    ```
 
-	fmt.Println("Endpoint online: forwarding from", ln.URL(), "to", address)
+    This should print your reserved domain URL to the terminal.
+    When you visit the URL, you should be prompted to log in with Google.
+    After logging in, you'll see your app or service.
 
-	// Explicitly stop forwarding; otherwise it runs indefinitely
-	<-ln.Done()
-	return nil
-}
-```
-
-## 5. Test your endpoint
-
-Test your endpoint by running the following terminal command:
-
-```bash
-go run endpoint.go
-```
-
-This should print your reserved domain URL to the terminal.
-When you visit the URL, you should be prompted to log in with Google.
-After logging in, you'll see your app or service.
-
-If you used the example app in this quickstart, you'll see **"Hello from Go HTTP Server!"** displayed in your browser.
+    If you used the example app in this quickstart, you'll see **"Hello from Go HTTP Server!"** displayed in your browser.
+  </Step>
+</Steps>
 
 ## What's next?
 

@@ -22,40 +22,42 @@ With this pattern, you can:
 - Prevent your services or their host systems from being exposed to the public internet.
 - Give infrastructure and platform teams control over creating consistent global policy while also allowing developers to manage how traffic reaches their services.
 
-## 1. Create an endpoint for your service
+<Steps>
+  <Step title="Create an endpoint for your service">
+    Start an internal [Agent Endpoint](/endpoints/agent-endpoints/), replacing `$PORT` based on where your service listens.
+    You can also use one of the [SDKs](/agent-sdks) or the [Kubernetes Operator](/k8s).
 
-Start an internal [Agent Endpoint](/endpoints/agent-endpoints/), replacing `$PORT` based on where your service listens.
-You can also use one of the [SDKs](/agent-sdks) or the [Kubernetes Operator](/k8s).
+    ```bash
+    ngrok http $PORT --url https://service.internal
+    ```
+  </Step>
 
-```bash
-ngrok http $PORT --url https://service.internal
-```
+  <Step title="Reserve a domain">
+    <ReserveDomain />
+  </Step>
 
-## 2. Reserve a domain
+  <Step title="Create a Cloud Endpoint">
+    <CloudEndpoint />
+  </Step>
 
-<ReserveDomain />
+  <Step title="Add routing to your service with Traffic Policy">
+    While viewing your new Cloud Endpoint in the dashboard, copy the policy below and paste it into the Traffic Policy editor.
 
-## 3. Create a Cloud Endpoint
+    ```yaml
+    on_http_request:
+      - actions:
+          - type: forward-internal
+            config:
+              url: http://service.internal
+    ```
 
-<CloudEndpoint />
+    **What's happening here?** The Traffic Policy engine forwards all HTTP requests to the internal Agent Endpoint you created at `https://service.internal`.
+  </Step>
 
-## 4. Add routing to your service with Traffic Policy
-
-While viewing your new Cloud Endpoint in the dashboard, copy the policy below and paste it into the Traffic Policy editor.
-
-```yaml
-on_http_request:
-  - actions:
-      - type: forward-internal
-        config:
-          url: http://service.internal
-```
-
-**What's happening here?** The Traffic Policy engine forwards all HTTP requests to the internal Agent Endpoint you created at `https://service.internal`.
-
-## 5. Try out your endpoint
-
-<TryOut />
+  <Step title="Try out your endpoint">
+    <TryOut />
+  </Step>
+</Steps>
 
 ## Optional: Add a second service and routing
 

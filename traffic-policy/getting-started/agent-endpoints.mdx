@@ -22,94 +22,96 @@ This guide will demonstrate both approaches. If you don't know which to choose, 
 - An [ngrok account](https://dashboard.ngrok.com/).
 - The [ngrok Agent CLI](https://ngrok.com/download) installed.
 
-## 1. Set up your Traffic Policy
+<Steps>
+  <Step title="Set up your Traffic Policy">
+    <Tabs>
 
-<Tabs>
+    <Tab title="Using a separate policy file">
+    Create a custom Traffic Policy file with the following contents:
 
-<Tab title="Using a separate policy file">
-Create a custom Traffic Policy file with the following contents:
+    ```yaml
+    on_http_request:
+      - actions:
+          - type: custom-response
+            config:
+              status_code: 200
+              body: "Hello, World!"
+    ```
 
-```yaml
-on_http_request:
-  - actions:
-      - type: custom-response
-        config:
-          status_code: 200
-          body: "Hello, World!"
-```
+    This policy will respond to each HTTP request with a simple “Hello, World!” message.
 
-This policy will respond to each HTTP request with a simple “Hello, World!” message.
-
-</Tab>
-<Tab title="Using the Agent Configuration File">
+    </Tab>
+    <Tab title="Using the Agent Configuration File">
 
 
-<Note>
+    <Note>
 
-Your configuration file `version` [must be set to `3`](/agent/config/v3).
+    Your configuration file `version` [must be set to `3`](/agent/config/v3).
 
-</Note>
+    </Note>
 
-Enter the following command into your terminal:
+    Enter the following command into your terminal:
 
-```bash
-ngrok config edit
-```
+    ```bash
+    ngrok config edit
+    ```
 
-In your configuration file, add the following content to the bottom and save the file:
+    In your configuration file, add the following content to the bottom and save the file:
 
-```yaml
-endpoints:
-  - name: my-agent-endpoint
-    description: My first Agent Endpoint with a Traffic Policy
-    upstream:
-      url: 80
-    traffic_policy:
-      on_http_request:
-        - actions:
-            - type: custom-response
-              config:
-                status_code: 200
-                body: Hello, World!
-```
+    ```yaml
+    endpoints:
+      - name: my-agent-endpoint
+        description: My first Agent Endpoint with a Traffic Policy
+        upstream:
+          url: 80
+        traffic_policy:
+          on_http_request:
+            - actions:
+                - type: custom-response
+                  config:
+                    status_code: 200
+                    body: Hello, World!
+    ```
 
-This policy will respond to each HTTP request with “Hello, World!"
+    This policy will respond to each HTTP request with “Hello, World!"
 
-</Tab>
-</Tabs>
+    </Tab>
+    </Tabs>
+  </Step>
 
-## 2. Start your endpoint
+  <Step title="Start your endpoint">
+    <Tabs>
 
-<Tabs>
+    <Tab title="Using a separate policy file">
 
-<Tab title="Using a separate policy file">
+    Run the agent, applying the Traffic Policy you saved in the previous step with the `--traffic-policy-file` flag:
 
-Run the agent, applying the Traffic Policy you saved in the previous step with the `--traffic-policy-file` flag:
+    ```bash
+    $ ngrok http 80 --traffic-policy-file policy.yml
+    ```
 
-```bash
-$ ngrok http 80 --traffic-policy-file policy.yml
-```
+    This command starts an HTTP tunnel for port `80`, using the specified `policy.yml` Traffic Policy to manage traffic.
 
-This command starts an HTTP tunnel for port `80`, using the specified `policy.yml` Traffic Policy to manage traffic.
+    </Tab>
+    <Tab title="Using the Agent Configuration File">
 
-</Tab>
-<Tab title="Using the Agent Configuration File">
+    Start your Agent Endpoint by running the following command:
 
-Start your Agent Endpoint by running the following command:
+    ```bash
+    ngrok start my-agent-endpoint
+    ```
 
-```bash
-ngrok start my-agent-endpoint
-```
+    This command will start an HTTP tunnel for port `80`, using the specified Traffic Policy in the config file to manage traffic.
 
-This command will start an HTTP tunnel for port `80`, using the specified Traffic Policy in the config file to manage traffic.
+    </Tab>
+    </Tabs>
+  </Step>
 
-</Tab>
-</Tabs>
-
-## 3. Test it out
-
-After running the ngrok command in the previous step you should now see a URL in the forwarding section. Open the URL
-in your web browser. You should see the "Hello, World!" message displayed in your browser.
+  <Step title="Test it out">
+    After running the ngrok command in the previous step you should now see a URL in the forwarding section. Open the URL
+    in your web browser. You should see the "Hello, World!" message displayed in your browser.
+  </Step>
+</Steps>
 
 ## What's next?
 
