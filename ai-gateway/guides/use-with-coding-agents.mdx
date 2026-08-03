@@ -1,7 +1,7 @@
 ---
 title: Connect a coding agent to custom models
 sidebarTitle: Connect a coding agent
-description: Point OpenCode, Zed, Pi, or another OpenAI-compatible coding agent at the AI Gateway to reach a model you run on your own machine.
+description: Point OpenCode, Zed, Pi, Cursor, or another OpenAI-compatible coding agent at the AI Gateway to reach a model you run on your own machine.
 ---
 
 Some coding agents let you replace their built-in model with any OpenAI-compatible endpoint.
@@ -151,6 +151,44 @@ Point one at `https://gateway.ngrok.ai/v1` and it can call a self-hosted model o
         pi --provider ngrok --model "ollama:llama3.2" -p "Explain quantum entanglement like I'm 10."
         ```
 
+      </Tab>
+
+      <Tab title="Cursor">
+        [Cursor](https://cursor.com) is a code editor with a built-in agent.
+        It reaches custom models by overriding the base URL of its OpenAI provider, so the gateway stands in for OpenAI.
+
+        <Warning>
+        This needs a paid Cursor plan.
+        Free plans can only use Cursor's **Auto** model and can't select a named model, which is what a model you add yourself is.
+        </Warning>
+
+        Open **Cursor Settings**, go to **Models**, and expand **API Keys**:
+
+        1. Turn on **OpenAI API Key** and paste your ngrok.ai access key.
+           The field is labeled OpenAI, but Cursor sends the key to whatever endpoint you configure below.
+        2. Turn on **Override OpenAI Base URL** and enter `https://gateway.ngrok.ai/v1`.
+           Keep the `/v1` suffix: Cursor appends `/chat/completions` to whatever you enter.
+        3. Select **+ Add model**, enter your full `provider:model` name, such as `ollama:llama3.2`, and enable it.
+        4. Select **Verify** to confirm the gateway answers.
+
+        Pick your model in the chat model selector and test it:
+
+        <Prompt description="Explain quantum entanglement like I'm 10." actions={["copy"]}>
+          Explain quantum entanglement like I'm 10.
+        </Prompt>
+
+        <Warning>
+        The base URL override is global.
+        While it's on, Cursor routes its other OpenAI-model traffic to the gateway too, which fails for models your access key can't reach.
+        Turn the override off to go back to Cursor's own models.
+        </Warning>
+
+        Expect chat, not the whole editor.
+        Three Cursor behaviors limit how far a custom model reaches:
+
+        - Tab completion always uses Cursor's built-in models. It never reaches your endpoint.
+        - Agent and Edit also rely on Cursor's own models, so Cursor may refuse them while a custom API key is set and ask you to disable the key.
+        - Where agent runs do work, Cursor's tool definitions over an overridden base URL aren't strictly OpenAI-shaped, so tool calls can fail against a self-hosted model even when plain chat succeeds.
       </Tab>
 
       <Tab title="Anything else">
