@@ -1,0 +1,75 @@
+---
+title: Configure account settings
+sidebarTitle: Configure account settings
+description: Configure account-wide AI Gateway timeouts and token limits.
+---
+
+Account-wide gateway settings apply to every request through `https://gateway.ngrok.ai`, so you can set defaults like timeouts and token limits once instead of repeating them on every [access key configuration](/ai-gateway/guides/access-key-configurations).
+
+## Timeouts
+
+| Setting | Default | Description |
+|---------|---------|-------------|
+| `perRequestTimeout` | `60s` | Max time for a single upstream attempt |
+| `totalTimeout` | `120s` | Max time for a request including all failover attempts |
+
+If a single attempt exceeds `perRequestTimeout`, the gateway moves to the next failover candidate. If total time exceeds `totalTimeout`, the gateway returns an error.
+
+## Token limits
+
+| Setting | Default | Description |
+|---------|---------|-------------|
+| `maxInputTokens` | none | Reject requests above estimated input tokens |
+| `maxOutputTokens` | none | Cap completion length |
+
+Leave token limits unset for no cap. Set them to block oversized requests before they reach upstream providers.
+
+## Via dashboard
+
+1. Open [Settings](https://app.ngrok.ai/settings) in app.ngrok.ai
+2. Edit **Total timeout**, **Per-request timeout**, and optional token limits
+3. Save
+
+The **Settings** page also shows the gateway URL (`https://gateway.ngrok.ai`) and lets you manage [AI Gateway API keys](/ai-gateway/concepts/access-keys#credentials-overview) for automation.
+
+## Via the AI Gateway API
+
+Get current settings:
+
+```bash
+curl https://api.ngrok.ai/gateway-config \
+  -H "Authorization: Bearer $AI_GATEWAY_API_KEY"
+```
+
+Update settings (omitted fields keep their current values):
+
+```bash
+curl -X PATCH https://api.ngrok.ai/gateway-config \
+  -H "Authorization: Bearer $AI_GATEWAY_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "totalTimeout": "120s",
+    "perRequestTimeout": "60s",
+    "maxInputTokens": 128000,
+    "maxOutputTokens": 8192
+  }'
+```
+
+Clear a token limit by sending `null`:
+
+```bash
+curl -X PATCH https://api.ngrok.ai/gateway-config \
+  -H "Authorization: Bearer $AI_GATEWAY_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{ "maxInputTokens": null }'
+```
+
+Duration fields use Go duration strings (for example, `30s`, `2m`).
+
+See the [Gateway configuration API reference](/ai-gateway/api-reference/gateway-config/get).
+
+## Next steps
+
+- [How It Works](/ai-gateway/how-it-works): Request flow and failover
+- [Choose how to reach providers](/ai-gateway/guides/configuring-providers): Credits, provider keys, and self-run models
+- [Access Key Configurations](/ai-gateway/guides/access-key-configurations): Per-key scope and routing

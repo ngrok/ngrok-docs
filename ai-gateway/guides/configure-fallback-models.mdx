@@ -1,0 +1,79 @@
+---
+title: Configure fallback models
+sidebarTitle: Configure fallback models
+description: Try another model if the primary model request fails.
+---
+
+Use fallback models when you want the AI Gateway to try another model if the primary request fails.
+
+Fallback is useful when you want better availability across providers, or when you want to try a private model first and use a hosted model as a backup.
+
+## Add fallback models
+
+Set the primary model with `model`. Set fallback models with `models`.
+
+```json
+{
+  "model": "gpt-4o",
+  "models": ["gpt-4o-mini", "anthropic:claude-sonnet-4-6"],
+  "messages": [{"role": "user", "content": "Hello"}]
+}
+```
+
+The gateway tries `gpt-4o` first. If that request fails, it tries each entry in `models` in order until one succeeds.
+
+## Choose the provider for each fallback
+
+Fallback models can use model IDs or `provider:model`.
+
+```json
+{
+  "model": "openai:gpt-4o",
+  "models": [
+    "openai:gpt-4o-mini",
+    "anthropic:claude-sonnet-4-6"
+  ],
+  "messages": [{"role": "user", "content": "Hello"}]
+}
+```
+
+Use provider-qualified model names when you want to control exactly which provider each fallback uses.
+
+## Fall back from a private model to a hosted model
+
+Fallback works with [custom providers](/ai-gateway/concepts/custom-providers), too.
+
+```json
+{
+  "model": "my-ollama:llama3.2",
+  "models": ["openai:gpt-4o-mini"],
+  "messages": [{"role": "user", "content": "Hello"}]
+}
+```
+
+In this example, the gateway tries your `my-ollama` provider first. If that request fails, it falls back to OpenAI.
+
+## Choose fallback models carefully
+
+Pick fallback models that can handle the same kind of request as the primary model. Check each model for:
+
+- Input modality.
+- Tool calling support.
+- Output size.
+- Context window.
+- Latency expectations.
+- Provider credentials.
+
+Use the [model catalog](/ai-gateway/reference/model-catalog) to compare built-in model capabilities.
+
+## Access restrictions still apply
+
+Fallback models must be allowed by the [access key configuration](/ai-gateway/guides/access-key-configurations) assigned to the access key.
+
+If a fallback model isn't allowed, the gateway rejects that model before routing the request upstream.
+
+## Next steps
+
+- [Choose a model](/ai-gateway/guides/model-selection-strategies): Choose a model by ID or provider
+- [Restrict providers and models](/ai-gateway/guides/restrict-providers-and-models): Limit what an access key can call
+- [Model catalog](/ai-gateway/reference/model-catalog): Compare model capabilities

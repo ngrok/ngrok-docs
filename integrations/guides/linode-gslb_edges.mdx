@@ -4,7 +4,7 @@ sidebarTitle: Linode
 description: Learn how to layer load balancing between three or more globally distributed, cloud-based virtual machines in Linode.
 ---
 
-In this guide, you'll learn how to layer ngrok's [Global Load Balancer](/universal-gateway/global-load-balancer/) (GSLB) on top of a VM-based deployment on Linode.
+In this guide, you'll learn how to layer ngrok's [Global Load Balancer](/gateway/global-load-balancer/) (GSLB) on top of a VM-based deployment on Linode.
 
 GSLB improves the performance and resiliency for your apps by distributing traffic to the nearest Point of Prescence (PoP) and the upstream service.
 Unlike a traditional GSLB deployment, ngrok automatically routes traffic without requiring you to deploy infrastructure, provision IPs, or change DNS records.
@@ -32,7 +32,7 @@ Export the API key on your local workstation.
 export NGROK_API_KEY=<YOUR-API-KEY>
 ```
 
-Next, create a domain that is a subdomain of an [ngrok-managed domain](/universal-gateway/domains/). For an example deployment like this, `YOUR_COMPANY-linode-gslb.ngrok.app` would work great.
+Next, create a domain that is a subdomain of an [ngrok-managed domain](/gateway/domains/). For an example deployment like this, `YOUR_COMPANY-linode-gslb.ngrok.app` would work great.
 
 You can reserve your domain in one of two ways: with the [ngrok API](/api/), or in the [ngrok dashboard](https://dashboard.ngrok.com/domains).
 
@@ -57,12 +57,12 @@ export NGROK_DOMAIN=<YOUR-NGROK-DOMAIN>
 **Custom domains within ngrok**
 
 Using CNAMEs, ngrok can host an endpoint on your domain while also managing the complete TLS certificate lifecycle on your behalf.
-If you'd prefer to use a custom domain rather than an ngrok-managed one, [follow our guide](/universal-gateway/custom-domains/) to set up your DNS and replace your custom domain in the `export` command above.
+If you'd prefer to use a custom domain rather than an ngrok-managed one, [follow our guide](/gateway/custom-domains/) to set up your DNS and replace your custom domain in the `export` command above.
 </Tip>
 
 ## 2. Create a Cloud Endpoint
 
-With ngrok, you create a [Cloud Endpoint](/universal-gateway/cloud-endpoints/) to manage a persistent public endpoint in the cloud.
+With ngrok, you create a [Cloud Endpoint](/gateway/cloud-endpoints/) to manage a persistent public endpoint in the cloud.
 A Cloud Endpoint's [Traffic Policy](/traffic-policy/) defines how requests are handled—including routing, authentication, and load balancing across your upstream services.
 
 Save the following Traffic Policy to a file named `policy.yaml` on your local workstation.
@@ -86,7 +86,7 @@ on_http_request:
           body: "No upstream available."
 ```
 
-This policy randomly picks one of three [internal endpoints](/universal-gateway/internal-endpoints/) on each request, distributing load equally across your VMs.
+This policy randomly picks one of three [internal endpoints](/gateway/internal-endpoints/) on each request, distributing load equally across your VMs.
 When a VM's agent is offline, `on_error: continue` falls through to the next action rather than returning an error to the client.
 
 <Tip>
@@ -274,7 +274,7 @@ From here, you have many options for extending your use of ngrok's GSLB:
 
 - Spread the load from user requests further by creating additional deployments in more regions, adding their internal endpoint URLs to the `set-vars` list in your Traffic Policy, and patching your Cloud Endpoint with the updated configuration.
 - Add more VMs to a region with existing deployments by starting additional agents pointing to the same internal endpoint URL.
-  ngrok will [pool](/universal-gateway/endpoint-pooling/) those connections and load-balance between them automatically.
+  ngrok will [pool](/gateway/endpoint-pooling/) those connections and load-balance between them automatically.
   Alternatively, use [NodeBalancers](https://www.linode.com/docs/products/networking/nodebalancers/) for additional load balancing within a region.
 - Provision a Kubernetes cluster with the same workload and the ngrok [Kubernetes Operator](/k8s/) to load-balance between VM- and Kubernetes-based deployments of the same API or application.
 - Use your Traffic Policy for A/B tests by adjusting the distribution logic in the `set-vars` action.

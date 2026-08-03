@@ -1,0 +1,101 @@
+---
+title: Use a model you run yourself
+sidebarTitle: Use a model you run yourself
+description: Connect Ollama, vLLM, LM Studio, or another private model endpoint to the AI Gateway.
+---
+
+Use a custom provider when you want the AI Gateway to call a model running on your machine, private network, or cloud GPU.
+
+Custom providers can point to self-hosted tools like Ollama, vLLM, LM Studio, or any OpenAI- or Anthropic-compatible API.
+
+## What you'll need
+
+Your model server must:
+
+1. Expose a supported API surface, such as OpenAI Chat Completions, OpenAI Responses, or Anthropic Messages.
+2. Be reachable from the AI Gateway.
+3. Have at least one model ID configured on the provider.
+
+## Connect a local model with an internal endpoint
+
+If your model runs on your machine or private network, expose it with an ngrok internal endpoint.
+
+For example, if your model server listens on port `11434`:
+
+```bash
+ngrok http 11434 --url https://my-ollama.internal
+```
+
+Use the internal endpoint URL as the custom provider base URL.
+
+<Note>
+Internal endpoints (`.internal` domains) are private to your ngrok account, meaning they're not reachable from the public internet. Use the same ngrok account here and in the AI Gateway, otherwise the gateway can't reach the endpoint.
+</Note>
+
+## Create a custom provider
+
+In [app.ngrok.ai](https://app.ngrok.ai):
+
+1. Go to **Providers**.
+2. Open the **Custom** tab.
+3. Select **Add provider**.
+4. Choose **External URL** or **Local**.
+5. Enter a provider ID, base URL, API format, and model IDs.
+6. Add a provider key if the upstream requires authentication.
+
+## Create a custom provider with the API
+
+```bash
+curl -X POST https://api.ngrok.ai/providers \
+  -H "Authorization: Bearer $AI_GATEWAY_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "providerId": "my-ollama",
+    "name": "Local Ollama",
+    "baseUrl": "https://my-ollama.internal",
+    "supportedApiSurfaces": [
+      { "format": "openai", "surface": "chat-completions" }
+    ],
+    "models": [{ "modelId": "llama3.2" }]
+  }'
+```
+
+See the [Providers API reference](/ai-gateway/api-reference/providers/create) for every field.
+
+## Allow the provider on an access key
+
+Creating a custom provider doesn't automatically make every access key able to call it.
+
+To route traffic to the provider:
+
+1. Add a provider key if the upstream requires authentication.
+2. Create or update an [access key configuration](/ai-gateway/guides/access-key-configurations).
+3. Allow the custom provider ID.
+4. Assign the configuration to an [access key](/ai-gateway/concepts/access-keys).
+
+## Call the model
+
+Use `provider:model` in the request.
+
+```json
+{
+  "model": "my-ollama:llama3.2",
+  "messages": [{"role": "user", "content": "Hello"}]
+}
+```
+
+## URL requirements
+
+| URL type | Scheme | Example |
+|----------|--------|---------|
+| External | `https://` only | `https://api.example.com/v1` |
+| ngrok internal | `http://` or `https://` | `https://my-ollama.internal` |
+
+HTTP is only allowed for ngrok `.internal` endpoints. External URLs must use HTTPS.
+
+## Next steps
+
+- [Ollama guide](/ai-gateway/custom-providers/ollama): Connect Ollama
+- [vLLM guide](/ai-gateway/custom-providers/vllm): Connect vLLM
+- [Provider keys](/ai-gateway/guides/attaching-provider-keys): Store upstream credentials
+- [Restrict providers and models](/ai-gateway/guides/restrict-providers-and-models): Allow the custom provider on a key

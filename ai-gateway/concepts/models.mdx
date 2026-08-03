@@ -3,15 +3,11 @@ title: Models
 description: Understanding model naming and request formats in the AI Gateway.
 ---
 
-Models are the AI systems that process your requests. The AI Gateway supports flexible model naming and can route to the same model across different providers.
+Models are the AI systems that process your requests. You specify the model in each request body, and you can use an [access key configuration](/ai-gateway/guides/access-key-configurations) to restrict which models an access key may call.
 
 ## Specifying models
 
-You can specify which model to use in your requests. The gateway supports several formats depending on how specific you need to be.
-
-### Just the model name
-
-The simplest approach—use the model name directly:
+### Model name only
 
 ```json
 {
@@ -20,63 +16,36 @@ The simplest approach—use the model name directly:
 }
 ```
 
-The gateway looks up `gpt-4o` in the [Model Catalog](/ai-gateway/reference/model-catalog) and automatically routes to the right provider (OpenAI in this case).
+The gateway looks up `gpt-4o` in the [model catalog](/ai-gateway/reference/model-catalog) and routes to OpenAI.
 
-### With a provider prefix
-
-Use `provider:model` when you want to explicitly choose a provider:
+### Provider prefix
 
 ```json
 {
-  "model": "anthropic:claude-3-5-sonnet-latest",
+  "model": "anthropic:claude-sonnet-4-6",
   "messages": [{"role": "user", "content": "Hello"}]
 }
 ```
 
-This is useful when:
-- A model name exists on multiple providers
-- You want to force a specific provider
-- You're using a custom provider you've configured
+Use `provider:model` when you want to force a specific provider or target [a model you run yourself](/ai-gateway/guides/use-a-model-you-run-yourself).
 
-## Multiple models (fallback)
+## Multiple models (failover)
 
-Specify multiple models for automatic fallback using the `models` array:
+List fallback models with the `models` array:
 
 ```json
 {
   "model": "gpt-4o",
-  "models": ["gpt-4o-mini", "claude-3-5-sonnet-20241022"],
+  "models": ["gpt-4o-mini", "anthropic:claude-sonnet-4-6"],
   "messages": [{"role": "user", "content": "Hello"}]
 }
 ```
 
-The gateway tries models in order:
-1. `model` field first (primary choice)
-2. `models` array entries as fallbacks
-
-You can use `model` alone, `models` alone, or both together—all are valid ways to specify client model preferences.
-
-This enables cross-provider failover—if OpenAI fails, the gateway can automatically try Anthropic.
-
-## Automatic model selection
-
-Use the special `ngrok/auto` model to let the gateway choose based on your configured [model selection strategy](/ai-gateway/guides/model-selection-strategies):
-
-```json
-{
-  "model": "ngrok/auto",
-  "messages": [{"role": "user", "content": "Hello"}]
-}
-```
-
-This is equivalent to omitting the model field entirely. The gateway selects from available models based on your strategy (for example, lowest latency, lowest cost).
+The gateway tries `model` first, then each entry in `models` in order, until one succeeds.
 
 ## Unknown models (pass-through)
 
-If a client requests a model that isn't in the [Model Catalog](/ai-gateway/reference/model-catalog), the gateway can still route it if:
-
-1. The model name includes a provider prefix (for example, `openai:some-new-model`)
-2. The provider is known (either from the model catalog or a custom provider you've defined in your configuration) and allowed by your configuration
+If a model is not in the catalog, the gateway still routes it when you include a provider prefix:
 
 ```json
 {
@@ -85,52 +54,19 @@ If a client requests a model that isn't in the [Model Catalog](/ai-gateway/refer
 }
 ```
 
-The gateway extracts `openai` as the provider and forwards the request with `some-new-model` as the model name. This enables immediate access to new models before they're added to the catalog.
-
-<Note>
-Unknown models bypass catalog validation—the provider will return an error if the model doesn't exist. Unknown models also lack metadata (pricing, capabilities) for model selection strategies.
-</Note>
+The provider returns an error if the model does not exist. Pass-through models must still be allowed by the access key's configuration.
 
 ## Model aliases
 
-The gateway automatically normalizes common model aliases. For example:
-
-- Shortened names may map to full version identifiers
-- Legacy names may map to current versions
-
-All model, provider, and author names are not case-sensitive. For example, `gpt-4o`, `GPT-4o`, and `Gpt-4O` all resolve to the same model. See the [Aliases reference](/ai-gateway/reference/model-catalog#aliases-reference) for a complete list of built-in aliases.
-
-You can also define custom aliases in your provider configuration:
-
-```yaml
-providers:
-  - id: "openai"
-    models:
-      - id: "gpt-4o-2024-11-20"
-        id_aliases: ["gpt-4o", "gpt-4-latest"]
-```
-
-Clients can then use any of these names to reach the same model.
-
-<Note>
-Aliases must be unique across all models. You cannot use an alias that is already in use as an ID or alias by another model.
-</Note>
+Model and provider names are not case-sensitive. The catalog includes built-in aliases—see [Aliases reference](/ai-gateway/reference/model-catalog#aliases-reference).
 
 ## Model capabilities
 
-Models have different capabilities that you can filter on using [selection strategies](/ai-gateway/guides/model-selection-strategies):
-
-- **Input modalities**: text, image, audio, video, file
-- **Output modalities**: text, image, audio
-- **Features**: tool-calling, coding, vision, etc.
-- **Context window**: Maximum input tokens
-- **Output tokens**: Maximum output tokens
-
-See the [Model Catalog](/ai-gateway/reference/model-catalog) for capabilities of each model.
+Models differ in input/output modalities, context window, and features. See the [model catalog](/ai-gateway/reference/model-catalog) for details.
 
 ## Next steps
 
-- [Model Catalog](/ai-gateway/reference/model-catalog) - Full list of supported models
-- [Model Selection Strategies](/ai-gateway/guides/model-selection-strategies) - Custom routing logic
-- [Configuring Providers](/ai-gateway/guides/configuring-providers) - Configure specific models
-
+- [Model catalog](/ai-gateway/reference/model-catalog): Supported models by provider
+- [Choose a model](/ai-gateway/guides/model-selection-strategies): Model IDs and provider prefixes
+- [Configure fallback models](/ai-gateway/guides/configure-fallback-models): Try another model when the first one fails
+- [Restrict providers and models](/ai-gateway/guides/restrict-providers-and-models): Limit models per key

@@ -3,56 +3,68 @@ title: Credits
 description: Understanding AI Gateway credits, pricing, and balance management.
 ---
 
-AI Gateway credits are a prepaid balance that funds [AI Gateway API Key](/ai-gateway/concepts/api-keys) usage. When you [bring your own keys](/ai-gateway/concepts/bring-your-own-keys), credits are not required—you pay providers directly through your own billing relationship.
+AI Gateway credits are a prepaid balance you purchase through [app.ngrok.ai](https://app.ngrok.ai). Every request through `https://gateway.ngrok.ai` spends credits.
 
-## Plan requirement
+Each request pays a small [processing fee](#processing-fee). When you use ngrok.ai inference for built-in OpenAI and Anthropic, credits also cover the model cost. See [How credits are consumed](#how-credits-are-consumed) for the full breakdown.
 
-AI Gateway requires the **Pay-as-you-go** plan. Free and Hobbyist plans cannot use the AI Gateway.
+AI Gateway credits are separate from your ngrok platform billing on [dashboard.ngrok.com](https://dashboard.ngrok.com).
+
+## Accounts and plans
+
+You don't need a specific ngrok subscription plan to use the AI Gateway or purchase credits. Sign in at [app.ngrok.ai](https://app.ngrok.ai), buy credits, and create an [access key](/ai-gateway/concepts/access-keys).
+
+The AI Gateway and your broader ngrok account share the same ngrok account, but they are separate systems:
+
+| | [app.ngrok.ai](https://app.ngrok.ai) | [dashboard.ngrok.com](https://dashboard.ngrok.com) |
+|---|---|---|
+| **Purpose** | AI Gateway: keys, providers, credits, usage | ngrok platform: subscription, team members, tunnels, endpoints |
+| **Credits** | AI Gateway credits (this page) | Not used for AI Gateway traffic |
+
+If you want ngrok platform features alongside the AI Gateway (such as team members, or [internal endpoints](/ai-gateway/concepts/custom-providers) to reach self-hosted models) you can manage those through [dashboard.ngrok.com](https://dashboard.ngrok.com). This generally requires a paid ngrok plan such as [Pay-as-you-go](https://ngrok.com/pricing); using the gateway with credits alone does not.
 
 ## Purchasing credits
 
-[Purchase credits](https://dashboard.ngrok.com/ai-gateways/credit/add) directly from the ngrok dashboard. The minimum purchase is USD $5.00.
+Visit the [Credits page](https://app.ngrok.ai/credits) and purchase at least USD $5.00.
 
-Credits expire **one year** after purchase. There is no REST API for purchasing credits—this is a dashboard-only operation.
+You can also start checkout via the AI Gateway API:
+
+```bash
+curl -X POST https://api.ngrok.ai/credits/checkout-session \
+  -H "Authorization: Bearer $AI_GATEWAY_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{ "amount": 500 }'
+```
+
+Credits expire **one year** after purchase.
 
 ## How credits are consumed
 
-When you use [AI Gateway API Keys](/ai-gateway/concepts/api-keys), credits cover both ngrok's processing fee and the upstream provider cost (OpenAI, Anthropic). ngrok pays the provider on your behalf.
-
-When you [bring your own keys](/ai-gateway/concepts/bring-your-own-keys), credits are not required—you pay providers directly through your own billing relationship.
+| Routing | Credits pay for | You pay separately |
+|---------|-----------------|------------------|
+| Built-in OpenAI or Anthropic (ngrok.ai inference) | Processing fee and upstream model cost | Nothing |
+| Built-in provider with your provider key | Processing fee | Upstream model cost to your provider |
 
 ## Balance tracking
 
-View your current credit balance in the [ngrok dashboard](https://dashboard.ngrok.com/ai-gateways).
+You can view your balance on the [Credits page](https://app.ngrok.ai/credits), or via the API:
 
-## Low balance alerts
-
-When your balance drops below a threshold, ngrok sends an email notification warning you to purchase additional credits before they run out.
+```bash
+curl https://api.ngrok.ai/credits/balance \
+  -H "Authorization: Bearer $AI_GATEWAY_API_KEY"
+```
 
 ## What happens when credits run out
 
-When your credit balance reaches zero:
+When your credit balance reaches zero, the gateway rejects new requests until you purchase more credits.
 
-1. **AI Gateway API Key requests stop working**: ngrok can no longer pay providers on your behalf
-2. Clients receive **HTTP 403** with error [`ERR_NGROK_4026`](/errors/err_ngrok_4026): "Your account has run out of credit"
+## Processing fee
 
-<Note>
-BYOK requests are not affected by credit depletion—you pay providers directly through your own billing relationship.
-</Note>
+Every successful request through the gateway incurs a processing fee at **USD $0.05 per million tokens**. The fee is based on the tokens in your request and response. It applies to all traffic—ngrok.ai inference, your own [provider keys](/ai-gateway/guides/attaching-provider-keys), and [custom providers](/ai-gateway/concepts/custom-providers)—and does not vary by model or provider.
 
-## Restoring access
-
-[Purchase additional credits](https://dashboard.ngrok.com/ai-gateways/credit/add) to restore access. Once your balance is restored, AI Gateway API Keys resume working immediately.
-
-## AI Gateway credits vs. platform credits
-
-AI Gateway credits are separate from general ngrok platform credits (used for endpoints, bandwidth, and more on Free/Hobbyist plans). They are:
-
-They are purchased separately, tracked separately, and used exclusively for AI Gateway requests.
+When you use ngrok.ai inference for built-in OpenAI and Anthropic providers, credits also cover upstream model cost. When you bring your own key, upstream costs stay on your provider account and credits cover only the processing fee.
 
 ## Next steps
 
-- [AI Gateway API Keys](/ai-gateway/concepts/api-keys): Create keys to authenticate requests
-- [Quickstart](/ai-gateway/quickstart): Get your AI Gateway running in minutes
+- [Access Keys](/ai-gateway/concepts/access-keys): Authenticate requests to the gateway
+- [Quickstart](/ai-gateway/quickstart): Purchase credits and make your first request
 - [Bring Your Own Keys](/ai-gateway/concepts/bring-your-own-keys): Use your own provider API keys
-- [FAQ](/ai-gateway/faq): Common questions about credits and billing

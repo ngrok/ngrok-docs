@@ -1,0 +1,106 @@
+---
+title: Access Keys
+sidebarTitle: Access Keys
+description: The credential your application uses to authenticate with the AI Gateway.
+---
+
+An **access key** authenticates your application to `https://gateway.ngrok.ai`. Send it with every request—the gateway uses it to verify who is calling and whether the request is allowed through.
+
+## Access keys vs provider keys
+
+The AI Gateway splits authentication into two credentials so your application never handles upstream secrets.
+
+| | Access key | Provider key |
+|---|------------|--------------|
+| **What it is** | The credential your app sends to the gateway | An upstream API key for OpenAI, Anthropic, or another provider |
+| **Where it lives** | In your application | In [app.ngrok.ai](https://app.ngrok.ai), attached through an [access key configuration](/ai-gateway/guides/access-key-configurations) |
+| **Who uses it** | Your code, as the SDK's `api_key` | The AI Gateway, injected server-side on each request |
+
+Because the two are separate, you can rotate or revoke an access key for one client without touching your [provider keys](/ai-gateway/guides/attaching-provider-keys), and your upstream secrets never ship in client code.
+
+With [credits](/ai-gateway/concepts/credits), built-in **OpenAI** and **Anthropic** work through ngrok.ai inference—no provider keys to store at all.
+
+See [How It Works](/ai-gateway/how-it-works) for the full request flow.
+
+## Use in your application
+
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://gateway.ngrok.ai/v1",
+    api_key="ng-xxxxx-g1-xxxxx"  # Your access key
+)
+
+response = client.chat.completions.create(
+    model="gpt-4o",
+    messages=[{"role": "user", "content": "Hello!"}]
+)
+```
+
+See the [Quickstart](/ai-gateway/quickstart) to create your first key.
+
+## Create and manage keys
+
+Create a separate key per application or team so you can revoke one client without affecting others.
+
+### Via the ngrok dashboard
+
+1. Open [app.ngrok.ai](https://app.ngrok.ai) → **Keys**.
+2. Click **New access key**.
+3. Enter a name and optionally assign a configuration.
+4. Copy the token immediately—it's only shown once.
+
+### Via the AI Gateway API
+
+1. Create an [AI Gateway API key](#credentials-overview).
+2. Send a request to the [Access Keys API](/ai-gateway/api-reference/access-keys/create), authorized with that key:
+
+```bash
+curl -X POST https://api.ngrok.ai/access-keys \
+  -H "Authorization: Bearer $AI_GATEWAY_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{ "name": "Production web app" }'
+```
+
+## Things to know
+
+### Your key token is only shown once
+
+When you create a key, the token (starting with `ng-`) is displayed exactly once. If you lose it, delete the key and create a new one.
+
+### Requests require credits
+
+Every request consumes [credits](/ai-gateway/concepts/credits) for ngrok's processing fee. When ngrok.ai inference handles built-in OpenAI or Anthropic, credits also cover model cost. When you bring your own key, upstream costs go to your provider account.
+
+When your balance reaches zero, new requests fail until you purchase more credits.
+
+### Invalid keys are rejected
+
+Malformed or deleted access keys are rejected immediately with a `401 Unauthorized`. See [Error Codes](/ai-gateway/reference/error-codes) to look up that and other gateway responses.
+
+## Credentials overview
+
+| Credential | What it's for |
+|------------|---------------|
+| **ngrok.ai access keys** | Authenticate AI requests to `gateway.ngrok.ai` (required) |
+| **ngrok.ai API keys** | Automate AI Gateway resources via `api.ngrok.ai` |
+| **ngrok API keys** | Manage ngrok platform resources via the [ngrok API](https://api.ngrok.com) |
+| **Your provider keys** | Upstream credentials. See [Bring your own provider key](/ai-gateway/guides/attaching-provider-keys) |
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Access Key Configurations" icon="sliders" href="/ai-gateway/guides/access-key-configurations">
+    Scope providers and route traffic per key
+  </Card>
+  <Card title="Bring your own provider key" icon="key" href="/ai-gateway/guides/attaching-provider-keys">
+    Store upstream credentials
+  </Card>
+  <Card title="Securing Your Gateway" icon="shield" href="/ai-gateway/guides/securing-endpoints">
+    Per-client keys and revocation
+  </Card>
+  <Card title="Credits" icon="coins" href="/ai-gateway/concepts/credits">
+    How usage is billed
+  </Card>
+</CardGroup>

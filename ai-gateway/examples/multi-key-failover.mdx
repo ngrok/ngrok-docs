@@ -3,137 +3,48 @@ title: Multi-Key Failover
 description: Configure multiple provider keys for automatic failover across rate limits and errors.
 ---
 
-Configure multiple provider keys per provider to automatically failover when keys hit rate limits or encounter errors. This works with both [attached provider keys](/ai-gateway/guides/attaching-provider-keys) (recommended) and Traffic Policy keys (custom providers only).
+Add multiple provider keys to the same routing rule in an [access key configuration](/ai-gateway/guides/access-key-configurations). The gateway tries keys in order when one fails.
 
-<Tip>
-For standard providers (such as OpenAI, Anthropic, and Google), use [attached provider keys](/ai-gateway/guides/attaching-provider-keys): attach multiple keys to your AI Gateway API Key and the most recently attached key is tried first, falling back to older keys on failure. Traffic Policy `api_keys` is deprecated for standard providers.
-</Tip>
+Your application sends only an [access key](/ai-gateway/concepts/access-keys)—provider keys are stored in app.ngrok.ai and referenced by the configuration.
 
-## Basic example
+## Setup
 
-```yaml
-on_http_request:
-  - type: ai-gateway
-    config:
-      providers:
-        - id: openai
-          api_keys:
-            - value: ${secrets.get('openai', 'key-one')}
-            - value: ${secrets.get('openai', 'key-two')}
+1. [Add two or more provider keys](/ai-gateway/guides/attaching-provider-keys#add-a-provider-key) for the same provider
+2. Create or edit a configuration with an ordered `user` step listing both key IDs
+3. Assign the configuration to your access key
+
+```json
+{
+  "router": {
+    "rules": [
+      {
+        "provider": "openai",
+        "steps": [
+          {
+            "type": "user",
+            "keySelectionStrategy": "ordered",
+            "keys": [
+              { "id": "aigpk_primary" },
+              { "id": "aigpk_backup" }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
 ```
 
-## How it works
-
-When a request fails with the first key, the gateway automatically tries the next key:
+## Failover sequence
 
 ```
-1. Request arrives for gpt-4o
-2. Try with openai/key-one → 429 Rate Limit
-3. Automatically retry with openai/key-two → Success ✓
+1. Request arrives with access key
+2. Try primary OpenAI key → Rate limited (429)
+3. Try backup OpenAI key → Success
 ```
 
-Keys are tried **in the order they're listed**. Put your highest-capacity or preferred keys first.
+## Next steps
 
-## Benefits
-
-- **No downtime** when hitting rate limits
-- **Automatic failover** without manual intervention
-- **Load distribution** across multiple billing accounts
-- **Increased capacity** by combining quotas
-
-## Three-key failover
-
-Add more keys for additional resilience:
-
-```yaml
-providers:
-  - id: openai
-    api_keys:
-      - value: ${secrets.get('openai', 'team-a-key')}
-      - value: ${secrets.get('openai', 'team-b-key')}
-      - value: ${secrets.get('openai', 'backup-key')}
-```
-
-Failover sequence:
-
-```
-1. Try team-a-key → Rate limited
-2. Try team-b-key → Timeout
-3. Try backup-key → Success ✓
-```
-
-## Multiple providers with multiple keys
-
-Combine multi-key and multi-provider failover for maximum resilience:
-
-```yaml
-on_http_request:
-  - type: ai-gateway
-    config:
-      only_allow_configured_providers: true
-
-      providers:
-        - id: openai
-          api_keys:
-            - value: ${secrets.get('openai', 'key-one')}
-            - value: ${secrets.get('openai', 'key-two')}
-        
-        - id: anthropic
-          api_keys:
-            - value: ${secrets.get('anthropic', 'key-one')}
-            - value: ${secrets.get('anthropic', 'key-two')}
-      
-      model_selection:
-        strategy:
-          - "ai.models.filter(m, m.provider_id == 'openai')"
-          - "ai.models.filter(m, m.provider_id == 'anthropic')"
-```
-
-Failover cascade:
-
-```
-1. openai/key-one → Fails
-2. openai/key-two → Fails
-3. anthropic/key-one → Success ✓
-```
-
-<Note>
-For cross-provider failover, clients must specify multiple models in the request or use a model selection strategy. Providers are tried in alphabetical order by default; use `model_selection.strategy` to specify a custom order.
-</Note>
-
-## Real-world scenario
-
-High-traffic production application:
-
-```yaml
-on_http_request:
-  - type: ai-gateway
-    config:
-      per_request_timeout: "30s"
-      total_timeout: "2m"
-      
-      providers:
-        - id: openai
-          api_keys:
-            # Production keys with high quotas
-            - value: ${secrets.get('openai', 'prod-key-1')}
-            - value: ${secrets.get('openai', 'prod-key-2')}
-            - value: ${secrets.get('openai', 'prod-key-3')}
-            # Backup key for emergencies
-            - value: ${secrets.get('openai', 'emergency-key')}
-```
-
-## Best practices
-
-1. **Use at least 2-3 keys** per provider for reliability
-2. **Order keys by capacity** - highest quota first
-3. **Use different billing accounts** for true isolation
-4. **Monitor usage** to identify when keys need rotation
-5. **Rotate keys regularly** for security
-
-## See also
-
-- [Multi-Provider Failover](/ai-gateway/examples/multi-provider-failover) - Failover across providers
-- [Attaching Provider Keys](/ai-gateway/guides/attaching-provider-keys): Attach and manage provider keys on your AI Gateway API Key
-- [Managing Provider API Keys](/ai-gateway/guides/managing-provider-keys): Key rotation and secrets for custom providers
-- [Configuring Providers](/ai-gateway/guides/configuring-providers): Full provider setup
+- [Multi-key failover guide](/ai-gateway/guides/key-selection-failover): Full details
+- [Bring your own provider key](/ai-gateway/guides/attaching-provider-keys): Store credentials
+- [Multi-provider failover](/ai-gateway/examples/multi-provider-failover): Fail over across providers

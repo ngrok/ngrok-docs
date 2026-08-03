@@ -1,240 +1,43 @@
 ---
-title: Configuring Providers
-description: How to configure AI providers, custom endpoints, and advanced key selection in Traffic Policy.
+title: Choose how to reach providers
+sidebarTitle: Choose how to reach providers
+description: Decide whether to use credits, bring your own provider key, or connect a model you run yourself.
 ---
 
-This guide covers Traffic Policy provider configuration. This is required for custom or self-hosted providers. For standard providers (such as OpenAI, Anthropic, and Google), [attach your keys directly](/ai-gateway/guides/attaching-provider-keys) to your AI Gateway API Key instead.
+The AI Gateway can reach providers in three ways. Pick the path that matches what you're trying to do.
 
-## Basic configuration
+## Use OpenAI or Anthropic without a provider account
 
-Define providers in your Traffic Policy:
+Use [credits](/ai-gateway/concepts/credits) when you want the fastest path to OpenAI or Anthropic. The gateway supplies upstream credentials and bills model usage through your credit balance.
 
-```yaml
-on_http_request:
-  - type: ai-gateway
-    config:
-      providers:
-        - id: "openai"
-          api_keys:
-            - value: ${secrets.get('openai', 'key-one')}
-            - value: ${secrets.get('openai', 'key-two')}
-          models:
-            - id: "gpt-4o"
-            - id: "gpt-4o-mini"
-```
+Start here: [Use ngrok.ai inference](/ai-gateway/guides/use-ngrok-ai-inference).
 
-## Provider fields
+## Bring your own provider key
 
-### `id`
+Bring your own key when you want upstream usage billed to your provider account, need a provider that requires your own credentials, or want to use your own OpenAI or Anthropic account.
 
-- **Type**: `string`
-- **Required**: Yes
-- **Description**: Provider identifier. Use built-in names (`openai`, `anthropic`, `google`, `deepseek`) or custom names for self-hosted providers.
+Start here: [Bring your own provider key](/ai-gateway/guides/attaching-provider-keys).
 
-### `id_aliases`
+## Use a model you run yourself
 
-- **Type**: `array of strings`
-- **Optional**: Yes
-- **Description**: Alternative identifiers for this provider. Allows clients to reference the same provider by different names.
+Use a custom provider when your model runs on your machine, private network, cloud GPU, or another OpenAI- or Anthropic-compatible endpoint outside the built-in catalog.
 
-```yaml
-- id: "custom-openai"
-  id_aliases: ["openai", "gpt"]
-  base_url: "https://api.openai.internal"
-```
+Start here: [Use a model you run yourself](/ai-gateway/guides/use-a-model-you-run-yourself).
 
-### `base_url`
+## Make the provider usable from a request
 
-- **Type**: `string`
-- **Optional**: Yes
-- **Description**: Custom endpoint URL for self-hosted or alternative provider endpoints. Required for custom providers.
+Adding a provider or provider key doesn't route traffic by itself. A working request needs:
 
-```yaml
-- id: "custom-ollama"
-  base_url: "https://ollama.internal.company.com"
-```
+1. A provider: built-in or custom.
+2. A credential source: credits or a provider key, when required.
+3. An [access key configuration](/ai-gateway/guides/access-key-configurations) that allows the provider and model.
+4. An [access key](/ai-gateway/concepts/access-keys) assigned to that configuration.
+5. A request with a matching `model` or `provider:model`.
 
-### `disabled`
-
-- **Type**: `boolean`
-- **Default**: `false`
-- **Description**: Temporarily disable this provider without removing its configuration.
-
-### `metadata`
-
-- **Type**: `object`
-- **Optional**: Yes
-- **Description**: Custom metadata for tracking and organization. Not sent to providers. Available in [selection strategies](/ai-gateway/guides/model-selection-strategies).
-
-```yaml
-- id: "openai"
-  metadata:
-    team: "ml-platform"
-    environment: "production"
-    cost_center: "engineering"
-```
-
-### `api_keys`
-
-- **Type**: `array`
-- **Optional**: Yes
-- **Description**: List of API keys for this provider. **Deprecated for standard providers.** Use [Attached Provider Keys](/ai-gateway/guides/attaching-provider-keys) instead. Still supported for custom providers with `base_url`.
-
-```yaml
-api_keys:
-  - value: ${secrets.get('openai', 'primary')}
-  - value: ${secrets.get('openai', 'backup')}
-```
-
-### `models`
-
-- **Type**: `array`
-- **Optional**: Yes
-- **Description**: List of model configurations for this provider.
-
-
-### `supported_api_surfaces`
-
-- **Type**: `array`
-- **Optional**: Yes
-- **Description**: List of API formats this provider supports. Possible values are `openai`, `anthropic`.  Default is `openai`.
-
-```yaml
-supported_api_surfaces:
-  - format: openai
-  - format: anthropic
-```
-
-
-## Model configuration
-
-Configure specific models within a provider:
-
-```yaml
-models:
-  - id: "gpt-4o"
-    disabled: false
-    metadata:
-      cost_per_1k_tokens: 0.03
-      recommended: true
-```
-
-### Model fields
-
-#### `id`
-
-- **Type**: `string`
-- **Required**: Yes
-- **Description**: Model identifier as recognized by the provider.
-
-#### `id_aliases`
-
-- **Type**: `array of strings`
-- **Optional**: Yes
-- **Description**: Alternative identifiers for this model. Allows clients to reference the same model by different names.
-
-```yaml
-models:
-  - id: "gpt-4o-2024-11-20"
-    id_aliases: ["gpt-4o", "gpt-4-latest"]
-```
-
-#### `disabled`
-
-- **Type**: `boolean`
-- **Default**: `false`
-- **Description**: Temporarily disable this model.
-
-#### `metadata`
-
-- **Type**: `object`
-- **Optional**: Yes
-- **Description**: Custom metadata for the model. Available in [selection strategies](/ai-gateway/guides/model-selection-strategies).
-
-## Custom provider example
-
-Connect to self-hosted models or custom endpoints:
-
-```yaml
-providers:
-  - id: "ollama-internal"
-    base_url: "https://ollama.internal"
-    api_keys:
-      - value: ${secrets.get('ollama', 'key')}
-    models:
-      - id: "llama3"
-      - id: "mistral"
-      - id: "codellama"
-```
-
-The provider must expose an OpenAI or Anthropic Claude compatible API. See [Custom Providers](/ai-gateway/concepts/custom-providers) for detailed setup.
-
-## Multi-provider configuration
-
-Configure multiple providers for failover and flexibility:
-
-```yaml
-on_http_request:
-  - type: ai-gateway
-    config:
-      providers:
-        - id: "openai"
-          metadata:
-            tier: "primary"
-          api_keys:
-            - value: ${secrets.get('openai', 'prod-key')}
-          models:
-            - id: "gpt-4o"
-            - id: "gpt-4o-mini"
-        
-        - id: "anthropic"
-          metadata:
-            tier: "secondary"
-          api_keys:
-            - value: ${secrets.get('anthropic', 'key')}
-          models:
-            - id: "claude-3-5-sonnet-20241022"
-        
-        - id: "ollama-internal"
-          base_url: "https://ollama.company.internal"
-          metadata:
-            tier: "fallback"
-          models:
-            - id: "llama3-70b"
-```
-
-## Complete example
-
-```yaml
-on_http_request:
-  - type: ai-gateway
-    config:
-      only_allow_configured_providers: true
-      only_allow_configured_models: true
-      
-      providers:
-        - id: "openai"
-          metadata:
-            team: "ml"
-          api_keys:
-            - value: ${secrets.get('openai', 'prod-key')}
-          models:
-            - id: "gpt-4o"
-              metadata:
-                approved: true
-            - id: "gpt-4o-mini"
-              metadata:
-                approved: true
-        
-        - id: "anthropic"
-          api_keys:
-            - value: ${secrets.get('anthropic', 'key')}
-          models:
-            - id: "claude-3-5-sonnet-20241022"
-```
+If requests are rejected before they reach the provider, check [Restrict providers and models](/ai-gateway/guides/restrict-providers-and-models).
 
 ## Next steps
 
-- [Managing Provider Keys](/ai-gateway/guides/managing-provider-keys) - Secrets and key rotation
-- [Restricting Access](/ai-gateway/guides/restricting-access) - Limit providers and models
-- [Model Selection Strategies](/ai-gateway/guides/model-selection-strategies) - Custom routing logic
+- [Choose a model](/ai-gateway/guides/model-selection-strategies): Use model IDs in requests
+- [Access key configurations](/ai-gateway/guides/access-key-configurations): Scope access and choose credentials
+- [Model catalog](/ai-gateway/reference/model-catalog): Check providers, models, aliases, and key requirements

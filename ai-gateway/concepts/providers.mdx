@@ -1,28 +1,27 @@
 ---
 title: Providers
-description: AI providers available in the ngrok AI Gateway.
+description: Built-in and custom AI providers in the ngrok AI Gateway.
 ---
 
 Providers are the AI services that host and serve models. The AI Gateway routes your requests to providers and handles authentication, failover, and observability.
 
-## Managed providers
+Manage providers at [app.ngrok.ai](https://app.ngrok.ai). If you're deciding which setup path to use, start with [Choose how to reach providers](/ai-gateway/guides/configuring-providers). The dashboard separates **built-in** catalog providers from **custom** providers you define.
 
-These providers are available with [AI Gateway API Keys](/ai-gateway/concepts/api-keys)—no provider accounts needed. ngrok handles authentication automatically.
+## Built-in providers
+
+Built-in providers are public AI APIs with a known model catalog: OpenAI, Anthropic, Google, Groq, and others listed in the [model catalog](/ai-gateway/reference/model-catalog). You can send requests with an [access key](/ai-gateway/concepts/access-keys). Your access key authenticates you to the gateway, not to the upstream provider.
+
+For **OpenAI** and **Anthropic**, the AI Gateway can supply upstream credentials when you have [credits](/ai-gateway/concepts/credits). You aren't required to have your own provider account or provider API keys—the AI Gateway handles upstream authentication and bills model cost through credits.
+
+For other built-in providers, [bring your own provider key](/ai-gateway/guides/attaching-provider-keys#add-a-provider-key). Upstream costs go to your provider account; credits still cover the gateway processing fee. This is generally referred to as BYOK (bring your own key).
 
 <CardGroup cols={2}>
   <Card title="OpenAI" icon="robot" href="/ai-gateway/providers/openai">
-    GPT and o-series models. Managed keys available.
+    GPT and o-series models. ngrok.ai inference available.
   </Card>
   <Card title="Anthropic" icon="a" href="/ai-gateway/providers/anthropic">
-    Claude models. Managed keys available. Supports both OpenAI and Anthropic SDK formats.
+    Claude models. ngrok.ai inference available. Supports both OpenAI and Anthropic SDK formats.
   </Card>
-</CardGroup>
-
-## BYOK providers
-
-These providers require you to bring your own key. See each provider's page for setup instructions.
-
-<CardGroup cols={2}>
   <Card title="OpenRouter" icon="shuffle" href="/ai-gateway/providers/openrouter">
     Access hundreds of models from multiple providers through a single API.
   </Card>
@@ -46,9 +45,11 @@ These providers require you to bring your own key. See each provider's page for 
   </Card>
 </CardGroup>
 
-## Self-hosted providers
+## Custom providers
 
-Run open-source models on your own infrastructure and connect them to the gateway.
+Custom providers are upstream endpoints you define, such as self-hosted Ollama or vLLM, a private deployment, or any OpenAI- or Anthropic-compatible API that isn't in the built-in catalog. See [Use a model you run yourself](/ai-gateway/guides/use-a-model-you-run-yourself).
+
+Custom providers require a provider key when the upstream needs authentication. See [Custom providers](/ai-gateway/concepts/custom-providers) for the concept.
 
 <CardGroup cols={2}>
   <Card title="Ollama" icon="terminal" href="/ai-gateway/custom-providers/ollama">
@@ -71,10 +72,10 @@ When a request arrives, the gateway determines which provider to use:
 
 1. **Explicit provider prefix**: if the model name includes a provider prefix (for example, `openai:gpt-4o` or `openrouter:anthropic/claude-3.5-sonnet`), that provider is used
 2. **Catalog lookup**: the gateway looks up the model ID in its [catalog](/ai-gateway/reference/model-catalog) to find the default provider
-3. **Selection strategy**: if configured, [model selection strategies](/ai-gateway/guides/model-selection-strategies) can override the default
+3. **Request selection**: [model names](/ai-gateway/guides/model-selection-strategies) and fallback lists can override the default
 
 ## Next steps
 
 - [Model Catalog](/ai-gateway/reference/model-catalog): browse all available models by provider
-- [Bring Your Own Keys](/ai-gateway/concepts/bring-your-own-keys): manage provider API keys centrally
+- [Bring Your Own Keys](/ai-gateway/concepts/bring-your-own-keys): add provider keys for built-in and custom providers
 - [Multi-provider failover](/ai-gateway/examples/multi-provider-failover): automatic failover across providers

@@ -5,7 +5,7 @@ description: Use the ngrok AI Gateway with LangChain.
 ---
 
 <Note>
-**Prerequisite**: You need an AI Gateway endpoint before continuing. Create one using the [dashboard quickstart](/ai-gateway/quickstart) or follow the [manual setup guide](/ai-gateway/guides/creating-endpoints).
+**Prerequisite**: Complete the [Quickstart](/ai-gateway/quickstart) to get an [access key](/ai-gateway/concepts/access-keys). All requests go to `https://gateway.ngrok.ai`.
 </Note>
 
 [LangChain](https://langchain.com/) is a framework for building applications with LLMs. The ngrok AI Gateway works with LangChain's OpenAI-compatible integrations, adding automatic failover and key rotation.
@@ -24,19 +24,15 @@ npm install langchain @langchain/openai
 
 ## Basic usage
 
-Configure LangChain to use your AI Gateway.
-
-**Which API key do I use?**
-- **AI Gateway API Keys** (recommended): Use your [AI Gateway API Key](/ai-gateway/concepts/api-keys) (format: `ng-xxxxx-g1-xxxxx`). ngrok handles provider keys for you.
-- **BYOK (passthrough mode)**: Use your provider API key (for example, `sk-...` from OpenAI). See [Bring Your Own Keys](/ai-gateway/concepts/bring-your-own-keys).
+Configure LangChain to use your AI Gateway. Pass your [access key](/ai-gateway/concepts/access-keys) (`ng-xxxxx-g1-xxxxx`) as the API key—the AI Gateway injects upstream provider credentials from your [access key configuration](/ai-gateway/guides/access-key-configurations).
 
 <CodeGroup>
 ```python Python highlight={4}
 from langchain_openai import ChatOpenAI
 
 llm = ChatOpenAI(
-    base_url="https://your-ai-gateway.ngrok.app/v1",
-    api_key="ng-xxxxx-g1-xxxxx",  # Your AI Gateway API Key
+    base_url="https://gateway.ngrok.ai/v1",
+    api_key="ng-xxxxx-g1-xxxxx",  # Your access key
     model="gpt-4o"
 )
 
@@ -49,9 +45,9 @@ import { ChatOpenAI } from "@langchain/openai";
 
 const llm = new ChatOpenAI({
   configuration: {
-    baseURL: "https://your-ai-gateway.ngrok.app/v1",
+    baseURL: "https://gateway.ngrok.ai/v1",
   },
-  apiKey: "ng-xxxxx-g1-xxxxx",  // Your AI Gateway API Key
+  apiKey: "ng-xxxxx-g1-xxxxx",  // Your access key
   model: "gpt-4o",
 });
 
@@ -68,8 +64,8 @@ Stream responses for real-time output:
 from langchain_openai import ChatOpenAI
 
 llm = ChatOpenAI(
-    base_url="https://your-ai-gateway.ngrok.app/v1",
-    api_key="ng-xxxxx-g1-xxxxx",  # Your AI Gateway API Key
+    base_url="https://gateway.ngrok.ai/v1",
+    api_key="ng-xxxxx-g1-xxxxx",  # Your access key
     model="gpt-4o"
 )
 
@@ -85,8 +81,8 @@ Route to different providers with model prefixes:
 from langchain_openai import ChatOpenAI
 
 llm = ChatOpenAI(
-    base_url="https://your-ai-gateway.ngrok.app/v1",
-    api_key="unused",  # Gateway handles auth
+    base_url="https://gateway.ngrok.ai/v1",
+    api_key="ng-xxxxx-g1-xxxxx",  # Your access key
     model="anthropic:claude-3-5-sonnet-latest"  # Use Anthropic through gateway
 )
 
@@ -102,8 +98,8 @@ from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 
 llm = ChatOpenAI(
-    base_url="https://your-ai-gateway.ngrok.app/v1",
-    api_key="ng-xxxxx-g1-xxxxx",  # Your AI Gateway API Key
+    base_url="https://gateway.ngrok.ai/v1",
+    api_key="ng-xxxxx-g1-xxxxx",  # Your access key
     model="gpt-4o"
 )
 
@@ -131,8 +127,8 @@ Generate embeddings through the gateway:
 from langchain_openai import OpenAIEmbeddings
 
 embeddings = OpenAIEmbeddings(
-    base_url="https://your-ai-gateway.ngrok.app/v1",
-    api_key="ng-xxxxx-g1-xxxxx",  # Your AI Gateway API Key
+    base_url="https://gateway.ngrok.ai/v1",
+    api_key="ng-xxxxx-g1-xxxxx",  # Your access key
     model="text-embedding-3-small"
 )
 
@@ -149,14 +145,14 @@ from langchain_community.vectorstores import FAISS
 from langchain_core.prompts import ChatPromptTemplate
 
 llm = ChatOpenAI(
-    base_url="https://your-ai-gateway.ngrok.app/v1",
-    api_key="ng-xxxxx-g1-xxxxx",  # Your AI Gateway API Key
+    base_url="https://gateway.ngrok.ai/v1",
+    api_key="ng-xxxxx-g1-xxxxx",  # Your access key
     model="gpt-4o"
 )
 
 embeddings = OpenAIEmbeddings(
-    base_url="https://your-ai-gateway.ngrok.app/v1",
-    api_key="ng-xxxxx-g1-xxxxx"  # Your AI Gateway API Key
+    base_url="https://gateway.ngrok.ai/v1",
+    api_key="ng-xxxxx-g1-xxxxx"  # Your access key
 )
 
 # Create vector store
@@ -185,8 +181,8 @@ from langchain.agents import create_react_agent, AgentExecutor
 from langchain_core.tools import tool
 
 llm = ChatOpenAI(
-    base_url="https://your-ai-gateway.ngrok.app/v1",
-    api_key="ng-xxxxx-g1-xxxxx",  # Your AI Gateway API Key
+    base_url="https://gateway.ngrok.ai/v1",
+    api_key="ng-xxxxx-g1-xxxxx",  # Your access key
     model="gpt-4o"
 )
 
@@ -202,6 +198,7 @@ def search(query: str) -> str:
 ## Next steps
 
 - [LangChain Documentation](https://python.langchain.com/docs/) - Full LangChain reference
-- [Model Selection Strategies](/ai-gateway/guides/model-selection-strategies) - Configure routing
-- [Configuring Providers](/ai-gateway/guides/configuring-providers) - Set up providers
+- [Choose a model](/ai-gateway/guides/model-selection-strategies): Model IDs and provider prefixes
+- [Configure fallback models](/ai-gateway/guides/configure-fallback-models): Try another model when the first one fails
+- [Choose how to reach providers](/ai-gateway/guides/configuring-providers): Credits, provider keys, and self-run models
 

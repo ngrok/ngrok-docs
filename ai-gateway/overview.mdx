@@ -7,38 +7,38 @@ description: Route requests to AI providers with automatic failover, load balanc
 
 import { YouTubeEmbed } from "/snippets/YouTubeEmbed.jsx";
 
-The ngrok AI Gateway routes requests to AI providers like OpenAI and Anthropic. Get started with an API key from ngrok—no provider accounts needed. [Bring your own keys](/ai-gateway/concepts/bring-your-own-keys) to access additional providers like Google, DeepSeek, and more.
+The ngrok AI Gateway ([ngrok.ai](https://ngrok.ai)) enables your applications to call both hosted AI providers and local models through a single endpoint. Control who has access, decide what they can call, and choose whether requests use credits, your provider keys, or a model you run yourself.
 
-<YouTubeEmbed videoId="X6KspO4S-v8" title="Route and control all your AI traffic on ngrok.ai" />
+<YouTubeEmbed videoId="VC7vrSsSCpg" title="ngrok's AI Gateway: Route to local LLMs without a VPN" />
 
 ## Why use the AI Gateway?
 
 <CardGroup cols={2}>
-  <Card title="No Provider Accounts Needed" icon="key">
-    Use OpenAI, Anthropic, and more without signing up for each provider. ngrok manages the provider keys for you.
+  <Card title="Start without provider accounts" icon="key">
+    Use built-in OpenAI and Anthropic with an access key and credits—no OpenAI or Anthropic signup required.
+  </Card>
+  <Card title="Route to Self-Hosted Models" icon="server">
+    Route to local models like Ollama or vLLM alongside cloud providers with [a model you run yourself](/ai-gateway/guides/use-a-model-you-run-yourself).
   </Card>
   <Card title="Automatic Failover" icon="rotate">
-    If one provider fails, the gateway automatically tries the next model, provider, or key.
+    If one provider or key fails, ngrok.ai automatically tries the next model or key.
   </Card>
   <Card title="Compatible With Popular SDKs" icon="plug">
-    Works with official and third-party SDKs. Change the base URL and use your AI Gateway API Key.
-  </Card>
-  <Card title="Self-Hosted Models" icon="server">
-    Route to local models like Ollama or vLLM alongside cloud providers using [Bring Your Own Keys](/ai-gateway/concepts/bring-your-own-keys).
+    Works with official and third-party SDKs. Point the base URL at `gateway.ngrok.ai` and use your access key.
   </Card>
 </CardGroup>
 
 ## Quick example
 
-Point your SDK at your [ngrok endpoint](/ai-gateway/guides/creating-endpoints) and use your [AI Gateway API Key](/ai-gateway/concepts/api-keys):
+Sign up at [app.ngrok.ai](https://app.ngrok.ai) and point your SDK at the gateway with your [access key](/ai-gateway/concepts/access-keys):
 
 <CodeGroup>
 ```python Python (OpenAI) highlight={4-5}
 from openai import OpenAI
 
 client = OpenAI(
-    base_url="https://your-ai-gateway.ngrok.app/v1",
-    api_key="ng-xxxxx-g1-xxxxx"  # Your AI Gateway API Key
+    base_url="https://gateway.ngrok.ai/v1",
+    api_key="ng-xxxxx-g1-xxxxx"  # Your access key
 )
 
 response = client.chat.completions.create(
@@ -51,8 +51,8 @@ response = client.chat.completions.create(
 import anthropic
 
 client = anthropic.Anthropic(
-    base_url="https://your-ai-gateway.ngrok.app",
-    api_key="ng-xxxxx-g1-xxxxx"  # Your AI Gateway API Key
+    base_url="https://gateway.ngrok.ai",
+    api_key="ng-xxxxx-g1-xxxxx"  # Your access key
 )
 
 message = client.messages.create(
@@ -66,8 +66,8 @@ message = client.messages.create(
 import OpenAI from "openai";
 
 const client = new OpenAI({
-  baseURL: "https://your-ai-gateway.ngrok.app/v1",
-  apiKey: "ng-xxxxx-g1-xxxxx"  // Your AI Gateway API Key
+  baseURL: "https://gateway.ngrok.ai/v1",
+  apiKey: "ng-xxxxx-g1-xxxxx"  // Your access key
 });
 
 const response = await client.chat.completions.create({
@@ -80,8 +80,8 @@ const response = await client.chat.completions.create({
 import Anthropic from "@anthropic-ai/sdk";
 
 const client = new Anthropic({
-  baseURL: "https://your-ai-gateway.ngrok.app",
-  apiKey: "ng-xxxxx-g1-xxxxx",  // Your AI Gateway API Key
+  baseURL: "https://gateway.ngrok.ai",
+  apiKey: "ng-xxxxx-g1-xxxxx",  // Your access key
 });
 
 const message = await client.messages.create({
@@ -92,7 +92,7 @@ const message = await client.messages.create({
 ```
 
 ```bash cURL (OpenAI) highlight={3}
-curl https://your-ai-gateway.ngrok.app/v1/chat/completions \
+curl https://gateway.ngrok.ai/v1/chat/completions \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer ng-xxxxx-g1-xxxxx" \
   -d '{
@@ -102,7 +102,7 @@ curl https://your-ai-gateway.ngrok.app/v1/chat/completions \
 ```
 
 ```bash cURL (Anthropic) highlight={3}
-curl https://your-ai-gateway.ngrok.app/v1/messages \
+curl https://gateway.ngrok.ai/v1/messages \
   -H "Content-Type: application/json" \
   -H "x-api-key: ng-xxxxx-g1-xxxxx" \
   -H "anthropic-version: 2023-06-01" \
@@ -114,44 +114,47 @@ curl https://your-ai-gateway.ngrok.app/v1/messages \
 ```
 </CodeGroup>
 
+You don't need to sign up for OpenAI or bring your own OpenAI key to make this request. Your ngrok.ai credits will cover any provider costs.
+
+<Note>
+Every request consumes [credits](/ai-gateway/concepts/credits). No subscription plan required to get started. See [Credits](/ai-gateway/concepts/credits) for more details and when you might need a ngrok subscription for features like team members or internal endpoints.
+</Note>
+
 On each request, the AI Gateway:
-1. Receives your request with your AI Gateway API Key
-2. Validates your key
+
+1. Receives your request with your access key at `gateway.ngrok.ai`
+2. Validates the key and loads your account configuration
 3. Selects which model and provider to use
-4. Forwards the request with ngrok's managed provider API keys
-5. If it fails, retries with the next option in your failover chain
+4. Forwards the request using ngrok.ai inference or your provider keys
+5. Retries with the next key or model on failure
 6. Returns the response
 
 ## What can you do?
 
 | Use Case | Description |
 |----------|-------------|
-| **Use without provider accounts** | Get started with OpenAI and Anthropic using just an AI Gateway API Key |
-| **Automatic model selection** | Use `ngrok/auto` to let the gateway pick the best model |
-| **Multi-provider failover** | If one provider fails, automatically try another |
-| **Custom selection strategies** | Define exactly how models are selected using CEL expressions |
-| **Cost-based routing** | Route to the cheapest available model automatically |
-| **Access control** | Restrict which providers and models clients can use |
-| **Self-hosted models** | Route to Ollama, vLLM, or other local inference servers (requires [BYOK](/ai-gateway/concepts/bring-your-own-keys)) |
-| **Content modification** | Redact PII, sanitize responses, or inject prompts |
-
-<Note>
-AI Gateway requires the **Pay-as-you-go** plan. See [Credits](/ai-gateway/concepts/credits) for pricing details.
-</Note>
+| **Use without provider accounts** | Get started with OpenAI and Anthropic using an access key and [credits](/ai-gateway/concepts/credits) |
+| **Per-key routing** | [Access key configurations](/ai-gateway/guides/access-key-configurations) scope providers, models, and credentials |
+| **Multi-model failover** | List multiple models in a request; the gateway tries each in order |
+| **Multi-key failover** | Attach multiple provider keys in a configuration routing rule |
+| **Self-hosted models** | Route to Ollama, vLLM, or other servers with [a model you run yourself](/ai-gateway/guides/use-a-model-you-run-yourself) |
 
 ## Next steps
 
 <CardGroup cols={2}>
   <Card title="Quickstart" icon="rocket" href="/ai-gateway/quickstart">
-    Get your AI Gateway running in 5 minutes
+    Get ngrok.ai integrated in 5 minutes
+  </Card>
+  <Card title="Access Keys" icon="key" href="/ai-gateway/concepts/access-keys">
+    Learn about managing access to ngrok.ai
   </Card>
   <Card title="How It Works" icon="gears" href="/ai-gateway/how-it-works">
-    Understand the request flow and failover behavior
+    Request flow and failover behavior
   </Card>
   <Card title="SDK Integration" icon="plug" href="/ai-gateway/sdks">
-    Connect your application to the AI Gateway
+    Connect your application to ngrok.ai
   </Card>
   <Card title="Bring Your Own Keys" icon="key" href="/ai-gateway/concepts/bring-your-own-keys">
-    Already have provider API keys? Use them with the AI Gateway
+    Use your own provider API keys for providers
   </Card>
 </CardGroup>
