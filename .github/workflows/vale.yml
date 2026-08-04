@@ -73,14 +73,22 @@ jobs:
         uses: vale-cli/vale-action@2.1.2
         with:
           files: ${{ steps.changed-files.outputs.files }}
-          reporter: github-pr-review
-          # Report all issues in changed files, not only newly added lines.
-          # Vale line numbers can differ from diff positions after MDX parsing.
-          # Must be `file`, not `nofilter`: the review API cannot comment on files
-          # outside the PR diff, so reviewdog silently downgrades those findings to
-          # GitHub Actions log annotations, which are capped at 10 per step and error
-          # the run past that -- a red check with no review comments.
-          filter_mode: file
+          # Reports via the Checks API rather than the PR review API. The review
+          # reporter fetches the PR's unified diff to anchor its comments, and
+          # GitHub answers 406 "diff exceeded the maximum number of lines (20000)"
+          # on large PRs -- reviewdog treats that as fatal and exits non-zero, so
+          # the check went red on PR size alone with no findings to show for it.
+          # Note reviewdog calls Diff() unconditionally in Run(), so filter_mode
+          # cannot avoid that fetch; only the doghouse reporters (github-check,
+          # github-pr-check) take a path that skips it.
+          reporter: github-check
+          # Report all issues in the changed files, not only newly added lines:
+          # Vale's line numbers can drift from diff positions after MDX parsing.
+          # The "Get changed files" step above already scopes Vale to the PR's own
+          # files, so diff-based filtering here would be redundant as well as
+          # size-dependent. Findings on lines inside the diff still surface inline
+          # on Files changed; the rest land in the check run summary.
+          filter_mode: nofilter
           fail_on_error: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
