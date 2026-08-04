@@ -19,67 +19,69 @@ With this setup, you can:
 
 This also implements the ['front door' pattern](/gateway/examples/front-door-pattern), which creates a loose coupling between the traffic management logic at your gateway and your services.
 
-## 1. Start endpoints for your services
+<Steps>
+  <Step title="Start endpoints for your services">
+    On a server designated for U.S. traffic, start an internal [Agent Endpoint](/gateway/agent-endpoints/), replacing `$PORT` based on where your service listens.
+    You can also use one of the [SDKs](/agent-sdks) or the [Kubernetes Operator](/k8s).
 
-On a server designated for U.S. traffic, start an internal [Agent Endpoint](/gateway/agent-endpoints/), replacing `$PORT` based on where your service listens.
-You can also use one of the [SDKs](/agent-sdks) or the [Kubernetes Operator](/k8s).
+    ```bash
+    ngrok http $PORT --url https://us-service.internal
+    ```
 
-```bash
-ngrok http $PORT --url https://us-service.internal
-```
+    On a server designated for Canadian traffic, start a second endpoint.
 
-On a server designated for Canadian traffic, start a second endpoint.
+    ```bash
+    ngrok http $PORT --url https://ca-service.internal
+    ```
+  </Step>
 
-```bash
-ngrok http $PORT --url https://ca-service.internal
-```
+  <Step title="Reserve a domain">
+    <ReserveDomain />
+  </Step>
 
-## 2. Reserve a domain
+  <Step title="Create a Cloud Endpoint">
+    <CloudEndpoint />
+  </Step>
 
-<ReserveDomain />
+  <Step title="Add routing to your services with Traffic Policy">
+    While viewing your new Cloud Endpoint in the dashboard, copy the policy below and paste it into the Traffic Policy editor.
 
-## 3. Create a Cloud Endpoint
+    ```yaml
+    on_http_request:
+      - expressions:
+          # Check if the client is from the U.S.
+          - "conn.geo.country_code == 'US'"
+        actions:
+          # Forward the request to the U.S. internal service
+          - type: forward-internal
+            config:
+              url: http://us-service.internal
 
-<CloudEndpoint />
+      - expressions:
+          # Check if the client is from Canada
+          - "conn.geo.country_code == 'CA'"
+        actions:
+          # Forward the request to the CA internal service
+          - type: forward-internal
+            config:
+              url: http://ca-service.internal
 
-## 4. Add routing to your services with Traffic Policy
+      - actions:
+          # Forward all other requests to a "default" service of your choosing
+          - type: forward-internal
+            config:
+              url: http://us-service.internal
+    ```
 
-While viewing your new Cloud Endpoint in the dashboard, copy the policy below and paste it into the Traffic Policy editor.
+    **What's happening here?** This policy checks every HTTP request to see where it originated from.
+    If that's the U.S. or Canada, ngrok forwards the traffic to its respective endpoint.
+    If the traffic comes from any other country, ngrok forwards it to a "default" service of your choosing.
+  </Step>
 
-```yaml
-on_http_request:
-  - expressions:
-      # Check if the client is from the U.S.
-      - "conn.geo.country_code == 'US'"
-    actions:
-      # Forward the request to the U.S. internal service
-      - type: forward-internal
-        config:
-          url: http://us-service.internal
-
-  - expressions:
-      # Check if the client is from Canada
-      - "conn.geo.country_code == 'CA'"
-    actions:
-      # Forward the request to the CA internal service
-      - type: forward-internal
-        config:
-          url: http://ca-service.internal
-
-  - actions:
-      # Forward all other requests to a "default" service of your choosing
-      - type: forward-internal
-        config:
-          url: http://us-service.internal
-```
-
-**What's happening here?** This policy checks every HTTP request to see where it originated from.
-If that's the U.S. or Canada, ngrok forwards the traffic to its respective endpoint.
-If the traffic comes from any other country, ngrok forwards it to a "default" service of your choosing.
-
-## 5. Try out your endpoint
-
-<TryOut />
+  <Step title="Try out your endpoint">
+    <TryOut />
+  </Step>
+</Steps>
 
 ## What's next?
 

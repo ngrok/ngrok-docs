@@ -27,72 +27,74 @@ By integrating ngrok with Coinbase, you can:
 - [Node.js](https://nodejs.org/) installed (for the sample app, or use your own app).
 - A Coinbase account.
 
-## 1. Start your app
+<Steps>
+  <Step title="Start your app">
+    For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
 
-For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+    To install the sample, run the following in a terminal:
 
-To install the sample, run the following in a terminal:
+    ```bash
+    git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
+    cd ngrok-webhook-nodejs-sample
+    npm install
+    ```
 
-```bash
-git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
-cd ngrok-webhook-nodejs-sample
-npm install
-```
+    Then start the app:
 
-Then start the app:
+    ```bash
+    npm start
+    ```
 
-```bash
-npm start
-```
+    The app runs on port 3000 by default.
 
-The app runs on port 3000 by default.
+    You can confirm it's running by visiting `http://localhost:3000`.
+    The app logs request headers and body in the terminal and shows a message in the browser.
+  </Step>
 
-You can confirm it's running by visiting `http://localhost:3000`.
-The app logs request headers and body in the terminal and shows a message in the browser.
+  <Step title="Expose your app with ngrok">
+    Once your app is running locally, you're ready to put it online securely using ngrok.
 
-## 2. Expose your app with ngrok
+    - Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
 
-Once your app is running locally, you're ready to put it online securely using ngrok.
+    <Tip>
+      The ngrok agent uses your authtoken to authenticate when you start a tunnel.
+    </Tip>
 
-- Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
+    - Start ngrok:
 
-<Tip>
-  The ngrok agent uses your authtoken to authenticate when you start a tunnel.
-</Tip>
+      ```bash
+      ngrok http 3000
+      ```
 
-- Start ngrok:
+    - Copy the URL ngrok displays.
+      Your app is now exposed at that URL for use with Coinbase.
+  </Step>
 
-  ```bash
-  ngrok http 3000
-  ```
+  <Step title="Configure Coinbase to send webhooks">
+    Coinbase can send webhook requests to your app when events occur in your account.
+    To register for those events:
 
-- Copy the URL ngrok displays.
-  Your app is now exposed at that URL for use with Coinbase.
+    - Sign in to the [Coinbase homepage](https://www.coinbase.com/).
+    - On the **Home** page, click your avatar in the top right and then click **Settings**.
+    - On the **Settings** page, click the **API** tab and then click **New API Key**.
+    - On the **New API Key** popup, click **all** under **Accounts**, click **Select all** under **Permissions**, enter your ngrok URL in the **Notification URL** field (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`), and click **Create**.
+    - Copy the **API Key** and **API Secret** from the **API Key details** popup.
 
-## 3. Configure Coinbase to send webhooks
+    ### Run webhooks with Coinbase and ngrok
 
-Coinbase can send webhook requests to your app when events occur in your account.
-To register for those events:
+    Coinbase sends different request body contents depending on the event.
+    To trigger new calls from Coinbase to your app:
 
-- Sign in to the [Coinbase homepage](https://www.coinbase.com/).
-- On the **Home** page, click your avatar in the top right and then click **Settings**.
-- On the **Settings** page, click the **API** tab and then click **New API Key**.
-- On the **New API Key** popup, click **all** under **Accounts**, click **Select all** under **Permissions**, enter your ngrok URL in the **Notification URL** field (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`), and click **Create**.
-- Copy the **API Key** and **API Secret** from the **API Key details** popup.
+    - In [Coinbase](https://www.coinbase.com/), go to **Trade**, click **Simple** in the top menu, and click **Buy** for one of the assets.
+    - On the **Buy** popup, enter an amount, click **Preview Buy**, and then click **Buy now**.
 
-### Run webhooks with Coinbase and ngrok
+    Confirm your localhost app receives the event and logs both headers and body in the terminal.
 
-Coinbase sends different request body contents depending on the event.
-To trigger new calls from Coinbase to your app:
+    <InspectingRequests />
 
-- In [Coinbase](https://www.coinbase.com/), go to **Trade**, click **Simple** in the top menu, and click **Buy** for one of the assets.
-- On the **Buy** popup, enter an amount, click **Preview Buy**, and then click **Buy now**.
-
-Confirm your localhost app receives the event and logs both headers and body in the terminal.
-
-<InspectingRequests />
-
-<ReplayingRequests />
+    <ReplayingRequests />
+  </Step>
+</Steps>
 
 ## Secure webhook requests
 

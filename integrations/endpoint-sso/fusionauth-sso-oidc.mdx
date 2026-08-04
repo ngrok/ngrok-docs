@@ -24,77 +24,79 @@ You need a public-facing FusionAuth instance (for example, FusionAuth Cloud or a
 - An ngrok Pay-as-you-go account with an authtoken or admin access to configure endpoints with OpenID Connect.
 - A local web app or application that needs to be protected by FusionAuth.
 
-## 1. Configure FusionAuth 
+<Steps>
+  <Step title="Configure FusionAuth">
+    ### Add the ngrok app in FusionAuth
 
-### Add the ngrok app in FusionAuth
+    - Navigate to your FusionAuth instance.
+    - Navigate to **Tenants** > **Your Tenant** and change the issuer to the URL of your FusionAuth instance. For example, https://acme.fusionauth.io.
+    - Navigate to **Applications** and then create a new Application. Fill out the **Name** field, then click the **OAuth** tab.
+    - Make sure that the **Enabled grants** checkboxes have the **Authorization Code** and **Refresh Token** grants enabled.
+    - In the **Authorized redirect URLs** field add `https://idp.ngrok.com/oauth2/callback`
+    - Click the `Save` button.
+    - You should see values in the **Client Id** and **Client secret** fields. Copy them; you'll use them in the [Configure ngrok](#2-configure-ngrok) step.
+  </Step>
 
-- Navigate to your FusionAuth instance.
-- Navigate to **Tenants** > **Your Tenant** and change the issuer to the URL of your FusionAuth instance. For example, https://acme.fusionauth.io.
-- Navigate to **Applications** and then create a new Application. Fill out the **Name** field, then click the **OAuth** tab.
-- Make sure that the **Enabled grants** checkboxes have the **Authorization Code** and **Refresh Token** grants enabled.
-- In the **Authorized redirect URLs** field add `https://idp.ngrok.com/oauth2/callback`
-- Click the `Save` button.
-- You should see values in the **Client Id** and **Client secret** fields. Copy them; you'll use them in the [Configure ngrok](#2-configure-ngrok) step.
+  <Step title="Configure ngrok">
+    ngrok can use FusionAuth SSO in two ways:
 
-## 2. Configure ngrok 
+    - From the ngrok CLI (using the `--oidc` parameter)
+    - From the ngrok dashboard
 
-ngrok can use FusionAuth SSO in two ways:
+    ### **Option 1**: ngrok CLI
 
-- From the ngrok CLI (using the `--oidc` parameter)
-- From the ngrok dashboard
+    <Note>
+    This tutorial assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok client installed.
+    </Note>
 
-### **Option 1**: ngrok CLI
+    - Launch a terminal.
+    - Enter the following command to launch an ngrok tunnel with FusionAuth SSO.
+    Replace `<FusionAuth_url>` with your FusionAuth org address (for example, `https://acme.fusionauth.com`) and the `<FusionAuth_client_id>` and `<FusionAuth_client_secret>` with the respective values copied from the ngrok app registered at FusionAuth:
 
-<Note>
-This tutorial assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok client installed.
-</Note>
+       ```bash
+       ngrok http 3000 --oidc <FusionAuth_url> \
+       --oidc-client-id <FusionAuth_client_id> \
+       --oidc-client-secret <FusionAuth_client_secret> \
+       --url fusionauth-sso-test.ngrok.dev
+       ```
 
-- Launch a terminal.
-- Enter the following command to launch an ngrok tunnel with FusionAuth SSO.
-Replace `<FusionAuth_url>` with your FusionAuth org address (for example, `https://acme.fusionauth.com`) and the `<FusionAuth_client_id>` and `<FusionAuth_client_secret>` with the respective values copied from the ngrok app registered at FusionAuth:
+    - Skip to **Step 3**.
 
-   ```bash
-   ngrok http 3000 --oidc <FusionAuth_url> \
-   --oidc-client-id <FusionAuth_client_id> \
-   --oidc-client-secret <FusionAuth_client_secret> \
-   --url fusionauth-sso-test.ngrok.dev
-   ```
+    ### **Option 2**: Traffic Policy
 
-- Skip to **Step 3**.
+    <Note>
+    This tutorial assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok client installed.
+    </Note>
 
-### **Option 2**: Traffic Policy
+    Create a `policy.yaml` file with the following content, replacing the placeholder values with those copied from FusionAuth:
 
-<Note>
-This tutorial assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok client installed.
-</Note>
+    ```yaml
+    on_http_request:
+      - actions:
+          - type: openid-connect
+            config:
+              issuer_url: 'https://acme.fusionauth.com'
+              client_id: 'YOUR_FUSIONAUTH_CLIENT_ID'
+              client_secret: 'YOUR_FUSIONAUTH_CLIENT_SECRET'
+              scopes:
+                - openid
+                - profile
+                - email
+    ```
 
-Create a `policy.yaml` file with the following content, replacing the placeholder values with those copied from FusionAuth:
+    Launch an ngrok tunnel with this policy:
 
-```yaml
-on_http_request:
-  - actions:
-      - type: openid-connect
-        config:
-          issuer_url: 'https://acme.fusionauth.com'
-          client_id: 'YOUR_FUSIONAUTH_CLIENT_ID'
-          client_secret: 'YOUR_FUSIONAUTH_CLIENT_SECRET'
-          scopes:
-            - openid
-            - profile
-            - email
-```
+    ```bash
+    ngrok http 3000 --traffic-policy-file policy.yaml --url YOUR_DOMAIN
+    ```
 
-Launch an ngrok tunnel with this policy:
+    Copy the URL next to **Forwarding** (for example, `https://fusionauth-sso-test.ngrok.app`).
+  </Step>
 
-```bash
-ngrok http 3000 --traffic-policy-file policy.yaml --url YOUR_DOMAIN
-```
-
-Copy the URL next to **Forwarding** (for example, `https://fusionauth-sso-test.ngrok.app`).
-
-## 3. Test the integration
-
-- In your browser, launch an incognito window.
-- Access your ngrok tunnel (for example, `https://fusionauth-sso-test.ngrok.app` or using a copied URL).
-- You should be prompted to log in with your FusionAuth credentials.
-- After logging in, you should be able to see your web app.
+  <Step title="Test the integration">
+    - In your browser, launch an incognito window.
+    - Access your ngrok tunnel (for example, `https://fusionauth-sso-test.ngrok.app` or using a copied URL).
+    - You should be prompted to log in with your FusionAuth credentials.
+    - After logging in, you should be able to see your web app.
+  </Step>
+</Steps>

@@ -27,72 +27,74 @@ By integrating ngrok with Pusher, you can:
 - [Node.js](https://nodejs.org/) installed (for the sample app, or use your own app).
 - A Pusher account.
 
-## 1. Start your app
+<Steps>
+  <Step title="Start your app">
+    For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
 
-For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+    To install the sample, run the following in a terminal:
 
-To install the sample, run the following in a terminal:
+    ```bash
+    git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
+    cd ngrok-webhook-nodejs-sample
+    npm install
+    ```
 
-```bash
-git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
-cd ngrok-webhook-nodejs-sample
-npm install
-```
+    Then start the app:
 
-Then start the app:
+    ```bash
+    npm start
+    ```
 
-```bash
-npm start
-```
+    The app runs on port 3000 by default.
 
-The app runs on port 3000 by default.
+    You can confirm it's running by visiting `http://localhost:3000`.
+    The app logs request headers and body in the terminal and shows a message in the browser.
+  </Step>
 
-You can confirm it's running by visiting `http://localhost:3000`.
-The app logs request headers and body in the terminal and shows a message in the browser.
+  <Step title="Expose your app with ngrok">
+    Once your app is running locally, you're ready to put it online securely using ngrok.
 
-## 2. Expose your app with ngrok
+    - Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
 
-Once your app is running locally, you're ready to put it online securely using ngrok.
+    <Tip>
+      The ngrok agent uses your authtoken to authenticate when you start a tunnel.
+    </Tip>
 
-- Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
+    - Start ngrok:
 
-<Tip>
-  The ngrok agent uses your authtoken to authenticate when you start a tunnel.
-</Tip>
+      ```bash
+      ngrok http 3000
+      ```
 
-- Start ngrok:
+    - Copy the URL ngrok displays.
+      Your app is now exposed at that URL for use with Pusher.
+  </Step>
 
-  ```bash
-  ngrok http 3000
-  ```
+  <Step title="Configure Pusher to send webhooks">
+    Pusher can send webhook requests to your app when events occur in your channel.
+    To register for those events:
 
-- Copy the URL ngrok displays.
-  Your app is now exposed at that URL for use with Pusher.
+    - Sign in to the [Pusher dashboard](https://dashboard.pusher.com/).
+    - Click your channel name in the **Channels** tile (or create a channel, for example `my-channel`).
+    - On your channel page, click **Webhooks** and then **Add webhook**.
+    - On **Add new webhook**, enter your ngrok URL in **Webhook URL** (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
+    - Under **Event type**, click **Client events** and click **Save**.
+    - Repeat to add webhooks for other event types if needed.
 
-## 3. Configure Pusher to send webhooks
+    ### Run webhooks with Pusher and ngrok
 
-Pusher can send webhook requests to your app when events occur in your channel.
-To register for those events:
+    Pusher sends different request body contents depending on the event.
+    To trigger a call: in the [Pusher dashboard](https://dashboard.pusher.com/), go to **Debug console**, expand **Event creator**, enter `my-channel` in **Channel**, `my-event` in **Event**, and some text in **Data**, then click **Send event**.
 
-- Sign in to the [Pusher dashboard](https://dashboard.pusher.com/).
-- Click your channel name in the **Channels** tile (or create a channel, for example `my-channel`).
-- On your channel page, click **Webhooks** and then **Add webhook**.
-- On **Add new webhook**, enter your ngrok URL in **Webhook URL** (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
-- Under **Event type**, click **Client events** and click **Save**.
-- Repeat to add webhooks for other event types if needed.
+    Confirm your localhost app receives the event and logs both headers and body in the terminal.
 
-### Run webhooks with Pusher and ngrok
+    You can check **Error Logs** and the **Webhook errors** tab for delivery issues (Pusher shows only messages that could not be delivered).
 
-Pusher sends different request body contents depending on the event.
-To trigger a call: in the [Pusher dashboard](https://dashboard.pusher.com/), go to **Debug console**, expand **Event creator**, enter `my-channel` in **Channel**, `my-event` in **Event**, and some text in **Data**, then click **Send event**.
+    <InspectingRequests />
 
-Confirm your localhost app receives the event and logs both headers and body in the terminal.
-
-You can check **Error Logs** and the **Webhook errors** tab for delivery issues (Pusher shows only messages that could not be delivered).
-
-<InspectingRequests />
-
-<ReplayingRequests />
+    <ReplayingRequests />
+  </Step>
+</Steps>
 
 ## Secure webhook requests
 

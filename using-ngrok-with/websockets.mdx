@@ -14,45 +14,47 @@ If you want to use WebSockets with HTTP, you only need one ngrok endpoint: you c
 - An [ngrok account](https://dashboard.ngrok.com/signup).
 - Your [ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken).
 
-## 1. Install dependencies
+<Steps>
+  <Step title="Install dependencies">
+    ```sh
+    npm install ws
+    ```
+  </Step>
 
-```sh
-npm install ws
-```
+  <Step title="Create the server">
+    Create a `server.js` file:
 
-## 2. Create the server
+    ```js
+    import { createServer } from 'http';
+    import { WebSocketServer } from 'ws';
 
-Create a `server.js` file:
+    const server = createServer((req, res) => {
+      res.writeHead(200, { 'Content-Type': 'text/plain' });
+      res.end('OK\n');
+    });
 
-```js
-import { createServer } from 'http';
-import { WebSocketServer } from 'ws';
+    const wss = new WebSocketServer({ server });
 
-const server = createServer((req, res) => {
-  res.writeHead(200, { 'Content-Type': 'text/plain' });
-  res.end('OK\n');
-});
+    wss.on('connection', (ws) => {
+      ws.on('message', (data) => ws.send(`Echo: ${data}`));
+      ws.send('Hello from WebSocket');
+    });
 
-const wss = new WebSocketServer({ server });
+    server.listen(8000);
+    ```
+  </Step>
 
-wss.on('connection', (ws) => {
-  ws.on('message', (data) => ws.send(`Echo: ${data}`));
-  ws.send('Hello from WebSocket');
-});
+  <Step title="Start ngrok">
+    A single ngrok endpoint handles traffic for both protocols.
 
-server.listen(8000);
-```
+    ```sh
+    ngrok http 8000
+    ```
 
-## 3. Start ngrok
+    Connect to your WebSocket using the `wss://` scheme:
 
-A single ngrok endpoint handles traffic for both protocols.
-
-```sh
-ngrok http 8000
-```
-
-Connect to your WebSocket using the `wss://` scheme:
-
-```js
-const ws = new WebSocket('wss://<your-ngrok-domain>');
-```
+    ```js
+    const ws = new WebSocket('wss://<your-ngrok-domain>');
+    ```
+  </Step>
+</Steps>

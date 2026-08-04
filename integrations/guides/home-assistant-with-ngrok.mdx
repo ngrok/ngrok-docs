@@ -18,108 +18,110 @@ This combination lets you access your Home Assistant dashboard over the public i
   The same principles apply if you already have a Home Assistant instance set up, or if you set it up using one of their other [installation methods](https://www.home-assistant.io/installation/).
 </Note>
 
-## 1. Initial setup
+<Steps>
+  <Step title="Initial setup">
+    Create a directory called `home-assistant` and inside it:
 
-Create a directory called `home-assistant` and inside it:
+    - Create a Docker Compose file called `compose.yaml`
+    - Create a directory called `config`
+  </Step>
 
-- Create a Docker Compose file called `compose.yaml`
-- Create a directory called `config`
+  <Step title="Run Home Assistant in a Docker container">
+    Update `compose.yaml`:
 
-## 2. Run Home Assistant in a Docker container
+    ```yaml
+    services:
+      homeassistant:
+        image: "ghcr.io/home-assistant/home-assistant:stable"
+        volumes:
+          - /etc/localtime:/etc/localtime:ro
+          - /run/dbus:/run/dbus:ro
+          # the first part of this path will be the location of
+          # the `/home-assistant/config` directories you created in the last step
+          - /Desktop/home-assistant/config:/config
+        restart: unless-stopped
+        ports:
+          - 8123:8123
+        privileged: true
+    ```
 
-Update `compose.yaml`:
+    In your terminal, start a Docker container with this `compose.yaml` file:
 
-```yaml
-services:
-  homeassistant:
-    image: "ghcr.io/home-assistant/home-assistant:stable"
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /run/dbus:/run/dbus:ro
-      # the first part of this path will be the location of
-      # the `/home-assistant/config` directories you created in the last step
-      - /Desktop/home-assistant/config:/config
-    restart: unless-stopped
-    ports:
-      - 8123:8123
-    privileged: true
-```
+    ```bash
+    docker compose up -d
+    ```
 
-In your terminal, start a Docker container with this `compose.yaml` file:
+    Visit `localhost:8123` in your browser.
+    You should see your Home Assistant login page.
+  </Step>
 
-```bash
-docker compose up -d
-```
+  <Step title="Configure ngrok to expose Home Assistant">
+    Add ngrok to your `compose.yaml` under the services section:
 
-Visit `localhost:8123` in your browser.
-You should see your Home Assistant login page.
+    ```yaml
+    services:
+      ngrok:
+        image: ngrok/ngrok:latest
+        command:
+          - "http"
+          - "http://host.docker.internal:8123"
+        ports:
+          # you can choose different ports here if you want
+          - 4041:4041
+        environment:
+          # find this at https://dashboard.ngrok.com/get-started/your-authtoken
+          NGROK_AUTHTOKEN: YOUR_AUTH_TOKEN
+    ```
 
-## 3. Configure ngrok to expose Home Assistant
+    In your terminal, restart your Docker container with this `compose.yaml` file:
 
-Add ngrok to your `compose.yaml` under the services section:
+    ```bash
+    docker compose up -d
+    ```
 
-```yaml
-services:
-  ngrok:
-    image: ngrok/ngrok:latest
-    command:
-      - "http"
-      - "http://host.docker.internal:8123"
-    ports:
-      # you can choose different ports here if you want
-      - 4041:4041
-    environment:
-      # find this at https://dashboard.ngrok.com/get-started/your-authtoken
-      NGROK_AUTHTOKEN: YOUR_AUTH_TOKEN
-```
+    Visit your [ngrok dashboard](https://dashboard.ngrok.com/endpoints) to see the endpoint URL.
 
-In your terminal, restart your Docker container with this `compose.yaml` file:
+    If you visit the ngrok URL, you'll get a 4xx response and see an error log line in your Docker Desktop logs for the Home Assistant container:
 
-```bash
-docker compose up -d
-```
+    ```
+    ERROR (MainThread) [homeassistant.components.http.forwarded] A request from a reverse proxy was received from 192.168.65.1, but your HTTP integration is not set-up for reverse proxies
+    ```
 
-Visit your [ngrok dashboard](https://dashboard.ngrok.com/endpoints) to see the endpoint URL.
+    That's because the Home Assistant configuration still needs to be updated to allow trusted proxies.
+  </Step>
 
-If you visit the ngrok URL, you'll get a 4xx response and see an error log line in your Docker Desktop logs for the Home Assistant container:
+  <Step title="Allow trusted proxies in Home Assistant">
+    In your `/home-assistant/config` directory, look for the file called `configuration.yaml`.
+    By default, it should already have these settings:
 
-```
-ERROR (MainThread) [homeassistant.components.http.forwarded] A request from a reverse proxy was received from 192.168.65.1, but your HTTP integration is not set-up for reverse proxies
-```
+    ```yaml
+    # Loads default set of integrations. Do not remove.
+    default_config:
 
-That's because the Home Assistant configuration still needs to be updated to allow trusted proxies.
+    # Load frontend themes from the themes folder
+    frontend:
+      themes: !include_dir_merge_named themes
 
-## 4. Allow trusted proxies in Home Assistant
+    automation: !include automations.yaml
+    script: !include scripts.yaml
+    scene: !include scenes.yaml
+    ```
 
-In your `/home-assistant/config` directory, look for the file called `configuration.yaml`.
-By default, it should already have these settings:
+    Add this snippet to the bottom:
 
-```yaml
-# Loads default set of integrations. Do not remove.
-default_config:
+    ```yaml
+    http:
+      use_x_forwarded_for: true
+      trusted_proxies:
+        # this IP may be different on your network; grab the IP from the error message
+        # in your logs
+        - 192.168.65.1
+        - 127.0.0.1
+        - ::1
+    ```
 
-# Load frontend themes from the themes folder
-frontend:
-  themes: !include_dir_merge_named themes
+    Restart the Docker container so the updated Home Assistant configuration can take effect.
 
-automation: !include automations.yaml
-script: !include scripts.yaml
-scene: !include scenes.yaml
-```
-
-Add this snippet to the bottom:
-
-```yaml
-http:
-  use_x_forwarded_for: true
-  trusted_proxies:
-    # this IP may be different on your network; grab the IP from the error message
-    # in your logs
-    - 192.168.65.1
-    - 127.0.0.1
-    - ::1
-```
-
-Restart the Docker container so the updated Home Assistant configuration can take effect.
-
-Visit your ngrok endpoint URL to see your Home Assistant instance online.
+    Visit your ngrok endpoint URL to see your Home Assistant instance online.
+  </Step>
+</Steps>

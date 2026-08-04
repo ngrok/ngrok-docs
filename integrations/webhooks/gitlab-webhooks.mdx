@@ -27,86 +27,88 @@ By integrating ngrok with GitLab, you can:
 - [Node.js](https://nodejs.org/) installed (for the sample app, or use your own app).
 - A GitLab account.
 
-## 1. Start your app
+<Steps>
+  <Step title="Start your app">
+    For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
 
-For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+    To install the sample, run the following in a terminal:
 
-To install the sample, run the following in a terminal:
+    ```bash
+    git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
+    cd ngrok-webhook-nodejs-sample
+    npm install
+    ```
 
-```bash
-git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
-cd ngrok-webhook-nodejs-sample
-npm install
-```
+    Then start the app:
 
-Then start the app:
+    ```bash
+    npm start
+    ```
 
-```bash
-npm start
-```
+    The app runs on port 3000 by default.
 
-The app runs on port 3000 by default.
+    You can confirm it's running by visiting `http://localhost:3000`.
+    The app logs request headers and body in the terminal and shows a message in the browser.
+  </Step>
 
-You can confirm it's running by visiting `http://localhost:3000`.
-The app logs request headers and body in the terminal and shows a message in the browser.
+  <Step title="Expose your app with ngrok">
+    Once your app is running locally, you're ready to put it online securely using ngrok.
 
-## 2. Expose your app with ngrok
+    - Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
 
-Once your app is running locally, you're ready to put it online securely using ngrok.
+    <Tip>
+      The ngrok agent uses your authtoken to authenticate when you start a tunnel.
+    </Tip>
 
-- Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
+    - Start ngrok:
 
-<Tip>
-  The ngrok agent uses your authtoken to authenticate when you start a tunnel.
-</Tip>
+      ```bash
+      ngrok http 3000
+      ```
 
-- Start ngrok:
+    - Copy the URL ngrok displays.
+      Your app is now exposed at that URL for use with GitLab.
+  </Step>
 
-  ```bash
-  ngrok http 3000
-  ```
+  <Step title="Configure GitLab to send webhooks">
+    GitLab can send webhook requests to your app when events occur in a repository.
+    To register for those events:
 
-- Copy the URL ngrok displays.
-  Your app is now exposed at that URL for use with GitLab.
+    - Sign in to [GitLab](https://gitlab.com).
+    - Select a repository from the **Your Repository** list.
 
-## 3. Configure GitLab to send webhooks
+    <Note>
+      If you don't have a repository, create a new empty one.
+    </Note>
 
-GitLab can send webhook requests to your app when events occur in a repository.
-To register for those events:
+    - In the repository, click **Settings** and then **Webhooks**.
+    - On the **Webhooks** page, enter your ngrok URL in the **URL** field (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
+    - Check **Push events** under **Trigger** and click **Add webhook**.
+    - Scroll to the **Project Hooks** section, click **Test** for your webhook, and then click **Push events**.
 
-- Sign in to [GitLab](https://gitlab.com).
-- Select a repository from the **Your Repository** list.
+    Confirm your localhost app receives the test event and logs both headers and body in the terminal.
 
-<Note>
-  If you don't have a repository, create a new empty one.
-</Note>
+    You can verify the request in GitLab: click **Edit** for your webhook, scroll to **Recent events**, and click **View details** for the **Push Hook** line.
 
-- In the repository, click **Settings** and then **Webhooks**.
-- On the **Webhooks** page, enter your ngrok URL in the **URL** field (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
-- Check **Push events** under **Trigger** and click **Add webhook**.
-- Scroll to the **Project Hooks** section, click **Test** for your webhook, and then click **Push events**.
+    ### Run webhooks with GitLab and ngrok
 
-Confirm your localhost app receives the test event and logs both headers and body in the terminal.
+    With **Push events** as the trigger, GitLab sends a post request to your app when you push to the repository.
+    To trigger a call:
 
-You can verify the request in GitLab: click **Edit** for your webhook, scroll to **Recent events**, and click **View details** for the **Push Hook** line.
+    - Click your repository name at the top of the left menu.
+    - On the project page, click **+** and then **New file**.
+    - On the **New file** page, enter a **File name** and add content (for example, `This is my file content`).
+    - Click **Commit changes**.
 
-### Run webhooks with GitLab and ngrok
+    Confirm your localhost app receives the push event and logs both headers and body in the terminal.
 
-With **Push events** as the trigger, GitLab sends a post request to your app when you push to the repository.
-To trigger a call:
+    Alternatively, clone the repository locally, add and commit changes, then push: `git add .; git commit -m "my first commit"; git push`
 
-- Click your repository name at the top of the left menu.
-- On the project page, click **+** and then **New file**.
-- On the **New file** page, enter a **File name** and add content (for example, `This is my file content`).
-- Click **Commit changes**.
+    <InspectingRequests />
 
-Confirm your localhost app receives the push event and logs both headers and body in the terminal.
-
-Alternatively, clone the repository locally, add and commit changes, then push: `git add .; git commit -m "my first commit"; git push`
-
-<InspectingRequests />
-
-<ReplayingRequests />
+    <ReplayingRequests />
+  </Step>
+</Steps>
 
 ## Secure webhook requests
 

@@ -20,59 +20,61 @@ By integrating miniOrange SSO with ngrok, you can:
 - A miniOrange account with administrative rights to create apps.
 - An ngrok Pay-as-you-go account with an authtoken or admin access to configure endpoints with SAML.
 
-## 1. Configure miniOrange 
+<Steps>
+  <Step title="Configure miniOrange">
+    - Access miniOrange and sign in using your miniOrange administrator account.
+    - On the **Dashboard** page, click **Apps** on the left menu, click **Add Application**, click the **SAML/WS-Fed** tile, and then click the **Custom SAML App** tile.
+    - On the **Add App** page, enter `ngrok SAML` in the **Custom Application Name** field.
+    - Click the **SSO** tab, enter temporary values (such as `https://temporary`) in both the **SP Entity ID or Issuer** and the **ACS URL** fields, and then click **Save**.
+  </Step>
 
-- Access miniOrange and sign in using your miniOrange administrator account.
-- On the **Dashboard** page, click **Apps** on the left menu, click **Add Application**, click the **SAML/WS-Fed** tile, and then click the **Custom SAML App** tile.
-- On the **Add App** page, enter `ngrok SAML` in the **Custom Application Name** field.
-- Click the **SSO** tab, enter temporary values (such as `https://temporary`) in both the **SP Entity ID or Issuer** and the **ACS URL** fields, and then click **Save**.
+  <Step title="Download the IdP metadata">
+    - On the **View Apps** page, click **Select** in the **ngrok** app line, and then click **Metadata**.
+    - On the **View IDP Metadata** page, click **Show Metadata Details**, click **Download Metadata**, and then save the XML file on your desktop.
+  </Step>
 
-## 2. Download the IdP metadata 
+  <Step title="Configure ngrok">
+    <Warning>
+    The SAML Traffic Policy action is currently in [developer preview](/traffic-policy/actions/saml/). [Request access](https://dashboard.ngrok.com/early-access) to configure SAML via Traffic Policy.
+    </Warning>
 
-- On the **View Apps** page, click **Select** in the **ngrok** app line, and then click **Metadata**.
-- On the **View IDP Metadata** page, click **Show Metadata Details**, click **Download Metadata**, and then save the XML file on your desktop.
+    Once you have developer preview access, create a `policy.yaml` file with the following content, replacing `YOUR_IDP_METADATA_XML` with the IdP metadata XML from miniOrange:
 
-## 3. Configure ngrok 
+    ```yaml
+    on_http_request:
+      - actions:
+          - type: saml
+            config:
+              idp_metadata: 'YOUR_IDP_METADATA_XML'
+    ```
 
-<Warning>
-The SAML Traffic Policy action is currently in [developer preview](/traffic-policy/actions/saml/). [Request access](https://dashboard.ngrok.com/early-access) to configure SAML via Traffic Policy.
-</Warning>
+    The SAML action generates your ngrok SP Entity ID and ACS URL based on your endpoint URL. Refer to the [SAML action documentation](/traffic-policy/actions/saml/) for how to retrieve these values to complete your IdP configuration.
+  </Step>
 
-Once you have developer preview access, create a `policy.yaml` file with the following content, replacing `YOUR_IDP_METADATA_XML` with the IdP metadata XML from miniOrange:
+  <Step title="Obtain the SP metadata">
+    The SAML action generates your ngrok SP Entity ID and ACS URL based on your endpoint URL. Once you have [developer preview access](https://dashboard.ngrok.com/early-access), refer to the [SAML action documentation](/traffic-policy/actions/saml/) for how to retrieve these values.
+  </Step>
 
-```yaml
-on_http_request:
-  - actions:
-      - type: saml
-        config:
-          idp_metadata: 'YOUR_IDP_METADATA_XML'
-```
+  <Step title="Link miniOrange with ngrok">
+    - On the miniOrange Dashboard, click **Apps** on the left menu, click **Select** in the **ngrok SAML** app line, and then click **Edit**.
+    - On the **Edit Application** page, enter the SP Entity ID and ACS URL from the [SAML action documentation](/traffic-policy/actions/saml/) (see [Obtain the SP metadata](#4-obtain-the-sp-metadata)) into the corresponding fields.
+    - On the **Edit Application** page, click **Save**.
+  </Step>
 
-The SAML action generates your ngrok SP Entity ID and ACS URL based on your endpoint URL. Refer to the [SAML action documentation](/traffic-policy/actions/saml/) for how to retrieve these values to complete your IdP configuration.
+  <Step title="Start a tunnel">
+    <Note>
+    This step assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok client installed.
+    </Note>
 
-## 4. Obtain the SP metadata
+    Run the following command, replacing `3000` with your local web app port and `YOUR_DOMAIN` with your ngrok domain:
 
-The SAML action generates your ngrok SP Entity ID and ACS URL based on your endpoint URL. Once you have [developer preview access](https://dashboard.ngrok.com/early-access), refer to the [SAML action documentation](/traffic-policy/actions/saml/) for how to retrieve these values.
+    ```bash
+    ngrok http 3000 --traffic-policy-file policy.yaml --url YOUR_DOMAIN
+    ```
 
-## 5. Link miniOrange with ngrok 
-
-- On the miniOrange Dashboard, click **Apps** on the left menu, click **Select** in the **ngrok SAML** app line, and then click **Edit**.
-- On the **Edit Application** page, enter the SP Entity ID and ACS URL from the [SAML action documentation](/traffic-policy/actions/saml/) (see [Obtain the SP metadata](#4-obtain-the-sp-metadata)) into the corresponding fields.
-- On the **Edit Application** page, click **Save**.
-
-## 6. Start a tunnel 
-
-<Note>
-This step assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok client installed.
-</Note>
-
-Run the following command, replacing `3000` with your local web app port and `YOUR_DOMAIN` with your ngrok domain:
-
-```bash
-ngrok http 3000 --traffic-policy-file policy.yaml --url YOUR_DOMAIN
-```
-
-Copy the URL next to **Forwarding**. You use this URL to test the miniOrange authentication.
+    Copy the URL next to **Forwarding**. You use this URL to test the miniOrange authentication.
+  </Step>
+</Steps>
 
 ## Grant access to miniOrange users 
 

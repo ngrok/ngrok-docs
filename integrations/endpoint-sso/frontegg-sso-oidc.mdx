@@ -23,91 +23,93 @@ In this mode, users access ngrok endpoints and are redirected to Frontegg for au
 - A Frontegg account with administrative rights to create apps.
 - An ngrok Pay-as-you-go account with an authtoken or admin access to configure endpoints with OpenID Connect.
 
-## 1. Configure Frontegg 
+<Steps>
+  <Step title="Configure Frontegg">
+    ### Add the ngrok app in Frontegg
 
-### Add the ngrok app in Frontegg
+    - Access the Frontegg Portal and sign in using your Frontegg administrator account.
+    - On the left menu, click the environment you want to integrate with ngrok.
+    In this example, click the **Development** environment.
+    - On the left menu, click **Authentication**, click **Login method**, enter the URL `https://idp.ngrok.com/oauth2/callback` under the **Hosted login** field, and then click **Save**.
+    - On the left menu, click **Env settings**, and copy the value of both the **Client ID** and the **API key** fields.
+    - Click the **Domains** tab, and copy the value of the **Domain name**.
 
-- Access the Frontegg Portal and sign in using your Frontegg administrator account.
-- On the left menu, click the environment you want to integrate with ngrok.
-In this example, click the **Development** environment.
-- On the left menu, click **Authentication**, click **Login method**, enter the URL `https://idp.ngrok.com/oauth2/callback` under the **Hosted login** field, and then click **Save**.
-- On the left menu, click **Env settings**, and copy the value of both the **Client ID** and the **API key** fields.
-- Click the **Domains** tab, and copy the value of the **Domain name**.
+    ### Grant access to Frontegg users
 
-### Grant access to Frontegg users
+    Create a Frontegg user:
 
-Create a Frontegg user:
+    - On the left menu of the Frontegg Portal, click your environment, click **Backoffice**, click **Accounts**, and then click **Add New**.
+    - On the **Add new account** popup, enter a name for the account, `ngrok.com` in the **Domain** field, and then click **Save**.
+    - On the left menu, click **Backoffice**, click **Users**, and then click **Add New**.
+    - On the **Add new user** popup, enter a name, email, select the account you have created, and then click **Save**.
+    By default, the user is assigned the **Admin** role.
+  </Step>
 
-- On the left menu of the Frontegg Portal, click your environment, click **Backoffice**, click **Accounts**, and then click **Add New**.
-- On the **Add new account** popup, enter a name for the account, `ngrok.com` in the **Domain** field, and then click **Save**.
-- On the left menu, click **Backoffice**, click **Users**, and then click **Add New**.
-- On the **Add new user** popup, enter a name, email, select the account you have created, and then click **Save**.
-By default, the user is assigned the **Admin** role.
+  <Step title="Configure ngrok">
+    ngrok can use Frontegg SSO in two ways:
 
-## 2. Configure ngrok 
+    - From the ngrok CLI (using the `--oidc` parameter)
+    - From the ngrok dashboard
 
-ngrok can use Frontegg SSO in two ways:
+    ### **Option 1**: ngrok CLI
 
-- From the ngrok CLI (using the `--oidc` parameter)
-- From the ngrok dashboard
+    <Note>
+    This tutorial assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok client installed.
+    </Note>
 
-### **Option 1**: ngrok CLI
+    - Launch a terminal.
+    - Enter the following command to launch an ngrok tunnel with Frontegg SSO:
 
-<Note>
-This tutorial assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok client installed.
-</Note>
+       ```bash
+       ngrok http 3000 --oidc=FRONTEGG_OAUTH_URL \
+       --oidc-client-id=FRONTEGG_CLIENT_ID \
+       --oidc-client-secret=FRONTEGG_CLIENT_SECRET \
+       ```
 
-- Launch a terminal.
-- Enter the following command to launch an ngrok tunnel with Frontegg SSO:
+       Replace the following with the values:
+       - FRONTEGG_OAUTH_URL: Your Frontegg **Domain name** URL (for example, `https://app-123456.frontegg.com`).
+       - FRONTEGG_CLIENT_ID: The client ID you copied from Frontegg.
+       - FRONTEGG_CLIENT_SECRET: The API key you copied from Frontegg.
 
-   ```bash
-   ngrok http 3000 --oidc=FRONTEGG_OAUTH_URL \
-   --oidc-client-id=FRONTEGG_CLIENT_ID \
-   --oidc-client-secret=FRONTEGG_CLIENT_SECRET \
-   ```
+       Alternatively, add the `--url YOUR_DOMAIN` argument to get your custom URL, replacing `YOUR_DOMAIN` with your URL of preference.
+    - Copy the URL available next to **Forwarding** (for example, `https://frontegg-sso-test.ngrok.app`).
+    - Skip to **Step 3**.
 
-   Replace the following with the values:
-   - FRONTEGG_OAUTH_URL: Your Frontegg **Domain name** URL (for example, `https://app-123456.frontegg.com`).
-   - FRONTEGG_CLIENT_ID: The client ID you copied from Frontegg.
-   - FRONTEGG_CLIENT_SECRET: The API key you copied from Frontegg.
+    ### **Option 2**: Traffic Policy
 
-   Alternatively, add the `--url YOUR_DOMAIN` argument to get your custom URL, replacing `YOUR_DOMAIN` with your URL of preference.
-- Copy the URL available next to **Forwarding** (for example, `https://frontegg-sso-test.ngrok.app`).
-- Skip to **Step 3**.
+    <Note>
+    This tutorial assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok client installed.
+    </Note>
 
-### **Option 2**: Traffic Policy
+    Create a `policy.yaml` file with the following content, replacing the placeholder values with those copied from Frontegg:
 
-<Note>
-This tutorial assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok client installed.
-</Note>
+    ```yaml
+    on_http_request:
+      - actions:
+          - type: openid-connect
+            config:
+              issuer_url: 'https://app-123456.frontegg.com'
+              client_id: 'YOUR_FRONTEGG_CLIENT_ID'
+              client_secret: 'YOUR_FRONTEGG_API_KEY'
+              scopes:
+                - openid
+                - profile
+                - email
+    ```
 
-Create a `policy.yaml` file with the following content, replacing the placeholder values with those copied from Frontegg:
+    Launch an ngrok tunnel with this policy:
 
-```yaml
-on_http_request:
-  - actions:
-      - type: openid-connect
-        config:
-          issuer_url: 'https://app-123456.frontegg.com'
-          client_id: 'YOUR_FRONTEGG_CLIENT_ID'
-          client_secret: 'YOUR_FRONTEGG_API_KEY'
-          scopes:
-            - openid
-            - profile
-            - email
-```
+    ```bash
+    ngrok http 3000 --traffic-policy-file policy.yaml --url YOUR_DOMAIN
+    ```
 
-Launch an ngrok tunnel with this policy:
+    Copy the URL next to **Forwarding** (for example, `https://frontegg-sso-test.ngrok.app`).
+  </Step>
 
-```bash
-ngrok http 3000 --traffic-policy-file policy.yaml --url YOUR_DOMAIN
-```
-
-Copy the URL next to **Forwarding** (for example, `https://frontegg-sso-test.ngrok.app`).
-
-## 3. Test the integration
-
-- In your browser, launch an incognito window.
-- Access your ngrok tunnel (for example, `https://frontegg-sso-test.ngrok.app` or using the copied endpoint URL).
-- You should be prompted to log in with your Frontegg credentials.
-- After logging in, you should be able to see your web app.
+  <Step title="Test the integration">
+    - In your browser, launch an incognito window.
+    - Access your ngrok tunnel (for example, `https://frontegg-sso-test.ngrok.app` or using the copied endpoint URL).
+    - You should be prompted to log in with your Frontegg credentials.
+    - After logging in, you should be able to see your web app.
+  </Step>
+</Steps>

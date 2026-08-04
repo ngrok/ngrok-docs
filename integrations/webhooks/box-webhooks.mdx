@@ -27,75 +27,77 @@ By integrating ngrok with Box, you can:
 - [Node.js](https://nodejs.org/) installed (for the sample app, or use your own app).
 - A Box account.
 
-## 1. Start your app
+<Steps>
+  <Step title="Start your app">
+    For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
 
-For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+    To install the sample, run the following in a terminal:
 
-To install the sample, run the following in a terminal:
+    ```bash
+    git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
+    cd ngrok-webhook-nodejs-sample
+    npm install
+    ```
 
-```bash
-git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
-cd ngrok-webhook-nodejs-sample
-npm install
-```
+    Then start the app:
 
-Then start the app:
+    ```bash
+    npm start
+    ```
 
-```bash
-npm start
-```
+    The app runs on port 3000 by default.
 
-The app runs on port 3000 by default.
+    You can confirm it's running by visiting `http://localhost:3000`.
+    The app logs request headers and body in the terminal and shows a message in the browser.
+  </Step>
 
-You can confirm it's running by visiting `http://localhost:3000`.
-The app logs request headers and body in the terminal and shows a message in the browser.
+  <Step title="Expose your app with ngrok">
+    Once your app is running locally, you're ready to put it online securely using ngrok.
 
-## 2. Expose your app with ngrok
+    - Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
 
-Once your app is running locally, you're ready to put it online securely using ngrok.
+    <Tip>
+      The ngrok agent uses your authtoken to authenticate when you start a tunnel.
+    </Tip>
 
-- Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
+    - Start ngrok:
 
-<Tip>
-  The ngrok agent uses your authtoken to authenticate when you start a tunnel.
-</Tip>
+      ```bash
+      ngrok http 3000
+      ```
 
-- Start ngrok:
+    - Copy the URL ngrok displays.
+      Your app is now exposed at that URL for use with Box.
+  </Step>
 
-  ```bash
-  ngrok http 3000
-  ```
+  <Step title="Configure Box to send webhooks">
+    Box can send webhook requests to your app when events occur in your account.
+    To register for those events:
 
-- Copy the URL ngrok displays.
-  Your app is now exposed at that URL for use with Box.
+    - Sign in to [Box](https://box.com/) and click **Dev Console** in the left menu.
+    - On the Box Developer console, click **Create New App**, then **Custom App**.
+    - In the **Custom App** popup, select **Server Authentication (with JWT)**, enter a name in **App name**, and click **Create**.
+    - On the app page, open the **Configuration** tab, check **Manage Webhooks** under **Developer Actions**, and click **Save Changes**.
+    - Open the **Authorization** tab, click **Review and Submit**, enter a description in **App Description** (for example, `Requesting Access`), and click **Submit**.
+    - In [Box Admin Console](https://app.box.com/master), go to **Apps**, **Custom App Manager**, click **View** on your app, then **Authorize** and **Authorize** again.
+    - Back in the [Box Developer Console](https://app.box.com/developers/console), open your app, click the **Webhook** tab, click **Create Webhook**, then **V2**.
+    - On **Create a Webhook**, paste the ngrok URL in **URL Address** (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
+    - For **Content Type**, click **Choose an item** and select a folder from your Box account.
+    - Under **File Triggers**, check **File Uploaded** and click **Create Webhook**.
 
-## 3. Configure Box to send webhooks
+    ### Run webhooks with Box and ngrok
 
-Box can send webhook requests to your app when events occur in your account.
-To register for those events:
+    With the **File Uploaded** trigger, Box sends a notification to your app when you upload files to the chosen folder.
 
-- Sign in to [Box](https://box.com/) and click **Dev Console** in the left menu.
-- On the Box Developer console, click **Create New App**, then **Custom App**.
-- In the **Custom App** popup, select **Server Authentication (with JWT)**, enter a name in **App name**, and click **Create**.
-- On the app page, open the **Configuration** tab, check **Manage Webhooks** under **Developer Actions**, and click **Save Changes**.
-- Open the **Authorization** tab, click **Review and Submit**, enter a description in **App Description** (for example, `Requesting Access`), and click **Submit**.
-- In [Box Admin Console](https://app.box.com/master), go to **Apps**, **Custom App Manager**, click **View** on your app, then **Authorize** and **Authorize** again.
-- Back in the [Box Developer Console](https://app.box.com/developers/console), open your app, click the **Webhook** tab, click **Create Webhook**, then **V2**.
-- On **Create a Webhook**, paste the ngrok URL in **URL Address** (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
-- For **Content Type**, click **Choose an item** and select a folder from your Box account.
-- Under **File Triggers**, check **File Uploaded** and click **Create Webhook**.
+    - In [Box](https://box.com/), upload a file from your desktop to the folder you selected when creating the webhook.
 
-### Run webhooks with Box and ngrok
+    Confirm your localhost app receives the **FILE.UPLOADED** event and logs both headers and body in the terminal.
 
-With the **File Uploaded** trigger, Box sends a notification to your app when you upload files to the chosen folder.
+    <InspectingRequests />
 
-- In [Box](https://box.com/), upload a file from your desktop to the folder you selected when creating the webhook.
-
-Confirm your localhost app receives the **FILE.UPLOADED** event and logs both headers and body in the terminal.
-
-<InspectingRequests />
-
-<ReplayingRequests />
+    <ReplayingRequests />
+  </Step>
+</Steps>
 
 ## Secure webhook requests
 

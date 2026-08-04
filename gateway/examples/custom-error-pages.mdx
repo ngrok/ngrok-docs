@@ -15,76 +15,78 @@ A custom error page gives you the chance to communicate clearly and reinforce yo
 
 With ngrok’s Traffic Policy engine, you can define exactly what your users see when your upstream service fails. This example walks you through how to route requests to your internal service, and then fall back to a branded error page if that service is unavailable.
 
-## 1. Create an endpoint for your service
+<Steps>
+  <Step title="Create an endpoint for your service">
+    Start an internal [Agent Endpoint](/gateway/agent-endpoints/), replacing `$PORT` based on where your service listens.
+    You can also use one of the [SDKs](/agent-sdks) or the [Kubernetes Operator](/k8s).
 
-Start an internal [Agent Endpoint](/gateway/agent-endpoints/), replacing `$PORT` based on where your service listens.
-You can also use one of the [SDKs](/agent-sdks) or the [Kubernetes Operator](/k8s).
+    ```bash
+    ngrok http $PORT --url https://service.internal
+    ```
+  </Step>
 
-```bash
-ngrok http $PORT --url https://service.internal
-```
+  <Step title="Reserve a domain">
+    <ReserveDomain />
+  </Step>
 
-## 2. Reserve a domain
+  <Step title="Create a Cloud Endpoint">
+    <CloudEndpoint />
+  </Step>
 
-<ReserveDomain />
+  <Step title="Add routing to your service and error handling with Traffic Policy">
+    While viewing your new Cloud Endpoint in the dashboard, copy the policy below and paste it into the Traffic Policy editor.
 
-## 3. Create a Cloud Endpoint
+    ```yaml
+    on_http_request:
+      - actions:
+          - type: forward-internal
+            config:
+              url: https://service.internal
+              on_error: continue
+          - type: custom-response
+            config:
+              status_code: 503
+              headers:
+                content-type: text/html
+              body: |
+                <!doctype html>
+                <html>
+                <head>
+                  <meta charset="UTF-8" />
+                  <meta name="viewport" content="width=device-width, initial-scale=1" />
+                  <title>Error at ${req.host}!</title>
+                  <style>
+                    body { font-family: system-ui, sans-serif; padding: 2rem; background: #fff; }
+                    code { font-family: monospace; background: #eee; padding: 0.2em 0.4em; border-radius: 4px; }
+                    .container { max-width: 600px; margin: 0 auto; }
+                  </style>
+                </head>
+                <body>
+                  <div class="container">
+                    <h1>Sorry, something went wrong!</h1>
+                    <p>We're having trouble reaching <strong>${req.host}</strong>.</p>
+                    <ul>
+                      <li>Time: <code>${timestamp(time.now)}</code></li>
+                      <li>Path: <code>${req.url.path}</code></li>
+                      <li>Method: <code>${req.method}</code></li>
+                      <li>Region: <code>${conn.server_region}</code></li>
+                    </ul>
+                  </div>
+                </body>
+                </html>
+    ```
 
-<CloudEndpoint />
+    **What's happening here?** This policy forwards all HTTP requests to the internal Agent Endpoint you created at `https://service.internal`.
 
-## 4. Add routing to your service and error handling with Traffic Policy
+    If forwarding to `https://service.internal` fails, the `on_error: continue` configuration on your `forward-internal` action means that the policy continues to the next rule, which sends a custom `503` error response with the HTML specified in the `body`.
+  </Step>
 
-While viewing your new Cloud Endpoint in the dashboard, copy the policy below and paste it into the Traffic Policy editor.
+  <Step title="Try out your endpoint">
+    <TryOut />
 
-```yaml
-on_http_request:
-  - actions:
-      - type: forward-internal
-        config:
-          url: https://service.internal
-          on_error: continue
-      - type: custom-response
-        config:
-          status_code: 503
-          headers:
-            content-type: text/html
-          body: |
-            <!doctype html>
-            <html>
-            <head>
-              <meta charset="UTF-8" />
-              <meta name="viewport" content="width=device-width, initial-scale=1" />
-              <title>Error at ${req.host}!</title>
-              <style>
-                body { font-family: system-ui, sans-serif; padding: 2rem; background: #fff; }
-                code { font-family: monospace; background: #eee; padding: 0.2em 0.4em; border-radius: 4px; }
-                .container { max-width: 600px; margin: 0 auto; }
-              </style>
-            </head>
-            <body>
-              <div class="container">
-                <h1>Sorry, something went wrong!</h1>
-                <p>We're having trouble reaching <strong>${req.host}</strong>.</p>
-                <ul>
-                  <li>Time: <code>${timestamp(time.now)}</code></li>
-                  <li>Path: <code>${req.url.path}</code></li>
-                  <li>Method: <code>${req.method}</code></li>
-                  <li>Region: <code>${conn.server_region}</code></li>
-                </ul>
-              </div>
-            </body>
-            </html>
-```
-
-**What's happening here?** This policy forwards all HTTP requests to the internal Agent Endpoint you created at `https://service.internal`.
-
-If forwarding to `https://service.internal` fails, the `on_error: continue` configuration on your `forward-internal` action means that the policy continues to the next rule, which sends a custom `503` error response with the HTML specified in the `body`.
-
-## 5. Try out your endpoint
-
-<TryOut />
-
-If you take down either your upstream service or the internal Agent Endpoint, you'll see your custom error message.
+    If you take down either your upstream service or the internal Agent Endpoint, you'll see your custom error message.
+  </Step>
+</Steps>
 
 ## What's next?
 

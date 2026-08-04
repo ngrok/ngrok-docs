@@ -27,72 +27,74 @@ By integrating ngrok with Mux, you can:
 - [Node.js](https://nodejs.org/) installed (for the sample app, or use your own app).
 - A Mux account.
 
-## 1. Start your app
+<Steps>
+  <Step title="Start your app">
+    For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
 
-For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+    To install the sample, run the following in a terminal:
 
-To install the sample, run the following in a terminal:
+    ```bash
+    git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
+    cd ngrok-webhook-nodejs-sample
+    npm install
+    ```
 
-```bash
-git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
-cd ngrok-webhook-nodejs-sample
-npm install
-```
+    Then start the app:
 
-Then start the app:
+    ```bash
+    npm start
+    ```
 
-```bash
-npm start
-```
+    The app runs on port 3000 by default.
 
-The app runs on port 3000 by default.
+    You can confirm it's running by visiting `http://localhost:3000`.
+    The app logs request headers and body in the terminal and shows a message in the browser.
+  </Step>
 
-You can confirm it's running by visiting `http://localhost:3000`.
-The app logs request headers and body in the terminal and shows a message in the browser.
+  <Step title="Expose your app with ngrok">
+    Once your app is running locally, you're ready to put it online securely using ngrok.
 
-## 2. Expose your app with ngrok
+    - Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
 
-Once your app is running locally, you're ready to put it online securely using ngrok.
+    <Tip>
+      The ngrok agent uses your authtoken to authenticate when you start a tunnel.
+    </Tip>
 
-- Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
+    - Start ngrok:
 
-<Tip>
-  The ngrok agent uses your authtoken to authenticate when you start a tunnel.
-</Tip>
+      ```bash
+      ngrok http 3000
+      ```
 
-- Start ngrok:
+    - Copy the URL ngrok displays.
+      Your app is now exposed at that URL for use with Mux.
+  </Step>
 
-  ```bash
-  ngrok http 3000
-  ```
+  <Step title="Configure Mux to send webhooks">
+    Mux can send webhook requests to your app when events occur in your account.
+    To register for those events:
 
-- Copy the URL ngrok displays.
-  Your app is now exposed at that URL for use with Mux.
+    - Sign in to [Mux](https://www.mux.com/).
+    - Click **Settings** in the left menu and then **Webhooks**.
+    - On the **Webhooks** tab, click **Create new webhook**.
+    - Select your environment and enter your ngrok URL in **URL to notify** (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
+    - Click **Create Webhook**.
 
-## 3. Configure Mux to send webhooks
+    ### Run webhooks with Mux and ngrok
 
-Mux can send webhook requests to your app when events occur in your account.
-To register for those events:
+    Mux sends different request body contents depending on the event.
+    To trigger new calls from Mux to your app:
 
-- Sign in to [Mux](https://www.mux.com/).
-- Click **Settings** in the left menu and then **Webhooks**.
-- On the **Webhooks** tab, click **Create new webhook**.
-- Select your environment and enter your ngrok URL in **URL to notify** (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
-- Click **Create Webhook**.
+    - On the Mux dashboard, click **Assets** and then **Create New Asset**.
+    - On the **Create a new asset** popup, click **Run Request**.
 
-### Run webhooks with Mux and ngrok
+    Confirm your localhost app receives event notifications and logs both headers and body in the terminal.
 
-Mux sends different request body contents depending on the event.
-To trigger new calls from Mux to your app:
+    <InspectingRequests />
 
-- On the Mux dashboard, click **Assets** and then **Create New Asset**.
-- On the **Create a new asset** popup, click **Run Request**.
-
-Confirm your localhost app receives event notifications and logs both headers and body in the terminal.
-
-<InspectingRequests />
-
-<ReplayingRequests />
+    <ReplayingRequests />
+  </Step>
+</Steps>
 
 ## Secure webhook requests
 

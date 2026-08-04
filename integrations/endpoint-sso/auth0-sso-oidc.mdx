@@ -23,91 +23,93 @@ In this mode, users access ngrok endpoints and are redirected to Auth0 for authe
 - An Auth0 account with administrative rights to create apps.
 - An ngrok Pay-as-you-go account with an authtoken or admin access to configure endpoints with OpenID Connect.
 
-## 1. Configure Auth0 
+<Steps>
+  <Step title="Configure Auth0">
+    ### Add the ngrok app in Auth0
 
-### Add the ngrok app in Auth0
+    - Access the Auth0 Dashboard and sign in using your Auth0 account.
+    - On the left menu, click **Applications**, click **Applications**, and then click **Create Application**.
+    - On the **Create application** popup, enter `ngrok oidc` in the **name** field, click the **Single Page Web Applications** tile, and then click **Create**.
+    - On the **ngrok oidc** page, click the **Settings** tab and make note of the **Domain**, **Client ID**, and **Client Secret** values.
+    - Enter `https://idp.ngrok.com/oauth2/callback` in the **Allowed Callback URLs** field, and enter the URL provided by the ngrok agent to expose your application to the internet in the **Application Login URI** field (for example, `https://myexample.ngrok.app`).
+    - Click **Save Changes**.
 
-- Access the Auth0 Dashboard and sign in using your Auth0 account.
-- On the left menu, click **Applications**, click **Applications**, and then click **Create Application**.
-- On the **Create application** popup, enter `ngrok oidc` in the **name** field, click the **Single Page Web Applications** tile, and then click **Create**.
-- On the **ngrok oidc** page, click the **Settings** tab and make note of the **Domain**, **Client ID**, and **Client Secret** values.
-- Enter `https://idp.ngrok.com/oauth2/callback` in the **Allowed Callback URLs** field, and enter the URL provided by the ngrok agent to expose your application to the internet in the **Application Login URI** field (for example, `https://myexample.ngrok.app`).
-- Click **Save Changes**.
+    ### Grant access to Auth0 users
 
-### Grant access to Auth0 users
+    Auth0 allows administrators to restrict access to SSO apps—such as ngrok—via user group assignments.
+    By default, apps created in Auth0 have no group assignments; in other words, nobody can use Auth0 SSO to access ngrok until you assign a group to the app.
 
-Auth0 allows administrators to restrict access to SSO apps—such as ngrok—via user group assignments.
-By default, apps created in Auth0 have no group assignments; in other words, nobody can use Auth0 SSO to access ngrok until you assign a group to the app.
+    To assign Auth0 groups to the ngrok app:
 
-To assign Auth0 groups to the ngrok app:
+    - On the Auth0 Dashboard, click **User Management** on the left menu, click **Users**, and then click **Create User**.
+    - Enter an email address in the **Email** field, provide a **Password**, and then click **Create**.
+  </Step>
 
-- On the Auth0 Dashboard, click **User Management** on the left menu, click **Users**, and then click **Create User**.
-- Enter an email address in the **Email** field, provide a **Password**, and then click **Create**.
+  <Step title="Configure ngrok">
+    ngrok can work with Auth0 SSO in two ways:
 
-## 2. Configure ngrok 
+    - From the ngrok CLI (using the `--oidc` parameter)
+    - From the ngrok dashboard
 
-ngrok can work with Auth0 SSO in two ways:
+    ### **Option 1**: ngrok CLI
 
-- From the ngrok CLI (using the `--oidc` parameter)
-- From the ngrok dashboard
+    <Note>
+    This step assumes you have an app running locally (for example, at `localhost:3000`) with the ngrok client installed.
+    </Note>
 
-### **Option 1**: ngrok CLI
+    - Launch a terminal.
+    - Enter the following command to launch an ngrok tunnel with Auth0 SSO:
 
-<Note>
-This step assumes you have an app running locally (for example, at `localhost:3000`) with the ngrok client installed.
-</Note>
+      ```bash
+      ngrok http 3000 --oidc=AUTH0_OAUTH_URL \
+      --oidc-client-id=Auth0_CLIENT_ID \
+      --oidc-client-secret=Auth0_CLIENT_SECRET \
+      ```
 
-- Launch a terminal.
-- Enter the following command to launch an ngrok tunnel with Auth0 SSO:
+      Replace the following with values:
+      - `Auth0_OAUTH_URL`: The domain value you copied from Auth0, in the form of a URL (for example, `https://dev-abcd1234.us.auth0.com/`).
+      - `Auth0_CLIENT_ID`: The client ID you copied from Auth0.
+      - `Auth0_CLIENT_SECRET`: The client secret you copied from Auth0.
 
-  ```bash
-  ngrok http 3000 --oidc=AUTH0_OAUTH_URL \
-  --oidc-client-id=Auth0_CLIENT_ID \
-  --oidc-client-secret=Auth0_CLIENT_SECRET \
-  ```
+      Alternatively, add the `--url YOUR_DOMAIN` argument to get your custom URL, replacing `YOUR_DOMAIN` with your URL of preference.
+    - Copy the URL available next to **Forwarding** (for example, `https://auth0-sso-test.ngrok.app`).
+    - Continue to [Test the integration](#3-test-the-integration).
 
-  Replace the following with values:
-  - `Auth0_OAUTH_URL`: The domain value you copied from Auth0, in the form of a URL (for example, `https://dev-abcd1234.us.auth0.com/`).
-  - `Auth0_CLIENT_ID`: The client ID you copied from Auth0.
-  - `Auth0_CLIENT_SECRET`: The client secret you copied from Auth0.
+    ### **Option 2**: Traffic Policy
 
-  Alternatively, add the `--url YOUR_DOMAIN` argument to get your custom URL, replacing `YOUR_DOMAIN` with your URL of preference.
-- Copy the URL available next to **Forwarding** (for example, `https://auth0-sso-test.ngrok.app`).
-- Continue to [Test the integration](#3-test-the-integration).
+    <Note>
+    This tutorial assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok client installed.
+    </Note>
 
-### **Option 2**: Traffic Policy
+    Create a `policy.yaml` file with the following content, replacing the placeholder values with those copied from Auth0:
 
-<Note>
-This tutorial assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok client installed.
-</Note>
+    ```yaml
+    on_http_request:
+      - actions:
+          - type: openid-connect
+            config:
+              issuer_url: 'https://dev-abcd1234.us.auth0.com/'
+              client_id: 'YOUR_AUTH0_CLIENT_ID'
+              client_secret: 'YOUR_AUTH0_CLIENT_SECRET'
+              scopes:
+                - openid
+                - profile
+                - email
+    ```
 
-Create a `policy.yaml` file with the following content, replacing the placeholder values with those copied from Auth0:
+    Launch an ngrok tunnel with this policy:
 
-```yaml
-on_http_request:
-  - actions:
-      - type: openid-connect
-        config:
-          issuer_url: 'https://dev-abcd1234.us.auth0.com/'
-          client_id: 'YOUR_AUTH0_CLIENT_ID'
-          client_secret: 'YOUR_AUTH0_CLIENT_SECRET'
-          scopes:
-            - openid
-            - profile
-            - email
-```
+    ```bash
+    ngrok http 3000 --traffic-policy-file policy.yaml --url YOUR_DOMAIN
+    ```
 
-Launch an ngrok tunnel with this policy:
+    Copy the URL next to **Forwarding** (for example, `https://auth0-sso-test.ngrok.app`).
+  </Step>
 
-```bash
-ngrok http 3000 --traffic-policy-file policy.yaml --url YOUR_DOMAIN
-```
-
-Copy the URL next to **Forwarding** (for example, `https://auth0-sso-test.ngrok.app`).
-
-## 3. Test the integration
-
-- In your browser, launch an incognito window.
-- Access your ngrok tunnel (for example, `https://auth0-sso-test.ngrok.app` or using the copied endpoint URL).
-- You should be prompted to log in with your Auth0 credentials.
-- After logging in, you should be able to see your web app.
+  <Step title="Test the integration">
+    - In your browser, launch an incognito window.
+    - Access your ngrok tunnel (for example, `https://auth0-sso-test.ngrok.app` or using the copied endpoint URL).
+    - You should be prompted to log in with your Auth0 credentials.
+    - After logging in, you should be able to see your web app.
+  </Step>
+</Steps>

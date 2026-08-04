@@ -28,82 +28,84 @@ By integrating ngrok with Stripe, you can:
 - [Node.js](https://nodejs.org/) installed (for the sample app, or use your own app).
 - A Stripe account.
 
-## 1. Start your app
+<Steps>
+  <Step title="Start your app">
+    For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
 
-For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+    To install the sample, run the following in a terminal:
 
-To install the sample, run the following in a terminal:
+    ```bash
+    git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
+    cd ngrok-webhook-nodejs-sample
+    npm install
+    ```
 
-```bash
-git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
-cd ngrok-webhook-nodejs-sample
-npm install
-```
+    Then start the app:
 
-Then start the app:
+    ```bash
+    npm start
+    ```
 
-```bash
-npm start
-```
+    The app runs on port 3000 by default.
 
-The app runs on port 3000 by default.
+    You can confirm it's running by visiting `http://localhost:3000`.
+    The app logs request headers and body in the terminal and shows a message in the browser.
+  </Step>
 
-You can confirm it's running by visiting `http://localhost:3000`.
-The app logs request headers and body in the terminal and shows a message in the browser.
+  <Step title="Expose your app with ngrok">
+    Once your app is running locally, you're ready to put it online securely using ngrok.
 
-## 2. Expose your app with ngrok
+    - Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
 
-Once your app is running locally, you're ready to put it online securely using ngrok.
+    <Tip>
+      The ngrok agent uses your authtoken to authenticate when you start a tunnel.
+    </Tip>
 
-- Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
+    - Start ngrok:
 
-<Tip>
-  The ngrok agent uses your authtoken to authenticate when you start a tunnel.
-</Tip>
+      ```bash
+      ngrok http 3000
+      ```
 
-- Start ngrok:
+    - Copy the URL ngrok displays.
+      Your app is now exposed at that URL for use with Stripe.
+  </Step>
 
-  ```bash
-  ngrok http 3000
-  ```
+  <Step title="Configure Stripe to send webhooks">
+    Stripe can send webhook requests to your app when events occur in your account.
+    To register for those events:
 
-- Copy the URL ngrok displays.
-  Your app is now exposed at that URL for use with Stripe.
+    - Sign in to the [Stripe dashboard](https://dashboard.stripe.com/).
+    - Click **Developers** and **Webhooks** in the left menu.
+    - On **Webhooks**, click **Add an endpoint**.
+    - On **Listen to Stripe events**, enter your ngrok URL in **Endpoint URL** (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
+    - Click **+ Select events**, choose the events you want (for this tutorial, expand **Product** and click **Select all Product events**), then click **Add events** and **Add endpoint**.
 
-## 3. Configure Stripe to send webhooks
+    <Tip>
+      Stripe may show sample code for running an app; for this tutorial use the sample app from [Start your app](#1-start-your-app) instead.
+    </Tip>
 
-Stripe can send webhook requests to your app when events occur in your account.
-To register for those events:
+    The **Webhooks** page shows your new endpoint.
 
-- Sign in to the [Stripe dashboard](https://dashboard.stripe.com/).
-- Click **Developers** and **Webhooks** in the left menu.
-- On **Webhooks**, click **Add an endpoint**.
-- On **Listen to Stripe events**, enter your ngrok URL in **Endpoint URL** (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
-- Click **+ Select events**, choose the events you want (for this tutorial, expand **Product** and click **Select all Product events**), then click **Add events** and **Add endpoint**.
+    ### Run webhooks with Stripe and ngrok
 
-<Tip>
-  Stripe may show sample code for running an app; for this tutorial use the sample app from [Start your app](#1-start-your-app) instead.
-</Tip>
+    Create a product so Stripe notifies your app:
 
-The **Webhooks** page shows your new endpoint.
+    - In the Stripe dashboard, click **Product** and **Add product**.
+    - Enter a **Name** and **Price**, then click **Save product**.
 
-### Run webhooks with Stripe and ngrok
+    Confirm your localhost app receives the product creation notification.
+    You can review sent messages under **Developers**, **Webhooks**, and your webhook.
 
-Create a product so Stripe notifies your app:
+    <Tip>
+      Stripe sends different request body contents and headers depending on the event.
+    </Tip>
 
-- In the Stripe dashboard, click **Product** and **Add product**.
-- Enter a **Name** and **Price**, then click **Save product**.
+    <InspectingRequests />
 
-Confirm your localhost app receives the product creation notification.
-You can review sent messages under **Developers**, **Webhooks**, and your webhook.
-
-<Tip>
-  Stripe sends different request body contents and headers depending on the event.
-</Tip>
-
-<InspectingRequests />
-
-<ReplayingRequests />
+    <ReplayingRequests />
+  </Step>
+</Steps>
 
 ## Secure webhook requests
 

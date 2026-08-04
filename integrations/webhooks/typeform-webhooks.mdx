@@ -27,72 +27,74 @@ By integrating ngrok with Typeform, you can:
 - [Node.js](https://nodejs.org/) installed (for the sample app, or use your own app).
 - A Typeform account.
 
-## 1. Start your app
+<Steps>
+  <Step title="Start your app">
+    For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
 
-For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+    To install the sample, run the following in a terminal:
 
-To install the sample, run the following in a terminal:
+    ```bash
+    git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
+    cd ngrok-webhook-nodejs-sample
+    npm install
+    ```
 
-```bash
-git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
-cd ngrok-webhook-nodejs-sample
-npm install
-```
+    Then start the app:
 
-Then start the app:
+    ```bash
+    npm start
+    ```
 
-```bash
-npm start
-```
+    The app runs on port 3000 by default.
 
-The app runs on port 3000 by default.
+    You can confirm it's running by visiting `http://localhost:3000`.
+    The app logs request headers and body in the terminal and shows a message in the browser.
+  </Step>
 
-You can confirm it's running by visiting `http://localhost:3000`.
-The app logs request headers and body in the terminal and shows a message in the browser.
+  <Step title="Expose your app with ngrok">
+    Once your app is running locally, you're ready to put it online securely using ngrok.
 
-## 2. Expose your app with ngrok
+    - Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
 
-Once your app is running locally, you're ready to put it online securely using ngrok.
+    <Tip>
+      The ngrok agent uses your authtoken to authenticate when you start a tunnel.
+    </Tip>
 
-- Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
+    - Start ngrok:
 
-<Tip>
-  The ngrok agent uses your authtoken to authenticate when you start a tunnel.
-</Tip>
+      ```bash
+      ngrok http 3000
+      ```
 
-- Start ngrok:
+    - Copy the URL ngrok displays.
+      Your app is now exposed at that URL for use with Typeform.
+  </Step>
 
-  ```bash
-  ngrok http 3000
-  ```
+  <Step title="Configure Typeform to send webhooks">
+    Typeform can send webhook requests to your app when someone submits a form.
+    To register for those events:
 
-- Copy the URL ngrok displays.
-  Your app is now exposed at that URL for use with Typeform.
+    - Sign in to [Typeform](https://www.typeform.com/).
+    - Open a form (or **Create typeform** > **Create it for me** > **Publish**).
+    - Click **Connect**, open the **WEBHOOKS** tab, and click **Add a webhook**.
+    - In **Add a webhook**, enter your ngrok URL in **Endpoint** (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`) and click **Save Webhook**.
+    - On the webhook page, turn the webhook on, click **Edit**, enter a value in **Secret** (for example, `12345`), and click **Save changes**.
 
-## 3. Configure Typeform to send webhooks
+    ### Run webhooks with Typeform and ngrok
 
-Typeform can send webhook requests to your app when someone submits a form.
-To register for those events:
+    Typeform sends a POST request to your app when someone submits the form:
 
-- Sign in to [Typeform](https://www.typeform.com/).
-- Open a form (or **Create typeform** > **Create it for me** > **Publish**).
-- Click **Connect**, open the **WEBHOOKS** tab, and click **Add a webhook**.
-- In **Add a webhook**, enter your ngrok URL in **Endpoint** (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`) and click **Save Webhook**.
-- On the webhook page, turn the webhook on, click **Edit**, enter a value in **Secret** (for example, `12345`), and click **Save changes**.
+    - In [Typeform](https://www.typeform.com/), open your form, click **Share**, **Copy link**, and open the link in a new tab.
+    - Complete the form and click **Submit**.
 
-### Run webhooks with Typeform and ngrok
+    Confirm your localhost app receives the notification and logs both headers and body in the terminal.
+    You can also check **Connect** > **WEBHOOKS** > **View deliveries** in Typeform to see delivery logs.
 
-Typeform sends a POST request to your app when someone submits the form:
+    <InspectingRequests />
 
-- In [Typeform](https://www.typeform.com/), open your form, click **Share**, **Copy link**, and open the link in a new tab.
-- Complete the form and click **Submit**.
-
-Confirm your localhost app receives the notification and logs both headers and body in the terminal.
-You can also check **Connect** > **WEBHOOKS** > **View deliveries** in Typeform to see delivery logs.
-
-<InspectingRequests />
-
-<ReplayingRequests />
+    <ReplayingRequests />
+  </Step>
+</Steps>
 
 ## Secure webhook requests
 

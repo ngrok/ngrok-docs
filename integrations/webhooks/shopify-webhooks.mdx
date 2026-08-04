@@ -27,78 +27,80 @@ By integrating ngrok with Shopify, you can:
 - [Node.js](https://nodejs.org/) installed (for the sample app, or use your own app).
 - A Shopify store.
 
-## 1. Start your app
+<Steps>
+  <Step title="Start your app">
+    For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
 
-For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+    To install the sample, run the following in a terminal:
 
-To install the sample, run the following in a terminal:
+    ```bash
+    git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
+    cd ngrok-webhook-nodejs-sample
+    npm install
+    ```
 
-```bash
-git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
-cd ngrok-webhook-nodejs-sample
-npm install
-```
+    Then start the app:
 
-Then start the app:
+    ```bash
+    npm start
+    ```
 
-```bash
-npm start
-```
+    The app runs on port 3000 by default.
 
-The app runs on port 3000 by default.
+    You can confirm it's running by visiting `http://localhost:3000`.
+    The app logs request headers and body in the terminal and shows a message in the browser.
+  </Step>
 
-You can confirm it's running by visiting `http://localhost:3000`.
-The app logs request headers and body in the terminal and shows a message in the browser.
+  <Step title="Expose your app with ngrok">
+    Once your app is running locally, you're ready to put it online securely using ngrok.
 
-## 2. Expose your app with ngrok
+    - Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
 
-Once your app is running locally, you're ready to put it online securely using ngrok.
+    <Tip>
+      The ngrok agent uses your authtoken to authenticate when you start a tunnel.
+    </Tip>
 
-- Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
+    - Start ngrok:
 
-<Tip>
-  The ngrok agent uses your authtoken to authenticate when you start a tunnel.
-</Tip>
+      ```bash
+      ngrok http 3000
+      ```
 
-- Start ngrok:
+    - Copy the URL ngrok displays.
+      Your app is now exposed at that URL for use with Shopify.
+  </Step>
 
-  ```bash
-  ngrok http 3000
-  ```
+  <Step title="Configure Shopify to send webhooks">
+    Shopify can send webhook requests to your app when events occur in your store.
+    To register for those events:
 
-- Copy the URL ngrok displays.
-  Your app is now exposed at that URL for use with Shopify.
+    - Sign in to your Shopify account, select your store, and click **Settings** at the bottom of the left menu.
+    - Click **Notifications**, scroll to **Webhooks**, and click **Create webhook**.
+    - In **Add webhook**, select **Product creation** for **Event** and **JSON** for **Format**.
+    - Enter your ngrok URL in **URL** (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
+    - For **Webhook API version**, select an option that includes `(Latest)` and click **Save**.
 
-## 3. Configure Shopify to send webhooks
+    Optionally, copy the signing key shown in the **Webhooks** section for use in verification.
 
-Shopify can send webhook requests to your app when events occur in your store.
-To register for those events:
+    ### Run webhooks with Shopify and ngrok
 
-- Sign in to your Shopify account, select your store, and click **Settings** at the bottom of the left menu.
-- Click **Notifications**, scroll to **Webhooks**, and click **Create webhook**.
-- In **Add webhook**, select **Product creation** for **Event** and **JSON** for **Format**.
-- Enter your ngrok URL in **URL** (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
-- For **Webhook API version**, select an option that includes `(Latest)` and click **Save**.
+    You can send a test from the **Webhooks** section with **Send test notification**.
+    With **Product creation** selected, creating a product triggers a notification:
 
-Optionally, copy the signing key shown in the **Webhooks** section for use in verification.
+    - Click **Products** and **Add product**.
+    - Enter a **Title**, **Price**, and **SKU** and click **Save**.
 
-### Run webhooks with Shopify and ngrok
+    Confirm your localhost app receives the notification and logs both headers and body in the terminal.
 
-You can send a test from the **Webhooks** section with **Send test notification**.
-With **Product creation** selected, creating a product triggers a notification:
+    <Tip>
+      Shopify sends different request body contents depending on the event you selected.
+    </Tip>
 
-- Click **Products** and **Add product**.
-- Enter a **Title**, **Price**, and **SKU** and click **Save**.
+    <InspectingRequests />
 
-Confirm your localhost app receives the notification and logs both headers and body in the terminal.
-
-<Tip>
-  Shopify sends different request body contents depending on the event you selected.
-</Tip>
-
-<InspectingRequests />
-
-<ReplayingRequests />
+    <ReplayingRequests />
+  </Step>
+</Steps>
 
 ## Secure webhook requests
 

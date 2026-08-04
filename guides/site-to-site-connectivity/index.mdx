@@ -32,105 +32,107 @@ Traditionally, you might assume that every server inside the network needs its o
 - An ngrok account. If you don't have one, [sign up](https://dashboard.ngrok.com/signup).
 - An ngrok agent configured in a remote network. See the [Agent CLI Quickstart](/gateway/agent-cli-quickstart/) for instructions on how to install the ngrok agent.
 
-### 1. Create a Service User and authtoken for isolated network access
+<Steps>
+  <Step title="Create a Service User and authtoken for isolated network access">
+    First, you'll create a service user and an associated authtoken for each of your customers. A Service User is intended for automated systems that programmatically interact with your ngrok account (other platforms sometimes call this concept a Service Account). Create a separate Service User + associated authtoken for each of your customers so that:
 
-First, you'll create a service user and an associated authtoken for each of your customers. A Service User is intended for automated systems that programmatically interact with your ngrok account (other platforms sometimes call this concept a Service Account). Create a separate Service User + associated authtoken for each of your customers so that:
+    1. Their usage of your ngrok account is isolated and scoped with a specific permission set
+    2. If a customer is compromised you can revoke their access independently
+    3. Agent start/stop audit events are properly attributed to each customer
+    4. Your ngrok agents don't stop working if the human user who set them up leaves your ngrok account.
 
-1. Their usage of your ngrok account is isolated and scoped with a specific permission set
-2. If a customer is compromised you can revoke their access independently
-3. Agent start/stop audit events are properly attributed to each customer
-4. Your ngrok agents don't stop working if the human user who set them up leaves your ngrok account.
+    Navigate to the [Service Users](https://dashboard.ngrok.com/service-users) section of your dashboard and click "new Service User".
 
-Navigate to the [Service Users](https://dashboard.ngrok.com/service-users) section of your dashboard and click "new Service User".
+    <img src="./img/new-service-user-dialog.png" alt="ngrok dashboard New Service User dialog with a name field for creating an isolated service account per customer" width="918" height="272" />
 
-<img src="./img/new-service-user-dialog.png" alt="ngrok dashboard New Service User dialog with a name field for creating an isolated service account per customer" width="918" height="272" />
+    Next, create an authtoken assigned to this specific service user.
 
-Next, create an authtoken assigned to this specific service user.
+    <img src="./img/new-authtoken-service-user-dialog.png" alt="ngrok dashboard New Authtoken dialog with description and owner assigned to a Service User for isolated network access" width="1068" height="424" />
+  </Step>
 
-<img src="./img/new-authtoken-service-user-dialog.png" alt="ngrok dashboard New Authtoken dialog with description and owner assigned to a Service User for isolated network access" width="1068" height="424" />
+  <Step title="Install ngrok and configure Internal Endpoints">
+    Configure the agent to create internal Agent Endpoints that point to the services you want to remotely access. This will connect the services to your ngrok account but nothing will be able to connect to them until completing the subsequent steps. The configuration to achieve this is shown below in the example agent configuration file.
 
-### 2. Install ngrok and configure Internal Endpoints
+    Internal Endpoints are private endpoints that only receive traffic when forwarded through the [forward-internal Traffic Policy action](/traffic-policy/actions/forward-internal/). This allows you to route traffic to an application through ngrok without making it publicly addressable. Internal endpoint URL hostnames must end with `.internal`.
 
-Configure the agent to create internal Agent Endpoints that point to the services you want to remotely access. This will connect the services to your ngrok account but nothing will be able to connect to them until completing the subsequent steps. The configuration to achieve this is shown below in the example agent configuration file.
+    After installing the ngrok agent, define internal endpoints for each service you want to remotely access inside the ngrok configuration file. Additionally, here is where you'll configure the agent to terminate mTLS for the patient DB endpoint. You can install ngrok and its configuration file in `/path/to/ngrok/ngrok.yml` and the executable in `/path/to/ngrok/ngrok`.
 
-Internal Endpoints are private endpoints that only receive traffic when forwarded through the [forward-internal Traffic Policy action](/traffic-policy/actions/forward-internal/). This allows you to route traffic to an application through ngrok without making it publicly addressable. Internal endpoint URL hostnames must end with `.internal`.
+    ```yaml
+    version: 3
 
-After installing the ngrok agent, define internal endpoints for each service you want to remotely access inside the ngrok configuration file. Additionally, here is where you'll configure the agent to terminate mTLS for the patient DB endpoint. You can install ngrok and its configuration file in `/path/to/ngrok/ngrok.yml` and the executable in `/path/to/ngrok/ngrok`.
+    agent:
+      authtoken: AUTHTOKEN_CREATED_IN_STEP_1
 
-```yaml
-version: 3
+    endpoints:
+      - name: Internal Endpoint for API
+        url: https://api.internal
+        upstream:
+          url: 8080
 
-agent:
-  authtoken: AUTHTOKEN_CREATED_IN_STEP_1
+      - name: Internal Endpoint for patient DB
+        url: tls://patient-db.internal
+        upstream:
+          url: 8081
+        agent_tls_termination:
+          server_certificate: /path/to/your-cert.crt
+          server_private_key: /path/to/your-key.key
+          mutual_tls_certificate_authorities:
+            - "list CAs here"
+    ```
+  </Step>
 
-endpoints:
-  - name: Internal Endpoint for API
-    url: https://api.internal
-    upstream:
-      url: 8080
+  <Step title="Create your Cloud Endpoints and attach a Traffic Policy">
+    Cloud Endpoints are persistent, always-on endpoints whose creation, deletion, and configuration is managed centrally via the Dashboard or API. They exist permanently until they are explicitly deleted. Cloud Endpoints do not forward their traffic to an agent by default and instead only use their attached **Traffic Policy** to handle connections.
 
-  - name: Internal Endpoint for patient DB
-    url: tls://patient-db.internal
-    upstream:
-      url: 8081
-    agent_tls_termination:
-      server_certificate: /path/to/your-cert.crt
-      server_private_key: /path/to/your-key.key
-      mutual_tls_certificate_authorities:
-        - "list CAs here"
-```
+    Create a public Cloud Endpoint in the ngrok dashboard by navigating to endpoints and clicking **new** as shown in the screenshot below:
 
-### 3. Create your Cloud Endpoints and attach a Traffic Policy
+    <img src="./img/new-cloud-endpoint-public-binding-dialog.png" alt="ngrok dashboard New Cloud Endpoint dialog with Public binding selected and URL set to https://api.acme.com" width="1380" height="1040" />
 
-Cloud Endpoints are persistent, always-on endpoints whose creation, deletion, and configuration is managed centrally via the Dashboard or API. They exist permanently until they are explicitly deleted. Cloud Endpoints do not forward their traffic to an agent by default and instead only use their attached **Traffic Policy** to handle connections.
+    Additionally, create a Cloud Endpoint for the patient DB: `tls://db.acme.com`.
 
-Create a public Cloud Endpoint in the ngrok dashboard by navigating to endpoints and clicking **new** as shown in the screenshot below:
+    Click on your newly created API Cloud Endpoint and replace the default Traffic Policy with:
 
-<img src="./img/new-cloud-endpoint-public-binding-dialog.png" alt="ngrok dashboard New Cloud Endpoint dialog with Public binding selected and URL set to https://api.acme.com" width="1380" height="1040" />
+    ```yaml
+    on_http_request:
+      - actions:
+          - type: forward-internal
+            config:
+              url: https://api.internal
+    ```
 
-Additionally, create a Cloud Endpoint for the patient DB: `tls://db.acme.com`.
+    Click on your newly created DB Cloud Endpoint and replace the default Traffic Policy with:
 
-Click on your newly created API Cloud Endpoint and replace the default Traffic Policy with:
+    ```yaml
+    on_tcp_connect:
+      - actions:
+          - type: forward-internal
+            config:
+              url: tls://db.internal
+    ```
+  </Step>
 
-```yaml
-on_http_request:
-  - actions:
-      - type: forward-internal
-        config:
-          url: https://api.internal
-```
+  <Step title="Secure your API Cloud Endpoint with IP restrictions">
+    Navigate to your newly created Cloud Endpoints in the [endpoints](https://dashboard.ngrok.com/endpoints) tab on your ngrok dashboard, and apply a Traffic Policy action to each. For this example, you can apply IP restrictions to your API endpoint. Browse through the full list of Traffic Policy actions listed [here](/traffic-policy/actions/). You can add this action directly to the Cloud Endpoint's YAML configuration. The final Traffic Policy config for each endpoint can be seen below:
 
-Click on your newly created DB Cloud Endpoint and replace the default Traffic Policy with:
+    **https://api.acme.com**
 
-```yaml
-on_tcp_connect:
-  - actions:
-      - type: forward-internal
-        config:
-          url: tls://db.internal
-```
+    ```yaml
+    on_http_request:
+      - actions:
+          - type: restrict-ips
+            config:
+              enforce: true
+              allow:
+                - "allowed ips here (IPv4 or IPv6)"
 
-### 4. Secure your API Cloud Endpoint with IP restrictions
+          - type: forward-internal
+            config:
+              url: https://api.internal
+    ```
 
-Navigate to your newly created Cloud Endpoints in the [endpoints](https://dashboard.ngrok.com/endpoints) tab on your ngrok dashboard, and apply a Traffic Policy action to each. For this example, you can apply IP restrictions to your API endpoint. Browse through the full list of Traffic Policy actions listed [here](/traffic-policy/actions/). You can add this action directly to the Cloud Endpoint's YAML configuration. The final Traffic Policy config for each endpoint can be seen below:
-
-**https://api.acme.com**
-
-```yaml
-on_http_request:
-  - actions:
-      - type: restrict-ips
-        config:
-          enforce: true
-          allow:
-            - "allowed ips here (IPv4 or IPv6)"
-
-      - type: forward-internal
-        config:
-          url: https://api.internal
-```
-
-Now that you have this Traffic Policy action in place, you have IP restrictions layered in front of your API endpoint, and your connection to the patient DB is end-to-end encrypted, with the ngrok agent validating mTLS.
+    Now that you have this Traffic Policy action in place, you have IP restrictions layered in front of your API endpoint, and your connection to the patient DB is end-to-end encrypted, with the ngrok agent validating mTLS.
+  </Step>
+</Steps>
 
 ## What's next
 

@@ -27,84 +27,86 @@ By integrating ngrok with X, you can:
 - [Node.js](https://nodejs.org/) installed (for the sample app, or use your own app).
 - An approved X Developer account.
 
-## 1. Start your app
+<Steps>
+  <Step title="Start your app">
+    For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
 
-For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+    To install the sample, run the following in a terminal:
 
-To install the sample, run the following in a terminal:
+    ```bash
+    git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
+    cd ngrok-webhook-nodejs-sample
+    npm install
+    ```
 
-```bash
-git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
-cd ngrok-webhook-nodejs-sample
-npm install
-```
+    Then start the app:
 
-Then start the app:
+    ```bash
+    npm start
+    ```
 
-```bash
-npm start
-```
+    The app runs on port 3000 by default.
 
-The app runs on port 3000 by default.
+    You can confirm it's running by visiting `http://localhost:3000`.
+    The app logs request headers and body in the terminal and shows a message in the browser.
+  </Step>
 
-You can confirm it's running by visiting `http://localhost:3000`.
-The app logs request headers and body in the terminal and shows a message in the browser.
+  <Step title="Expose your app with ngrok">
+    Once your app is running locally, you're ready to put it online securely using ngrok.
 
-## 2. Expose your app with ngrok
+    - Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
 
-Once your app is running locally, you're ready to put it online securely using ngrok.
+    <Tip>
+      The ngrok agent uses your authtoken to authenticate when you start a tunnel.
+    </Tip>
 
-- Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
+    - Start ngrok:
 
-<Tip>
-  The ngrok agent uses your authtoken to authenticate when you start a tunnel.
-</Tip>
+      ```bash
+      ngrok http 3000
+      ```
 
-- Start ngrok:
+    - Copy the URL ngrok displays.
+      Your app is now exposed at that URL for use with X.
+  </Step>
 
-  ```bash
-  ngrok http 3000
-  ```
+  <Step title="Configure X to send webhooks">
+    X can send webhook requests to your app for Account Activity API events.
+    To register:
 
-- Copy the URL ngrok displays.
-  Your app is now exposed at that URL for use with X.
+    - Sign in to the [X Developer Portal](https://developer.twitter.com/) and click **Developer Portal**.
+    - Create a project and app (e.g. **Development** environment), and note **API Key**, **API Key Secret**, **Bearer Token**, and generate **Access Token** and **Access Token Secret** under **Keys and tokens**.
+    - Under **Products**, click **Premium** and **Dev environments**, then **Set up dev environment** for **Account Activity API**, name the environment, and select your app.
+    - Register the webhook with a POST request (URL-encode your ngrok URL). Example:
 
-## 3. Configure X to send webhooks
+      ```bash
+      curl --request POST --url 'https://api.twitter.com/1.1/account_activity/webhooks.json?url=ENCODED_URL' \
+      --header 'authorization: OAuth oauth_consumer_key="CONSUMER_KEY", oauth_nonce="GENERATED", oauth_signature="GENERATED", oauth_signature_method="HMAC-SHA1", oauth_timestamp="GENERATED", oauth_token="ACCESS_TOKEN", oauth_version="1.0"'
+      ```
 
-X can send webhook requests to your app for Account Activity API events.
-To register:
+      Replace `ENCODED_URL`, `CONSUMER_KEY`, `ACCESS_TOKEN`, and generated OAuth values as needed.
 
-- Sign in to the [X Developer Portal](https://developer.twitter.com/) and click **Developer Portal**.
-- Create a project and app (e.g. **Development** environment), and note **API Key**, **API Key Secret**, **Bearer Token**, and generate **Access Token** and **Access Token Secret** under **Keys and tokens**.
-- Under **Products**, click **Premium** and **Dev environments**, then **Set up dev environment** for **Account Activity API**, name the environment, and select your app.
-- Register the webhook with a POST request (URL-encode your ngrok URL). Example:
+    - Subscribe a user to the webhook (use the same OAuth signing with the subscribing user’s access token):
 
-  ```bash
-  curl --request POST --url 'https://api.twitter.com/1.1/account_activity/webhooks.json?url=ENCODED_URL' \
-  --header 'authorization: OAuth oauth_consumer_key="CONSUMER_KEY", oauth_nonce="GENERATED", oauth_signature="GENERATED", oauth_signature_method="HMAC-SHA1", oauth_timestamp="GENERATED", oauth_token="ACCESS_TOKEN", oauth_version="1.0"'
-  ```
+      ```bash
+      curl --request POST --url 'https://api.twitter.com/1.1/account_activity/all/APP_NAME/subscriptions.json' \
+      --header 'authorization: OAuth ...'
+      ```
 
-  Replace `ENCODED_URL`, `CONSUMER_KEY`, `ACCESS_TOKEN`, and generated OAuth values as needed.
+    ### Run webhooks with X and ngrok
 
-- Subscribe a user to the webhook (use the same OAuth signing with the subscribing user’s access token):
+    X sends different request body contents depending on the event.
+    To trigger a notification:
 
-  ```bash
-  curl --request POST --url 'https://api.twitter.com/1.1/account_activity/all/APP_NAME/subscriptions.json' \
-  --header 'authorization: OAuth ...'
-  ```
+    - Sign in to [X](https://www.twitter.com/) and post a tweet.
 
-### Run webhooks with X and ngrok
+    Confirm your localhost app receives the notification and logs both headers and body in the terminal.
 
-X sends different request body contents depending on the event.
-To trigger a notification:
+    <InspectingRequests />
 
-- Sign in to [X](https://www.twitter.com/) and post a tweet.
-
-Confirm your localhost app receives the notification and logs both headers and body in the terminal.
-
-<InspectingRequests />
-
-<ReplayingRequests />
+    <ReplayingRequests />
+  </Step>
+</Steps>
 
 ## Secure webhook requests
 

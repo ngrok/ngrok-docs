@@ -10,135 +10,137 @@ The following instructions will guide you through setting up Agent TLS terminati
 
 - Ensure you have [openssl](https://docs.openiam.com/docs-4.2.1.3/appendix/2-openssl) installed.
 
-## 1. Generate a cert and key pair
+<Steps>
+  <Step title="Generate a cert and key pair">
+    The following command:
 
-The following command:
+    1. Generates a new certificate signing request (CSR) for a 4096-bit RSA key pair.
+       - The key is saved to `your-key.key`.
+    1. Creates a self-signed certificate which:
+       - Is in x509 format and uses the SHA-256 hash algorithm.
+       - Is valid for 365 days.
+       - Is saved to `your-cert.crt`.
 
-1. Generates a new certificate signing request (CSR) for a 4096-bit RSA key pair.
-   - The key is saved to `your-key.key`.
-1. Creates a self-signed certificate which:
-   - Is in x509 format and uses the SHA-256 hash algorithm.
-   - Is valid for 365 days.
-   - Is saved to `your-cert.crt`.
+    ```bash
+    openssl req -new -newkey rsa:4096 -x509 -sha256 -days 365 -noenc -out your-cert.crt -keyout your-key.key
+    ```
+  </Step>
 
-```bash
-openssl req -new -newkey rsa:4096 -x509 -sha256 -days 365 -noenc -out your-cert.crt -keyout your-key.key
-```
+  <Step title="Configure your endpoint">
+    You can configure your endpoint with an [agent configuration file](/agent/config/). To create a new configuration file with your generated cert and key pair, run the following command:
 
-## 2. Configure your endpoint
+    ```bash
+    ngrok config add-authtoken you-authtoken
+    ```
 
-You can configure your endpoint with an [agent configuration file](/agent/config/). To create a new configuration file with your generated cert and key pair, run the following command:
+    Your generated configuration file should resemble the following:
 
-```bash
-ngrok config add-authtoken you-authtoken
-```
+    ```yaml
+    version: 3
+    agent:
+      authtoken: your-authtoken
+    endpoints:
+      - name: demo-tls
+        url: tls://your-domain.ngrok.app
+        upstream:
+          url: 12345
+        agent_tls_termination:
+          server_certificate: /path/to/your-cert.crt
+          server_private_key: /path/to/your-key.key
+    ```
 
-Your generated configuration file should resemble the following:
+    <Tip>
+    You can run `ngrok config edit` to open the configuration file in your default text editor. [Learn more about the `ngrok config` command](/agent/cli/#ngrok-config).
+    </Tip>
 
-```yaml
-version: 3
-agent:
-  authtoken: your-authtoken
-endpoints:
-  - name: demo-tls
-    url: tls://your-domain.ngrok.app
-    upstream:
-      url: 12345
-    agent_tls_termination:
-      server_certificate: /path/to/your-cert.crt
-      server_private_key: /path/to/your-key.key
-```
+    ### Optional: require client certificates (mTLS) at the agent
 
-<Tip>
-You can run `ngrok config edit` to open the configuration file in your default text editor. [Learn more about the `ngrok config` command](/agent/cli/#ngrok-config).
-</Tip>
+    To make the agent authenticate clients as part of the TLS handshake, add one or more Certificate Authorities to the `agent_tls_termination` block with `mutual_tls_certificate_authorities`.
+    The agent will reject any client whose certificate isn't signed by one of the listed CAs.
 
-### Optional: require client certificates (mTLS) at the agent
+    ```yaml
+    version: 3
+    agent:
+      authtoken: your-authtoken
+    endpoints:
+      - name: demo-tls
+        url: tls://your-domain.ngrok.app
+        upstream:
+          url: 12345
+        agent_tls_termination:
+          server_certificate: /path/to/your-cert.crt
+          server_private_key: /path/to/your-key.key
+          mutual_tls_certificate_authorities:
+            - /path/to/your-ca-cert.crt
+    ```
 
-To make the agent authenticate clients as part of the TLS handshake, add one or more Certificate Authorities to the `agent_tls_termination` block with `mutual_tls_certificate_authorities`.
-The agent will reject any client whose certificate isn't signed by one of the listed CAs.
+    See [`agent_tls_termination.mutual_tls_certificate_authorities`](/agent/config/v3#agent_tls_termination-mutual_tls_certificate_authorities) for the full reference.
 
-```yaml
-version: 3
-agent:
-  authtoken: your-authtoken
-endpoints:
-  - name: demo-tls
-    url: tls://your-domain.ngrok.app
-    upstream:
-      url: 12345
-    agent_tls_termination:
-      server_certificate: /path/to/your-cert.crt
-      server_private_key: /path/to/your-key.key
-      mutual_tls_certificate_authorities:
-        - /path/to/your-ca-cert.crt
-```
+    <Note>
+    This is different from mTLS terminated at the ngrok edge via [the `terminate-tls` Traffic Policy action](/gateway/mtls-termination/).
+    With agent-side mTLS, the client certificate is validated by your agent; traffic between the ngrok edge and your agent is still carried over the agent's secure TLS connection to ngrok, but client-certificate authentication is not performed on that hop.
+    </Note>
+  </Step>
 
-See [`agent_tls_termination.mutual_tls_certificate_authorities`](/agent/config/v3#agent_tls_termination-mutual_tls_certificate_authorities) for the full reference.
+  <Step title="Start your endpoint">
+    Next, use `ngrok start endpoint_name_here` in the terminal to start an endpoint using the settings in your agent configuration file, as shown below:
 
-<Note>
-This is different from mTLS terminated at the ngrok edge via [the `terminate-tls` Traffic Policy action](/gateway/mtls-termination/).
-With agent-side mTLS, the client certificate is validated by your agent; traffic between the ngrok edge and your agent is still carried over the agent's secure TLS connection to ngrok, but client-certificate authentication is not performed on that hop.
-</Note>
+    ```bash
+    ngrok start demo-tls
+    ```
+  </Step>
 
-## 3. Start your endpoint
+  <Step title="Start your upstream server">
+    Start an upstream server on the specified port (for example, `12345`) to handle incoming requests. The following example uses Python, but you can use any language or framework depending on your requirements.
 
-Next, use `ngrok start endpoint_name_here` in the terminal to start an endpoint using the settings in your agent configuration file, as shown below:
+    ```python
+    import socket
 
-```bash
-ngrok start demo-tls
-```
+    host='127.0.0.1'
+    port=12345
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server.bind((host, port))
+    print(f"Server started on {host}:{port}")
+    server.listen(1)
 
-## 4. Start your upstream server
+    while True:
+        client, client_address = server.accept()
+        print(f"Connection established with {client_address}")
+        client.sendall(b"hello, world!")
+        client.close()
+        print(f"Connection with {client_address} closed")
+    ```
+  </Step>
 
-Start an upstream server on the specified port (for example, `12345`) to handle incoming requests. The following example uses Python, but you can use any language or framework depending on your requirements.
+  <Step title="Try connecting to your endpoint">
+    The following example uses `openssl s_client` to initiate an SSL/TLS client connection to your upstream server without a certificate.
 
-```python
-import socket
+    ```bash
+    openssl s_client -quiet -connect your-domain.ngrok.app:443 -verify_return_error
+    ```
 
-host='127.0.0.1'
-port=12345
-server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server.bind((host, port))
-print(f"Server started on {host}:{port}")
-server.listen(1)
+    ```bash
+    Connecting to 2600:1f16:d83:1200::6e:0
+    depth=0 C=AU, ST=Some-State, O=Internet Widgets Pty Ltd, CN=your-domain.ngrok.app
+    verify error:num=18:self-signed certificate
+    408FB6F801000000:error:0A000086:SSL routines:tls_post_process_server_certificate:certificate verify failed:ssl/statem/statem_clnt.c:2093:
+    ```
 
-while True:
-    client, client_address = server.accept()
-    print(f"Connection established with {client_address}")
-    client.sendall(b"hello, world!")
-    client.close()
-    print(f"Connection with {client_address} closed")
-```
+    The following example uses `openssl s_client` to initiate an SSL/TLS client connection to your upstream server with a certificate.
 
-## 5. Try connecting to your endpoint
+    ```bash
+    openssl s_client -quiet -connect your-domain.ngrok.app:443 -verify_return_error -CAfile your-cert.crt
+    ```
 
-The following example uses `openssl s_client` to initiate an SSL/TLS client connection to your upstream server without a certificate.
+    ```bash
+    Connecting to 2600:1f16:d83:1200::6e:0
+    depth=0 C=AU, ST=Some-State, O=Internet Widgets Pty Ltd, CN=your-domain.ngrok.app
+    verify return:1
+    hello, world!%
+    ```
 
-```bash
-openssl s_client -quiet -connect your-domain.ngrok.app:443 -verify_return_error
-```
-
-```bash
-Connecting to 2600:1f16:d83:1200::6e:0
-depth=0 C=AU, ST=Some-State, O=Internet Widgets Pty Ltd, CN=your-domain.ngrok.app
-verify error:num=18:self-signed certificate
-408FB6F801000000:error:0A000086:SSL routines:tls_post_process_server_certificate:certificate verify failed:ssl/statem/statem_clnt.c:2093:
-```
-
-The following example uses `openssl s_client` to initiate an SSL/TLS client connection to your upstream server with a certificate.
-
-```bash
-openssl s_client -quiet -connect your-domain.ngrok.app:443 -verify_return_error -CAfile your-cert.crt
-```
-
-```bash
-Connecting to 2600:1f16:d83:1200::6e:0
-depth=0 C=AU, ST=Some-State, O=Internet Widgets Pty Ltd, CN=your-domain.ngrok.app
-verify return:1
-hello, world!%
-```
-
-<Note>
-The extra arguments added to the command suppress most of the output so that only the data exchanged with the server will be displayed.
-</Note>
+    <Note>
+    The extra arguments added to the command suppress most of the output so that only the data exchanged with the server will be displayed.
+    </Note>
+  </Step>
+</Steps>

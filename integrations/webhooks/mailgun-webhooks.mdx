@@ -27,85 +27,87 @@ By integrating ngrok with Mailgun, you can:
 - [Node.js](https://nodejs.org/) installed (for the sample app, or use your own app).
 - A Mailgun account.
 
-## 1. Start your app
+<Steps>
+  <Step title="Start your app">
+    For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
 
-For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+    To install the sample, run the following in a terminal:
 
-To install the sample, run the following in a terminal:
+    ```bash
+    git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
+    cd ngrok-webhook-nodejs-sample
+    npm install
+    ```
 
-```bash
-git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
-cd ngrok-webhook-nodejs-sample
-npm install
-```
+    Then start the app:
 
-Then start the app:
+    ```bash
+    npm start
+    ```
 
-```bash
-npm start
-```
+    The app runs on port 3000 by default.
 
-The app runs on port 3000 by default.
+    You can confirm it's running by visiting `http://localhost:3000`.
+    The app logs request headers and body in the terminal and shows a message in the browser.
+  </Step>
 
-You can confirm it's running by visiting `http://localhost:3000`.
-The app logs request headers and body in the terminal and shows a message in the browser.
+  <Step title="Expose your app with ngrok">
+    Once your app is running locally, you're ready to put it online securely using ngrok.
 
-## 2. Expose your app with ngrok
+    - Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
 
-Once your app is running locally, you're ready to put it online securely using ngrok.
+    <Tip>
+      The ngrok agent uses your authtoken to authenticate when you start a tunnel.
+    </Tip>
 
-- Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
+    - Start ngrok:
 
-<Tip>
-  The ngrok agent uses your authtoken to authenticate when you start a tunnel.
-</Tip>
+      ```bash
+      ngrok http 3000
+      ```
 
-- Start ngrok:
+    - Copy the URL ngrok displays.
+      Your app is now exposed at that URL for use with Mailgun.
+  </Step>
 
-  ```bash
-  ngrok http 3000
-  ```
+  <Step title="Configure Mailgun to send webhooks">
+    Mailgun can send webhook requests to your app when events occur in your account.
+    To register for those events:
 
-- Copy the URL ngrok displays.
-  Your app is now exposed at that URL for use with Mailgun.
+    - Sign in to [Mailgun](https://app.mailgun.com/).
+    - Click **Sending**, **Webhooks**, and then **Add webhook**.
+    - On the **New webhook** popup, select **Delivered Messages** in **Event type**, enter your ngrok URL in **URL** (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
+    - Click **Create webhook**.
 
-## 3. Configure Mailgun to send webhooks
+    To test: on the **Webhooks** page, select **Delivered Messages**, enter your ngrok URL in **URL to test**, and click **Test webhook**.
+    Confirm your localhost app receives the event and logs both headers and body in the terminal, and that a **Response** appears on the **Webhooks** page.
 
-Mailgun can send webhook requests to your app when events occur in your account.
-To register for those events:
+    ### Run webhooks with Mailgun and ngrok
 
-- Sign in to [Mailgun](https://app.mailgun.com/).
-- Click **Sending**, **Webhooks**, and then **Add webhook**.
-- On the **New webhook** popup, select **Delivered Messages** in **Event type**, enter your ngrok URL in **URL** (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
-- Click **Create webhook**.
+    Mailgun sends different request body contents depending on the event.
+    To trigger new calls from Mailgun to your app:
 
-To test: on the **Webhooks** page, select **Delivered Messages**, enter your ngrok URL in **URL to test**, and click **Test webhook**.
-Confirm your localhost app receives the event and logs both headers and body in the terminal, and that a **Response** appears on the **Webhooks** page.
+    - In the [Mailgun Dashboard](https://app.mailgun.com/), go to **Sending** and **Overview**.
+    - In **Authorized Recipients**, enter a valid email and click **Save Recipient**.
+    - Have the recipient confirm by clicking the link in the email from Mailgun.
+    - Send an email (for example, via the Mailgun API). Replace placeholders with values from your account (**API base URL** and **API Key** from **Overview**, your domain from **Domains**, and the authorized recipient email):
 
-### Run webhooks with Mailgun and ngrok
+      ```bash
+      curl --location --request POST 'API_BASE_URL/messages' \
+      --header 'Authorization: Basic api:API_KEY' \
+      --form 'from="mailgun@YOUR_DOMAIN"' \
+      --form 'to="AUTHORIZED_RECIPIENT"' \
+      --form 'subject="Hello from Mailgun"' \
+      --form 'text="Testing some Mailgun email!"'
+      ```
 
-Mailgun sends different request body contents depending on the event.
-To trigger new calls from Mailgun to your app:
+    Confirm your localhost app receives the event and logs both headers and body in the terminal.
 
-- In the [Mailgun Dashboard](https://app.mailgun.com/), go to **Sending** and **Overview**.
-- In **Authorized Recipients**, enter a valid email and click **Save Recipient**.
-- Have the recipient confirm by clicking the link in the email from Mailgun.
-- Send an email (for example, via the Mailgun API). Replace placeholders with values from your account (**API base URL** and **API Key** from **Overview**, your domain from **Domains**, and the authorized recipient email):
+    <InspectingRequests />
 
-  ```bash
-  curl --location --request POST 'API_BASE_URL/messages' \
-  --header 'Authorization: Basic api:API_KEY' \
-  --form 'from="mailgun@YOUR_DOMAIN"' \
-  --form 'to="AUTHORIZED_RECIPIENT"' \
-  --form 'subject="Hello from Mailgun"' \
-  --form 'text="Testing some Mailgun email!"'
-  ```
-
-Confirm your localhost app receives the event and logs both headers and body in the terminal.
-
-<InspectingRequests />
-
-<ReplayingRequests />
+    <ReplayingRequests />
+  </Step>
+</Steps>
 
 ## Secure webhook requests
 

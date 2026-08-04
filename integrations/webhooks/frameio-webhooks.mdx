@@ -27,74 +27,76 @@ By integrating ngrok with Frame.io, you can:
 - [Node.js](https://nodejs.org/) installed (for the sample app, or use your own app).
 - A Frame.io account.
 
-## 1. Start your app
+<Steps>
+  <Step title="Start your app">
+    For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
 
-For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+    To install the sample, run the following in a terminal:
 
-To install the sample, run the following in a terminal:
+    ```bash
+    git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
+    cd ngrok-webhook-nodejs-sample
+    npm install
+    ```
 
-```bash
-git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
-cd ngrok-webhook-nodejs-sample
-npm install
-```
+    Then start the app:
 
-Then start the app:
+    ```bash
+    npm start
+    ```
 
-```bash
-npm start
-```
+    The app runs on port 3000 by default.
 
-The app runs on port 3000 by default.
+    You can confirm it's running by visiting `http://localhost:3000`.
+    The app logs request headers and body in the terminal and shows a message in the browser.
+  </Step>
 
-You can confirm it's running by visiting `http://localhost:3000`.
-The app logs request headers and body in the terminal and shows a message in the browser.
+  <Step title="Expose your app with ngrok">
+    Once your app is running locally, you're ready to put it online securely using ngrok.
 
-## 2. Expose your app with ngrok
+    - Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
 
-Once your app is running locally, you're ready to put it online securely using ngrok.
+    <Tip>
+      The ngrok agent uses your authtoken to authenticate when you start a tunnel.
+    </Tip>
 
-- Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
+    - Start ngrok:
 
-<Tip>
-  The ngrok agent uses your authtoken to authenticate when you start a tunnel.
-</Tip>
+      ```bash
+      ngrok http 3000
+      ```
 
-- Start ngrok:
+    - Copy the URL ngrok displays.
+      Your app is now exposed at that URL for use with Frame.io.
+  </Step>
 
-  ```bash
-  ngrok http 3000
-  ```
+  <Step title="Configure Frame.io to send webhooks">
+    Frame.io can send webhook requests to your app when events occur in your account.
+    To register for those events:
 
-- Copy the URL ngrok displays.
-  Your app is now exposed at that URL for use with Frame.io.
+    - Sign in to [Frame.io](https://frame.io/) and open [Frame.io Developer](https://developer.frame.io/) in the same browser.
+    - On the developer site, click **DEVELOPER TOOLS** and then **Webhooks**.
+    - On the **Webhooks** page, click **Create a Webhook**.
+    - On **Create a new webhook**, enter a name in **NAME**, enter your ngrok URL in the **URL** field (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
+    - Select your team in **TEAM**, check **created** for **Projects** under **EVENTS**, and click **Submit**.
 
-## 3. Configure Frame.io to send webhooks
+    ### Run webhooks with Frame.io and ngrok
 
-Frame.io can send webhook requests to your app when events occur in your account.
-To register for those events:
+    Frame.io sends different request body contents depending on the event.
+    To trigger new calls from Frame.io to your app:
 
-- Sign in to [Frame.io](https://frame.io/) and open [Frame.io Developer](https://developer.frame.io/) in the same browser.
-- On the developer site, click **DEVELOPER TOOLS** and then **Webhooks**.
-- On the **Webhooks** page, click **Create a Webhook**.
-- On **Create a new webhook**, enter a name in **NAME**, enter your ngrok URL in the **URL** field (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
-- Select your team in **TEAM**, check **created** for **Projects** under **EVENTS**, and click **Submit**.
+    - In [Frame.io](https://frame.io/), click **+** next to your team name in the left menu.
+    - On the **New Project** popup, enter a project name and click **Create Project**.
 
-### Run webhooks with Frame.io and ngrok
+    Confirm your localhost app receives the create-project event and logs both headers and body in the terminal.
 
-Frame.io sends different request body contents depending on the event.
-To trigger new calls from Frame.io to your app:
+    You can verify the webhook in Frame.io: in [Frame.io Developer](https://developer.frame.io/), go to **DEVELOPER TOOLS**, **Webhooks**, click **View logs** next to your webhook, and then **View details** on the **Webhook Logs** page.
 
-- In [Frame.io](https://frame.io/), click **+** next to your team name in the left menu.
-- On the **New Project** popup, enter a project name and click **Create Project**.
+    <InspectingRequests />
 
-Confirm your localhost app receives the create-project event and logs both headers and body in the terminal.
-
-You can verify the webhook in Frame.io: in [Frame.io Developer](https://developer.frame.io/), go to **DEVELOPER TOOLS**, **Webhooks**, click **View logs** next to your webhook, and then **View details** on the **Webhook Logs** page.
-
-<InspectingRequests />
-
-<ReplayingRequests />
+    <ReplayingRequests />
+  </Step>
+</Steps>
 
 ## Secure webhook requests
 

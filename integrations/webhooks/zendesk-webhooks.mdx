@@ -27,73 +27,75 @@ By integrating ngrok with Zendesk, you can:
 - [Node.js](https://nodejs.org/) installed (for the sample app, or use your own app).
 - A Zendesk account.
 
-## 1. Start your app
+<Steps>
+  <Step title="Start your app">
+    For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
 
-For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+    To install the sample, run the following in a terminal:
 
-To install the sample, run the following in a terminal:
+    ```bash
+    git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
+    cd ngrok-webhook-nodejs-sample
+    npm install
+    ```
 
-```bash
-git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
-cd ngrok-webhook-nodejs-sample
-npm install
-```
+    Then start the app:
 
-Then start the app:
+    ```bash
+    npm start
+    ```
 
-```bash
-npm start
-```
+    The app runs on port 3000 by default.
 
-The app runs on port 3000 by default.
+    You can confirm it's running by visiting `http://localhost:3000`.
+    The app logs request headers and body in the terminal and shows a message in the browser.
+  </Step>
 
-You can confirm it's running by visiting `http://localhost:3000`.
-The app logs request headers and body in the terminal and shows a message in the browser.
+  <Step title="Expose your app with ngrok">
+    Once your app is running locally, you're ready to put it online securely using ngrok.
 
-## 2. Expose your app with ngrok
+    - Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
 
-Once your app is running locally, you're ready to put it online securely using ngrok.
+    <Tip>
+      The ngrok agent uses your authtoken to authenticate when you start a tunnel.
+    </Tip>
 
-- Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
+    - Start ngrok:
 
-<Tip>
-  The ngrok agent uses your authtoken to authenticate when you start a tunnel.
-</Tip>
+      ```bash
+      ngrok http 3000
+      ```
 
-- Start ngrok:
+    - Copy the URL ngrok displays.
+      Your app is now exposed at that URL for use with Zendesk.
+  </Step>
 
-  ```bash
-  ngrok http 3000
-  ```
+  <Step title="Configure Zendesk to send webhooks">
+    Zendesk can send webhook requests to your app when automation rules run.
+    To set it up:
 
-- Copy the URL ngrok displays.
-  Your app is now exposed at that URL for use with Zendesk.
+    - Sign in to [Zendesk](https://www.zendesk.com), go to **Admin** (gear icon) > **Admin Center**.
+    - Click **Apps and integrations** > **Webhooks** > **Create Webhooks**.
+    - On **Create webhook**, enter a **Name** and your ngrok URL in **Endpoint URL** (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
+    - Set **Request method** to **POST** and **Request format** to **JSON** (for production you can add Basic or Bearer authentication; for this tutorial use **None**).
+    - Click **Test webhook** > **Send test**, confirm your app receives the request, then click **Create**.
+    - Create an automation: **Objects and rules** > **Automations** > **Add automation**. Set title, conditions (e.g. Ticket is Created, Type is Incident, Priority is High), and under **Perform these actions** add **Notify webhook** with a **JSON body** (e.g. `{"message":"{{ticket.requester.name}} we are setting your ticket {{ticket.title}} to urgent priority."}`). Click **Create automation**.
 
-## 3. Configure Zendesk to send webhooks
+    ### Run webhooks with Zendesk and ngrok
 
-Zendesk can send webhook requests to your app when automation rules run.
-To set it up:
+    With the automation above, a high-priority incident ticket triggers the webhook:
 
-- Sign in to [Zendesk](https://www.zendesk.com), go to **Admin** (gear icon) > **Admin Center**.
-- Click **Apps and integrations** > **Webhooks** > **Create Webhooks**.
-- On **Create webhook**, enter a **Name** and your ngrok URL in **Endpoint URL** (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
-- Set **Request method** to **POST** and **Request format** to **JSON** (for production you can add Basic or Bearer authentication; for this tutorial use **None**).
-- Click **Test webhook** > **Send test**, confirm your app receives the request, then click **Create**.
-- Create an automation: **Objects and rules** > **Automations** > **Add automation**. Set title, conditions (e.g. Ticket is Created, Type is Incident, Priority is High), and under **Perform these actions** add **Notify webhook** with a **JSON body** (e.g. `{"message":"{{ticket.requester.name}} we are setting your ticket {{ticket.title}} to urgent priority."}`). Click **Create automation**.
+    - In [Zendesk](https://www.zendesk.com), click **+ Add** > **Ticket**.
+    - Set **Requester**, **Type** to **Incident**, **Priority** to **High**, enter a subject, and click **Submit as New**.
 
-### Run webhooks with Zendesk and ngrok
+    Zendesk evaluates automations on a schedule (e.g. hourly), so you may need to wait for the webhook to be called.
+    You can check **Admin Center** > **Webhooks** > your webhook > **Activity** to see delivery logs.
 
-With the automation above, a high-priority incident ticket triggers the webhook:
+    <InspectingRequests />
 
-- In [Zendesk](https://www.zendesk.com), click **+ Add** > **Ticket**.
-- Set **Requester**, **Type** to **Incident**, **Priority** to **High**, enter a subject, and click **Submit as New**.
-
-Zendesk evaluates automations on a schedule (e.g. hourly), so you may need to wait for the webhook to be called.
-You can check **Admin Center** > **Webhooks** > your webhook > **Activity** to see delivery logs.
-
-<InspectingRequests />
-
-<ReplayingRequests />
+    <ReplayingRequests />
+  </Step>
+</Steps>
 
 ## Secure webhook requests
 

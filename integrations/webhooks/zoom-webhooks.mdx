@@ -27,77 +27,79 @@ By integrating ngrok with Zoom, you can:
 - [Node.js](https://nodejs.org/) installed (for the sample app, or use your own app).
 - A Zoom account.
 
-## 1. Start your app
+<Steps>
+  <Step title="Start your app">
+    For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
 
-For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+    To install the sample, run the following in a terminal:
 
-To install the sample, run the following in a terminal:
+    ```bash
+    git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
+    cd ngrok-webhook-nodejs-sample
+    npm install
+    ```
 
-```bash
-git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
-cd ngrok-webhook-nodejs-sample
-npm install
-```
+    Then start the app:
 
-Then start the app:
+    ```bash
+    npm start
+    ```
 
-```bash
-npm start
-```
+    The app runs on port 3000 by default.
 
-The app runs on port 3000 by default.
+    You can confirm it's running by visiting `http://localhost:3000`.
+    The app logs request headers and body in the terminal and shows a message in the browser.
+  </Step>
 
-You can confirm it's running by visiting `http://localhost:3000`.
-The app logs request headers and body in the terminal and shows a message in the browser.
+  <Step title="Expose your app with ngrok">
+    Once your app is running locally, you're ready to put it online securely using ngrok.
 
-## 2. Expose your app with ngrok
+    - Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
 
-Once your app is running locally, you're ready to put it online securely using ngrok.
+    <Tip>
+      The ngrok agent uses your authtoken to authenticate when you start a tunnel.
+    </Tip>
 
-- Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
+    - Start ngrok:
 
-<Tip>
-  The ngrok agent uses your authtoken to authenticate when you start a tunnel.
-</Tip>
+      ```bash
+      ngrok http 3000
+      ```
 
-- Start ngrok:
+    - Copy the URL ngrok displays.
+      Your app is now exposed at that URL for use with Zoom.
+  </Step>
 
-  ```bash
-  ngrok http 3000
-  ```
+  <Step title="Configure Zoom to send webhooks">
+    Zoom can send webhook requests to your app when meeting and other events occur.
+    This guide uses the **Webhook Only** app type (free Zoom account).
 
-- Copy the URL ngrok displays.
-  Your app is now exposed at that URL for use with Zoom.
+    - Sign in to the [Zoom Marketplace](https://marketplace.zoom.us/).
+    - Click **Develop** > **Build App**, select **Webhook Only**, enter a **Name**, and click **Create**.
+    - Complete registration with **Company Name**, developer **Name**, and **Email**, then click **Continue**.
+    - On **Feature**, turn **Event subscriptions** on and click **Add Event Subscriptions**.
+    - Enter your ngrok URL in **Event notification endpoint URL** (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
+    - Copy the **Secret Token** for use in verification.
+    - Click **Add Events**, select events (e.g. **Start Meeting**, **End Meeting**), click **Done**, then **Save** and **Continue**.
+    - When you see **Your app is activated on the account**, Zoom is ready to send events. You can review the webhook under **Manage** on the Marketplace page.
 
-## 3. Configure Zoom to send webhooks
+    ### Run webhooks with Zoom and ngrok
 
-Zoom can send webhook requests to your app when meeting and other events occur.
-This guide uses the **Webhook Only** app type (free Zoom account).
+    After the webhook is added, start a meeting in your Zoom account and end it after a few seconds.
+    Your localhost app receives notifications for both events.
 
-- Sign in to the [Zoom Marketplace](https://marketplace.zoom.us/).
-- Click **Develop** > **Build App**, select **Webhook Only**, enter a **Name**, and click **Create**.
-- Complete registration with **Company Name**, developer **Name**, and **Email**, then click **Continue**.
-- On **Feature**, turn **Event subscriptions** on and click **Add Event Subscriptions**.
-- Enter your ngrok URL in **Event notification endpoint URL** (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
-- Copy the **Secret Token** for use in verification.
-- Click **Add Events**, select events (e.g. **Start Meeting**, **End Meeting**), click **Done**, then **Save** and **Continue**.
-- When you see **Your app is activated on the account**, Zoom is ready to send events. You can review the webhook under **Manage** on the Marketplace page.
+    <Tip>
+      Zoom sends different request body contents and headers depending on the event.
+      Each request includes an **authorization** header with the **Secret Token**; you can validate this in your app or use ngrok’s webhook verification below.
+    </Tip>
 
-### Run webhooks with Zoom and ngrok
+    You can review **Manage** > **Call Logs** > **Webhook Logs** in the Marketplace to compare request bodies with what your app received.
 
-After the webhook is added, start a meeting in your Zoom account and end it after a few seconds.
-Your localhost app receives notifications for both events.
+    <InspectingRequests />
 
-<Tip>
-  Zoom sends different request body contents and headers depending on the event.
-  Each request includes an **authorization** header with the **Secret Token**; you can validate this in your app or use ngrok’s webhook verification below.
-</Tip>
-
-You can review **Manage** > **Call Logs** > **Webhook Logs** in the Marketplace to compare request bodies with what your app received.
-
-<InspectingRequests />
-
-<ReplayingRequests />
+    <ReplayingRequests />
+  </Step>
+</Steps>
 
 ## Secure webhook requests
 
