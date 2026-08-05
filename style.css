@@ -207,3 +207,327 @@ footer#footer a {
 .nav-tabs-item > div.absolute.bottom-0 {
   height: 2px !important;
 }
+
+/* ============================================================================
+ * Ketch cookie-consent banner
+ *
+ * Ported from `packages/dot-com-mon/src/ketch-overrides.css` in the
+ * ngrok-private/frontend monorepo, the sheet ngrok.com and blog.ngrok.com ship.
+ * That sheet reads @ngrok/mantle design tokens. This site has no mantle, so
+ * every token below is the literal value mantle 0.83.4 resolves to. Any custom
+ * property this block reads is also declared in this block.
+ *
+ * Ketch renders its banner into the light DOM under `#lanyard_root`, so plain
+ * descendant selectors reach it. Every selector starts at `#lanyard_root` so
+ * nothing here can touch the docs UI.
+ *
+ * `!important` appears only where Ketch sets the same property itself, through
+ * a `ketch-`-prefixed utility class or an inline style. Ketch's inline styles
+ * carry no `!important`, so a stylesheet `!important` beats them.
+ * ========================================================================= */
+
+/*
+ * Dark mode keys off the `dark` class alone. Mintlify resolves the reader's
+ * system preference into that class before the page paints, so a
+ * `prefers-color-scheme` query would carry the same signal twice and could beat
+ * the class whenever the reader picks the theme their OS disagrees with. One
+ * hook keeps the class authoritative. `html[data-theme="dark"]` rides along
+ * because every other dark rule in this file pairs the two.
+ */
+#lanyard_root {
+  /* mantle `background-color-popover`, `border-color-popover`, `text-color-body`. */
+  --ngrok-ketch-surface: #ffffff;
+  --ngrok-ketch-border: #d4d4d4;
+  --ngrok-ketch-text: rgb(18 18 18 / 75%);
+  /* mantle `color-sky-700`, the link color ngrok.com uses in the banner. */
+  --ngrok-ketch-link: #0069a8;
+  /* Translucent ghost fill. White reads on the dark card, black on the light one. */
+  --ngrok-ketch-action-bg: rgb(18 18 18 / 10%);
+  --ngrok-ketch-action-bg-hover: rgb(18 18 18 / 16%);
+  --ngrok-ketch-action-text: #121212;
+  /* `docs.json` primary. The focus ring belongs to this site, not to mantle. */
+  --ngrok-ketch-focus-ring: rgb(39 63 195 / 35%);
+
+  /*
+   * Ketch's own theme API. Ketch reads these to build the styles it applies
+   * inline, so they cover the parts of the banner this sheet cannot select.
+   */
+  --k-banner-container-background-color: var(--ngrok-ketch-surface) !important;
+  --k-banner-container-cornerRadius: 14px !important;
+  --k-banner-description-text-color: var(--ngrok-ketch-text) !important;
+  --k-banner-description-link-color: var(--ngrok-ketch-link) !important;
+}
+
+:is(html.dark, html[data-theme="dark"]) #lanyard_root {
+  --ngrok-ketch-surface: #171717;
+  --ngrok-ketch-border: #404040;
+  --ngrok-ketch-text: rgb(255 255 255 / 70%);
+  --ngrok-ketch-link: #74d4ff;
+  --ngrok-ketch-action-bg: rgb(255 255 255 / 20%);
+  --ngrok-ketch-action-bg-hover: rgb(255 255 255 / 30%);
+  --ngrok-ketch-action-text: #ffffff;
+  --ngrok-ketch-focus-ring: rgb(105 154 252 / 35%);
+}
+
+/*
+ * Ketch ships its own font stack. Roobert and JetBrains Mono are already loaded
+ * above, so the banner can match ngrok.com instead of falling back.
+ */
+#lanyard_root * {
+  font-family: "Roobert", ui-sans-serif, system-ui, sans-serif !important;
+}
+
+/* ---------------------------------------------------------------------------
+ * Position: a card that floats 8px above the bottom edge, centered.
+ * ------------------------------------------------------------------------ */
+
+/* Ketch's outer positioning wrapper carries a hashed class starting `root`. */
+#lanyard_root [class^="root"] {
+  top: unset !important;
+  bottom: 8px !important;
+}
+
+#lanyard_root #ketch-banner {
+  padding-inline: 16px !important;
+  bottom: 8px !important;
+  /*
+   * This wrapper spans the viewport while the visible card sits centered
+   * inside it, so its transparent gutters would swallow clicks on the page
+   * behind — including the docs theme toggle. Pass clicks through here and
+   * take them back on the card.
+   */
+  pointer-events: none !important;
+}
+
+/* ---------------------------------------------------------------------------
+ * The card.
+ * ------------------------------------------------------------------------ */
+#lanyard_root #ketch-consent-banner {
+  pointer-events: auto !important;
+  background-color: var(--ngrok-ketch-surface) !important;
+  color: var(--ngrok-ketch-text) !important;
+  border-width: 1px !important;
+  border-style: solid !important;
+  border-color: var(--ngrok-ketch-border) !important;
+  /*
+   * 14px, not the 6px the donor sheet also declares. The donor carries both:
+   * 6px on this element, copied from the dashboard sheet, and 14px on Ketch's
+   * `--k-banner-container-cornerRadius`, which ngrok.com added on purpose.
+   * Ketch applies that variable through an inline `!important` utility, which
+   * beats a stylesheet, so 14px is what ngrok.com renders. Declaring both
+   * makes the corner independent of which mechanism a lanyard build uses.
+   */
+  border-radius: 14px !important;
+  box-shadow:
+    0 2px 13px 0 rgb(0 0 0 / 5%),
+    0 2px 4px -2px rgb(0 0 0 / 10%),
+    0 4px 6px -1px rgb(0 0 0 / 10%) !important;
+}
+
+/*
+ * Compact the card. `#ketch-consent-banner` carries no padding itself — the
+ * spacing lives on its inner wrappers, and current lanyard builds nest the
+ * default `pt-4 px-5 pb-3` one level below the direct flex child. Flatten both
+ * layers or the card renders double-padded.
+ */
+#lanyard_root #ketch-consent-banner > div {
+  padding: 0.625rem 1rem !important;
+  gap: 1rem !important;
+}
+
+#lanyard_root #ketch-consent-banner > div > div {
+  padding: 0 !important;
+}
+
+#lanyard_root #ketch-consent-banner .ketch-overflow-y-auto {
+  padding-bottom: 0 !important;
+}
+
+/*
+ * Ketch caps the button group at `max-w-[40%]` and `sm:max-w-[50%]`, which
+ * clips the last button once the card stops stretching. `div:has(> button)`
+ * finds the group however deeply a lanyard build nests it. The donor sheet
+ * lifts the cap at >= 640px only; the cap squeezes the mobile group down to
+ * 40% of the card and stacks all three buttons, so lift it at every width.
+ */
+#lanyard_root #ketch-consent-banner div:has(> button) {
+  max-width: none !important;
+}
+
+/* ---------------------------------------------------------------------------
+ * Body copy and the Privacy Policy link.
+ * ------------------------------------------------------------------------ */
+#lanyard_root #ketch-consent-banner p {
+  max-width: 120ch !important;
+  color: var(--ngrok-ketch-text) !important;
+  font-size: 0.875rem !important;
+  line-height: 1.25rem !important;
+}
+
+/*
+ * The link stays underlined at rest. The donor underlines on hover only, but
+ * ngrok.com shows a standing underline, and an underline is the only non-color
+ * cue that the text is a link.
+ */
+#lanyard_root #ketch-consent-banner a {
+  cursor: pointer !important;
+  background-color: transparent !important;
+  color: var(--ngrok-ketch-link) !important;
+  text-decoration: underline !important;
+  text-underline-offset: 2px !important;
+  border-radius: 0.375rem !important;
+  outline-color: transparent !important;
+}
+
+#lanyard_root a:focus {
+  outline-color: transparent !important;
+}
+
+#lanyard_root a:focus-visible {
+  box-shadow: 0 0 0 3px var(--ngrok-ketch-focus-ring) !important;
+  outline-color: transparent !important;
+}
+
+/* ---------------------------------------------------------------------------
+ * Actions.
+ *
+ * All three buttons share one treatment. The donor sheet lets "Accept all" and
+ * "Reject all" drift to a 6px radius and a 20% fill while "View preferences"
+ * keeps the pill and a 30% fill; ngrok.com shows three matched pills. The pill
+ * is the donor's own base radius, so unifying here drops two overrides rather
+ * than inventing a fourth style. The 20% fill wins the tie because two of the
+ * three buttons already use it and it is the quieter of the two.
+ * ------------------------------------------------------------------------ */
+#lanyard_root button {
+  align-items: center !important;
+  background-color: var(--ngrok-ketch-action-bg) !important;
+  background-image: none !important;
+  color: var(--ngrok-ketch-action-text) !important;
+  border-radius: calc(infinity * 1px) !important;
+  border-style: none !important;
+  border-width: 0 !important;
+  cursor: pointer !important;
+  display: inline-flex !important;
+  flex-shrink: 0 !important;
+  font-family:
+    "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace !important;
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+  /*
+   * mantle `sm` sizing. `min-height` has to repeat the height because Ketch
+   * pins buttons to 40px with its own `ketch-min-h-10` class, and a bare
+   * `height` loses to the larger `min-height` in the box model.
+   */
+  height: 1.75rem !important;
+  min-height: 1.75rem !important;
+  justify-content: center !important;
+  line-height: 1.25rem !important;
+  outline-color: transparent !important;
+  padding: 0 0.625rem !important;
+  transition-property: none !important;
+  transition-duration: 0ms !important;
+  white-space: nowrap !important;
+}
+
+#lanyard_root button:hover {
+  background-color: var(--ngrok-ketch-action-bg-hover) !important;
+}
+
+#lanyard_root button:focus {
+  outline-color: transparent !important;
+}
+
+#lanyard_root button:focus-visible {
+  box-shadow: 0 0 0 4px var(--ngrok-ketch-focus-ring) !important;
+  outline-color: transparent !important;
+}
+
+/*
+ * Re-declare the three properties Ketch themes per button, at higher
+ * specificity.
+ *
+ * Ketch builds its utilities with Tailwind's `important: '#lanyard_root'`
+ * option, so a `!`-prefixed utility compiles to
+ * `#lanyard_root .\!ketch-bg-\[--k-banner-buttons-primary-background-color\]`
+ * — specificity (1,1,0) *and* `!important`. That outranks the (1,0,1) rule
+ * above for `background-color`, `color`, and `border-radius`, the three
+ * properties Ketch drives through its own theme variables. Measured on the
+ * live banner: "Accept all" kept Ketch's configured `#1853db` fill, and both
+ * other buttons kept `#1853db` *text* on the translucent fill — about 1.9:1
+ * against the dark card, so the labels were barely readable. Ketch's other
+ * button styling arrives through plain, non-`!important` utilities
+ * (`ketch-min-h-10`, `ketch-px-4`), which the rule above still wins.
+ *
+ * The donor sheet solves this with per-label rules
+ * (`button[aria-label="accept all" i]`, (1,1,1)). One `[id^=]` rule covers all
+ * three banner buttons instead, and stays scoped to the banner so it cannot
+ * reach the preference-center buttons.
+ */
+#lanyard_root #ketch-consent-banner button[id^="ketch-banner-button"] {
+  background-color: var(--ngrok-ketch-action-bg) !important;
+  color: var(--ngrok-ketch-action-text) !important;
+  border-radius: calc(infinity * 1px) !important;
+}
+
+#lanyard_root #ketch-consent-banner button[id^="ketch-banner-button"]:hover {
+  background-color: var(--ngrok-ketch-action-bg-hover) !important;
+}
+
+/* ---------------------------------------------------------------------------
+ * Desktop — Ketch flips the banner into its row layout at 640px.
+ * ------------------------------------------------------------------------ */
+@media (min-width: 640px) {
+  /*
+   * Ketch's inner wrapper carries `ketch-items-start`, which top-aligns the
+   * short button group against the taller text block.
+   */
+  #lanyard_root #ketch-consent-banner > div {
+    align-items: center !important;
+  }
+
+  #lanyard_root #ketch-banner {
+    justify-content: center !important;
+  }
+
+  /*
+   * Shrink the card to its content and center it. Ketch ships `sm:w-auto` on
+   * the fixed wrapper, so without this the card stretches edge to edge.
+   */
+  #lanyard_root #ketch-consent-banner {
+    flex: 0 0 auto !important;
+    width: max-content !important;
+    max-width: 100% !important;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * Mobile — below 640px Ketch swaps to a nested, full-width stacked template
+ * that puts all three buttons on their own rows and makes the card very tall.
+ * ------------------------------------------------------------------------ */
+@media (max-width: 639px) {
+  /* The card spans the viewport minus the wrapper's 16px gutters. */
+  #lanyard_root #ketch-consent-banner {
+    width: auto !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  #lanyard_root #ketch-consent-banner .ketch-overflow-y-auto {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  #lanyard_root #ketch-consent-banner div:has(> button) {
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    gap: 0.5rem !important;
+    margin-top: 0.5rem !important;
+  }
+
+  #lanyard_root #ketch-consent-banner div:has(> button) > button {
+    width: auto !important;
+    flex: 1 1 auto !important;
+  }
+}
