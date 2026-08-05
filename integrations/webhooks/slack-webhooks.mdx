@@ -28,84 +28,86 @@ By integrating ngrok with Slack, you can:
 - [Node.js](https://nodejs.org/) installed (for the sample app, or use your own app).
 - A Slack account.
 
-## 1. Start your app
+<Steps>
+  <Step title="Start your app">
+    For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
 
-For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+    To install the sample, run the following in a terminal:
 
-To install the sample, run the following in a terminal:
+    ```bash
+    git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
+    cd ngrok-webhook-nodejs-sample
+    npm install
+    ```
 
-```bash
-git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
-cd ngrok-webhook-nodejs-sample
-npm install
-```
+    Then start the app (Slack sample):
 
-Then start the app (Slack sample):
+    ```bash
+    npm run startSlack
+    ```
 
-```bash
-npm run startSlack
-```
+    The app runs on port 3000 by default.
 
-The app runs on port 3000 by default.
+    You can confirm it's running by visiting `http://localhost:3000`.
+    The app logs request headers and body in the terminal and shows a message in the browser.
+  </Step>
 
-You can confirm it's running by visiting `http://localhost:3000`.
-The app logs request headers and body in the terminal and shows a message in the browser.
+  <Step title="Expose your app with ngrok">
+    Once your app is running locally, you're ready to put it online securely using ngrok.
 
-## 2. Expose your app with ngrok
+    - Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
 
-Once your app is running locally, you're ready to put it online securely using ngrok.
+    <Tip>
+      The ngrok agent uses your authtoken to authenticate when you start a tunnel.
+    </Tip>
 
-- Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
+    - Start ngrok:
 
-<Tip>
-  The ngrok agent uses your authtoken to authenticate when you start a tunnel.
-</Tip>
+      ```bash
+      ngrok http 3000
+      ```
 
-- Start ngrok:
+    - Copy the URL ngrok displays.
+      Your app is now exposed at that URL for use with Slack.
+  </Step>
 
-  ```bash
-  ngrok http 3000
-  ```
+  <Step title="Configure Slack to send webhooks">
+    Slack can send webhook requests to your app when events occur in your workspace.
+    To register for those events:
 
-- Copy the URL ngrok displays.
-  Your app is now exposed at that URL for use with Slack.
+    - Sign in to the [Slack Web app](https://app.slack.com/) (you can use **use Slack in your browser**).
+    - Open the [Slack API portal](https://api.slack.com/apps) and click **Create an App**.
+    - In **Create an app**, click **From scratch**, enter an **App Name**, select a workspace under **Pick a workspace to develop your app in**, and click **Create App**.
+    - On **Basic Information**, expand **Add features and functionality** and click **Event Subscriptions**.
+    - On **Event Subscriptions**, turn **Enable Events** on.
+      In **Request URL**, enter your ngrok URL (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
 
-## 3. Configure Slack to send webhooks
+    <Note>
+      Slack makes a one-time call to your app with a challenge parameter and expects the app to respond with that value.
+      See the [Slack Events API handshake](https://api.slack.com/apis/events-api#handshake) for details.
+    </Note>
 
-Slack can send webhook requests to your app when events occur in your workspace.
-To register for those events:
+    - Under **Subscribe to events on behalf of users**, click **Add Workspace Event**, select `message.im`, and click **Save Changes**.
+    - In the left menu, click **Install App**, then **Install to Workspace**, and **Allow**.
 
-- Sign in to the [Slack Web app](https://app.slack.com/) (you can use **use Slack in your browser**).
-- Open the [Slack API portal](https://api.slack.com/apps) and click **Create an App**.
-- In **Create an app**, click **From scratch**, enter an **App Name**, select a workspace under **Pick a workspace to develop your app in**, and click **Create App**.
-- On **Basic Information**, expand **Add features and functionality** and click **Event Subscriptions**.
-- On **Event Subscriptions**, turn **Enable Events** on.
-  In **Request URL**, enter your ngrok URL (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
+    ### Run webhooks with Slack and ngrok
 
-<Note>
-  Slack makes a one-time call to your app with a challenge parameter and expects the app to respond with that value.
-  See the [Slack Events API handshake](https://api.slack.com/apis/events-api#handshake) for details.
-</Note>
+    Because you subscribed to `message.im` and installed the app, you can trigger webhooks by sending a direct message:
 
-- Under **Subscribe to events on behalf of users**, click **Add Workspace Event**, select `message.im`, and click **Save Changes**.
-- In the left menu, click **Install App**, then **Install to Workspace**, and **Allow**.
+    - In the [Slack Web app](https://app.slack.com/) or desktop app, confirm your app appears under **Apps**.
+    - Direct message a user in the workspace, or message **Slackbot** with something like `Hello Slack bot!` and send it.
 
-### Run webhooks with Slack and ngrok
+    Confirm your localhost app receives the notification.
 
-Because you subscribed to `message.im` and installed the app, you can trigger webhooks by sending a direct message:
+    <Tip>
+      Slack sends different request body contents and headers depending on the event.
+    </Tip>
 
-- In the [Slack Web app](https://app.slack.com/) or desktop app, confirm your app appears under **Apps**.
-- Direct message a user in the workspace, or message **Slackbot** with something like `Hello Slack bot!` and send it.
+    <InspectingRequests />
 
-Confirm your localhost app receives the notification.
-
-<Tip>
-  Slack sends different request body contents and headers depending on the event.
-</Tip>
-
-<InspectingRequests />
-
-<ReplayingRequests />
+    <ReplayingRequests />
+  </Step>
+</Steps>
 
 ## Secure webhook requests
 

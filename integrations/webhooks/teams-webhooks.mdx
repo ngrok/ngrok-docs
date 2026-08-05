@@ -31,72 +31,74 @@ By integrating ngrok with Microsoft Teams, you can:
   This integration requires an ngrok Pay-as-you-go plan because Microsoft Teams validates your ngrok domain and certificate.
 </Note>
 
-## 1. Start your app
+<Steps>
+  <Step title="Start your app">
+    For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
 
-For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+    To install the sample, run the following in a terminal:
 
-To install the sample, run the following in a terminal:
+    ```bash
+    git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
+    cd ngrok-webhook-nodejs-sample
+    npm install
+    ```
 
-```bash
-git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
-cd ngrok-webhook-nodejs-sample
-npm install
-```
+    Then start the app:
 
-Then start the app:
+    ```bash
+    npm start
+    ```
 
-```bash
-npm start
-```
+    The app runs on port 3000 by default.
 
-The app runs on port 3000 by default.
+    You can confirm it's running by visiting `http://localhost:3000`.
+    The app logs request headers and body in the terminal and shows a message in the browser.
+  </Step>
 
-You can confirm it's running by visiting `http://localhost:3000`.
-The app logs request headers and body in the terminal and shows a message in the browser.
+  <Step title="Expose your app with ngrok">
+    Once your app is running locally, you're ready to put it online securely using ngrok.
 
-## 2. Expose your app with ngrok
+    - Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
 
-Once your app is running locally, you're ready to put it online securely using ngrok.
+    <Tip>
+      The ngrok agent uses your authtoken to authenticate when you start a tunnel.
+      You need a reserved domain: in the dashboard, expand **Gateway**, click **Domains**, then **+ Create Domain** or **+ New Domain**, and reserve a domain (for example, `myexample.ngrok.app`).
+    </Tip>
 
-- Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
+    - Start ngrok with your reserved domain:
 
-<Tip>
-  The ngrok agent uses your authtoken to authenticate when you start a tunnel.
-  You need a reserved domain: in the dashboard, expand **Gateway**, click **Domains**, then **+ Create Domain** or **+ New Domain**, and reserve a domain (for example, `myexample.ngrok.app`).
-</Tip>
+      ```bash
+      ngrok http 3000 --url myexample.ngrok.app
+      ```
 
-- Start ngrok with your reserved domain:
+    - Copy the URL ngrok displays (for example, `https://myexample.ngrok.app`).
+      Your app is now exposed at that URL for use with Microsoft Teams.
+  </Step>
 
-  ```bash
-  ngrok http 3000 --url myexample.ngrok.app
-  ```
+  <Step title="Configure Microsoft Teams to send webhooks">
+    Microsoft Teams can send webhook requests to your app when you use an outgoing webhook in a channel.
+    To set it up:
 
-- Copy the URL ngrok displays (for example, `https://myexample.ngrok.app`).
-  Your app is now exposed at that URL for use with Microsoft Teams.
+    - Sign in to the [Microsoft Teams web interface](https://teams.microsoft.com/) (or use the Teams app).
+    - Click **Teams**, select a channel, and click the **+** at the top of the team page.
+    - In **Add a tab**, click **Manage apps** and then **Create an outgoing webhook** at the bottom.
+    - In **Create an outgoing webhook**, enter **Name** and **Description** (for example, `My local app`) and your ngrok URL in **Callback URL** (for example, `https://myexample.ngrok.app`).
+    - Click **Create** and note the **Security token** on the confirmation popup, then click **Close**.
 
-## 3. Configure Microsoft Teams to send webhooks
+    ### Run webhooks with Microsoft Teams and ngrok
 
-Microsoft Teams can send webhook requests to your app when you use an outgoing webhook in a channel.
-To set it up:
+    The outgoing webhook acts as a bot: when you @mention it, it sends the message to your app.
 
-- Sign in to the [Microsoft Teams web interface](https://teams.microsoft.com/) (or use the Teams app).
-- Click **Teams**, select a channel, and click the **+** at the top of the team page.
-- In **Add a tab**, click **Manage apps** and then **Create an outgoing webhook** at the bottom.
-- In **Create an outgoing webhook**, enter **Name** and **Description** (for example, `My local app`) and your ngrok URL in **Callback URL** (for example, `https://myexample.ngrok.app`).
-- Click **Create** and note the **Security token** on the confirmation popup, then click **Close**.
+    - In a channel, type `@My local app` (or your webhook name) and press Enter.
 
-### Run webhooks with Microsoft Teams and ngrok
+    Your localhost app receives the notification and logs both headers and body in the terminal.
+    The bot may reply with a message such as `{ message: "Thank you for the message" }`.
 
-The outgoing webhook acts as a bot: when you @mention it, it sends the message to your app.
+    <InspectingRequests />
 
-- In a channel, type `@My local app` (or your webhook name) and press Enter.
-
-Your localhost app receives the notification and logs both headers and body in the terminal.
-The bot may reply with a message such as `{ message: "Thank you for the message" }`.
-
-<InspectingRequests />
-
-<ReplayingRequests />
+    <ReplayingRequests />
+  </Step>
+</Steps>
 
 ## Secure webhook requests
 
@@ -110,7 +112,7 @@ ngrok can verify that incoming requests are from your Microsoft Teams webhook so
 
 To add verification:
 
-- Use the **Security token** you copied when creating the outgoing webhook (see [Configure Microsoft Teams to send webhooks](#3-configure-microsoft-teams-to-send-webhooks)).
+- Use the **Security token** you copied when creating the outgoing webhook (see the **Configure Microsoft Teams to send webhooks** step).
 - Create a Traffic Policy file named `teams_policy.yml`.
   Replace `{your app secret}` with that Security token:
 

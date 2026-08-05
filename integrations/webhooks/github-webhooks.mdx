@@ -27,88 +27,90 @@ By integrating ngrok with GitHub, you can:
 - [Node.js](https://nodejs.org/) installed (for the sample app, or use your own app).
 - Your GitHub account and a repository.
 
-## 1. Start your app
+<Steps>
+  <Step title="Start your app">
+    For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
 
-For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+    To install the sample, run the following in a terminal:
 
-To install the sample, run the following in a terminal:
+    ```bash
+    git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
+    cd ngrok/ngrok-webhook-nodejs-sample
+    npm install
+    ```
 
-```bash
-git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
-cd ngrok/ngrok-webhook-nodejs-sample
-npm install
-```
+    Then start the app:
 
-Then start the app:
+    ```bash
+    npm start
+    ```
 
-```bash
-npm start
-```
+    The app runs on port 3000 by default.
 
-The app runs on port 3000 by default.
+    You can confirm it's running by visiting `http://localhost:3000`.
+    The app logs request headers and body in the terminal and shows a message in the browser.
+  </Step>
 
-You can confirm it's running by visiting `http://localhost:3000`.
-The app logs request headers and body in the terminal and shows a message in the browser.
+  <Step title="Expose your app with ngrok">
+    With your app running locally, expose it with ngrok.
 
-## 2. Expose your app with ngrok
+    - Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
 
-With your app running locally, expose it with ngrok.
+    <Tip>
+      The ngrok agent uses your authtoken to authenticate when you start a tunnel.
+    </Tip>
 
-- Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
+    - Start ngrok:
 
-<Tip>
-  The ngrok agent uses your authtoken to authenticate when you start a tunnel.
-</Tip>
+      ```bash
+      ngrok http 3000
+      ```
 
-- Start ngrok:
+    - Copy the URL ngrok displays.
+      Your app is now exposed at that URL for use with GitHub.
+  </Step>
 
-  ```bash
-  ngrok http 3000
-  ```
+  <Step title="Configure GitHub to send webhooks">
+    GitHub can send webhook requests to your app when repository events occur.
+    To register for those events:
 
-- Copy the URL ngrok displays.
-  Your app is now exposed at that URL for use with GitHub.
+    - Sign in to [GitHub](https://github.com).
+    - Open a repository from your repositories list.
 
-## 3. Configure GitHub to send webhooks
+    <Tip>
+      If you don't have a repository, create an empty one first.
+    </Tip>
 
-GitHub can send webhook requests to your app when repository events occur.
-To register for those events:
+    - In the repository, go to **Settings** and select **Webhooks** in the left menu.
+    - Click **Add webhook**.
+    - In **Payload URL**, paste the ngrok URL (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
+    - Set **Content type** to `application/json`.
+    - Choose which events trigger the webhook (for this example, select **Just the push event**).
+    - Leave the webhook active and click **Add webhook**.
 
-- Sign in to [GitHub](https://github.com).
-- Open a repository from your repositories list.
+    ### Run webhooks with GitHub and ngrok
 
-<Tip>
-  If you don't have a repository, create an empty one first.
-</Tip>
+    After you add the webhook, GitHub sends POST requests to your app through ngrok.
 
-- In the repository, go to **Settings** and select **Webhooks** in the left menu.
-- Click **Add webhook**.
-- In **Payload URL**, paste the ngrok URL (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
-- Set **Content type** to `application/json`.
-- Choose which events trigger the webhook (for this example, select **Just the push event**).
-- Leave the webhook active and click **Add webhook**.
+    To compare what GitHub sends with what your app receives:
 
-### Run webhooks with GitHub and ngrok
+    - Open the webhook you created.
+    - Click the **Recent Deliveries** tab.
+    - Select a delivery by ID.
 
-After you add the webhook, GitHub sends POST requests to your app through ngrok.
+    Compare that delivery's headers and body with what your application received; they should match.
 
-To compare what GitHub sends with what your app receives:
+    <Note>
+      The payload your app receives depends on the events you chose.
+      Because this example uses **Just the push event**, push changes to the repository to trigger new webhook calls.
+      To resend a request, click **Redeliver** in the **Recent Deliveries** tab on the webhook page.
+    </Note>
 
-- Open the webhook you created.
-- Click the **Recent Deliveries** tab.
-- Select a delivery by ID.
+    <InspectingRequests />
 
-Compare that delivery's headers and body with what your application received; they should match.
-
-<Note>
-  The payload your app receives depends on the events you chose.
-  Because this example uses **Just the push event**, push changes to the repository to trigger new webhook calls.
-  To resend a request, click **Redeliver** in the **Recent Deliveries** tab on the webhook page.
-</Note>
-
-<InspectingRequests />
-
-<ReplayingRequests />
+    <ReplayingRequests />
+  </Step>
+</Steps>
 
 ## Secure webhook requests
 

@@ -31,70 +31,72 @@ By integrating ngrok with WhatsApp, you can:
   This integration requires an ngrok Pay-as-you-go plan because Meta validates your ngrok domain and certificate.
 </Note>
 
-## 1. Start your app
+<Steps>
+  <Step title="Start your app">
+    For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
 
-For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+    To install the sample, run the following in a terminal:
 
-To install the sample, run the following in a terminal:
+    ```bash
+    git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
+    cd ngrok-webhook-nodejs-sample
+    npm install
+    ```
 
-```bash
-git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
-cd ngrok-webhook-nodejs-sample
-npm install
-```
+    Then start the app (Facebook/WhatsApp sample):
 
-Then start the app (Facebook/WhatsApp sample):
+    ```bash
+    npm run startFacebook
+    ```
 
-```bash
-npm run startFacebook
-```
+    The app runs on port 3000 by default.
 
-The app runs on port 3000 by default.
+    You can confirm it's running by visiting `http://localhost:3000`.
+    The app logs request headers and body in the terminal and shows a message in the browser.
+  </Step>
 
-You can confirm it's running by visiting `http://localhost:3000`.
-The app logs request headers and body in the terminal and shows a message in the browser.
+  <Step title="Expose your app with ngrok">
+    Once your app is running locally, you're ready to put it online securely using ngrok.
 
-## 2. Expose your app with ngrok
+    - Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
 
-Once your app is running locally, you're ready to put it online securely using ngrok.
+    <Tip>
+      The ngrok agent uses your authtoken to authenticate when you start a tunnel.
+      You need a reserved domain: in the dashboard, expand **Gateway**, click **Domains**, then **+ Create Domain** or **+ New Domain**, and reserve a domain (for example, `myexample.ngrok.app`).
+    </Tip>
 
-- Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
+    - Start ngrok with your reserved domain:
 
-<Tip>
-  The ngrok agent uses your authtoken to authenticate when you start a tunnel.
-  You need a reserved domain: in the dashboard, expand **Gateway**, click **Domains**, then **+ Create Domain** or **+ New Domain**, and reserve a domain (for example, `myexample.ngrok.app`).
-</Tip>
+      ```bash
+      ngrok http 3000 --url myexample.ngrok.app
+      ```
 
-- Start ngrok with your reserved domain:
+    - Copy the URL ngrok displays.
+      Your app is now exposed at that URL for use with WhatsApp (use `https://myexample.ngrok.app/webhooks` as the callback URL).
+  </Step>
 
-  ```bash
-  ngrok http 3000 --url myexample.ngrok.app
-  ```
+  <Step title="Configure WhatsApp to send webhooks">
+    WhatsApp can send webhook requests to your app when messages and other events occur.
+    To set it up:
 
-- Copy the URL ngrok displays.
-  Your app is now exposed at that URL for use with WhatsApp (use `https://myexample.ngrok.app/webhooks` as the callback URL).
+    - Sign in to [Meta for Developers](https://developers.facebook.com/), open **My Apps** and your app.
+    - Under **WhatsApp**, click **Set up**, then **Configuration** > **Edit**.
+    - In **Edit webhook's callback URL**, enter your ngrok URL with `/webhooks` (for example, `https://myexample.ngrok.app/webhooks`), enter a **Verify token** (for example, `12345`), and click **Verify and save**.
+    - Confirm your app receives the verification request and logs `WEBHOOK_VERIFIED`.
+    - Back on **Configuration**, click **Manage**, subscribe to **messages** (and any other fields you need), click **Test** for **messages**, and confirm your app receives the POST.
+    - Ensure a production or test phone number is associated and **App Mode** is **Live** if needed.
 
-## 3. Configure WhatsApp to send webhooks
+    ### Run webhooks with WhatsApp and ngrok
 
-WhatsApp can send webhook requests to your app when messages and other events occur.
-To set it up:
+    - Add the WhatsApp number (or test number) to your contacts and send a message to it.
 
-- Sign in to [Meta for Developers](https://developers.facebook.com/), open **My Apps** and your app.
-- Under **WhatsApp**, click **Set up**, then **Configuration** > **Edit**.
-- In **Edit webhook's callback URL**, enter your ngrok URL with `/webhooks` (for example, `https://myexample.ngrok.app/webhooks`), enter a **Verify token** (for example, `12345`), and click **Verify and save**.
-- Confirm your app receives the verification request and logs `WEBHOOK_VERIFIED`.
-- Back on **Configuration**, click **Manage**, subscribe to **messages** (and any other fields you need), click **Test** for **messages**, and confirm your app receives the POST.
-- Ensure a production or test phone number is associated and **App Mode** is **Live** if needed.
+    Confirm your localhost app receives the message and logs both headers and body in the terminal.
 
-### Run webhooks with WhatsApp and ngrok
+    <InspectingRequests />
 
-- Add the WhatsApp number (or test number) to your contacts and send a message to it.
-
-Confirm your localhost app receives the message and logs both headers and body in the terminal.
-
-<InspectingRequests />
-
-<ReplayingRequests />
+    <ReplayingRequests />
+  </Step>
+</Steps>
 
 ## Secure webhook requests
 

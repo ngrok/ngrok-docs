@@ -13,47 +13,49 @@ It covers installing the module, configuring your authtoken, and declaring tunne
 - An [ngrok account](https://ngrok.com/signup).
 - Your [ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken).
 
-## 1. Install the Puppet module
+<Steps>
+  <Step title="Install the Puppet module">
+    Install the module from Puppet Forge:
 
-Install the module from Puppet Forge:
+    ```bash
+    puppet module install gabe-ngrok
+    ```
+  </Step>
 
-```bash
-puppet module install gabe-ngrok
-```
+  <Step title="Configure ngrok and declare a tunnel">
+    Include the `ngrok` class and declare at least one `ngrok::tunnel` resource.
 
-## 2. Configure ngrok and declare a tunnel
+    For example, declare a single HTTP tunnel to port `80`:
 
-Include the `ngrok` class and declare at least one `ngrok::tunnel` resource.
+    ```puppet
+    include ngrok
 
-For example, declare a single HTTP tunnel to port `80`:
+    ngrok::tunnel { 'web traffic':
+      proto => 'http',
+      addr  => '80',
+    }
+    ```
 
-```puppet
-include ngrok
+    If you need TCP tunnels, configure the `ngrok` class with your authtoken:
 
-ngrok::tunnel { 'web traffic':
-  proto => 'http',
-  addr  => '80',
-}
-```
+    ```puppet
+    class { 'ngrok':
+      authtoken => 'YOUR_AUTHTOKEN',
+    }
 
-If you need TCP tunnels, configure the `ngrok` class with your authtoken:
+    ngrok::tunnel { 'webhook':
+      proto => 'tcp',
+      addr  => '8170',
+    }
+    ```
+  </Step>
 
-```puppet
-class { 'ngrok':
-  authtoken => 'YOUR_AUTHTOKEN',
-}
+  <Step title="Verify ngrok is running">
+    After your Puppet run completes, verify ngrok is running and your tunnels are active.
+    If you use `facter`, the module provides an `ngrok` fact you can query:
 
-ngrok::tunnel { 'webhook':
-  proto => 'tcp',
-  addr  => '8170',
-}
-```
-
-## 3. Verify ngrok is running
-
-After your Puppet run completes, verify ngrok is running and your tunnels are active.
-If you use `facter`, the module provides an `ngrok` fact you can query:
-
-```bash
-facter -p ngrok
-```
+    ```bash
+    facter -p ngrok
+    ```
+  </Step>
+</Steps>

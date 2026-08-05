@@ -5,67 +5,69 @@ This guide walks you through configuring the [`jwt-validation` Traffic Policy ac
 - A cloud or agent endpoint running with a Traffic Policy rule applied.
 - If you need to set these up first, see the [Quickstart](/gateway/agent-cli-quickstart/), [Cloud Endpoints Quickstart](/getting-started/cloud-endpoints-quickstart/), or [Traffic Policy](/traffic-policy/) docs.
 
-## 1. Define your API in Auth0
+<Steps>
+  <Step title="Define your API in Auth0">
+    If you've already done this, skip to the next section.
 
-If you've already done this, skip to the next section.
+    - Sign in to your Auth0 tenant dashboard.
+    - Select **Applications** > **APIs**, then **+ Create API**.
+    - Name your API whatever you like.
+    - Replace the value of the **Identifier** field with `<YOUR_NGROK_DOMAIN>`.
+    - Leave the default values for **JSON Web Token (JWT) Profile** and **JSON Web Token Signing Algorithm**.
+    - Click **Create**.
 
-- Sign in to your Auth0 tenant dashboard.
-- Select **Applications** > **APIs**, then **+ Create API**.
-- Name your API whatever you like.
-- Replace the value of the **Identifier** field with `<YOUR_NGROK_DOMAIN>`.
-- Leave the default values for **JSON Web Token (JWT) Profile** and **JSON Web Token Signing Algorithm**.
-- Click **Create**.
+    After creating your API, you can define and add scopes in the **Permissions** tab.
+    Those values will be populated in the `scope` claim of your JWT.
+  </Step>
 
-After creating your API, you can define and add scopes in the **Permissions** tab.
-Those values will be populated in the `scope` claim of your JWT.
+  <Step title="Access your JWT">
+    When you create a new API, Auth0 creates an associated application under **Applications** > **APIs** in the left navigation.
 
-## 2. Access your JWT
+    Open that application and click the **Test** tab.
+    There you will find a signed, fully functional JWT and examples for generating others programmatically.
+  </Step>
 
-When you create a new API, Auth0 creates an associated application under **Applications** > **APIs** in the left navigation.
+  <Step title="Create a Machine to Machine application">
+    When you create your API in Auth0, it may automatically create a new Machine to Machine application and authorize it to use your new API.
+    If you added scopes for your API, add them to the new application in the **Machine to Machine Applications** tab of your new API.
 
-Open that application and click the **Test** tab.
-There you will find a signed, fully functional JWT and examples for generating others programmatically.
+    If no Machine to Machine app was created, create one and select your new API when prompted.
+  </Step>
 
-## 3. Create a Machine to Machine application
+  <Step title="Configure the jwt-validation Traffic Policy action">
+    You now have what you need to configure JWT validation in Traffic Policy.
 
-When you create your API in Auth0, it may automatically create a new Machine to Machine application and authorize it to use your new API.
-If you added scopes for your API, add them to the new application in the **Machine to Machine Applications** tab of your new API.
+    The following is an example [Traffic Policy](/traffic-policy/) configuration for enabling the action with your Auth0 settings.
+    Customize the variables in `issuer.allow_list.value`, `audience.allow_list.value`, and `jws.keys.sources.additional_jkus` as needed.
 
-If no Machine to Machine app was created, create one and select your new API when prompted.
+    - Find `<YOUR_TENANT_ID>` and `<AUTH0_REGION>` in your Auth0 dashboard.
+    - `<YOUR_NGROK_ID>` must match what you entered in Auth0 as the **Identifier**.
 
-## 4. Configure the `jwt-validation` Traffic Policy action
+    <ExampleTrafficPolicy />
 
-You now have what you need to configure JWT validation in Traffic Policy.
+    You can take the example token from the **Test** tab of your Auth0 application and decode it (for example using a JWT decoder) to discover and customize the values as follows:
 
-The following is an example [Traffic Policy](/traffic-policy/) configuration for enabling the action with your Auth0 settings.
-Customize the variables in `issuer.allow_list.value`, `audience.allow_list.value`, and `jws.keys.sources.additional_jkus` as needed.
+    | Field                              | Claim | Description                                                                                                                                                                                                                                            |
+    | ---------------------------------- | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+    | `issuer.allow_list.value`          | `iss` | The issuer is usually the full URL of the Auth0 application. It can be found in your `.well-known/openid-configuration` URL, which is usually at `https://<YOUR_AUTH0_TENANT_ID>.<AUTH0_REGION>.auth0.com/.well-known/openid-configuration`. |
+    | `audience.allow_list.value`        | `aud` | The audience claim is the identifier of your API and can be found in the **APIs** section of your Auth0 dashboard. It's usually the same as `https://<YOUR_NGROK_DOMAIN>`.                                                                               |
+    | `http.tokens`                      | n/a   | This is the location of the token in the incoming request. You do not need to change this value.                                                                                                                                                       |
+    | `jws.allowed_algorithms`           | `alg` | The algorithm your API uses to decode the JWT. You can find this in Auth0 in your API, on the **Settings** tab, under **Token Settings**.                                                                                                            |
+    | `jws.keys.sources.additional_jkus` | n/a   | This is the URL used to verify the JWT signature. It can be found in your `.well-known/openid-configuration` URL, usually at `https://<YOUR_AUTH0_TENANT_ID>.<AUTH0_REGION>.auth0.com/.well-known/openid-configuration`.          |
+  </Step>
 
-- Find `<YOUR_TENANT_ID>` and `<AUTH0_REGION>` in your Auth0 dashboard.
-- `<YOUR_NGROK_ID>` must match what you entered in Auth0 as the **Identifier**.
+  <Step title="Test JWT validation on your endpoint">
+    Start your endpoint with the new Traffic Policy rule applied, then test it with `curl`:
 
-<ExampleTrafficPolicy />
+    ```bash
+    curl --request GET \
+      --url https://<YOUR_NGROK_DOMAIN>/ \
+      --header 'authorization: Bearer YOUR-FULL-JWT-HERE-FROM-STEP-1'
+    ```
 
-You can take the example token from the **Test** tab of your Auth0 application and decode it (for example using a JWT decoder) to discover and customize the values as follows:
+    If you see the response from your API, the integration is working.
+    You can confirm by sending a malformed token.
 
-| Field                              | Claim | Description                                                                                                                                                                                                                                            |
-| ---------------------------------- | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `issuer.allow_list.value`          | `iss` | The issuer is usually the full URL of the Auth0 application. It can be found in your `.well-known/openid-configuration` URL, which is usually at `https://<YOUR_AUTH0_TENANT_ID>.<AUTH0_REGION>.auth0.com/.well-known/openid-configuration`. |
-| `audience.allow_list.value`        | `aud` | The audience claim is the identifier of your API and can be found in the **APIs** section of your Auth0 dashboard. It's usually the same as `https://<YOUR_NGROK_DOMAIN>`.                                                                               |
-| `http.tokens`                      | n/a   | This is the location of the token in the incoming request. You do not need to change this value.                                                                                                                                                       |
-| `jws.allowed_algorithms`           | `alg` | The algorithm your API uses to decode the JWT. You can find this in Auth0 in your API, on the **Settings** tab, under **Token Settings**.                                                                                                            |
-| `jws.keys.sources.additional_jkus` | n/a   | This is the URL used to verify the JWT signature. It can be found in your `.well-known/openid-configuration` URL, usually at `https://<YOUR_AUTH0_TENANT_ID>.<AUTH0_REGION>.auth0.com/.well-known/openid-configuration`.          |
-
-## 5. Test JWT validation on your endpoint
-
-Start your endpoint with the new Traffic Policy rule applied, then test it with `curl`:
-
-```bash
-curl --request GET \
-  --url https://<YOUR_NGROK_DOMAIN>/ \
-  --header 'authorization: Bearer YOUR-FULL-JWT-HERE-FROM-STEP-1'
-```
-
-If you see the response from your API, the integration is working.
-You can confirm by sending a malformed token.
-
-If you get an error with a valid token, double-check that your issuer and audience values are correct in your Traffic Policy rule.
+    If you get an error with a valid token, double-check that your issuer and audience values are correct in your Traffic Policy rule.
+  </Step>
+</Steps>

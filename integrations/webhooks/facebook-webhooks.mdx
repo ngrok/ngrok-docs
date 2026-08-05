@@ -31,96 +31,98 @@ By integrating ngrok with Facebook, you can:
   This integration requires an ngrok Pay-as-you-go plan because Facebook validates your ngrok domain and certificate.
 </Note>
 
-## 1. Start your app
+<Steps>
+  <Step title="Start your app">
+    For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
 
-For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+    To install the sample, run the following in a terminal:
 
-To install the sample, run the following in a terminal:
+    ```bash
+    git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
+    cd ngrok-webhook-nodejs-sample
+    npm install
+    ```
 
-```bash
-git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
-cd ngrok-webhook-nodejs-sample
-npm install
-```
+    Then start the app:
 
-Then start the app:
+    ```bash
+    npm run startFacebook
+    ```
 
-```bash
-npm run startFacebook
-```
+    The app runs on port 3000 by default.
 
-The app runs on port 3000 by default.
+    You can confirm it's running by visiting `http://localhost:3000`.
+    The app logs request headers and body in the terminal and shows a message in the browser.
+  </Step>
 
-You can confirm it's running by visiting `http://localhost:3000`.
-The app logs request headers and body in the terminal and shows a message in the browser.
+  <Step title="Expose your app with ngrok">
+    Once your app is running locally, you're ready to put it online securely using ngrok.
 
-## 2. Expose your app with ngrok
+    - Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
 
-Once your app is running locally, you're ready to put it online securely using ngrok.
+    <Tip>
+      The ngrok agent uses your authtoken to authenticate when you start a tunnel.
+    </Tip>
 
-- Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
+    - In the dashboard, expand **Gateway** and click **Domains**.
 
-<Tip>
-  The ngrok agent uses your authtoken to authenticate when you start a tunnel.
-</Tip>
+    <Tip>
+      If you don't have an ngrok Pay-as-you-go plan, sign up for one by clicking **Update Subscription** and following the subscribe procedure.
+    </Tip>
 
-- In the dashboard, expand **Gateway** and click **Domains**.
+    - On the **Domains** page, click **+ Create Domain** or **+ New Domain**.
+    - In the **Domain** pane, enter a value in the **Domain** field (for example, `myexample.ngrok.app`) and click **Continue**.
 
-<Tip>
-  If you don't have an ngrok Pay-as-you-go plan, sign up for one by clicking **Update Subscription** and following the subscribe procedure.
-</Tip>
+    <Tip>
+      Make sure your domain is available.
+    </Tip>
 
-- On the **Domains** page, click **+ Create Domain** or **+ New Domain**.
-- In the **Domain** pane, enter a value in the **Domain** field (for example, `myexample.ngrok.app`) and click **Continue**.
+    - Close the **Start a Tunnel** pane and then close the **Domain** pane.
+    - Start ngrok with your domain:
 
-<Tip>
-  Make sure your domain is available.
-</Tip>
+      ```bash
+      ngrok http 3000 --url myexample.ngrok.app
+      ```
 
-- Close the **Start a Tunnel** pane and then close the **Domain** pane.
-- Start ngrok with your domain:
+    - Copy the URL ngrok displays.
+      Your app is now exposed at that URL for use with Facebook.
+  </Step>
 
-  ```bash
-  ngrok http 3000 --url myexample.ngrok.app
-  ```
+  <Step title="Configure Facebook to send webhooks">
+    Facebook can send webhook requests to your app when page or account events occur in your account.
+    To register for those events you need a Facebook page and a Facebook app associated with that page; create them before continuing.
 
-- Copy the URL ngrok displays.
-  Your app is now exposed at that URL for use with Facebook.
+    - Sign in to [Meta for Developers](https://developers.facebook.com/).
+    - Click **My Apps** and then click your app.
+    - On the app dashboard, click **Add Product** and then **Set up** inside the **Webhooks** tile.
+    - On the **Webhooks** page, select **Page** from the combo box and click **Subscribe to this object**.
+    - In the **Edit User subscription** popup, enter your ngrok URL with `/webhooks` at the end in the **Callback URL** field (for example, `https://myexample.ngrok.app/webhooks`).
+    - Enter `12345` in the **Verify token** field, set the **Include values** slider to **Yes**, and click **Verify and save**.
+    - Confirm your localhost app receives the validation request and logs `WEBHOOK_VERIFIED` in the terminal.
+    - Back on the **Webhooks** page, click **Subscribe** for the **feed** field.
 
-## 3. Configure Facebook to send webhooks
+    <Tip>
+      You can subscribe to multiple fields under the **Page** object and other objects; use the same URL for each.
+    </Tip>
 
-Facebook can send webhook requests to your app when page or account events occur in your account.
-To register for those events you need a Facebook page and a Facebook app associated with that page; create them before continuing.
+    - Click **Test** for the **feed** field, click **Send to My Server**, and confirm your localhost app receives the test post request.
+    - Set **App Mode** to **Live** at the top of your app page.
 
-- Sign in to [Meta for Developers](https://developers.facebook.com/).
-- Click **My Apps** and then click your app.
-- On the app dashboard, click **Add Product** and then **Set up** inside the **Webhooks** tile.
-- On the **Webhooks** page, select **Page** from the combo box and click **Subscribe to this object**.
-- In the **Edit User subscription** popup, enter your ngrok URL with `/webhooks` at the end in the **Callback URL** field (for example, `https://myexample.ngrok.app/webhooks`).
-- Enter `12345` in the **Verify token** field, set the **Include values** slider to **Yes**, and click **Verify and save**.
-- Confirm your localhost app receives the validation request and logs `WEBHOOK_VERIFIED` in the terminal.
-- Back on the **Webhooks** page, click **Subscribe** for the **feed** field.
+    ### Run webhooks with Facebook and ngrok
 
-<Tip>
-  You can subscribe to multiple fields under the **Page** object and other objects; use the same URL for each.
-</Tip>
+    Facebook sends different request body contents depending on the object and field you subscribe to.
+    With the **feed** action you can test by creating a post on your page or liking a post:
 
-- Click **Test** for the **feed** field, click **Send to My Server**, and confirm your localhost app receives the test post request.
-- Set **App Mode** to **Live** at the top of your app page.
+    - Under **Your Pages and profiles**, click your page.
+    - On the **Manage Page** screen, click **Create post**, add content, and click **Post**.
 
-### Run webhooks with Facebook and ngrok
+    Confirm your localhost app receives the feed message and logs both headers and body in the terminal.
 
-Facebook sends different request body contents depending on the object and field you subscribe to.
-With the **feed** action you can test by creating a post on your page or liking a post:
+    <InspectingRequests />
 
-- Under **Your Pages and profiles**, click your page.
-- On the **Manage Page** screen, click **Create post**, add content, and click **Post**.
-
-Confirm your localhost app receives the feed message and logs both headers and body in the terminal.
-
-<InspectingRequests />
-
-<ReplayingRequests />
+    <ReplayingRequests />
+  </Step>
+</Steps>
 
 ## Secure webhook requests
 

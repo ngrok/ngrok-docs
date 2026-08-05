@@ -27,76 +27,78 @@ By integrating ngrok with Mailchimp, you can:
 - [Node.js](https://nodejs.org/) installed (for the sample app, or use your own app).
 - A Mailchimp account.
 
-## 1. Start your app
+<Steps>
+  <Step title="Start your app">
+    For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
 
-For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+    To install the sample, run the following in a terminal:
 
-To install the sample, run the following in a terminal:
+    ```bash
+    git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
+    cd ngrok-webhook-nodejs-sample
+    npm install
+    ```
 
-```bash
-git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
-cd ngrok-webhook-nodejs-sample
-npm install
-```
+    Then start the app:
 
-Then start the app:
+    ```bash
+    npm start
+    ```
 
-```bash
-npm start
-```
+    The app runs on port 3000 by default.
 
-The app runs on port 3000 by default.
+    You can confirm it's running by visiting `http://localhost:3000`.
+    The app logs request headers and body in the terminal and shows a message in the browser.
+  </Step>
 
-You can confirm it's running by visiting `http://localhost:3000`.
-The app logs request headers and body in the terminal and shows a message in the browser.
+  <Step title="Expose your app with ngrok">
+    Once your app is running locally, you're ready to put it online securely using ngrok.
 
-## 2. Expose your app with ngrok
+    - Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
 
-Once your app is running locally, you're ready to put it online securely using ngrok.
+    <Tip>
+      The ngrok agent uses your authtoken to authenticate when you start a tunnel.
+    </Tip>
 
-- Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
+    - Start ngrok:
 
-<Tip>
-  The ngrok agent uses your authtoken to authenticate when you start a tunnel.
-</Tip>
+      ```bash
+      ngrok http 3000
+      ```
 
-- Start ngrok:
+    - Copy the URL ngrok displays.
+      Your app is now exposed at that URL for use with Mailchimp.
+  </Step>
 
-  ```bash
-  ngrok http 3000
-  ```
+  <Step title="Configure Mailchimp to send webhooks">
+    Mailchimp can send webhook requests to your app when events occur in your audience.
+    To register for those events:
 
-- Copy the URL ngrok displays.
-  Your app is now exposed at that URL for use with Mailchimp.
+    - Sign in to [Mailchimp](https://mailchimp.com/).
+    - Click **Audience** and then **Audience dashboard**.
+    - Click **Manage Audience** and **Settings**.
+    - On the **Settings** page, click **Webhooks** and then **Create New Webhook**.
+    - On **Create new webhook**, enter your ngrok URL in **Callback URL** (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`) and click **Save**.
 
-## 3. Configure Mailchimp to send webhooks
+    Confirm your localhost app receives the GET request and logs both headers and body in the terminal.
 
-Mailchimp can send webhook requests to your app when events occur in your audience.
-To register for those events:
+    ### Run webhooks with Mailchimp and ngrok
 
-- Sign in to [Mailchimp](https://mailchimp.com/).
-- Click **Audience** and then **Audience dashboard**.
-- Click **Manage Audience** and **Settings**.
-- On the **Settings** page, click **Webhooks** and then **Create New Webhook**.
-- On **Create new webhook**, enter your ngrok URL in **Callback URL** (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`) and click **Save**.
+    Mailchimp sends different request body contents depending on the audience and event.
+    To trigger new calls from Mailchimp to your app:
 
-Confirm your localhost app receives the GET request and logs both headers and body in the terminal.
+    - Click **Audience** and **All Contacts**.
+    - Click **Add contacts** and **Add a subscriber**.
+    - On **Add subscriber**, enter a valid email in **Email Address**, check **This person gave me permission to email them**, and click **Subscribe**.
 
-### Run webhooks with Mailchimp and ngrok
+    <Note>
+      If the email is not on your contact list, you may need to import the contact first.
+    </Note>
 
-Mailchimp sends different request body contents depending on the audience and event.
-To trigger new calls from Mailchimp to your app:
+    Confirm your localhost app receives the event and logs both headers and body in the terminal.
 
-- Click **Audience** and **All Contacts**.
-- Click **Add contacts** and **Add a subscriber**.
-- On **Add subscriber**, enter a valid email in **Email Address**, check **This person gave me permission to email them**, and click **Subscribe**.
+    <InspectingRequests />
 
-<Note>
-  If the email is not on your contact list, you may need to import the contact first.
-</Note>
-
-Confirm your localhost app receives the event and logs both headers and body in the terminal.
-
-<InspectingRequests />
-
-<ReplayingRequests />
+    <ReplayingRequests />
+  </Step>
+</Steps>

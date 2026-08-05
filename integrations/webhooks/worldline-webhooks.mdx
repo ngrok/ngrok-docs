@@ -27,72 +27,74 @@ By integrating ngrok with Worldline, you can:
 - [Node.js](https://nodejs.org/) installed (for the sample app, or use your own app).
 - A Worldline account.
 
-## 1. Start your app
+<Steps>
+  <Step title="Start your app">
+    For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
 
-For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+    To install the sample, run the following in a terminal:
 
-To install the sample, run the following in a terminal:
+    ```bash
+    git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
+    cd ngrok-webhook-nodejs-sample
+    npm install
+    ```
 
-```bash
-git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
-cd ngrok-webhook-nodejs-sample
-npm install
-```
+    Then start the app:
 
-Then start the app:
+    ```bash
+    npm start
+    ```
 
-```bash
-npm start
-```
+    The app runs on port 3000 by default.
 
-The app runs on port 3000 by default.
+    You can confirm it's running by visiting `http://localhost:3000`.
+    The app logs request headers and body in the terminal and shows a message in the browser.
+  </Step>
 
-You can confirm it's running by visiting `http://localhost:3000`.
-The app logs request headers and body in the terminal and shows a message in the browser.
+  <Step title="Expose your app with ngrok">
+    Once your app is running locally, you're ready to put it online securely using ngrok.
 
-## 2. Expose your app with ngrok
+    - Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
 
-Once your app is running locally, you're ready to put it online securely using ngrok.
+    <Tip>
+      The ngrok agent uses your authtoken to authenticate when you start a tunnel.
+    </Tip>
 
-- Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
+    - Start ngrok:
 
-<Tip>
-  The ngrok agent uses your authtoken to authenticate when you start a tunnel.
-</Tip>
+      ```bash
+      ngrok http 3000
+      ```
 
-- Start ngrok:
+    - Copy the URL ngrok displays.
+      Your app is now exposed at that URL for use with Worldline.
+  </Step>
 
-  ```bash
-  ngrok http 3000
-  ```
+  <Step title="Configure Worldline to send webhooks">
+    Worldline can send webhook requests to your app when payment and other events occur.
+    To register for those events:
 
-- Copy the URL ngrok displays.
-  Your app is now exposed at that URL for use with Worldline.
+    - Sign in to [Worldline](https://www.worldline.com/).
+    - Go to **Developer** > **Webhooks** and click **Create a Webhook**.
+    - Click **Generate webhook keys** and note the **Secret Webhook Key**.
+    - Click **Add webhook endpoint**, enter your ngrok URL in **Endpoint URL** (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`), and click **Confirm**.
 
-## 3. Configure Worldline to send webhooks
+    ### Run webhooks with Worldline and ngrok
 
-Worldline can send webhook requests to your app when payment and other events occur.
-To register for those events:
+    Worldline sends different request body contents depending on the event.
+    To trigger a test:
 
-- Sign in to [Worldline](https://www.worldline.com/).
-- Go to **Developer** > **Webhooks** and click **Create a Webhook**.
-- Click **Generate webhook keys** and note the **Secret Webhook Key**.
-- Click **Add webhook endpoint**, enter your ngrok URL in **Endpoint URL** (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`), and click **Confirm**.
+    - In Worldline, go to **Payment links** > **Generate link**.
+    - Enter **Amount** and **Order reference** and click **Generate link**.
+    - On **Share link**, copy the payment link, open it in a new tab, select **Bancontact** (or another method), and click **Cancel**.
 
-### Run webhooks with Worldline and ngrok
+    Confirm your localhost app receives the POST and logs both headers and body in the terminal.
 
-Worldline sends different request body contents depending on the event.
-To trigger a test:
+    <InspectingRequests />
 
-- In Worldline, go to **Payment links** > **Generate link**.
-- Enter **Amount** and **Order reference** and click **Generate link**.
-- On **Share link**, copy the payment link, open it in a new tab, select **Bancontact** (or another method), and click **Cancel**.
-
-Confirm your localhost app receives the POST and logs both headers and body in the terminal.
-
-<InspectingRequests />
-
-<ReplayingRequests />
+    <ReplayingRequests />
+  </Step>
+</Steps>
 
 ## Secure webhook requests
 
@@ -106,7 +108,7 @@ ngrok can verify that incoming requests are from your Worldline webhook so only 
 
 To add verification:
 
-- Use the **Secret Webhook Key** you noted when creating the webhook (see [Configure Worldline to send webhooks](#3-configure-worldline-to-send-webhooks)).
+- Use the **Secret Webhook Key** you noted when creating the webhook (see the **Configure Worldline to send webhooks** step).
 - Create a Traffic Policy file named `worldline_policy.yml`.
   Replace `{your webhook secret}` with that value:
 

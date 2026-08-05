@@ -19,35 +19,95 @@ With ngrok, you can handle ingress to canary deployments by:
 - Applying different policies to each version depending on how they behave.
 - Testing a migration from one environment to another, like on-premises VMs to a cloud-based Kubernetes cluster.
 
-## 1. Create endpoints for your services
+<Steps>
+  <Step title="Create endpoints for your services">
+    Start internal [Agent Endpoints](/gateway/agent-endpoints/), replacing `$PORT` based on where your service listens, for each of your services on the systems where they run.
+    You can also use one of the [SDKs](/agent-sdks/#example-usage) or the [Kubernetes Operator](/getting-started/kubernetes/ingress/).
 
-Start internal [Agent Endpoints](/gateway/agent-endpoints/), replacing `$PORT` based on where your service listens, for each of your services on the systems where they run.
-You can also use one of the [SDKs](/agent-sdks/#example-usage) or the [Kubernetes Operator](/getting-started/kubernetes/ingress/).
+    ```bash
+    ngrok http $PORT --url https://service.internal
+    ngrok http $PORT --url https://service-canary.internal
+    ```
+  </Step>
 
-```bash
-ngrok http $PORT --url https://service.internal
-ngrok http $PORT --url https://service-canary.internal
-```
+  <Step title="Reserve a domain">
+    <ReserveDomain />
+  </Step>
 
-## 2. Reserve a domain
+  <Step title="Create a Cloud Endpoint">
+    <CloudEndpoint />
+  </Step>
 
-<ReserveDomain />
+  <Step title="Add canary routing with Traffic Policy">
+    While viewing your new Cloud Endpoint in the dashboard, copy one of the two policies below and paste it into the Traffic Policy editor.
+    The choice depends on whether you want to distribute traffic randomly or by a header like `x-canary`.
 
-## 3. Create a Cloud Endpoint
+    <Tabs>
+      <Tab title="Random distribution">
+        ```yaml
+        on_http_request:
+          - expressions:
+              - "rand.double() <= 0.2"
+            actions:
+              - type: forward-internal
+                config:
+                  url: https://service-canary.internal
 
-<CloudEndpoint />
+          - actions:
+              - type: forward-internal
+                config:
+                  url: https://service.internal
+        ```
 
-## 4. Add canary routing with Traffic Policy
+          **What's happening here?**
+          This policy first returns a random `double` between `0` and `1`.
+          If that double is less than or equal to `0.2`, it routes the request to your canary deployment, effectively routing 20% of incoming traffic to the canary.
 
-While viewing your new Cloud Endpoint in the dashboard, copy one of the two policies below and paste it into the Traffic Policy editor.
-The choice depends on whether you want to distribute traffic randomly or by a header like `x-canary`.
+          The policy then routes the remaining 80% of traffic to your stable version.
 
-<Tabs>
-  <Tab title="Random distribution">
+        </Tab>
+        <Tab title="By header">
+          ```yaml
+          on_http_request:
+            - expressions:
+                - "req.headers.exists_one(x, x == 'x-canary')"
+                - "req.headers['x-canary'].join(',') == 'true'"
+              actions:
+                - type: forward-internal
+                  config:
+                    url: https://service-canary.internal
+
+            - actions:
+                - type: forward-internal
+                  config:
+                    url: https://service.internal
+          ```
+
+          **What's happening here?**
+          This policy checks the incoming request for the presence of the `x-canary` and validates that its value is `true`.
+          If both are true, then the policy routes the request to your canary deployment.
+
+          In the absence of an `x-canary: true` header, the policy route traffic to your stable version.
+
+        </Tab>
+
+    </Tabs>
+  </Step>
+
+  <Step title="Try out your endpoints">
+    Visit the domain you reserved either in the browser or in the terminal using a tool like `curl`.
+    If you chose random distribution, you should see each service responding at roughly the percentage you defined.
+    If you choose to distribute by header, add `x-canary: true` to your requests to verify ngrok is routing traffic to your canary.
+  </Step>
+
+  <Step title="Tweak the distribution to your canary">
+    If you opted for random distribution, you should increase the volume of traffic forwarded to your canary at regular intervals as you gain confidence in its stability.
+    For example, to split traffic evenly between your two versions:
+
     ```yaml
     on_http_request:
       - expressions:
-          - "rand.double() <= 0.2"
+          - "rand.double() <= 0.5"
         actions:
           - type: forward-internal
             config:
@@ -58,84 +118,26 @@ The choice depends on whether you want to distribute traffic randomly or by a he
             config:
               url: https://service.internal
     ```
+  </Step>
 
-      **What's happening here?**
-      This policy first returns a random `double` between `0` and `1`.
-      If that double is less than or equal to `0.2`, it routes the request to your canary deployment, effectively routing 20% of incoming traffic to the canary.
+  <Step title="Cut over to the new version and clean up">
+    When you promote your canary deployment to stable, you can edit your policy to route traffic to the new version and close down the ngrok agent forwarding to `https://service.internal`.
 
-      The policy then routes the remaining 80% of traffic to your stable version.
+    ```yaml
+    on_http_request:
+      - actions:
+          - type: forward-internal
+            config:
+              url: https://service-canary.internal
+    ```
 
-    </Tab>
-    <Tab title="By header">
-      ```yaml
-      on_http_request:
-        - expressions:
-            - "req.headers.exists_one(x, x == 'x-canary')"
-            - "req.headers['x-canary'].join(',') == 'true'"
-          actions:
-            - type: forward-internal
-              config:
-                url: https://service-canary.internal
+    If you want to maintain `https://service.internal` as the canonical name for the stable production deployment, you can:
 
-        - actions:
-            - type: forward-internal
-              config:
-                url: https://service.internal
-      ```
-
-      **What's happening here?**
-      This policy checks the incoming request for the presence of the `x-canary` and validates that its value is `true`.
-      If both are true, then the policy routes the request to your canary deployment.
-
-      In the absence of an `x-canary: true` header, the policy route traffic to your stable version.
-
-    </Tab>
-
-</Tabs>
-
-## 5. Try out your endpoints
-
-Visit the domain you reserved either in the browser or in the terminal using a tool like `curl`.
-If you chose random distribution, you should see each service responding at roughly the percentage you defined.
-If you choose to distribute by header, add `x-canary: true` to your requests to verify ngrok is routing traffic to your canary.
-
-## 6. Tweak the distribution to your canary
-
-If you opted for random distribution, you should increase the volume of traffic forwarded to your canary at regular intervals as you gain confidence in its stability.
-For example, to split traffic evenly between your two versions:
-
-```yaml
-on_http_request:
-  - expressions:
-      - "rand.double() <= 0.5"
-    actions:
-      - type: forward-internal
-        config:
-          url: https://service-canary.internal
-
-  - actions:
-      - type: forward-internal
-        config:
-          url: https://service.internal
-```
-
-## 7. Cut over to the new version and clean up
-
-When you promote your canary deployment to stable, you can edit your policy to route traffic to the new version and close down the ngrok agent forwarding to `https://service.internal`.
-
-```yaml
-on_http_request:
-  - actions:
-      - type: forward-internal
-        config:
-          url: https://service-canary.internal
-```
-
-If you want to maintain `https://service.internal` as the canonical name for the stable production deployment, you can:
-
-1. Start another agent forwarding to your new version at this canonical internal URL.
-2. Edit your policy to route to it.
-3. Shut down the agent forwarding to `https://service-canary.internal`.
+    1. Start another agent forwarding to your new version at this canonical internal URL.
+    2. Edit your policy to route to it.
+    3. Shut down the agent forwarding to `https://service-canary.internal`.
+  </Step>
+</Steps>
 
 ## What's next?
 

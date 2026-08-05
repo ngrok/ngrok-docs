@@ -13,69 +13,71 @@ It covers setting up a local MQTT server, creating an ngrok TCP tunnel, and conn
 - [MQTT Explorer](https://mqtt-explorer.com/) installed.
 - The [Mosquitto binary](https://mosquitto.org/download/) installed.
 
-## 1. Start an MQTT server
+<Steps>
+  <Step title="Start an MQTT server">
+    For this tutorial, use the [Eclipse Mosquitto quickstart](https://github.com/eclipse-mosquitto/mosquitto).
 
-For this tutorial, use the [Eclipse Mosquitto quickstart](https://github.com/eclipse-mosquitto/mosquitto).
+    Start the server by running this command in your terminal:
 
-Start the server by running this command in your terminal:
+    ```bash
+    mosquitto
+    ```
 
-```bash
-mosquitto
-```
+    The server runs by default on port `1883`.
+    You'll see output like this:
 
-The server runs by default on port `1883`.
-You'll see output like this:
+    ```bash
+    1734408888: mosquitto version 2.0.20 starting
+    1734408888: Using default config.
+    1734408888: Starting in local only mode. Connections will only be possible from clients running on this machine.
+    1734408888: Create a configuration file which defines a listener to allow remote access.
+    1734408888: For more details see https://mosquitto.org/documentation/authentication-methods/
+    1734408888: Opening ipv4 listen socket on port 1883.
+    1734408888: Opening ipv6 listen socket on port 1883.
+    1734408888: mosquitto version 2.0.20 running
+    ```
+  </Step>
 
-```bash
-1734408888: mosquitto version 2.0.20 starting
-1734408888: Using default config.
-1734408888: Starting in local only mode. Connections will only be possible from clients running on this machine.
-1734408888: Create a configuration file which defines a listener to allow remote access.
-1734408888: For more details see https://mosquitto.org/documentation/authentication-methods/
-1734408888: Opening ipv4 listen socket on port 1883.
-1734408888: Opening ipv6 listen socket on port 1883.
-1734408888: mosquitto version 2.0.20 running
-```
+  <Step title="Launch ngrok">
+    Once your MQTT server is running successfully on `localhost`, you can put it online securely using ngrok.
 
-## 2. Launch ngrok
+    Go to the [ngrok dashboard](https://dashboard.ngrok.com) and copy your authtoken.
 
-Once your MQTT server is running successfully on `localhost`, you can put it online securely using ngrok.
+    Start ngrok by running the following command:
 
-Go to the [ngrok dashboard](https://dashboard.ngrok.com) and copy your authtoken.
+    ```bash
+    ngrok tcp 1883
+    ```
 
-Start ngrok by running the following command:
+    ngrok will display a URL where your localhost application is exposed to the internet.
+    Copy this URL for use with MQTT Explorer.
+  </Step>
 
-```bash
-ngrok tcp 1883
-```
+  <Step title="Connect with MQTT Explorer">
+    Open [MQTT Explorer](https://mqtt-explorer.com/) and click the plus sign to create a new MQTT connection.
+    Enter the TCP address from the last step and click **Connect**.
 
-ngrok will display a URL where your localhost application is exposed to the internet.
-Copy this URL for use with MQTT Explorer.
+    You'll see a few new lines in your MQTT server logs:
 
-## 3. Connect with MQTT Explorer
+    ```bash
+    1734410153: New connection on port 1883.
+    1734410153: New client connected as mqtt-explorer-ba9b56f9 (p2, c1, k60).
+    ```
 
-Open [MQTT Explorer](https://mqtt-explorer.com/) and click the plus sign to create a new MQTT connection.
-Enter the TCP address from the last step and click **Connect**.
+    MQTT Explorer is now connected to your server over the public internet.
+    To get messages from the client, subscribe to a topic.
+    In your terminal, open a tab and enter:
 
-You'll see a few new lines in your MQTT server logs:
+    ```bash
+    mosquitto_sub -t 'example/topic' -v
+    ```
 
-```bash
-1734410153: New connection on port 1883.
-1734410153: New client connected as mqtt-explorer-ba9b56f9 (p2, c1, k60).
-```
+    Back in MQTT Explorer, publish a message to `example/topic`.
 
-MQTT Explorer is now connected to your server over the public internet.
-To get messages from the client, subscribe to a topic.
-In your terminal, open a tab and enter:
+    You'll see the message in the terminal tab where you subscribed to the topic:
 
-```bash
-mosquitto_sub -t 'example/topic' -v
-```
-
-Back in MQTT Explorer, publish a message to `example/topic`.
-
-You'll see the message in the terminal tab where you subscribed to the topic:
-
-```bash
-example/topic hello world
-```
+    ```bash
+    example/topic hello world
+    ```
+  </Step>
+</Steps>

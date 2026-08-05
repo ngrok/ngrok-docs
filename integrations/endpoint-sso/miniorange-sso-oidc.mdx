@@ -23,85 +23,87 @@ In this mode, users access ngrok endpoints and are redirected to miniOrange for 
 - A miniOrange account with administrative rights to create apps.
 - An ngrok Pay-as-you-go account with an authtoken or admin access to configure endpoints with OpenID Connect.
 
-## 1. Configure miniOrange 
+<Steps>
+  <Step title="Configure miniOrange">
+    - Access miniOrange and sign in using your miniOrange administrator account.
+    - On the **Dashboard** page, click **Apps** on the left menu, click **Add Application**, click the **OAUTH/OIDC** tile, and then click the **OAuth2/OpenID Connect** tile.
+    - On the **Add App** page, enter `ngrok OIDC` in the **Client Name** field, enter `https://idp.ngrok.com/oauth2/callback` in the **Redirect-URL** field, and then click **Save**.
+    - On the **View Apps** page, click **Select** in the **ngrok OIDC** app line, and then click **Edit**.
+    - On the **Edit Application** page, make note of the value of the **Client ID** field, click the **Click to reveal client secret** link, and then make note of the value of the **Client Secret** field.
+    - Click **Save**.
+    - On the **View Apps** page, click **Select** in the **ngrok** app line, and then click **OAuth Endpoints**.
+    - On the **OAuth Endpoints** page, make note of the URL of the **Discovery Endpoints** field.
+  </Step>
 
-- Access miniOrange and sign in using your miniOrange administrator account.
-- On the **Dashboard** page, click **Apps** on the left menu, click **Add Application**, click the **OAUTH/OIDC** tile, and then click the **OAuth2/OpenID Connect** tile.
-- On the **Add App** page, enter `ngrok OIDC` in the **Client Name** field, enter `https://idp.ngrok.com/oauth2/callback` in the **Redirect-URL** field, and then click **Save**.
-- On the **View Apps** page, click **Select** in the **ngrok OIDC** app line, and then click **Edit**.
-- On the **Edit Application** page, make note of the value of the **Client ID** field, click the **Click to reveal client secret** link, and then make note of the value of the **Client Secret** field.
-- Click **Save**.
-- On the **View Apps** page, click **Select** in the **ngrok** app line, and then click **OAuth Endpoints**.
-- On the **OAuth Endpoints** page, make note of the URL of the **Discovery Endpoints** field.
+  <Step title="Grant access to miniOrange users">
+    miniOrange allows its users to access OIDC-integrated apps.
+    To create a user, follow the instructions below:
 
-## 2. Grant access to miniOrange users
+    - On the left menu of the miniOrange Dashboard, click **Users** and then click **User List**.
+    - On the **Users** page, click **Add User**, enter values for the **Email**, **Username**, **First Name**, **Last Name**, and **Password** fields, and then click **Create User**.
+  </Step>
 
-miniOrange allows its users to access OIDC-integrated apps.
-To create a user, follow the instructions below:
+  <Step title="Configure ngrok">
+    ngrok can use miniOrange SSO in two ways:
 
-- On the left menu of the miniOrange Dashboard, click **Users** and then click **User List**.
-- On the **Users** page, click **Add User**, enter values for the **Email**, **Username**, **First Name**, **Last Name**, and **Password** fields, and then click **Create User**.
+    - From the ngrok CLI (using the `--oidc` parameter)
+    - From the ngrok dashboard
 
-## 3. Configure ngrok 
+    ### **Option 1**: ngrok CLI
 
-ngrok can use miniOrange SSO in two ways:
+    <Note>
+    This tutorial assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok client installed.
+    </Note>
 
-- From the ngrok CLI (using the `--oidc` parameter)
-- From the ngrok dashboard
+    - Launch a terminal.
+    - Enter the following command to launch an ngrok tunnel with miniOrange SSO:
 
-### **Option 1**: ngrok CLI
+       ```bash
+       ngrok http 3000 --oidc=MINIORANGE_OAUTH_URL \
+       --oidc-client-id=MINIORANGE_CLIENT_ID \
+       --oidc-client-secret=MINIORANGE_CLIENT_SECRET \
+       ```
 
-<Note>
-This tutorial assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok client installed.
-</Note>
+       Replace the following with values:
+       - MINIORANGE_OAUTH_URL: The **Discovery Endpoint** URL you copied from miniOrange, without the `/.well-known/openid-configuration` suffix (for example, `https://login.xecurify.com/moas/discovery/v2.0/abcd1234`).
+       - MINIORANGE_CLIENT_ID: The client ID you copied from miniOrange.
+       - MINIORANGE_CLIENT_SECRET: The client secret you copied from miniOrange.
 
-- Launch a terminal.
-- Enter the following command to launch an ngrok tunnel with miniOrange SSO:
+       Alternatively, add the `--url YOUR_DOMAIN` argument to get your custom URL, replacing `YOUR_DOMAIN` with your URL of preference.
+    - Copy the URL available next to **Forwarding** (for example, `https://miniorange-sso-test.ngrok.app`).
+    - Skip to **Step 3**.
 
-   ```bash
-   ngrok http 3000 --oidc=MINIORANGE_OAUTH_URL \
-   --oidc-client-id=MINIORANGE_CLIENT_ID \
-   --oidc-client-secret=MINIORANGE_CLIENT_SECRET \
-   ```
+    ### **Option 2**: Traffic Policy
 
-   Replace the following with values:
-   - MINIORANGE_OAUTH_URL: The **Discovery Endpoint** URL you copied from miniOrange, without the `/.well-known/openid-configuration` suffix (for example, `https://login.xecurify.com/moas/discovery/v2.0/abcd1234`).
-   - MINIORANGE_CLIENT_ID: The client ID you copied from miniOrange.
-   - MINIORANGE_CLIENT_SECRET: The client secret you copied from miniOrange.
+    <Note>
+    This tutorial assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok client installed.
+    </Note>
 
-   Alternatively, add the `--url YOUR_DOMAIN` argument to get your custom URL, replacing `YOUR_DOMAIN` with your URL of preference.
-- Copy the URL available next to **Forwarding** (for example, `https://miniorange-sso-test.ngrok.app`).
-- Skip to **Step 3**.
+    Create a `policy.yaml` file with the following content, replacing the placeholder values with those copied from miniOrange:
 
-### **Option 2**: Traffic Policy
+    ```yaml
+    on_http_request:
+      - actions:
+          - type: openid-connect
+            config:
+              issuer_url: 'YOUR_MINIORANGE_DISCOVERY_ENDPOINT_URL'
+              client_id: 'YOUR_MINIORANGE_CLIENT_ID'
+              client_secret: 'YOUR_MINIORANGE_CLIENT_SECRET'
+              scopes:
+                - openid
+                - profile
+                - email
+    ```
 
-<Note>
-This tutorial assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok client installed.
-</Note>
+    Launch an ngrok tunnel with this policy:
 
-Create a `policy.yaml` file with the following content, replacing the placeholder values with those copied from miniOrange:
+    ```bash
+    ngrok http 3000 --traffic-policy-file policy.yaml --url YOUR_DOMAIN
+    ```
 
-```yaml
-on_http_request:
-  - actions:
-      - type: openid-connect
-        config:
-          issuer_url: 'YOUR_MINIORANGE_DISCOVERY_ENDPOINT_URL'
-          client_id: 'YOUR_MINIORANGE_CLIENT_ID'
-          client_secret: 'YOUR_MINIORANGE_CLIENT_SECRET'
-          scopes:
-            - openid
-            - profile
-            - email
-```
-
-Launch an ngrok tunnel with this policy:
-
-```bash
-ngrok http 3000 --traffic-policy-file policy.yaml --url YOUR_DOMAIN
-```
-
-Copy the URL next to **Forwarding** (for example, `https://miniorange-sso-test.ngrok.app`).
+    Copy the URL next to **Forwarding** (for example, `https://miniorange-sso-test.ngrok.app`).
+  </Step>
+</Steps>
 
 ## Test the integration
 

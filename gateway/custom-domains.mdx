@@ -14,60 +14,62 @@ ngrok is not a domain registrar; you must already own a domain name to use it wi
 Custom domains are only available on the [Pay-as-you-go](https://ngrok.com/pricing) plan.
 </Note>
 
-## 1. Add your domain in ngrok
+<Steps>
+  <Step title="Add your domain in ngrok">
+    On your dashboard's [Domain page](https://dashboard.ngrok.com/domains), click the **New Domain** button to add your domain to your ngrok account.
+    After it's been added, you'll be given a `CNAME` value such as `exampledata.otherdata.ngrok-cname.com`.
+    Copy this for the next step.
 
-On your dashboard's [Domain page](https://dashboard.ngrok.com/domains), click the **New Domain** button to add your domain to your ngrok account.
-After it's been added, you'll be given a `CNAME` value such as `exampledata.otherdata.ngrok-cname.com`.
-Copy this for the next step.
+    <Info>
+    You can also add a domain via the [ngrok API](/api-reference/reserveddomains/list).
+    The `CNAME` will be in the `"cname_target"` field of [the response object](/api-reference/reserveddomains/list).
+    </Info>
+  </Step>
 
-<Info>
-You can also add a domain via the [ngrok API](/api-reference/reserveddomains/list).
-The `CNAME` will be in the `"cname_target"` field of [the response object](/api-reference/reserveddomains/list).
-</Info>
+  <Step title="Add the CNAME record to your domain">
+    In a new browser tab, navigate to your domain hosting provider's dashboard and create a CNAME record.
+    (Check your provider's support content if you're unsure how to do this.)
+    When configuring the record, use the following values:
 
-## 2. Add the CNAME record to your domain
+    - **type**: `CNAME`
+    - **name**: `@`
+    - **value**: the `CNAME` value you copied from ngrok
 
-In a new browser tab, navigate to your domain hosting provider's dashboard and create a CNAME record.
-(Check your provider's support content if you're unsure how to do this.)
-When configuring the record, use the following values:
+    <Tip title="Test your CNAME record">
+    Using a tool like [`dig`](https://www.digwebinterface.com/) or [`nslookup`](https://www.nslookup.io/), you can test your CNAME record in the terminal.
+    </Tip>
+  </Step>
 
-- **type**: `CNAME`
-- **name**: `@`
-- **value**: the `CNAME` value you copied from ngrok
+  <Step title="Start an endpoint using your domain">
+    To start an Agent Endpoint at your domain, run the following command in your terminal, replacing `your-domain-here.example.com` with the domain you added in the ngrok dashboard:
 
-<Tip title="Test your CNAME record">
-Using a tool like [`dig`](https://www.digwebinterface.com/) or [`nslookup`](https://www.nslookup.io/), you can test your CNAME record in the terminal.
-</Tip>
+    ```bash
+    ngrok http --url your-domain-here.example.com 8080
+    ```
+  </Step>
 
-## 3. Start an endpoint using your domain
+  <Step title="Wait for the TLS certificate to provision">
+    After you add a custom domain, ngrok provisions a TLS certificate for it from an ACME provider such as Let's Encrypt.
+    This typically completes within a few minutes once your CNAME record is resolvable, but can take longer depending on DNS propagation and the certificate authority.
 
-To start an Agent Endpoint at your domain, run the following command in your terminal, replacing `your-domain-here.example.com` with the domain you added in the ngrok dashboard:
+    While the certificate is still provisioning, ngrok terminates HTTPS connections to your domain using a default ngrok wildcard certificate that does **not** match your custom hostname.
+    If you start an endpoint and open the custom domain in a browser before the certificate is ready, you'll see a certificate warning indicating that the hostname doesn't match the certificate.
+    This is expected during the provisioning window and resolves on its own as soon as the certificate is issued.
+    There's no action to take other than waiting and reloading.
 
-```bash
-ngrok http --url your-domain-here.example.com 8080
-```
+    <Tip title="Check certificate status">
+    You can see whether your certificate is still provisioning, ready, or blocked on a DNS error in two places:
 
-## 4. Wait for the TLS certificate to provision
+    - **Dashboard**: open the [Domains page](https://dashboard.ngrok.com/domains) and select your domain.
+      The certificate status panel shows the current provisioning state and any error.
+    - **API**: call [`GET /reserved_domains/{id}`](/api-reference/reserveddomains/get) and read `certificate_management_status.provisioning_job`.
+      The `status` field tells you whether provisioning is in progress, valid, or has hit a recoverable or user-correctable error, and `retries_at` tells you when ngrok will try again.
 
-After you add a custom domain, ngrok provisions a TLS certificate for it from an ACME provider such as Let's Encrypt.
-This typically completes within a few minutes once your CNAME record is resolvable, but can take longer depending on DNS propagation and the certificate authority.
-
-While the certificate is still provisioning, ngrok terminates HTTPS connections to your domain using a default ngrok wildcard certificate that does **not** match your custom hostname.
-If you start an endpoint and open the custom domain in a browser before the certificate is ready, you'll see a certificate warning indicating that the hostname doesn't match the certificate.
-This is expected during the provisioning window and resolves on its own as soon as the certificate is issued.
-There's no action to take other than waiting and reloading.
-
-<Tip title="Check certificate status">
-You can see whether your certificate is still provisioning, ready, or blocked on a DNS error in two places:
-
-- **Dashboard**: open the [Domains page](https://dashboard.ngrok.com/domains) and select your domain.
-  The certificate status panel shows the current provisioning state and any error.
-- **API**: call [`GET /reserved_domains/{id}`](/api-reference/reserveddomains/get) and read `certificate_management_status.provisioning_job`.
-  The `status` field tells you whether provisioning is in progress, valid, or has hit a recoverable or user-correctable error, and `retries_at` tells you when ngrok will try again.
-
-If `provisioning_job` reports a DNS error, double-check that the CNAME record from [step 2](#2-add-the-cname-record-to-your-domain) is published and resolvable with `dig` or `nslookup`.
-For wildcard custom domains, both CNAME records described in [TLS certificate provisioning](/gateway/tls-certificates/#wildcard-domains) must exist before the certificate can be issued.
-</Tip>
+    If `provisioning_job` reports a DNS error, double-check that the CNAME record from the **Add the CNAME record to your domain** step is published and resolvable with `dig` or `nslookup`.
+    For wildcard custom domains, both CNAME records described in [TLS certificate provisioning](/gateway/tls-certificates/#wildcard-domains) must exist before the certificate can be issued.
+    </Tip>
+  </Step>
+</Steps>
 
 ## Wildcard domains
 

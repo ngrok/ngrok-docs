@@ -193,59 +193,61 @@ Pooling works with [internal Agent Endpoints](/gateway/internal-endpoints/), whi
 A [Cloud Endpoint](/gateway/cloud-endpoints/) is a persistent public endpoint where you can manage a Traffic Policy for any upstream endpoints it forwards traffic to.
 Forwarding traffic from a Cloud Endpoint to a pool of internal endpoints gives you a single "front door" for your multicloud load-balanced services.
 
-### 1. Set up your internal Agent Endpoints
+<Steps>
+  <Step title="Set up your internal Agent Endpoints">
+    First, set up your internal Agent Endpoints. To pool traffic with a Cloud Endpoint, you must:
 
-First, set up your internal Agent Endpoints. To pool traffic with a Cloud Endpoint, you must:
+    1. Stop any agents you've already created associated with the URL you want to use.
+    1. Restart those agents as internal endpoints by giving them any URL with a TLD of `.internal`.
 
-1. Stop any agents you've already created associated with the URL you want to use.
-1. Restart those agents as internal endpoints by giving them any URL with a TLD of `.internal`.
+    ```bash title="Create an internal Agent Endpoint"
+    ngrok http 8080 --url "https://example.internal"
+    ```
+  </Step>
 
-```bash title="Create an internal Agent Endpoint"
-ngrok http 8080 --url "https://example.internal"
-```
+  <Step title="Set up your Cloud Endpoint">
+    Next, set up your Cloud Endpoint:
 
-### 2. Set up your Cloud Endpoint
+    1. Navigate to the [**Endpoint** section](https://dashboard.ngrok.com/endpoints) of your ngrok dashboard and select **New**, then **Cloud Endpoint**.
+    1. Leave the binding as **Public** and enter `your-reserved-domain` for the domain.
+    1. Select **Create Cloud Endpoint**.
+  </Step>
 
-Next, set up your Cloud Endpoint:
+  <Step title="Add a Traffic Policy">
+    Now you can add a Traffic Policy.
+    While viewing your Cloud Endpoint in the dashboard, add the following Traffic Policy.
+    It uses the `forward-internal` action to route all requests to your pool of internal Agent Endpoints.
 
-1. Navigate to the [**Endpoint** section](https://dashboard.ngrok.com/endpoints) of your ngrok dashboard and select **New**, then **Cloud Endpoint**.
-1. Leave the binding as **Public** and enter `your-reserved-domain` for the domain.
-1. Select **Create Cloud Endpoint**.
+    ```yaml
+    on_http_request:
+      - actions:
+          - type: forward-internal
+            config:
+              url: https://example.internal
+    ```
 
-### 3. Add a Traffic Policy
+    Be sure to select the **Save** button to apply the policy.
 
-Now you can add a Traffic Policy.
-While viewing your Cloud Endpoint in the dashboard, add the following Traffic Policy.
-It uses the `forward-internal` action to route all requests to your pool of internal Agent Endpoints.
+    Now when you make a request to your URL, your traffic is first routed through the Cloud Endpoint before being shared among your pooled internal Agent Endpoints.
 
-```yaml
-on_http_request:
-  - actions:
-      - type: forward-internal
-        config:
-          url: https://example.internal
-```
+    <Info title="Coming soon!">
 
-Be sure to select the **Save** button to apply the policy.
+    Custom load balancing strategies are not yet generally available, but you can
+    request Early Access in your [ngrok
+    dashboard](https://dashboard.ngrok.com/early-access).
 
-Now when you make a request to your URL, your traffic is first routed through the Cloud Endpoint before being shared among your pooled internal Agent Endpoints.
+    With custom load balancing strategies, you'll be able to decide exactly what happens to load-balanced traffic in certain scenarios, like:
 
-<Info title="Coming soon!">
+    - Balance randomly among endpoints in a single cloud provider, then fall back to
+      a secondary cloud if they all become unavailable.
+    - Prioritize endpoints with the most memory regardless of which cloud they were
+      deployed from.
+    - Route traffic to specific cloud providers depending on where the request
+      originated from.
 
-Custom load balancing strategies are not yet generally available, but you can
-request Early Access in your [ngrok
-dashboard](https://dashboard.ngrok.com/early-access).
-
-With custom load balancing strategies, you'll be able to decide exactly what happens to load-balanced traffic in certain scenarios, like:
-
-- Balance randomly among endpoints in a single cloud provider, then fall back to
-  a secondary cloud if they all become unavailable.
-- Prioritize endpoints with the most memory regardless of which cloud they were
-  deployed from.
-- Route traffic to specific cloud providers depending on where the request
-  originated from.
-
-</Info>
+    </Info>
+  </Step>
+</Steps>
 
 ## What's next?
 

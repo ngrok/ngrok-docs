@@ -27,80 +27,82 @@ By integrating ngrok with SendGrid, you can:
 - [Node.js](https://nodejs.org/) installed (for the sample app, or use your own app).
 - A SendGrid account.
 
-## 1. Start your app
+<Steps>
+  <Step title="Start your app">
+    For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
 
-For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+    To install the sample, run the following in a terminal:
 
-To install the sample, run the following in a terminal:
+    ```bash
+    git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
+    cd ngrok-webhook-nodejs-sample
+    npm install
+    ```
 
-```bash
-git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
-cd ngrok-webhook-nodejs-sample
-npm install
-```
+    Then start the app:
 
-Then start the app:
+    ```bash
+    npm start
+    ```
 
-```bash
-npm start
-```
+    The app runs on port 3000 by default.
 
-The app runs on port 3000 by default.
+    You can confirm it's running by visiting `http://localhost:3000`.
+    The app logs request headers and body in the terminal and shows a message in the browser.
+  </Step>
 
-You can confirm it's running by visiting `http://localhost:3000`.
-The app logs request headers and body in the terminal and shows a message in the browser.
+  <Step title="Expose your app with ngrok">
+    Once your app is running locally, you're ready to put it online securely using ngrok.
 
-## 2. Expose your app with ngrok
+    - Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
 
-Once your app is running locally, you're ready to put it online securely using ngrok.
+    <Tip>
+      The ngrok agent uses your authtoken to authenticate when you start a tunnel.
+    </Tip>
 
-- Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
+    - Start ngrok:
 
-<Tip>
-  The ngrok agent uses your authtoken to authenticate when you start a tunnel.
-</Tip>
+      ```bash
+      ngrok http 3000
+      ```
 
-- Start ngrok:
+    - Copy the URL ngrok displays.
+      Your app is now exposed at that URL for use with SendGrid.
+  </Step>
 
-  ```bash
-  ngrok http 3000
-  ```
+  <Step title="Configure SendGrid to send webhooks">
+    SendGrid can send webhook requests to your app with information about events as it processes your email.
+    To register for those events:
 
-- Copy the URL ngrok displays.
-  Your app is now exposed at that URL for use with SendGrid.
+    - Sign in to the [SendGrid Dashboard](https://app.sendgrid.com/).
+    - Click **Settings** and **Mail Settings**.
+    - On **Mail Settings**, click **Event Webhook**.
+    - In the **Event Webhook** popup, set **Authorization Method** to `None` and enter your ngrok URL in **HTTP Post URL** (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
+    - Click **Test Your Integration** and confirm your localhost app receives the test.
+    - Under **DELIVERABILITY DATA**, select **Select All**.
+    - Under **Event Webhook Status**, set to **ENABLED** and click **Save**.
 
-## 3. Configure SendGrid to send webhooks
+    ### Run webhooks with SendGrid and ngrok
 
-SendGrid can send webhook requests to your app with information about events as it processes your email.
-To register for those events:
+    To trigger webhooks, send an email through SendGrid (Web API or SMTP); SendGrid notifies your app on delivery success or failure.
 
-- Sign in to the [SendGrid Dashboard](https://app.sendgrid.com/).
-- Click **Settings** and **Mail Settings**.
-- On **Mail Settings**, click **Event Webhook**.
-- In the **Event Webhook** popup, set **Authorization Method** to `None` and enter your ngrok URL in **HTTP Post URL** (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
-- Click **Test Your Integration** and confirm your localhost app receives the test.
-- Under **DELIVERABILITY DATA**, select **Select All**.
-- Under **Event Webhook Status**, set to **ENABLED** and click **Save**.
+    - In SendGrid, go to **Email API** and **Integration Guide**.
+    - Choose **Web API** and **cURL**, enter a key name (for example, `myappkey`), and click **Create Key**.
+    - Run the curl command from the guide (use your sender identity and a real recipient email).
 
-### Run webhooks with SendGrid and ngrok
+    Confirm your localhost app receives notifications about the email being processed and delivered.
 
-To trigger webhooks, send an email through SendGrid (Web API or SMTP); SendGrid notifies your app on delivery success or failure.
+    <Tip>
+      SendGrid sends different request body contents depending on the events you selected.
+    </Tip>
 
-- In SendGrid, go to **Email API** and **Integration Guide**.
-- Choose **Web API** and **cURL**, enter a key name (for example, `myappkey`), and click **Create Key**.
-- Run the curl command from the guide (use your sender identity and a real recipient email).
+    You can confirm delivery under **Activity** and **Search** in the SendGrid UI.
 
-Confirm your localhost app receives notifications about the email being processed and delivered.
+    <InspectingRequests />
 
-<Tip>
-  SendGrid sends different request body contents depending on the events you selected.
-</Tip>
-
-You can confirm delivery under **Activity** and **Search** in the SendGrid UI.
-
-<InspectingRequests />
-
-<ReplayingRequests />
+    <ReplayingRequests />
+  </Step>
+</Steps>
 
 ## Secure webhook requests
 

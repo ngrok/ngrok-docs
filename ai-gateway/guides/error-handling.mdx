@@ -20,38 +20,40 @@ The gateway never retries the same model/key combination. It always moves to the
 
 When a request fails, the gateway follows this order:
 
-### 1. Try another API key
+<Steps>
+  <Step title="Try another API key">
+    If multiple API keys are configured for the current model's provider, the gateway tries the next key:
 
-If multiple API keys are configured for the current model's provider, the gateway tries the next key:
+    ```yaml
+    providers:
+      - id: "openai"
+        api_keys:
+          - value: ${secrets.get('openai', 'key-one')}   # Try first
+          - value: ${secrets.get('openai', 'key-two')}   # Try if first fails
+    ```
+  </Step>
 
-```yaml
-providers:
-  - id: "openai"
-    api_keys:
-      - value: ${secrets.get('openai', 'key-one')}   # Try first
-      - value: ${secrets.get('openai', 'key-two')}   # Try if first fails
-```
+  <Step title="Try another model">
+    After exhausting all keys for a model, the gateway moves to the next model candidate. Candidates come from:
 
-### 2. Try another model
+    - The client's `models` array in the request body
+    - Model selection strategies that return multiple models
 
-After exhausting all keys for a model, the gateway moves to the next model candidate. Candidates come from:
+    ```json
+    {
+      "model": "gpt-4o",
+      "models": ["anthropic:claude-3-5-sonnet-20241022", "google:gemini-2.0-flash"],
+      "messages": [{"role": "user", "content": "Hello"}]
+    }
+    ```
 
-- The client's `models` array in the request body
-- Model selection strategies that return multiple models
+    The `model` field is tried first, then entries in `models` as fallbacks.
 
-```json
-{
-  "model": "gpt-4o",
-  "models": ["anthropic:claude-3-5-sonnet-20241022", "google:gemini-2.0-flash"],
-  "messages": [{"role": "user", "content": "Hello"}]
-}
-```
-
-The `model` field is tried first, then entries in `models` as fallbacks.
-
-<Note>
-Cross-provider failover requires the client to specify models from different providers, or model selection strategies that return candidates from multiple providers.
-</Note>
+    <Note>
+    Cross-provider failover requires the client to specify models from different providers, or model selection strategies that return candidates from multiple providers.
+    </Note>
+  </Step>
+</Steps>
 
 ## Error behavior configuration
 

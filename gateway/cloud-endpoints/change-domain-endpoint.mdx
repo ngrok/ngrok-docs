@@ -10,51 +10,53 @@ If you want to change the [matching domain](/gateway/domains/) for your active C
 - An [ngrok API key](https://dashboard.ngrok.com/api-keys).
 - An active Cloud Endpoint.
 
-## 1. Configure your API key
+<Steps>
+  <Step title="Configure your API key">
+    If this is your first time using the ngrok API, add your API key to your config file:
 
-If this is your first time using the ngrok API, add your API key to your config file:
+    ```bash
+    ngrok config add-api-key $YOUR_API_KEY
+    ```
 
-```bash
-ngrok config add-api-key $YOUR_API_KEY
-```
+    You can verify that the API key is set by running:
 
-You can verify that the API key is set by running:
+    ```bash
+    ngrok api credentials list
+    ```
 
-```bash
-ngrok api credentials list
-```
+    You should see a response with information about your authtoken.
+  </Step>
 
-You should see a response with information about your authtoken.
+  <Step title="Get the ID of the endpoint you want to modify">
+    Next you'll need your endpoint's ID.
+    To see a complete list of your endpoints, run:
 
-## 2. Get the ID of the endpoint you want to modify
+    ```bash
+    ngrok api endpoints list
+    ```
 
-Next you'll need your endpoint's ID.
-To see a complete list of your endpoints, run:
+    Find the endpoint you want to modify and note its ID, which is a long character string beginning with `ep_`.
 
-```bash
-ngrok api endpoints list
-```
+    <Info>
+    You can also find your endpoint ID in the [Endpoints section of the dashboard](https://dashboard.ngrok.com/endpoints).
+    </Info>
+  </Step>
 
-Find the endpoint you want to modify and note its ID, which is a long character string beginning with `ep_`.
+  <Step title="Update the endpoint with the new domain">
+    Run the following command to change your Cloud Endpoint's URL, replacing `$YOUR_ENDPOINT_ID` and `$YOUR_DOMAIN` with their respective values from the previous steps:
 
-<Info>
-You can also find your endpoint ID in the [Endpoints section of the dashboard](https://dashboard.ngrok.com/endpoints).
-</Info>
+    ```bash
+    ngrok api endpoints update $YOUR_ENDPOINT_ID --url $YOUR_DOMAIN
+    ```
+  </Step>
 
-## 3. Update the endpoint with the new domain
+  <Step title="Test your new endpoint URL">
+    To verify that the change was successful, run:
 
-Run the following command to change your Cloud Endpoint's URL, replacing `$YOUR_ENDPOINT_ID` and `$YOUR_DOMAIN` with their respective values from the previous steps:
+    ```bash
+    ngrok api endpoints get $YOUR_ENDPOINT_ID
+    ```
 
-```bash
-ngrok api endpoints update $YOUR_ENDPOINT_ID --url $YOUR_DOMAIN
-```
-
-## 4. Test your new endpoint URL
-
-To verify that the change was successful, run:
-
-```bash
-ngrok api endpoints get $YOUR_ENDPOINT_ID
-```
-
-You should see the new URL in the output, confirming that your Cloud Endpoint is now running there.
+    You should see the new URL in the output, confirming that your Cloud Endpoint is now running there.
+  </Step>
+</Steps>

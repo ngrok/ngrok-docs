@@ -27,106 +27,108 @@ By integrating ngrok with Calendly, you can:
 - [Node.js](https://nodejs.org/) installed (for the sample app, or use your own app).
 - A Calendly account.
 
-## 1. Start your app
+<Steps>
+  <Step title="Start your app">
+    For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
 
-For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+    To install the sample, run the following in a terminal:
 
-To install the sample, run the following in a terminal:
+    ```bash
+    git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
+    cd ngrok-webhook-nodejs-sample
+    npm install
+    ```
 
-```bash
-git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
-cd ngrok-webhook-nodejs-sample
-npm install
-```
+    Then start the app:
 
-Then start the app:
+    ```bash
+    npm start
+    ```
 
-```bash
-npm start
-```
+    The app runs on port 3000 by default.
 
-The app runs on port 3000 by default.
+    You can confirm it's running by visiting `http://localhost:3000`.
+    The app logs request headers and body in the terminal and shows a message in the browser.
+  </Step>
 
-You can confirm it's running by visiting `http://localhost:3000`.
-The app logs request headers and body in the terminal and shows a message in the browser.
+  <Step title="Expose your app with ngrok">
+    Once your app is running locally, you're ready to put it online securely using ngrok.
 
-## 2. Expose your app with ngrok
+    - Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
 
-Once your app is running locally, you're ready to put it online securely using ngrok.
+    <Tip>
+      The ngrok agent uses your authtoken to authenticate when you start a tunnel.
+    </Tip>
 
-- Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
+    - Start ngrok:
 
-<Tip>
-  The ngrok agent uses your authtoken to authenticate when you start a tunnel.
-</Tip>
+      ```bash
+      ngrok http 3000
+      ```
 
-- Start ngrok:
+    - Copy the URL ngrok displays.
+      Your app is now exposed at that URL for use with Calendly.
+  </Step>
 
-  ```bash
-  ngrok http 3000
-  ```
+  <Step title="Configure Calendly to send webhooks">
+    Calendly can send webhook requests to your app when events occur in your account.
+    To register for those events:
 
-- Copy the URL ngrok displays.
-  Your app is now exposed at that URL for use with Calendly.
+    - Sign in to [Calendly](https://calendly.com/).
+    - On the **My Calendly** page, click **Integrations** in the top menu.
+    - On the **All integrations** page, click the **API and webhooks** tile and then click **Get a token** under the **Personal access tokens** section.
+    - On the **Before you begin** popup, click **Continue**, enter a name for the token in the **Choose a name for this token** field, click **Create token**, click **Copy token**, and then click **Close**.
+    - On the **Your personal access tokens** page, scroll down and click **Copy Key** in the **API Key** section.
+    - Open a terminal and run the following to get your account info:
 
-## 3. Configure Calendly to send webhooks
+      ```bash
+      curl --request GET --url https://api.calendly.com/users/me \
+      --header 'authorization: Bearer TOKEN'
+      ```
 
-Calendly can send webhook requests to your app when events occur in your account.
-To register for those events:
+      Replace `TOKEN` with the token value you copied.
+    - Copy the value of the **current_organization** field and the **uri** field from the response.
+    - Run the following to register the webhook:
 
-- Sign in to [Calendly](https://calendly.com/).
-- On the **My Calendly** page, click **Integrations** in the top menu.
-- On the **All integrations** page, click the **API and webhooks** tile and then click **Get a token** under the **Personal access tokens** section.
-- On the **Before you begin** popup, click **Continue**, enter a name for the token in the **Choose a name for this token** field, click **Create token**, click **Copy token**, and then click **Close**.
-- On the **Your personal access tokens** page, scroll down and click **Copy Key** in the **API Key** section.
-- Open a terminal and run the following to get your account info:
+      ```bash
+      curl --request POST --url https://api.calendly.com/webhook_subscriptions \
+      --header 'Authorization: Bearer TOKEN' \
+      --header 'Content-Type: application/json' --data '{
+      "url": "URL",
+      "events": [
+          "invitee.created",
+          "invitee.canceled"
+      ],
+      "organization": "ORGANIZATION_URL",
+      "user": "USER_URL",
+      "scope": "user",
+      "signing_key": "KEY"
+      }'
+      ```
 
-  ```bash
-  curl --request GET --url https://api.calendly.com/users/me \
-  --header 'authorization: Bearer TOKEN'
-  ```
+      Replace `URL` with your ngrok URL (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`), `TOKEN` with the Calendly token, `ORGANIZATION_URL` with the **current_organization** value, `USER_URL` with the **uri** value, and `KEY` with the key you copied.
+    - Confirm the response contains a **resource** attribute with the information you provided.
 
-  Replace `TOKEN` with the token value you copied.
-- Copy the value of the **current_organization** field and the **uri** field from the response.
-- Run the following to register the webhook:
+    ### Run webhooks with Calendly and ngrok
 
-  ```bash
-  curl --request POST --url https://api.calendly.com/webhook_subscriptions \
-  --header 'Authorization: Bearer TOKEN' \
-  --header 'Content-Type: application/json' --data '{
-  "url": "URL",
-  "events": [
-      "invitee.created",
-      "invitee.canceled"
-  ],
-  "organization": "ORGANIZATION_URL",
-  "user": "USER_URL",
-  "scope": "user",
-  "signing_key": "KEY"
-  }'
-  ```
+    Calendly sends different request body contents depending on the event.
+    To trigger new calls from Calendly to your app:
 
-  Replace `URL` with your ngrok URL (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`), `TOKEN` with the Calendly token, `ORGANIZATION_URL` with the **current_organization** value, `USER_URL` with the **uri** value, and `KEY` with the key you copied.
-- Confirm the response contains a **resource** attribute with the information you provided.
+    - Use your Calendly link to schedule a meeting (for example, click **30 Minutes Meeting**, select a date, and click **Confirm**).
 
-### Run webhooks with Calendly and ngrok
+    <Note>
+      If you don't know your Calendly link, go to [Calendly](https://calendly.com/), click **Account** in the top right, click **Share Your Link**, and copy your link.
+    </Note>
 
-Calendly sends different request body contents depending on the event.
-To trigger new calls from Calendly to your app:
+    - On the **Enter Details** page, enter your name and email and click **Schedule Event**.
 
-- Use your Calendly link to schedule a meeting (for example, click **30 Minutes Meeting**, select a date, and click **Confirm**).
+    Confirm your localhost app receives the **invitee.created** event and logs both headers and body in the terminal.
 
-<Note>
-  If you don't know your Calendly link, go to [Calendly](https://calendly.com/), click **Account** in the top right, click **Share Your Link**, and copy your link.
-</Note>
+    <InspectingRequests />
 
-- On the **Enter Details** page, enter your name and email and click **Schedule Event**.
-
-Confirm your localhost app receives the **invitee.created** event and logs both headers and body in the terminal.
-
-<InspectingRequests />
-
-<ReplayingRequests />
+    <ReplayingRequests />
+  </Step>
+</Steps>
 
 ## Secure webhook requests
 

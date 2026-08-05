@@ -27,91 +27,93 @@ By integrating ngrok with Intercom, you can:
 - [Node.js](https://nodejs.org/) installed (for the sample app, or use your own app).
 - An Intercom account.
 
-## 1. Start your app
+<Steps>
+  <Step title="Start your app">
+    For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
 
-For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+    To install the sample, run the following in a terminal:
 
-To install the sample, run the following in a terminal:
+    ```bash
+    git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
+    cd ngrok-webhook-nodejs-sample
+    npm install
+    ```
 
-```bash
-git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
-cd ngrok-webhook-nodejs-sample
-npm install
-```
+    Then start the app:
 
-Then start the app:
+    ```bash
+    npm start
+    ```
 
-```bash
-npm start
-```
+    The app runs on port 3000 by default.
 
-The app runs on port 3000 by default.
+    You can confirm it's running by visiting `http://localhost:3000`.
+    The app logs request headers and body in the terminal and shows a message in the browser.
+  </Step>
 
-You can confirm it's running by visiting `http://localhost:3000`.
-The app logs request headers and body in the terminal and shows a message in the browser.
+  <Step title="Expose your app with ngrok">
+    Once your app is running locally, you're ready to put it online securely using ngrok.
 
-## 2. Expose your app with ngrok
+    - Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
 
-Once your app is running locally, you're ready to put it online securely using ngrok.
+    <Tip>
+      The ngrok agent uses your authtoken to authenticate when you start a tunnel.
+    </Tip>
 
-- Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
+    - Start ngrok:
 
-<Tip>
-  The ngrok agent uses your authtoken to authenticate when you start a tunnel.
-</Tip>
+      ```bash
+      ngrok http 3000
+      ```
 
-- Start ngrok:
+    - Copy the URL ngrok displays.
+      Your app is now exposed at that URL for use with Intercom.
+  </Step>
 
-  ```bash
-  ngrok http 3000
-  ```
+  <Step title="Configure Intercom to send webhooks">
+    Intercom can send webhook requests to your app when events occur in your account.
+    To register for those events:
 
-- Copy the URL ngrok displays.
-  Your app is now exposed at that URL for use with Intercom.
+    - Sign in to [Intercom](https://app.intercom.com/).
+    - Click your avatar (below the **What's new** bell icon) and then **Settings**.
 
-## 3. Configure Intercom to send webhooks
+    <Note>
+      If your avatar doesn't appear, zoom out on the page.
+    </Note>
 
-Intercom can send webhook requests to your app when events occur in your account.
-To register for those events:
+    - Under **Apps & Integrations**, click **Developer Hub**.
 
-- Sign in to [Intercom](https://app.intercom.com/).
-- Click your avatar (below the **What's new** bell icon) and then **Settings**.
+    <Note>
+      If the **Developer Guidelines** popup appears, click **Accept and Continue**.
+    </Note>
 
-<Note>
-  If your avatar doesn't appear, zoom out on the page.
-</Note>
+    - Click **New App**, enter a name, select your workspace, keep **Internal integration** selected, and click **Create app**.
+    - In your app, click **Webhooks** under **Configure**.
+    - Enter your ngrok URL in **Your request endpoint URL** (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
+    - Select **contact.user.created** in **Webhook topics** and click **Save**.
 
-- Under **Apps & Integrations**, click **Developer Hub**.
+    Intercom sends a test request to your app; confirm your localhost app receives it in the terminal.
+    You can click **Send a test request** on the Intercom **Webhooks** page to send another test.
 
-<Note>
-  If the **Developer Guidelines** popup appears, click **Accept and Continue**.
-</Note>
+    ### Run webhooks with Intercom and ngrok
 
-- Click **New App**, enter a name, select your workspace, keep **Internal integration** selected, and click **Create app**.
-- In your app, click **Webhooks** under **Configure**.
-- Enter your ngrok URL in **Your request endpoint URL** (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
-- Select **contact.user.created** in **Webhook topics** and click **Save**.
+    With **contact.user.created** selected, you can trigger calls by creating a user:
 
-Intercom sends a test request to your app; confirm your localhost app receives it in the terminal.
-You can click **Send a test request** on the Intercom **Webhooks** page to send another test.
+    - In [Intercom](https://app.intercom.com/), click **Contacts**.
+    - Click **New**, **New users or leads**, **Create new user**.
+    - Enter **Name**, **Email**, and **User ID** and click **Create a user**.
 
-### Run webhooks with Intercom and ngrok
+    Confirm your localhost app receives the event and logs both headers and body in the terminal.
 
-With **contact.user.created** selected, you can trigger calls by creating a user:
+    <Tip>
+      Intercom sends different request body contents depending on the events you selected when registering the webhook.
+    </Tip>
 
-- In [Intercom](https://app.intercom.com/), click **Contacts**.
-- Click **New**, **New users or leads**, **Create new user**.
-- Enter **Name**, **Email**, and **User ID** and click **Create a user**.
+    <InspectingRequests />
 
-Confirm your localhost app receives the event and logs both headers and body in the terminal.
-
-<Tip>
-  Intercom sends different request body contents depending on the events you selected when registering the webhook.
-</Tip>
-
-<InspectingRequests />
-
-<ReplayingRequests />
+    <ReplayingRequests />
+  </Step>
+</Steps>
 
 ## Secure webhook requests
 

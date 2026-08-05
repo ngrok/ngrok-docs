@@ -20,77 +20,78 @@ By integrating Okta SSO with ngrok, you can:
 - An Okta account with administrative rights to create apps.
 - An ngrok Pay-as-you-go account with an authtoken or admin access to configure endpoints with SAML.
 
-## 1. Configure Okta 
+<Steps>
+  <Step title="Configure Okta">
+    ### Add the ngrok app in Okta
 
-### Add the ngrok app in Okta
+    - Access your Okta Dashboard as an administrator and then click **Admin**.
+    - Click **Application** > **Applications** .
+    - Click **Create App Integration**,
+    - Select _SAML 2.0_, and then click **Next**.
+    - Enter the **Application label**—this is the app name that will be displayed in the okta dashboard for end users—and click **Next**.
+    - Enter in temporary values for "Single sign on URL" and "Audience URI" and select "EmailAddress" for "Name ID format" and then click "Next".
+       - **Single sign-on URL**: https://temporary
+       - **Audience URI (SP Entity ID)**: https://temporary
+       - **Name ID format**: Email
+    - Select **I’m an Okta customer adding an internal app** and click **Finish**.
+    - Click **Done**.
+    - Under the **Sign On** tab of the ngrok application, **copy the Client ID and Client Secret**. These values will be used at ngrok to complete the configuration.
 
-- Access your Okta Dashboard as an administrator and then click **Admin**.
-- Click **Application** > **Applications** .
-- Click **Create App Integration**,
-- Select _SAML 2.0_, and then click **Next**.
-- Enter the **Application label**—this is the app name that will be displayed in the okta dashboard for end users—and click **Next**.
-- Enter in temporary values for "Single sign on URL" and "Audience URI" and select "EmailAddress" for "Name ID format" and then click "Next".
-   - **Single sign-on URL**: https://temporary
-   - **Audience URI (SP Entity ID)**: https://temporary
-   - **Name ID format**: Email
-- Select **I’m an Okta customer adding an internal app** and click **Finish**.
-- Click **Done**.
-- Under the **Sign On** tab of the ngrok application, **copy the Client ID and Client Secret**. These values will be used at ngrok to complete the configuration.
+    ### Download the IdP metadata
 
-### Download the IdP metadata
+    - Navigate to the **Sign On** tab on the new app and click **Actions** under the Active SHA-2 certificate and select **View IdP metadata**.
+    The metadata will open in a new tab.
+    - In the new tab, select **Save As** from the File menu to save your `metadata.xml` file for uploading into ngrok in a later step.
 
-- Navigate to the **Sign On** tab on the new app and click **Actions** under the Active SHA-2 certificate and select **View IdP metadata**.
-The metadata will open in a new tab.
-- In the new tab, select **Save As** from the File menu to save your `metadata.xml` file for uploading into ngrok in a later step.
+    ### Grant access to Okta people and groups
 
-### Grant access to Okta people and groups
+    Okta allows administrators to restrict access to SSO apps—such as ngrok—via assignments.
+    By default, apps created in Okta have no assignments; in other words, nobody can use Okta SSO to access ngrok until you assign them to the app.
+    To assign Okta users and groups to the ngrok app:
 
-Okta allows administrators to restrict access to SSO apps—such as ngrok—via assignments.
-By default, apps created in Okta have no assignments; in other words, nobody can use Okta SSO to access ngrok until you assign them to the app.
-To assign Okta users and groups to the ngrok app:
+    - Navigate to the **Assignments** tab.
+    - Use the **Assign** button to associate groups and users with the ngrok app.
+    To test the SSO with ngrok, make sure you're assigned to the app.
+  </Step>
 
-- Navigate to the **Assignments** tab.
-- Use the **Assign** button to associate groups and users with the ngrok app.
-To test the SSO with ngrok, make sure you're assigned to the app.
+  <Step title="Configure ngrok">
+    <Warning>
+    The SAML Traffic Policy action is currently in [developer preview](/traffic-policy/actions/saml/). [Request access](https://dashboard.ngrok.com/early-access) to configure SAML via Traffic Policy.
+    </Warning>
 
-## 2. Configure ngrok 
+    Once you have developer preview access, create a `policy.yaml` file with the following content, replacing `YOUR_IDP_METADATA_XML` with the IdP metadata XML from Okta:
 
-<Warning>
-The SAML Traffic Policy action is currently in [developer preview](/traffic-policy/actions/saml/). [Request access](https://dashboard.ngrok.com/early-access) to configure SAML via Traffic Policy.
-</Warning>
+    ```yaml
+    on_http_request:
+      - actions:
+          - type: saml
+            config:
+              idp_metadata: 'YOUR_IDP_METADATA_XML'
+    ```
 
-Once you have developer preview access, create a `policy.yaml` file with the following content, replacing `YOUR_IDP_METADATA_XML` with the IdP metadata XML from Okta:
+    The SAML action generates your ngrok SP Entity ID and ACS URL based on your endpoint URL. Refer to the [SAML action documentation](/traffic-policy/actions/saml/) for how to retrieve these values to complete your IdP configuration.
 
-```yaml
-on_http_request:
-  - actions:
-      - type: saml
-        config:
-          idp_metadata: 'YOUR_IDP_METADATA_XML'
-```
+    Launch an ngrok tunnel with this policy:
 
-The SAML action generates your ngrok SP Entity ID and ACS URL based on your endpoint URL. Refer to the [SAML action documentation](/traffic-policy/actions/saml/) for how to retrieve these values to complete your IdP configuration.
+    ```bash
+    ngrok http 3000 --traffic-policy-file policy.yaml --url YOUR_DOMAIN
+    ```
 
-Launch an ngrok tunnel with this policy:
+    Copy the URL next to **Forwarding**. You use this URL to test the integration.
+  </Step>
 
-```bash
-ngrok http 3000 --traffic-policy-file policy.yaml --url YOUR_DOMAIN
-```
+  <Step title="Update the Okta app settings">
+    - In Okta, open your ngrok app and go to the **General** tab.
+    - In **SAML Settings**, click **Edit**, then replace the temporary values with the generated ngrok values:
+      - Set **Single sign-on URL** to your ngrok **ACS URL**.
+      - Set **Audience URI (SP Entity ID)** to your ngrok **SP Entity ID**.
+    - Save the changes.
+  </Step>
 
-Copy the URL next to **Forwarding**. You use this URL to test the integration.
-
-
-## 3. Update the Okta app settings
-
-- In Okta, open your ngrok app and go to the **General** tab.
-- In **SAML Settings**, click **Edit**, then replace the temporary values with the generated ngrok values:
-  - Set **Single sign-on URL** to your ngrok **ACS URL**.
-  - Set **Audience URI (SP Entity ID)** to your ngrok **SP Entity ID**.
-- Save the changes.
-
-## 4. Test the integration
-
-- In your browser, launch an incognito window.
-- Access your ngrok tunnel (for example, `https://okta-sso-test.ngrok.app` or using a copied URL).
-- You should be prompted to log in with your Okta credentials.
-- After logging in, you should be able to see your web app.
+  <Step title="Test the integration">
+    - In your browser, launch an incognito window.
+    - Access your ngrok tunnel (for example, `https://okta-sso-test.ngrok.app` or using a copied URL).
+    - You should be prompted to log in with your Okta credentials.
+    - After logging in, you should be able to see your web app.
+  </Step>
+</Steps>

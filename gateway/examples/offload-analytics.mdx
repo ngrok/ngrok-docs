@@ -19,69 +19,71 @@ With this gateway setup and the [`http-request` action](/traffic-policy/actions/
 - Simplify your upstream services by removing libraries and code for instrumenting them directly.
 - Configure for exactly the timeout and retry conditions your services require.
 
-## 1. Create endpoints for your services
+<Steps>
+  <Step title="Create endpoints for your services">
+    Start an internal [Agent Endpoint](/gateway/agent-endpoints/), replacing `$PORT` based on where your upstream service listens.
+    You can also use one of the [SDKs](/agent-sdks) or the [Kubernetes Operator](/k8s).
 
-Start an internal [Agent Endpoint](/gateway/agent-endpoints/), replacing `$PORT` based on where your upstream service listens.
-You can also use one of the [SDKs](/agent-sdks) or the [Kubernetes Operator](/k8s).
+    ```bash
+    ngrok http $PORT --url https://service.internal
+    ```
 
-```bash
-ngrok http $PORT --url https://service.internal
-```
+    Start a second endpoint for your analytics service.
 
-Start a second endpoint for your analytics service.
+    ```bash
+    ngrok http $PORT --url https://analytics.internal
+    ```
+  </Step>
 
-```bash
-ngrok http $PORT --url https://analytics.internal
-```
+  <Step title="Reserve a domain">
+    <ReserveDomain />
+  </Step>
 
-## 2. Reserve a domain
+  <Step title="Create a Cloud Endpoint">
+    <CloudEndpoint />
+  </Step>
 
-<ReserveDomain />
+  <Step title="Send request data to your analytics service with Traffic Policy">
+    While viewing your new Cloud Endpoint in the dashboard, copy the policy below and paste it into the Traffic Policy editor.
 
-## 3. Create a Cloud Endpoint
+    ```yaml
+    on_http_request:
+      - actions:
+          - type: forward-internal
+            config:
+              url: https://service.internal
 
-<CloudEndpoint />
+    on_http_response:
+      - actions:
+          # Send authenticated request to analytics service
+          - type: http-request
+            config:
+              url: https://analytics.internal/api/request
+              method: POST
+              headers:
+                Authorization: "Bearer <ANALYTICS_API_TOKEN>"
+                Content-Type: "application/json"
+              body: |
+                {
+                  "path": "${req.url.path}",
+                  "method": "${req.method}",
+                  "status_code": "${res.status_code}",
+                  "country_code": "${conn.geo.country_code}",
+                  "region": "${conn.server_region}",
+                }
+              timeout: 1s
+    ```
 
-## 4. Send request data to your analytics service with Traffic Policy
+    **What's happening here?** This policy sends all requests directly to your upstream service at `https://service.internal`.
 
-While viewing your new Cloud Endpoint in the dashboard, copy the policy below and paste it into the Traffic Policy editor.
+    As part of the response lifecycle, this policy also sends an authenticated request to your analytics service with a body containing attributes, injected with CEL interpolation, about the user's request and your server's response.
+    The `http-request` action is purposely given a short timeout and no retry logic to ensure this analytics request doesn't add unnecessarily slow your service's response time.
+  </Step>
 
-```yaml
-on_http_request:
-  - actions:
-      - type: forward-internal
-        config:
-          url: https://service.internal
-
-on_http_response:
-  - actions:
-      # Send authenticated request to analytics service
-      - type: http-request
-        config:
-          url: https://analytics.internal/api/request
-          method: POST
-          headers:
-            Authorization: "Bearer <ANALYTICS_API_TOKEN>"
-            Content-Type: "application/json"
-          body: |
-            {
-              "path": "${req.url.path}",
-              "method": "${req.method}",
-              "status_code": "${res.status_code}",
-              "country_code": "${conn.geo.country_code}",
-              "region": "${conn.server_region}",
-            }
-          timeout: 1s
-```
-
-**What's happening here?** This policy sends all requests directly to your upstream service at `https://service.internal`.
-
-As part of the response lifecycle, this policy also sends an authenticated request to your analytics service with a body containing attributes, injected with CEL interpolation, about the user's request and your server's response.
-The `http-request` action is purposely given a short timeout and no retry logic to ensure this analytics request doesn't add unnecessarily slow your service's response time.
-
-## 5. Try out your endpoint
-
-<TryOut />
+  <Step title="Try out your endpoint">
+    <TryOut />
+  </Step>
+</Steps>
 
 ## What's next?
 

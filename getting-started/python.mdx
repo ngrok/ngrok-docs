@@ -33,140 +33,142 @@ In that case, you'll just need to reserve a domain and add your auth token as de
 - Your [ngrok auth token](https://dashboard.ngrok.com/get-started/your-authtoken).
 - [Python installed](https://www.python.org/downloads/) on your machine. You can check this by running `python -v` in your terminal.
 
-## 1. Start your app or service
+<Steps>
+  <Step title="Start your app or service">
+    Start up the app or service you'd like to put online.
+    This is the app that your Agent Endpoint will forward online traffic to.
 
-Start up the app or service you'd like to put online.
-This is the app that your Agent Endpoint will forward online traffic to.
+    If you don't have an app to work with, you can create a minimal Python app using the following code to set up a basic HTTP server at port `8080`.
 
-If you don't have an app to work with, you can create a minimal Python app using the following code to set up a basic HTTP server at port `8080`.
+    ```python title="service.py"
+    from http.server import BaseHTTPRequestHandler, HTTPServer
 
-```python title="service.py"
-from http.server import BaseHTTPRequestHandler, HTTPServer
+    class MyHandler(BaseHTTPRequestHandler):
+        def do_GET(self):
+            self.send_response(200)
+            self.send_header("Content-type", "text/html")
+            self.end_headers()
+            html = b"""
+            <html>
+            <head><title>Test Page</title></head>
+            <body><h1>Hello from Python HTTP Server!</h1></body>
+            </html>
+            """
+            self.wfile.write(html)
 
-class MyHandler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        self.send_response(200)
-        self.send_header("Content-type", "text/html")
-        self.end_headers()
-        html = b"""
-        <html>
-        <head><title>Test Page</title></head>
-        <body><h1>Hello from Python HTTP Server!</h1></body>
-        </html>
-        """
-        self.wfile.write(html)
+    def run(server_class=HTTPServer, handler_class=MyHandler, port=8080):
+        server_address = ('', port)
+        httpd = server_class(server_address, handler_class)
+        print(f"Serving custom HTML at http://localhost:{port}")
+        httpd.serve_forever()
 
-def run(server_class=HTTPServer, handler_class=MyHandler, port=8080):
-    server_address = ('', port)
-    httpd = server_class(server_address, handler_class)
-    print(f"Serving custom HTML at http://localhost:{port}")
-    httpd.serve_forever()
+    if __name__ == "__main__":
+        run()
+    ```
 
-if __name__ == "__main__":
-    run()
-```
+    Navigate to the directory where this file is located and run the following command to start the server:
 
-Navigate to the directory where this file is located and run the following command to start the server:
+    ```bash
+    python service.py
+    ```
+  </Step>
 
-```bash
-python service.py
-```
+  <Step title="Install the Python SDK">
+    Open a new terminal, then run the following terminal command to install the Python SDK:
 
-## 2. Install the Python SDK
+    ```bash
+    pip install ngrok
+    ```
+  </Step>
 
-Open a new terminal, then run the following terminal command to install the Python SDK:
+  <Step title="Create a .env file">
+    Create a `.env` file and add [your ngrok auth token](https://dashboard.ngrok.com/get-started/your-authtoken) and reserved domain to it.
+    This file needs to be in the same directory where you'll put the script using ngrok's Python SDK.
+    The following terminal commands will create this directory, navigate into it, and add the `.env` file there:
 
-```bash
-pip install ngrok
-```
+    ```bash
+    mkdir ngrok-python-demo && cd ngrok-python-demo
+    touch .env
+    ```
 
-## 3. Create a .env file
+    Add your ngrok auth token and reserved domain to this file:
 
-Create a `.env` file and add [your ngrok auth token](https://dashboard.ngrok.com/get-started/your-authtoken) and reserved domain to it.
-This file needs to be in the same directory where you'll put the script using ngrok's Python SDK.
-The following terminal commands will create this directory, navigate into it, and add the `.env` file there:
+    ```txt title=".env"
+    NGROK_AUTHTOKEN=your_actual_auth_token_here
+    NGROK_DOMAIN=your_actual_domain_here
+    ```
 
-```bash
-mkdir ngrok-python-demo && cd ngrok-python-demo
-touch .env
-```
+    Finally, you'll need to install [the `python-dotenv` package](https://pypi.org/project/python-dotenv/) to access your environment variable from your code.
 
-Add your ngrok auth token and reserved domain to this file:
+    ```bash
+    pip install python-dotenv
+    ```
 
-```txt title=".env"
-NGROK_AUTHTOKEN=your_actual_auth_token_here
-NGROK_DOMAIN=your_actual_domain_here
-```
+    <Tip>
+    If you don't want to use a `.env` file, you can instead [export your auth token as an environment variable](https://support.apple.com/en-il/guide/terminal/apd382cc5fa-4f58-4449-b20a-41c53c006f8f/mac) in your terminal session, or [call `ngrok.set_auth_token("your-token")`](https://ngrok.github.io/ngrok-python/index.html#authentication) in your code.
 
-Finally, you'll need to install [the `python-dotenv` package](https://pypi.org/project/python-dotenv/) to access your environment variable from your code.
+    You can set your reserved domain directly in your endpoint file below.
+    </Tip>
+  </Step>
 
-```bash
-pip install python-dotenv
-```
+  <Step title="Create your endpoint">
+    Create your Agent Endpoint, which will forward public traffic to your app.
 
-<Tip>
-If you don't want to use a `.env` file, you can instead [export your auth token as an environment variable](https://support.apple.com/en-il/guide/terminal/apd382cc5fa-4f58-4449-b20a-41c53c006f8f/mac) in your terminal session, or [call `ngrok.set_auth_token("your-token")`](https://ngrok.github.io/ngrok-python/index.html#authentication) in your code.
+    Create a new file named `endpoint.py` in the same directory as your `.env` file and add the following code.
+    This example:
 
-You can set your reserved domain directly in your endpoint file below.
-</Tip>
+    - Starts an Agent Endpoint that forwards from your reserved domain to your service running on port `8080`.
+    - Secures the endpoint with a Traffic Policy that requires authentication via Google OAuth.
 
-## 4. Create your endpoint
+    <Note>
+    This example uses ngrok's default Google OAuth application.
+    To use your own, see [the OAuth Traffic Policy Action documentation](/traffic-policy/actions/oauth/#google-example).
+    </Note>
 
-Create your Agent Endpoint, which will forward public traffic to your app.
+    ```python title="endpoint.py"
+    from dotenv import load_dotenv
+    import os
+    import ngrok
+    import time
 
-Create a new file named `endpoint.py` in the same directory as your `.env` file and add the following code.
-This example:
+    load_dotenv()
 
-- Starts an Agent Endpoint that forwards from your reserved domain to your service running on port `8080`.
-- Secures the endpoint with a Traffic Policy that requires authentication via Google OAuth.
+    listener = ngrok.forward(
+    	# The port your app is running on.
+      8080,
+      authtoken=os.getenv("NGROK_AUTHTOKEN"),
+      domain=os.getenv("NGROK_DOMAIN"),
+    	# Secure your endpoint with a Traffic Policy.
+    	# This could also be a path to a Traffic Policy file.
+      traffic_policy='{"on_http_request": [{"actions": [{"type": "oauth","config": {"provider": "google"}}]}]}'
+    )
 
-<Note>
-This example uses ngrok's default Google OAuth application.
-To use your own, see [the OAuth Traffic Policy Action documentation](/traffic-policy/actions/oauth/#google-example).
-</Note>
+    # Output ngrok URL to console
+    print(f"Ingress established at {listener.url()}")
 
-```python title="endpoint.py"
-from dotenv import load_dotenv
-import os
-import ngrok
-import time
+    # Keep the listener alive
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        print("Closing listener")
+    ```
+  </Step>
 
-load_dotenv()
+  <Step title="Test your endpoint">
+    Test your endpoint by running the following terminal command:
 
-listener = ngrok.forward(
-	# The port your app is running on.
-  8080,
-  authtoken=os.getenv("NGROK_AUTHTOKEN"),
-  domain=os.getenv("NGROK_DOMAIN"),
-	# Secure your endpoint with a Traffic Policy.
-	# This could also be a path to a Traffic Policy file.
-  traffic_policy='{"on_http_request": [{"actions": [{"type": "oauth","config": {"provider": "google"}}]}]}'
-)
+    ```bash
+    python endpoint.py
+    ```
 
-# Output ngrok URL to console
-print(f"Ingress established at {listener.url()}")
+    This should print your reserved domain URL to the terminal.
+    When you visit the URL, you should be prompted to log in with Google.
+    After logging in, you'll see your app or service.
 
-# Keep the listener alive
-try:
-    while True:
-        time.sleep(1)
-except KeyboardInterrupt:
-    print("Closing listener")
-```
-
-## 5. Test your endpoint
-
-Test your endpoint by running the following terminal command:
-
-```bash
-python endpoint.py
-```
-
-This should print your reserved domain URL to the terminal.
-When you visit the URL, you should be prompted to log in with Google.
-After logging in, you'll see your app or service.
-
-If you used the example app in this quickstart, you'll see **"Hello from Python HTTP Server!"** displayed in your browser.
+    If you used the example app in this quickstart, you'll see **"Hello from Python HTTP Server!"** displayed in your browser.
+  </Step>
+</Steps>
 
 ## What's next?
 
