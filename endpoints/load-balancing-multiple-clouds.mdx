@@ -108,13 +108,15 @@ require('dotenv').config();
 const ngrok = require('@ngrok/ngrok');
 
 (async function() {
-    const listener = await ngrok.forward({
-        // The port your app is running on.
-        addr: 8000,
-				domain: "your-reserved-domain",
-        authtoken: process.env.NGROK_AUTHTOKEN,
-				pooling_enabled: true,
-    });
+    const session = await new ngrok.SessionBuilder()
+        .authtokenFromEnv()
+        .connect();
+
+    // Endpoint pooling is currently only supported through the builder API, not ngrok.forward().
+    const listener = await session.httpEndpoint()
+        .domain("your-reserved-domain")
+        .poolingEnabled(true)
+        .listenAndForward("http://localhost:8000");
 
     // Output ngrok URL to console
     console.log(`Ingress established at ${listener.url()}`);
@@ -154,30 +156,34 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
 ```
 
 ```python title="example.py"
+import asyncio
+
 from dotenv import load_dotenv
-import os
 import ngrok
-import time
 
 load_dotenv()
 
-listener = ngrok.forward(
-	# The port your app is running on.
-  8000,
-  authtoken=os.getenv("NGROK_AUTHTOKEN"),
-	domain="your-reserved-domain",
-	pooling_enabled=True,
-)
 
-# Output ngrok URL to console
-print(f"Ingress established at {listener.url()}")
+async def main():
+    session = await ngrok.SessionBuilder().authtoken_from_env().connect()
 
-# Keep the listener alive
-try:
+    # Endpoint pooling is currently only supported through the builder API, not ngrok.forward().
+    listener = await (
+        session.http_endpoint()
+        .domain("your-reserved-domain")
+        .pooling_enabled(True)
+        .listen_and_forward("http://localhost:8000")
+    )
+
+    # Output ngrok URL to console
+    print(f"Ingress established at {listener.url()}")
+
+    # Keep the listener alive
     while True:
-        time.sleep(1)
-except KeyboardInterrupt:
-    print("Closing listener")
+        await asyncio.sleep(1)
+
+
+asyncio.run(main())
 ```
 
 </CodeGroup>
