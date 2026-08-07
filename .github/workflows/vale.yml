@@ -70,17 +70,23 @@ jobs:
 
       - name: Run Vale
         if: steps.changed-files.outputs.has_files == 'true'
+        # reviewdog exits non-zero when GitHub refuses to serve the PR's diff, which
+        # is a size failure rather than a lint one -- see the reporter note below.
+        # fail_on_error only covers findings, not this, so the step is allowed to
+        # fail without taking the job with it. Vale findings still render as check
+        # run annotations either way.
+        continue-on-error: true
         uses: vale-cli/vale-action@2.1.2
         with:
           files: ${{ steps.changed-files.outputs.files }}
           # Reports via the Checks API rather than the PR review API. The review
           # reporter fetches the PR's unified diff to anchor its comments, and
-          # GitHub answers 406 "diff exceeded the maximum number of lines (20000)"
-          # on large PRs -- reviewdog treats that as fatal and exits non-zero, so
-          # the check went red on PR size alone with no findings to show for it.
-          # Note reviewdog calls Diff() unconditionally in Run(), so filter_mode
-          # cannot avoid that fetch; only the doghouse reporters (github-check,
-          # github-pr-check) take a path that skips it.
+          # GitHub 406s on large PRs -- there are two independent caps, 20000 diff
+          # lines and 300 changed files.
+          # This reporter avoids the fetch reviewdog makes in Run() via Diff(), which
+          # is what tripped the line cap on #2270. It does NOT avoid parsing the diff
+          # when posting, so the 300-file cap still 406s -- #2292 hit it at 353 files.
+          # Hence continue-on-error above; no reporter setting clears both.
           reporter: github-check
           # Report all issues in the changed files, not only newly added lines:
           # Vale's line numbers can drift from diff positions after MDX parsing.
