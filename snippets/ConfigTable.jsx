@@ -33,7 +33,7 @@ export const ConfigField = ({
               {required && (<div className="px-2 py-0.5 rounded-md bg-red-100/50 dark:bg-red-400/10 whitespace-nowrap">
                 <span className="text-red-600 dark:text-red-300 !font-medium">Required</span>
               </div>)}
-              {cel && (<a className="px-2 py-0.5 rounded-md !border-none bg-blue-100/50 dark:bg-blue-400/10 whitespace-nowrap" href="/traffic-policy/concepts/cel-interpolation">
+              {cel && (<a className="px-2 py-0.5 rounded-md !border-none bg-blue-100/50 dark:bg-blue-400/10 whitespace-nowrap" href="/gateway/traffic-policy/concepts/cel-interpolation">
                 <span className="text-blue-600 dark:text-blue-300 !font-medium">Supports CEL</span>
               </a>)}
             </div>
@@ -105,7 +105,7 @@ export const OldConfigItem = ({
               {required && (<div className="px-2 py-0.5 rounded-md bg-red-100/50 dark:bg-red-400/10 whitespace-nowrap">
                 <span className="text-red-600 dark:text-red-300 !font-medium">Required</span>
               </div>)}
-              {cel && (<a className="px-2 py-0.5 rounded-md !border-none bg-blue-100/50 dark:bg-blue-400/10 whitespace-nowrap" href="/traffic-policy/concepts/cel-interpolation">
+              {cel && (<a className="px-2 py-0.5 rounded-md !border-none bg-blue-100/50 dark:bg-blue-400/10 whitespace-nowrap" href="/gateway/traffic-policy/concepts/cel-interpolation">
                 <span className="text-blue-600 dark:text-blue-300 !font-medium">Supports CEL</span>
               </a>)}
             </div>
