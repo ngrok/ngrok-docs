@@ -62,7 +62,7 @@ GDPR compliant.
 
 ### How does ngrok work?
 
-ngrok has three primitives: the **cloud service**, the [**agent**](/agent/), and the [**dashboard**](https://dashboard.ngrok.com/).
+ngrok has three primitives: the **cloud service**, the [**agent**](/gateway/agent/), and the [**dashboard**](https://dashboard.ngrok.com/).
 
 - The cloud service is globally distributed infrastructure that accepts traffic to endpoints, applies policies, and routes connections to the appropriate agent.
 - The agent is a lightweight program with zero runtime dependencies, which forwards requests from your vendor to your upstream services and data.
@@ -71,7 +71,7 @@ ngrok has three primitives: the **cloud service**, the [**agent**](/agent/), and
 In a generic site-to-site connectivity architecture, these pieces come together to do the following:
 
 1. The ngrok agent in your network connects to one or more of your upstream services.
-2. The ngrok agent connects out to the ngrok network at the default [Connect URL](/agent/connect-url/) at `connect.ngrok-agent.com` (or a custom one).
+2. The ngrok agent connects out to the ngrok network at the default [Connect URL](/gateway/agent/connect-url/) at `connect.ngrok-agent.com` (or a custom one).
 3. The ngrok network creates an endpoint like `your-company.your-vendor.com`, which then points to your upstream service.
 4. Your vendor sends requests from their services to the endpoint, which are then routed through to the agent and finally your upstream service.
 
@@ -91,7 +91,7 @@ There are many possible architectures for setting up a site-to-site network base
 Your vendor can configure your site-to-site architecture to match your data residency needs.
 
 They will first [configure the
-agent](/agent/changelog/) to
+agent](/gateway/agent/changelog/) to
 use a PoP in one of the [supported
 regions](/gateway/points-of-presence/), then work with you to set up
 appropriate DNS to route all connections through the same data plane.
@@ -173,7 +173,7 @@ Yes. Your vendor can configure your site-to-site connectivity architecture in a
 few ways to enable this functionality. They can:
 
 1. Configure your ngrok agent to trust a [specific
-   root certificate](/agent/config/v3/#connect-cas) you own on the host's OS
+   root certificate](/gateway/agent/config/v3/#connect-cas) you own on the host's OS
    or a specific PEM file on disk instead of the trusted certificate root for the
    ngrok network. You can then use a proxy for deep packet inspection.
 2. Require the outbound connection to `connect.ngrok-agent.com:443` go through a
@@ -189,9 +189,9 @@ strategies for your site-to-site architecture.
 
 ### How to prevent ngrok from being used for any purpose other than in site-to-site connectivity with your vendor 
 
-The best way to disallow other uses of ngrok on your network is working with your vendor to specify a [custom Connect URL](/agent/connect-url/#custom-connect-url).
+The best way to disallow other uses of ngrok on your network is working with your vendor to specify a [custom Connect URL](/gateway/agent/connect-url/#custom-connect-url).
 
-Your vendor will configure their DNS to issue certificates for the custom address, such as `your-company.us.connect.your-vendor.com:443`. Then they'll work with you to [reconfigure your ngrok agents](/agent/connect-url/) to utilize the custom Connect URL.
+Your vendor will configure their DNS to issue certificates for the custom address, such as `your-company.us.connect.your-vendor.com:443`. Then they'll work with you to [reconfigure your ngrok agents](/gateway/agent/connect-url/) to utilize the custom Connect URL.
 
 Your vendor can also work with ngrok to provision dedicated IPs for their custom Connect URL.
 
@@ -282,12 +282,12 @@ See the [Security, Privacy, and Compliance](https://ngrok.com/security) and [Tru
 
 The ngrok agent runs on Linux, Windows, and macOS systems and most CPU
 architectures. See the [supported platforms
-documentation](/agent/#system-requirements) for details about supported CPU
+documentation](/gateway/agent/#system-requirements) for details about supported CPU
 architectures and resource requirements.
 
 The agent is also distributed as [SDKs](/agent-sdks/), a
 [Docker container](https://hub.docker.com/r/ngrok/ngrok), and a [Kubernetes
-Operator](/k8s/).
+Operator](/gateway/k8s/).
 
 Your vendor will work with you to find the right form factor for your
 site-to-site connectivity architecture.
@@ -296,14 +296,14 @@ site-to-site connectivity architecture.
 
 Your vendor is responsible for helping you configure and maintain your agents.
 
-They might configure your ngrok agent to [run in the background](/agent/#background-service) as a native operating system service. This functionality works on all Linux, Windows, and macOS systems, and once installed, the ngrok service starts at boot-time, automatically restarts after crashes, and sends logs to your system's native logging service.
+They might configure your ngrok agent to [run in the background](/gateway/agent/#background-service) as a native operating system service. This functionality works on all Linux, Windows, and macOS systems, and once installed, the ngrok service starts at boot-time, automatically restarts after crashes, and sends logs to your system's native logging service.
 
 If they suggest deploying with Docker, they will likely recommend Docker's
 [restart
 policies](https://docs.docker.com/engine/reference/run/#restart-policies-restart)
 or [systemd
 integration](https://docs.docker.com/engine/install/linux-postinstall/#configure-docker-to-start-on-boot-with-systemd);
-with the [Kubernetes Operator](/k8s/), they will recommend the [container
+with the [Kubernetes Operator](/gateway/k8s/), they will recommend the [container
 restart
 policy](https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#restart-policy)
 is set to `Always`.
@@ -315,7 +315,7 @@ to update your ngrok agents because the process depends on how they asked you
 to install them.
 
 - Package manager (`brew` or `apt`): Get updated agent versions through the same channel (for example, `brew update && brew upgrade package_name` or `apt update && apt install ngrok`).
-- Binary from the [downloads page](https://download.ngrok.com): Follow the same process again or [update directly from your CLI](/agent/#updates) with `ngrok update`.
+- Binary from the [downloads page](https://download.ngrok.com): Follow the same process again or [update directly from your CLI](/gateway/agent/#updates) with `ngrok update`.
 - Agent SDK: Use the package manager for your language or framework (for example, `go get -u`)
 - Kubernetes Operator: Use `helm upgrade`.
 
@@ -332,19 +332,19 @@ By default, the ngrok agent attempts to connect to the default Connect URL at `c
 
 This connection includes the following steps:
 
-1. [DNS resolution](/agent/#dns-resolution) to discover the appropriate connection address.
-2. [Verification](/agent/#tls-verification) of the TLS certificate returned by the ngrok network, signed by ngrok's root certificate authority, against the certificate authorities bundled into the agent.
+1. [DNS resolution](/gateway/agent/#dns-resolution) to discover the appropriate connection address.
+2. [Verification](/gateway/agent/#tls-verification) of the TLS certificate returned by the ngrok network, signed by ngrok's root certificate authority, against the certificate authorities bundled into the agent.
 3. A Certificate Revocation List (CRL) check to `crl.ngrok-agent.com/ngrok.crl:80` to ensure you never use an ngrok network certificate that has been revoked.
 
-After the agent connects to the network, it also sends [heartbeat](/agent/#heartbeats) messages to validate the liveness of the connection, and [checks for updates](/agent/#ngrok-agent-update-check) on startup.
+After the agent connects to the network, it also sends [heartbeat](/gateway/agent/#heartbeats) messages to validate the liveness of the connection, and [checks for updates](/gateway/agent/#ngrok-agent-update-check) on startup.
 
 ### How does the Agent continue running if my server loses connection or times out?
 
-The ngrok agent utilizes a [heartbeat](/agent/#heartbeats) that attempts to reach ngrok's network every 10 seconds. If the agent doesn't receive a response within the tolerance window (15 seconds by default), it terminates the existing connection and attempts to reconnect.
+The ngrok agent utilizes a [heartbeat](/gateway/agent/#heartbeats) that attempts to reach ngrok's network every 10 seconds. If the agent doesn't receive a response within the tolerance window (15 seconds by default), it terminates the existing connection and attempts to reconnect.
 
 This mechanism allows your site-to-site connectivity to automatically reestablish after packet loss, dynamic IP changes, or complete network outages.
 
-Your vendor can [configure](/agent/config/v3/#heartbeat-interval) both the
+Your vendor can [configure](/gateway/agent/config/v3/#heartbeat-interval) both the
 heartbeat interval and tolerance per agent.
 
 ### How does using ngrok, and the availability of the platform, affect your own?

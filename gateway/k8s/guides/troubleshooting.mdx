@@ -1,0 +1,158 @@
+---
+title: Troubleshooting the ngrok Kubernetes Operator
+sidebarTitle: Troubleshooting
+description: Learn how to troubleshoot common issues with the ngrok Kubernetes Operator using kubectl describe, events, and logs.
+---
+
+## Check resource status
+
+ngrok custom resources include status conditions that report their current state. Use `kubectl describe` to check conditions and events on a resource:
+
+```bash
+kubectl describe cloudendpoint <name> -n <namespace>
+```
+
+The `Conditions` section in the output shows whether the resource is `Ready` and any errors encountered. For more details on the conditions available for each resource type, see the [CRD reference](/gateway/k8s/crds).
+
+## Check Kubernetes events
+
+If something is not right with the Operator you can check the events for the Operator namespace.
+
+```bash
+kubectl get events -n ngrok-operator --sort-by='.lastTimestamp'
+```
+
+Example Output:
+
+```bash
+LAST SEEN   TYPE     REASON              OBJECT                                                     MESSAGE
+3m24s       Normal   Scheduled           pod/ngrok-operator-manager-657c5b69d7-f7vvg                Successfully assigned ngrok-operator/ngrok-operator-manager-657c5b69d7-f7vvg to k3d-ngrok-operator-server-0
+3m25s       Normal   ScalingReplicaSet   deployment/ngrok-operator-manager                          Scaled up replica set ngrok-operator-manager-657c5b69d7 to 1
+3m25s       Normal   SuccessfulCreate    replicaset/ngrok-operator-manager-657c5b69d7               Created pod: ngrok-operator-manager-657c5b69d7-f7vvg
+3m24s       Normal   Started             pod/ngrok-operator-manager-657c5b69d7-f7vvg                Started container ngrok-operator
+3m24s       Normal   Created             pod/ngrok-operator-manager-657c5b69d7-f7vvg                Created container ngrok-operator
+3m24s       Normal   Pulled              pod/ngrok-operator-manager-657c5b69d7-f7vvg                Container image "docker.io/ngrok/ngrok-operator:0.15.0" already present on machine
+3m15s       Normal   ScalingReplicaSet   deployment/ngrok-operator-manager                          Scaled down replica set ngrok-operator-manager-74b76d8f6d to 0 from 1
+3m15s       Normal   SuccessfulDelete    replicaset/ngrok-operator-manager-74b76d8f6d               Deleted pod: ngrok-operator-manager-74b76d8f6d-2679x
+3m15s       Normal   Killing             pod/ngrok-operator-manager-74b76d8f6d-2679x                Stopping container ngrok-operator
+2m55s       Normal   Updating            boundendpoint/ngrok-22680758-eb09-576e-a7ac-dc3728458dfc   Updating BoundEndpoint/ngrok-22680758-eb09-576e-a7ac-dc3728458dfc
+2m55s       Normal   Updated             boundendpoint/ngrok-012050e0-8f06-560c-953e-c9d675d41305   Updated BoundEndpoint/ngrok-012050e0-8f06-560c-953e-c9d675d41305
+2m55s       Normal   Updated             boundendpoint/ngrok-22680758-eb09-576e-a7ac-dc3728458dfc   Updated BoundEndpoint/ngrok-22680758-eb09-576e-a7ac-dc3728458dfc
+2m55s       Normal   Status              boundendpoint/ngrok-22680758-eb09-576e-a7ac-dc3728458dfc   Successfully reconciled status
+2m55s       Normal   Updated             boundendpoint/ngrok-22680758-eb09-576e-a7ac-dc3728458dfc   Updated Services
+2m55s       Normal   Updated             service/ngrok-22680758-eb09-576e-a7ac-dc3728458dfc         Updated Upstream Service
+2m55s       Normal   Updating            boundendpoint/ngrok-012050e0-8f06-560c-953e-c9d675d41305   Updating BoundEndpoint/ngrok-012050e0-8f06-560c-953e-c9d675d41305
+2m55s       Normal   LeaderElection      lease/ngrok-operator-leader                                ngrok-operator-manager-657c5b69d7-f7vvg_72fb437b-38ad-444c-a9d8-d37349f2f677 became leader
+2m55s       Normal   Status              boundendpoint/ngrok-012050e0-8f06-560c-953e-c9d675d41305   Successfully reconciled status
+2m55s       Normal   Updated             boundendpoint/ngrok-012050e0-8f06-560c-953e-c9d675d41305   Updated Services
+2m55s       Normal   Updated             service/ngrok-012050e0-8f06-560c-953e-c9d675d41305         Updated Upstream Service
+2m55s       Normal   Updating            kubernetesoperator/ngrok-operator                          Updating KubernetesOperator/ngrok-operator
+2m55s       Normal   Status              kubernetesoperator/ngrok-operator                          Successfully reconciled status
+2m55s       Normal   Updated             kubernetesoperator/ngrok-operator                          Updated KubernetesOperator/ngrok-operator
+```
+
+<Tip>
+Kubernetes events usually expire after an hour, so you might want to restart the Operator to re-create the events while troubleshooting if the events happened more than an hour ago.
+</Tip>
+
+## Check Operator logs
+
+The operator runs two main deployments: `ngrok-operator-manager` (handles `CloudEndpoint`, `Domain`, `Ingress`, Gateway API, and other cluster-level resources) and `ngrok-operator-agent` (handles `AgentEndpoint` resources). To check for errors in either:
+
+```bash
+kubectl logs -n ngrok-operator deploy/ngrok-operator-manager | grep -i error
+kubectl logs -n ngrok-operator deploy/ngrok-operator-agent | grep -i error
+```
+
+Replace the namespace if you installed the Operator somewhere other than the default location.
+
+## Resources not getting deleted
+
+If you marked an ngrok custom resource for deletion but it is not getting deleted, there may be unresolved finalizers on it.
+You can refer to the [finalizers page](/gateway/k8s/guides/finalizers) for more information about how the Operator uses finalizers and how to clean up resources with dangling finalizers.
+
+If this is happening during or after an uninstall, see the [uninstall troubleshooting guide](/gateway/k8s/installation/uninstall#troubleshooting) for specific steps to resolve stuck resources and namespaces.
+
+## Cloud Endpoints not getting created from Ingress or Gateway API
+
+If you're applying `Ingress` and/or Gateway API resources and do not see any `CloudEndpoint` or `AgentEndpoint` custom resources created by the Operator, here are a few steps to identify the reason.
+
+### Ingress uses ngrok IngressClass?
+
+The ngrok `IngressClass` is required to use `Ingress` resources. Check that your `Ingress` uses the ngrok `IngressClass` like the following example.
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: demo-ingress
+  namespace: default
+spec:
+  ingressClassName: ngrok
+  rules:
+    - host: example-ingress.ngrok.io
+      http:
+        paths:
+          - backend:
+              service:
+                name: example-service
+                port:
+                  number: 80
+            path: /
+            pathType: Prefix
+```
+
+### Gateway API uses the ngrok GatewayClass?
+
+The ngrok `GatewayClass` is required to use Gateway API resources. If you do not already have it installed, you can create it with:
+
+```bash
+kubectl apply -f -<<EOF
+apiVersion: gateway.networking.k8s.io/v1
+kind: GatewayClass
+metadata:
+  name: ngrok
+spec:
+  controllerName: ngrok.com/gateway-controller
+EOF
+```
+
+Then, make sure your `Gateway` uses the `GatewayClass` like the following example:
+
+```yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: example-gateway
+  namespace: default
+spec:
+  gatewayClassName: ngrok
+  listeners:
+    - allowedRoutes:
+        namespaces:
+          from: Same
+      hostname: example-gateway.ngrok.io
+      name: example
+      port: 443
+      protocol: HTTPS
+```
+
+### Check Operator logs
+
+The manager pods handle the translation from `Ingress` and Gateway API into native ngrok resources.
+Check the [Operator logs](#check-operator-logs) for any errors to see if there is a problem with your configuration.
+
+## Endpoints not showing up on the dashboard
+
+If `CloudEndpoint` or `AgentEndpoint` resources are not working, first [check the resource status](#check-resource-status) for error conditions, then [check the Operator logs](#check-operator-logs) for errors processing them. Common errors include an invalid Traffic Policy configuration that may prevent your endpoint from being created.
+
+## Resource limits
+
+If you've added several resources such as domains and endpoints, you may encounter a limit for the resource you are trying to create depending on your payment plan.
+If you are on the pay-as-you-go plan, then you will not encounter this issue and you will be able to create resources freely and only be billed for the resources you create.
+Check with the [pricing and limits page](/pricing-limits/) for information about each plan and any limits associated with it.
+
+## Still need help?
+
+If you aren't able to identify and resolve your issue, head over to the [support page](https://ngrok.com/support) to reach out to ngrok support.
+You can also head over to [the Operator GitHub repo](https://github.com/ngrok/ngrok-operator) and see if anyone else encountered the same problem or file a new issue.
