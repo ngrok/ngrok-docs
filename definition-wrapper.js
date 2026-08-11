@@ -4,7 +4,7 @@ const terms = [
 		titles: ["Agent Endpoint"],
 		meaning:
 			"An Agent Endpoint is an ngrok endpoint created by an ngrok agent (or Agent SDK) that connects to an upstream service. The agent establishes a secure tunnel to the ngrok cloud, which forwards traffic to your local or remote service.",
-		link: "/docs/gateway/agent-endpoints/",
+		link: "/docs/endpoints/agent-endpoints/",
 		pluralEnding: "s",
 	},
 	{
@@ -32,7 +32,7 @@ const terms = [
 		titles: ["Cloud Endpoint"],
 		meaning:
 			"A Cloud Endpoint is a persistent ngrok endpoint that runs in ngrok's cloud service. Configured entirely in the ngrok dashboard or API, Cloud Endpoints can route traffic to upstream URLs and other endpoints, send custom responses, and more using Traffic Policy.",
-		link: "/docs/gateway/cloud-endpoints/",
+		link: "/docs/endpoints/cloud-endpoints/",
 		pluralEnding: "s",
 	},
 	{
@@ -54,7 +54,7 @@ const terms = [
 		titles: ["Endpoint Pooling", "Endpoint pool"],
 		meaning:
 			'When your create two ngrok endpoints with the same URL (and binding), those endpoints automatically form a "pool" and share incoming traffic.',
-		link: "/docs/gateway/endpoint-pooling/",
+		link: "/docs/endpoints/endpoint-pooling/",
 		pluralEnding: "s",
 	},
 	{
@@ -102,7 +102,7 @@ const terms = [
 		titles: ["Internal Endpoint"],
 		meaning:
 			"Internal Endpoints are only accessible to traffic from your other ngrok endpoints, enabling service-to-service communication without exposing traffic to the public internet. Internal Endpoints use the .internal top-level domain.",
-		link: "/docs/gateway/internal-endpoints/",
+		link: "/docs/endpoints/internal-endpoints/",
 		pluralEnding: "s",
 	},
 	{
@@ -265,7 +265,7 @@ const terms = [
 		titles: ["TLS Termination"],
 		meaning:
 			"TLS (Transport Layer Security) termination is the process of decrypting incoming TLS traffic at a server or load balancer before passing the unencrypted traffic to internal systems.",
-		link: "/docs/gateway/tls-termination/",
+		link: "/docs/domains/tls-termination/",
 	},
 	{
 		titles: ["Traffic Policy", "Traffic Policies"],
@@ -311,7 +311,7 @@ const pricingTerms = [
 	{
 		titles: ["Online endpoints"],
 		meaning: "The number of endpoints you can have online at the same time.",
-		link: "/docs/gateway/agent-endpoints/",
+		link: "/docs/endpoints/agent-endpoints/",
 	},
 	{
 		titles: ["Development endpoint hours"],
@@ -328,7 +328,7 @@ const pricingTerms = [
 		titles: ["Endpoint protocols"],
 		meaning:
 			"These are the different protocols available to you as a subscriber of each plan.",
-      link: "/docs/gateway/agent-endpoints#protocols%2C-binding-and-pooling"
+      link: "/docs/endpoints/agent-endpoints#protocols%2C-binding-and-pooling"
 	},
 	{
 		titles: ["Endpoint hours"],
@@ -338,23 +338,23 @@ const pricingTerms = [
 	{
 		titles: ["Load balancing"],
 		meaning: "Load balancing at ngrok is called endpoint pooling.",
-    link: "/docs/gateway/endpoint-pooling"
+    link: "/docs/endpoints/endpoint-pooling"
 	},
 	{
 		titles: ["Domains"],
 		meaning: "Domains you own registered in the ngrok dashboard.",
-		link: "/docs/gateway/domains/",
+		link: "/docs/domains/",
 	},
 	{
 		titles: ["Development domain"],
 		meaning:
 			"Your development domain is specific to your account, and does not incur usage charges. You can use anything for free on your sandbox domain within your account's limits.",
-		link: "/docs/gateway/domains/",
+		link: "/docs/domains/",
 	},
 	{
 		titles: ["ngrok-branded domains"],
 		meaning: "Use any ngrok-branded domain that you pick from ngrok's pool.",
-		link: "/docs/gateway/domains/",
+		link: "/docs/domains/",
 	},
   {
     titles: ["Traffic Policy Units"],
@@ -364,19 +364,19 @@ const pricingTerms = [
 	{
 		titles: ["Bring your own custom domains"],
 		meaning: "Use any custom domain name that you already own with ngrok.",
-		link: "/docs/gateway/custom-domains/",
+		link: "/docs/domains/custom-domains/",
 	},
 	{
 		titles: ["Wildcard Domains"],
 		meaning:
 			"You can create an endpoint which will receive traffic for all of the subdomains matching a given wildcard domain like *.example.com.",
-		link: "/docs/gateway/http/#wildcard-endpoints",
+		link: "/docs/endpoints/http/#wildcard-endpoints",
 	},
 	{
 		titles: ["TCP Addresses"],
 		meaning:
 			"TCP Addresses enable you to create public TCP Endpoints on a fixed address.",
-		link: "/docs/gateway/tcp-addresses/",
+		link: "/docs/domains/tcp-addresses/",
 	},
 	{
 		titles: ["Data transfer out"],
@@ -388,13 +388,13 @@ const pricingTerms = [
 		titles: ["Requests to HTTP/s endpoints"],
 		meaning:
 			"The maximum number of HTTP/s requests a client can make to an account's endpoints in a month.",
-		link: "/docs/gateway/http/",
+		link: "/docs/endpoints/http/",
 	},
 	{
 		titles: ["Connections to TCP / TLS endpoints"],
 		meaning:
 			"The maximum number of TCP/TLS connections a client can make to an account's endpoints in a month.",
-		link: "/docs/gateway/tcp/",
+		link: "/docs/endpoints/tcp/",
 	},
 	{
 		titles: ["HTTP Requests"],
@@ -413,13 +413,13 @@ const pricingTerms = [
 		titles: ["Bring your own certificates"],
 		meaning:
 			"Upload your own TLS certificates if you don't want to use the TLS certificates that ngrok automatically provisions for you.",
-		link: "/docs/gateway/tls/",
+		link: "/docs/endpoints/tls/",
 	},
 	{
 		titles: ["End to End TLS"],
 		meaning:
 			"Terminate TLS at your upstream service or at the ngrok agent to achieve end-to-end encryption.",
-		link: "/docs/gateway/tls-termination/",
+		link: "/docs/domains/tls-termination/",
 	},
 	{
 		titles: ["Mutual TLS"],
