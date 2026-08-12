@@ -1,0 +1,99 @@
+---
+title: ngrok Kubernetes Operator Network Egress Requirements
+sidebarTitle: Network Egress
+description: Learn which outbound hostnames and ports the ngrok Kubernetes Operator needs so you can allowlist it through a default-deny egress firewall.
+---
+
+import EgressFqdns from "/snippets/k8s/_egress-fqdns.mdx";
+
+The ngrok Kubernetes Operator reaches ngrok over a small number of outbound connections. In most clusters this works without any extra configuration, since outbound connections on port `443` are usually allowed by default.
+
+Some environments are more restrictive. If your cluster runs under a default-deny egress policy (common on private EKS clusters and other locked-down networks), outbound traffic is blocked unless you explicitly allow it. This page lists the hostnames and ports you'll need to allow so the Operator can start, sync your resources, and serve traffic. Every connection the Operator makes to ngrok is outbound over TLS on port `443`, so your firewall only needs egress rules, not inbound ones.
+
+<Note>
+ngrok's cloud service uses a dynamic, rotating set of IP addresses that can change without notice, so you can't allowlist it by IP. Allow traffic by hostname (FQDN) instead. This means a standard Kubernetes `NetworkPolicy`, which matches on IP/CIDR, isn't enough on its own. You'll need an egress firewall or proxy that supports FQDN-based rules, or a CNI that adds FQDN matching (such as Cilium's `toFQDNs`). See [ngrok IP addresses](/domains/ip-addresses) for more detail.
+</Note>
+
+## Required egress
+
+Every Operator installation needs to reach these hosts:
+
+<EgressFqdns />
+
+If you only expose inbound services (for example, running the Operator as a webhook gateway), these two hosts plus the image registry below are all you need. The section on endpoint bindings applies only if you turn that feature on.
+
+## Installation and upgrades
+
+You install and upgrade the Operator with Helm, which pulls two container images from Docker Hub:
+
+- `docker.io/ngrok/ngrok-operator`, the image for the Operator's deployments: the API manager, the agent, and, when endpoint bindings are enabled, the bindings forwarder.
+- `docker.io/bitnami/kubectl`, used only by the pre-delete cleanup job when you uninstall.
+
+To pull these, allow Docker Hub's registry and content-delivery hosts on TCP port `443`:
+
+- `registry-1.docker.io`
+- `auth.docker.io`
+- `production.cloudflare.docker.com`
+
+If your policy is to avoid Docker Hub entirely, mirror both images to a private registry (such as Amazon ECR) and point the `image.registry` and `cleanupHook.image.repository` Helm values at your mirror. In that case you allow your own registry instead of the hosts above.
+
+<Note>
+Bitnami changed how it distributes images on Docker Hub in 2025. If you run in an air-gapped or mirrored environment, plan to mirror `bitnami/kubectl` (or set `cleanupHook.image.repository` to a `kubectl` image you control) rather than relying on it being pulled at uninstall time.
+</Note>
+
+## Endpoint bindings
+
+[Endpoint bindings](/k8s/guides/bindings) are disabled by default (`bindings.enabled: false`), so skip this section unless you turn them on. When enabled, the bindings forwarder opens an additional connection to carry that traffic. Allow this host on TCP port `443`:
+
+- `kubernetes-binding-ingress.ngrok.io`
+
+The forwarder connects to the bound endpoint host your ngrok account returns, which defaults to `kubernetes-binding-ingress.ngrok.io`. If your account uses a different host, allow that one instead.
+
+## Verify connectivity from the cluster
+
+To check connectivity from where your pods actually run, you can run [`ngrok diagnose`](/agent/diagnose) as a `Job`, using the [pre-built agent image](https://hub.docker.com/r/ngrok/ngrok). This checks name resolution, TCP, and TLS to `connect.ngrok-agent.com`.
+
+<Note>
+`ngrok diagnose` only exercises the agent connect host, not `api.ngrok.com` or the bindings host. To check those, run a shell in the cluster and test them directly, for example `curl -sv https://api.ngrok.com`. The standalone agent image also checks a certificate revocation list on port `80` that the Operator itself doesn't use, so ignore a CRL failure when you're diagnosing the Operator.
+</Note>
+
+Create a manifest file (for example, `ngrok-diagnose.yaml`):
+
+```yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ngrok-diagnose
+spec:
+  template:
+    spec:
+      containers:
+        - name: ngrok-diagnose
+          image: ngrok/ngrok:latest
+          command: ["/bin/sh", "-c"]
+          args: ["ngrok diagnose"]
+      restartPolicy: Never
+```
+
+Apply it to your cluster:
+
+```bash
+kubectl apply -f ngrok-diagnose.yaml
+```
+
+Then check the logs:
+
+```bash
+kubectl logs -l "job-name=ngrok-diagnose"
+```
+
+```bash
+ngrok Connectivity - Region: Auto (lowest latency)
+  Name Resolution                           [ OK ]
+  TCP                                       [ OK ]
+  TLS                                       [ OK ]
+  Tunnel Protocol                           [ OK ]
+Successfully established ngrok connection! (region: 'auto', latency: 54.895145ms)
+```
+
+If any check fails, the host for that check isn't reachable from the cluster. Revisit the egress rules above with your network team.
