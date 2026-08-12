@@ -71,36 +71,39 @@ Once your app is running locally, you're ready to put it online securely using n
 
 ## 3. Configure Pinwheel to send webhooks
 
-Pinwheel can send webhook requests to your app when events occur in your account.
-To register for those events:
+Pinwheel registers webhook endpoints through its API rather than a dashboard form.
+Follow [Pinwheel's documentation for creating a webhook](https://docs.pinwheelapi.com/public/docs/webhooks-1) using your API secret and server URL from the Pinwheel Developer Portal, and set the following:
 
-- Sign in to the [Pinwheel Developer Portal](https://developer.getpinwheel.com/).
-- On the **Dashboard**, open the **API Keys** tab, click **Reveal Secret**, and note the **API Secret** and **Server** values.
-- Create the webhook with curl (replace `SERVER_URL`, `NGROK_URL`, and `API_SECRET` with your values):
+- **url**: your ngrok URL.
+- **enabled_events**: the events you want to subscribe to (for this example, `account.added`, `employment.added`, `identity.added`, and `income.added`).
+- **status**: `active`.
 
-  ```bash
-  curl --request POST --url SERVER_URL/v1/webhooks \
-  --header 'x-api-secret: API_SECRET' \
-  --header 'Content-Type: application/json' --data '{
-      "url": "NGROK_URL",
-      "status": "active",
-      "enabled_events": [
-          "account.added",
-          "employment.added",
-          "identity.added",
-          "income.added"
-      ]
-  }'
-  ```
+The request looks like this, with `SERVER_URL`, `API_SECRET`, and `NGROK_URL` replaced by your values:
 
-- Confirm the response JSON has a **status** attribute with value `active`.
+```bash
+curl --request POST --url SERVER_URL/v1/webhooks \
+--header 'x-api-secret: API_SECRET' \
+--header 'Content-Type: application/json' --data '{
+    "url": "NGROK_URL",
+    "status": "active",
+    "enabled_events": [
+        "account.added",
+        "employment.added",
+        "identity.added",
+        "income.added"
+    ]
+}'
+```
+
+Confirm the response JSON has a `status` attribute set to `active`.
 
 ### Run webhooks with Pinwheel and ngrok
 
-Pinwheel sends different request body contents depending on the events you enabled.
-With **account.added** subscribed, you can trigger calls by having users log into their payroll accounts via the Pinwheel API.
+After you create the webhook, Pinwheel sends requests to your app when the events you subscribed to occur.
 
-Confirm your localhost app receives the event and logs both headers and body in the terminal.
+Because this example subscribes to `account.added`, trigger calls by having users log into their payroll accounts through the Pinwheel API.
+
+Confirm your localhost app receives the event and logs both the headers and body in the terminal.
 
 <InspectingRequests />
 

@@ -71,25 +71,21 @@ Once your app is running locally, you're ready to put it online securely using n
 
 ## 3. Configure Zendesk to send webhooks
 
-Zendesk can send webhook requests to your app when automation rules run.
-To set it up:
+Follow [Zendesk's documentation for creating a webhook](https://support.zendesk.com/hc/en-us/articles/4408839108378-Creating-webhooks-to-interact-with-third-party-systems), and set the following:
 
-- Sign in to [Zendesk](https://www.zendesk.com), go to **Admin** (gear icon) > **Admin Center**.
-- Click **Apps and integrations** > **Webhooks** > **Create Webhooks**.
-- On **Create webhook**, enter a **Name** and your ngrok URL in **Endpoint URL** (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
-- Set **Request method** to **POST** and **Request format** to **JSON** (for production you can add Basic or Bearer authentication; for this tutorial use **None**).
-- Click **Test webhook** > **Send test**, confirm your app receives the request, then click **Create**.
-- Create an automation: **Objects and rules** > **Automations** > **Add automation**. Set title, conditions (e.g. Ticket is Created, Type is Incident, Priority is High), and under **Perform these actions** add **Notify webhook** with a **JSON body** (e.g. `{"message":"{{ticket.requester.name}} we are setting your ticket {{ticket.title}} to urgent priority."}`). Click **Create automation**.
+- **Endpoint URL**: your ngrok URL (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
+- **Request method**: `POST`.
+- **Request format**: `JSON`.
+- **Authentication**: `None` for this tutorial.
+
+To send events, connect the webhook to a trigger or automation.
+For this example, create an automation that fires on a high-priority incident ticket and add a **Notify webhook** action that calls your webhook.
 
 ### Run webhooks with Zendesk and ngrok
 
-With the automation above, a high-priority incident ticket triggers the webhook:
-
-- In [Zendesk](https://www.zendesk.com), click **+ Add** > **Ticket**.
-- Set **Requester**, **Type** to **Incident**, **Priority** to **High**, enter a subject, and click **Submit as New**.
-
-Zendesk evaluates automations on a schedule (e.g. hourly), so you may need to wait for the webhook to be called.
-You can check **Admin Center** > **Webhooks** > your webhook > **Activity** to see delivery logs.
+Create a ticket that matches your automation's conditions, such as a high-priority incident.
+Zendesk evaluates automations on a schedule, so the webhook may take some time to fire.
+Confirm your localhost app receives the request and logs both the headers and body in the terminal.
 
 <InspectingRequests />
 
