@@ -20,7 +20,7 @@ Every Operator installation needs to reach these hosts:
 
 <EgressFqdns />
 
-If you only expose inbound services (for example, running the Operator as a webhook gateway), these two hosts plus the image registry below are all you need. The section on endpoint bindings applies only if you turn that feature on.
+If you only expose inbound services (for example, running the Operator as a webhook gateway), these two hosts plus the image registry below are all you need. The section on private connectivity applies only if you turn that feature on.
 
 ## Installation and upgrades
 
@@ -41,20 +41,31 @@ If your policy is to avoid Docker Hub entirely, mirror both images to a private 
 Bitnami changed how it distributes images on Docker Hub in 2025. If you run in an air-gapped or mirrored environment, plan to mirror `bitnami/kubectl` (or set `cleanupHook.image.repository` to a `kubectl` image you control) rather than relying on it being pulled at uninstall time.
 </Note>
 
-## Endpoint bindings
+## Private connectivity
 
-[Endpoint bindings](/k8s/guides/bindings) are disabled by default (`bindings.enabled: false`), so skip this section unless you turn them on. When enabled, the bindings forwarder opens an additional connection to carry that traffic. Allow this host on TCP port `443`:
+To reach endpoints that aren't publicly exposed, the Operator uses private connectivity. In Operator `1.0.0` this replaces the [Kubernetes bound endpoints](/k8s/guides/bindings) used by earlier versions. It's off by default, so skip this section unless you turn it on. The hosts to allow depend on your Operator version.
 
-- `kubernetes-binding-ingress.ngrok.io`
+Operator `1.0.0` and later uses private connectivity. Allow:
 
-The forwarder connects to the bound endpoint host your ngrok account returns, which defaults to `kubernetes-binding-ingress.ngrok.io`. If your account uses a different host, allow that one instead.
+- `h2.connect-endpoint.ngrok.com` on TCP port `443`
+- `quic.connect-endpoint.ngrok.com` on UDP port `443`
+
+Operator versions before `1.0.0` use Kubernetes bound endpoints. Allow:
+
+- `kubernetes-binding-ingress.ngrok.io` on TCP port `443`
+
+<Note>
+On `1.0.0` and later, private connectivity prefers QUIC over UDP port `443` and falls back to HTTP/2 over TCP port `443` when UDP is blocked, so a TCP-only firewall still works. Allow `quic.connect-endpoint.ngrok.com` on UDP port `443` for the better-performing path.
+</Note>
+
+Before `1.0.0`, the Operator connects to the bound endpoint host your ngrok account returns, which defaults to `kubernetes-binding-ingress.ngrok.io`. If your account uses a different host, allow that one instead.
 
 ## Verify connectivity from the cluster
 
 To check connectivity from where your pods actually run, you can run [`ngrok diagnose`](/agent/diagnose) as a `Job`, using the [pre-built agent image](https://hub.docker.com/r/ngrok/ngrok). This checks name resolution, TCP, and TLS to `connect.ngrok-agent.com`.
 
 <Note>
-`ngrok diagnose` only exercises the agent connect host, not `api.ngrok.com` or the bindings host. To check those, run a shell in the cluster and test them directly, for example `curl -sv https://api.ngrok.com`. The standalone agent image also checks a certificate revocation list on port `80` that the Operator itself doesn't use, so ignore a CRL failure when you're diagnosing the Operator.
+`ngrok diagnose` only exercises the agent connect host, not `api.ngrok.com`, the bindings host, or the private connectivity hosts. To check those, run a shell in the cluster and test them directly, for example `curl -sv https://api.ngrok.com`. The standalone agent image also checks a certificate revocation list on port `80` that the Operator itself doesn't use, so ignore a CRL failure when you're diagnosing the Operator.
 </Note>
 
 Create a manifest file (for example, `ngrok-diagnose.yaml`):
