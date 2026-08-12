@@ -71,58 +71,41 @@ Once your app is running locally, you're ready to put it online securely using n
 
 ## 3. Configure Calendly to send webhooks
 
-Calendly can send webhook requests to your app when events occur in your account.
-To register for those events:
+Calendly registers webhooks through its API rather than a dashboard form.
+Follow [Calendly's guide for creating a webhook subscription](https://developer.calendly.com/receive-data-from-scheduled-events-in-real-time-with-webhook-subscriptions), which covers creating a personal access token and sending the registration request with your organization and user URIs.
 
-- Sign in to [Calendly](https://calendly.com/).
-- On the **My Calendly** page, click **Integrations** in the top menu.
-- On the **All integrations** page, click the **API and webhooks** tile and then click **Get a token** under the **Personal access tokens** section.
-- On the **Before you begin** popup, click **Continue**, enter a name for the token in the **Choose a name for this token** field, click **Create token**, click **Copy token**, and then click **Close**.
-- On the **Your personal access tokens** page, scroll down and click **Copy Key** in the **API Key** section.
-- Open a terminal and run the following to get your account info:
+Set the following in your request:
 
-  ```bash
-  curl --request GET --url https://api.calendly.com/users/me \
-  --header 'authorization: Bearer TOKEN'
-  ```
+- **url**: your ngrok URL (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
+- **events**: choose which events trigger the webhook (for this example, `invitee.created` and `invitee.canceled`).
+- **scope**: the level the webhook applies to (for this example, `user`).
 
-  Replace `TOKEN` with the token value you copied.
-- Copy the value of the **current_organization** field and the **uri** field from the response.
-- Run the following to register the webhook:
+Your registration request looks like this:
 
-  ```bash
-  curl --request POST --url https://api.calendly.com/webhook_subscriptions \
-  --header 'Authorization: Bearer TOKEN' \
-  --header 'Content-Type: application/json' --data '{
-  "url": "URL",
-  "events": [
-      "invitee.created",
-      "invitee.canceled"
-  ],
-  "organization": "ORGANIZATION_URL",
-  "user": "USER_URL",
-  "scope": "user",
-  "signing_key": "KEY"
-  }'
-  ```
+```bash
+curl --request POST --url https://api.calendly.com/webhook_subscriptions \
+--header 'Authorization: Bearer TOKEN' \
+--header 'Content-Type: application/json' --data '{
+"url": "URL",
+"events": [
+    "invitee.created",
+    "invitee.canceled"
+],
+"organization": "ORGANIZATION_URL",
+"user": "USER_URL",
+"scope": "user",
+"signing_key": "KEY"
+}'
+```
 
-  Replace `URL` with your ngrok URL (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`), `TOKEN` with the Calendly token, `ORGANIZATION_URL` with the **current_organization** value, `USER_URL` with the **uri** value, and `KEY` with the key you copied.
-- Confirm the response contains a **resource** attribute with the information you provided.
+Replace `URL` with your ngrok URL, `TOKEN` with your personal access token, `ORGANIZATION_URL` and `USER_URL` with your organization and user URIs, and `KEY` with your signing key.
 
 ### Run webhooks with Calendly and ngrok
 
-Calendly sends different request body contents depending on the event.
-To trigger new calls from Calendly to your app:
+Calendly sends a different request body for each event type.
+Book a meeting through your Calendly scheduling link to trigger a new event.
 
-- Use your Calendly link to schedule a meeting (for example, click **30 Minutes Meeting**, select a date, and click **Confirm**).
-
-<Note>
-  If you don't know your Calendly link, go to [Calendly](https://calendly.com/), click **Account** in the top right, click **Share Your Link**, and copy your link.
-</Note>
-
-- On the **Enter Details** page, enter your name and email and click **Schedule Event**.
-
-Confirm your localhost app receives the **invitee.created** event and logs both headers and body in the terminal.
+Confirm your app receives the `invitee.created` event and logs its headers and body in the terminal.
 
 <InspectingRequests />
 
