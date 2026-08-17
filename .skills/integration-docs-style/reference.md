@@ -76,7 +76,7 @@
 
 ## Links
 
-- **Use relative paths**: Internal documentation links should use relative paths (e.g., `../traffic-policy/`) not full URLs (e.g., `https://ngrok.com/docs/traffic-policy`)
+- **Use relative paths**: Internal documentation links should use relative paths (e.g., `../gateway/traffic-policy/`) not full URLs (e.g., `https://ngrok.com/docs/traffic-policy`)
 - **Descriptive anchor text**: Link anchor text should be descriptive (e.g., "ngrok Python SDK docs" not "Reference Documentation")
 
 ## Images

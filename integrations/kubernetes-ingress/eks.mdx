@@ -14,7 +14,7 @@ It works with an AWS EKS Kubernetes cluster to provide ingress to your services 
 - An AWS EKS cluster.
 - An ngrok account.
 - kubectl and Helm 3.0.0+ installed on your local workstation.
-- The [ngrok Kubernetes Operator](/k8s/) installed on your cluster.
+- The [ngrok Kubernetes Operator](/gateway/k8s/) installed on your cluster.
 - A reserved domain from the ngrok [dashboard](https://dashboard.ngrok.com/domains) or [API](/api-reference/reserveddomains/list); this guide refers to it as `<NGROK_DOMAIN>`.
 
 ## Ensure `kubectl` can speak with your cluster 
@@ -121,12 +121,12 @@ Access your ingress URL using the subdomain you chose in the manifest (for examp
 
 ## Add security to your app 
 
-With the [Traffic Policy system](/traffic-policy/) and the [`oauth` action](/traffic-policy/actions/oauth), ngrok manages OAuth protection entirely at ngrok.
+With the [Traffic Policy system](/gateway/traffic-policy/) and the [`oauth` action](/gateway/traffic-policy/actions/oauth), ngrok manages OAuth protection entirely at ngrok.
 ngrok's network authenticates and authorizes all requests before allowing ingress and access to your endpoint, meaning you don't need to add any additional services to your cluster, or alter any routes.
 
 To enable the `oauth` action, you'll create a new `NgrokTrafficPolicy` custom resource and apply it to your entire `Ingress` with an annotation.
 You can apply the policy to just a specific backend or as the default backend for an `Ingress`.
-See the documentation on using the [Operator with Ingresses](/k8s/guides/using-ingresses/#using-ngroktrafficpolicy-with-ingress).
+See the documentation on using the [Operator with Ingresses](/gateway/k8s/guides/using-ingresses/#using-ngroktrafficpolicy-with-ingress).
 
 Edit your existing `ngrok-manifest.yaml` manifest with the following, leaving the `Service` and `Deployment` as they were.
 Note the new `annotations` field and the `NgrokTrafficPolicy` CR.
@@ -179,7 +179,7 @@ kubectl apply -f ngrok-manifest.yaml
 When you open your demo app again, you'll be asked to log in via Google.
 That's a start, but what if you want to authenticate only yourself or colleagues?
 
-You can use [expressions](/traffic-policy/how-it-works#expressions) and [CEL interpolation](/traffic-policy/how-it-works#cel-interpolation) to filter out and reject OAuth logins that don't contain `example.com`.
+You can use [expressions](/gateway/traffic-policy/how-it-works#expressions) and [CEL interpolation](/gateway/traffic-policy/how-it-works#cel-interpolation) to filter out and reject OAuth logins that don't contain `example.com`.
 Update the `NgrokTrafficPolicy` portion of your manifest after changing `example.com` to your domain.
 
    ```yaml

@@ -1,0 +1,89 @@
+---
+title: NgrokTrafficPolicy
+description: Reference documentation for the NgrokTrafficPolicy Kubernetes custom resource for defining reusable Traffic Policy configurations.
+---
+
+## NgrokTrafficPolicy custom resource
+
+### **apiVersion:** `ngrok.k8s.ngrok.com/v1alpha1`
+
+### **kind:** `NgrokTrafficPolicy`
+
+The `NgrokTrafficPolicy` resource allows you to define your Traffic Policy configuration in a resource that can by used by reference on other resources such as
+`Ingress`, `Gateway`, `CloudEndpoint`, and `AgentEndpoint`. `Ingress` and `Gateway` have no direct method for configuring an ngrok Traffic Policy, so to use a Traffic Policy with those
+resources, you would create an `NgrokTrafficPolicy` resource and add the `k8s.ngrok.com/traffic-policy` annotation on your `Ingress`/`Gateway` to add the Traffic Policy configuration to it.
+
+`CloudEndpoint` and `AgentEndpoint` both give you the option to either define the Traffic Policy configuration inline, or as a reference to an `NgrokTrafficPolicy` resource, enabling the efficient
+reuse of common Traffic Policies such as enforcing ratelimiting/authentication across all of your endpoints without needing to redefine the Traffic Policy on each individual resource that needs to use it.
+
+For more information about writing ngrok Traffic Policies, refer to the [Traffic Policy section](/gateway/traffic-policy/)
+
+## NgrokTrafficPolicy structure and types
+
+The following outlines the high level structure and typings of a `NgrokTrafficPolicy`
+
+```yaml
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: NgrokTrafficPolicy
+metadata:
+  name: <string>
+  namespace: <string>
+spec:
+  policy: <json.RawMessage> # required
+```
+
+## NgrokTrafficPolicy fields
+
+The following sections outline each field of the `NgrokTrafficPolicy` custom resource, whether they are required, what their default values are (if applicable), and a description of their purpose/constraints.
+
+### `spec`
+
+`spec` defines the desired state of the `NgrokTrafficPolicy`
+
+**Type:** `Object`
+
+**Required:** yes
+
+**Default:** none
+
+**Fields:**
+
+| Field Name                   | Type              | Required | Default | Description                                            |
+| ---------------------------- | ----------------- | -------- | ------- | ------------------------------------------------------ |
+| [`spec.policy`](#specpolicy) | `json.RawMessage` | yes      | none    | Configuration for the Traffic Policy rules and actions |
+
+### `spec.policy`
+
+Defines the phases, rules, actions, and expressions of the Traffic Policy configuration.
+
+**Type:** `json.RawMessage`
+
+**Required:** yes
+
+**Default:** none
+
+## Example NgrokTrafficPolicy
+
+The following `NgrokTrafficPolicy` will return a static response when the request query parameter `?debug=true` is present.
+On its own, this `NgrokTrafficPolicy` will not do anything, and must be attached to an `Ingress`/`Gateway`/`CloudEndpoint`/`AgentEndpoint`
+
+```yaml
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: NgrokTrafficPolicy
+metadata:
+  name: example-ngroktrafficpolicy
+  namespace: default
+spec:
+  policy:
+    on_http_request:
+    - name: debug
+      expressions:
+      - req.url.query_params['debug'][0]=='true'
+      actions:
+      - type: custom-response
+        config:
+          body: Custom response from Traffic Policy
+          headers:
+            content-type: text/plain
+          status_code: 200
+```

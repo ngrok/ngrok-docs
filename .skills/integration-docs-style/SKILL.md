@@ -45,7 +45,7 @@ Before submitting edits, verify (every item is mandatory):
 
 **Links & media**
 
-- Internal links: relative paths (e.g. `../traffic-policy/`); descriptive anchor text
+- Internal links: relative paths (e.g. `../gateway/traffic-policy/`); descriptive anchor text
 - No UI screenshots; keep architectural diagrams. When removing screenshots: remove image markup from the doc, delete the image files from the repo, and delete the image directory if it is now empty. No broken image refs.
 
 **Metadata**

@@ -4,7 +4,7 @@ sidebarTitle: Global Server Load Balancing
 description: Layer load balancing between three or more globally distributed, cloud-based virtual machines in DigitalOcean using ngrok's GSLB.
 ---
 
-This guide shows you how to layer ngrok's [Global Server Load Balancing](/domains/global-load-balancer/) (GSLB) on top of a VM-based deployment on DigitalOcean.
+This guide shows you how to layer ngrok's [Global Server Load Balancing](/gateway/domains/global-load-balancer/) (GSLB) on top of a VM-based deployment on DigitalOcean.
 
 GSLB improves performance and resiliency by distributing traffic to the nearest Point of Presence (PoP) and upstream service.
 Unlike a traditional GSLB deployment, ngrok routes traffic automatically without new infrastructure, IP provisioning, or DNS changes.
@@ -30,7 +30,7 @@ To simplify authenticating your account with the ngrok API, export the API key o
 export NGROK_API_KEY=<YOUR-API-KEY>
 ```
 
-Next, create a domain that is a subdomain of an [ngrok-managed domain](/domains/).
+Next, create a domain that is a subdomain of an [ngrok-managed domain](/gateway/domains/).
 For an example deployment like this, `YOUR_COMPANY-digitalocean-gslb.ngrok.app` would work great.
 
 You can reserve your domain in one of two ways: with the [ngrok API](/api/), or in the [ngrok dashboard](https://dashboard.ngrok.com/domains).
@@ -55,7 +55,7 @@ curl \
 <Tip>
 **Custom domains within ngrok:**
 Using CNAMEs, ngrok can host an endpoint on your domain while also managing the complete TLS certificate lifecycle on your behalf.
-If you'd prefer to use a custom domain rather than an ngrok-managed one, [follow the guide](/domains/custom-domains/) to set up your DNS and replace your custom domain in the `export` command above.
+If you'd prefer to use a custom domain rather than an ngrok-managed one, [follow the guide](/gateway/domains/custom-domains/) to set up your DNS and replace your custom domain in the `export` command above.
 </Tip>
 
 ## 2. Create a Cloud Endpoint
@@ -109,7 +109,7 @@ This demo deployment has four parts:
 - A straightforward Go-based API with a single endpoint at `/api`, which returns a randomly generated UUID and the machine's `hostname`, which should reflect the regions of your VMs.
 - A `Dockerfile` for containerizing said Go-based API.
 - A `docker-compose.yml` file for starting the API container and a containerized edition of the ngrok agent on the same network.
-- A `ngrok.yml` [agent configuration file](/agent/config/v3/) to connect the agent to your ngrok account and the shared internal domain.
+- A `ngrok.yml` [agent configuration file](/gateway/agent/config/v3/) to connect the agent to your ngrok account and the shared internal domain.
 
 Repeat the following steps on each VM:
 
@@ -120,7 +120,7 @@ Repeat the following steps on each VM:
   cd ngrok-vps-gslb-demo
   ```
 
-- Edit the `ngrok.yml` [ngrok agent configuration file](/agent/config/) with your `<YOUR_NGROK_AUTHTOKEN>` (find it in the [ngrok dashboard](https://dashboard.ngrok.com/get-started/your-authtoken)); it's different from the API key you created in the first step.
+- Edit the `ngrok.yml` [ngrok agent configuration file](/gateway/agent/config/) with your `<YOUR_NGROK_AUTHTOKEN>` (find it in the [ngrok dashboard](https://dashboard.ngrok.com/get-started/your-authtoken)); it's different from the API key you created in the first step.
   All three VMs use the same `url` value—ngrok automatically routes each incoming request to the nearest connected agent.
 
   ```yaml
@@ -306,7 +306,7 @@ From here, you have many options for extending your use of ngrok's GSLB:
 
 - Spread the load further by deploying additional VMs in more regions and connecting each agent to `https://gslb-demo.internal`—ngrok will automatically include them in load balancing.
 - Add more VMs in an existing region and connect them to the same internal domain; ngrok will equally distribute traffic among all connected agents for that domain.
-- Provision a Kubernetes cluster with the same workload and the ngrok [Kubernetes Operator](/k8s/) to load-balance between VM- and Kubernetes-based deployments of the same API or application.
+- Provision a Kubernetes cluster with the same workload and the ngrok [Kubernetes Operator](/gateway/k8s/) to load-balance between VM- and Kubernetes-based deployments of the same API or application.
 - Use the [weighted distribution](#configure-weighted-distribution) Traffic Policy for A/B tests by adjusting weights between regions.
 
 To learn more about ngrok's GSLB, see:
