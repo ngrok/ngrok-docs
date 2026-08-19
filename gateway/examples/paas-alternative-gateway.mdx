@@ -23,58 +23,47 @@ With this setup, you can:
 
 <Steps>
   <Step title="Create endpoints for your application instances">
-    Start multiple [Agent Endpoints](/gateway/agent-endpoints/) with the same URL to create an endpoint pool for automatic load balancing. Replace `$PORT` with your application ports.
+
+    Start multiple [Agent Endpoints](/gateway/endpoints/agent-endpoints/) with the same URL to create an endpoint pool for automatic load balancing. Replace `$PORT` with your application ports.
     You can also use one of the [SDKs](/agent-sdks) or the [Kubernetes Operator](/k8s).
 
-<<<<<<< HEAD
     If you only have one instance now, you can add additional replicas later for redundancy through load balancing.
-=======
-Start multiple [Agent Endpoints](/gateway/endpoints/agent-endpoints/) with the same URL to create an endpoint pool for automatic load balancing. Replace `$PORT` with your application ports.
-You can also use one of the [SDKs](/agent-sdks) or the [Kubernetes Operator](/k8s).
->>>>>>> origin/main
 
     ```bash
-    # Instance 1
-    ngrok http $PORT --url https://service.internal --pooling-enabled
-
-    # Instance 2 (optional)
-    ngrok http $PORT --url https://service.internal --pooling-enabled
-
-    # Instance 3 (optional)
-    ngrok http $PORT --url https://service.internal --pooling-enabled
-    ```
-
-    <Tip>
-    By using the same URL with `--pooling-enabled`, ngrok automatically creates an [Endpoint Pool](/gateway/endpoint-pooling) that distributes traffic round-robin across all healthy instances with automatic failover.
-    </Tip>
   </Step>
+</Steps>
+# Instance 1
+ngrok http $PORT --url https://service.internal --pooling-enabled
 
-<<<<<<< HEAD
-  <Step title="Reserve a domain">
-    <ReserveDomain />
-=======
+# Instance 2 (optional)
+ngrok http $PORT --url https://service.internal --pooling-enabled
+
+# Instance 3 (optional)
+ngrok http $PORT --url https://service.internal --pooling-enabled
+```
+
 <Tip>
 By using the same URL with `--pooling-enabled`, ngrok automatically creates an [Endpoint Pool](/gateway/endpoints/endpoint-pooling) that distributes traffic round-robin across all healthy instances with automatic failover.
 </Tip>
->>>>>>> origin/main
+
+<Steps>
+  <Step title="Reserve a domain">
+
+    <ReserveDomain />
 
     <Tip>
-    For a production PaaS alternative, consider using a [custom domain](/gateway/custom-domains/) you own instead of an ngrok subdomain.
+    For a production PaaS alternative, consider using a [custom domain](/gateway/domains/custom-domains/) you own instead of an ngrok subdomain.
     </Tip>
   </Step>
 
   <Step title="Create a Cloud Endpoint">
+
     <CloudEndpoint />
   </Step>
 
-<<<<<<< HEAD
   <Step title="Create a vault and secrets">
-    Store your authentication and API secrets securely using [Traffic Policy Secrets](/traffic-policy/secrets).
-=======
-<Tip>
-For a production PaaS alternative, consider using a [custom domain](/gateway/domains/custom-domains/) you own instead of an ngrok subdomain.
-</Tip>
->>>>>>> origin/main
+
+    Store your authentication and API secrets securely using [Traffic Policy Secrets](/gateway/traffic-policy/secrets).
 
     First, create a vault to store your application secrets:
 
@@ -84,26 +73,25 @@ For a production PaaS alternative, consider using a [custom domain](/gateway/dom
 
     Then add your secrets using the vault ID from the response:
 
-<<<<<<< HEAD
     ```bash
-    # OAuth client secret for app authentication
-    ngrok api secrets create \
-      --name "oauth-client-secret" \
-      --value "your_oauth_client_secret_here" \
-      --vault-id "$VAULT_ID"
-=======
-Store your authentication and API secrets securely using [Traffic Policy Secrets](/gateway/traffic-policy/secrets).
->>>>>>> origin/main
-
-    # API key for admin access
-    ngrok api secrets create \
-      --name "admin-api-key" \
-      --value "your_admin_api_key_here" \
-      --vault-id "$VAULT_ID"
-    ```
   </Step>
+</Steps>
+# OAuth client secret for app authentication
+ngrok api secrets create \
+  --name "oauth-client-secret" \
+  --value "your_oauth_client_secret_here" \
+  --vault-id "$VAULT_ID"
 
+# API key for admin access
+ngrok api secrets create \
+  --name "admin-api-key" \
+  --value "your_admin_api_key_here" \
+  --vault-id "$VAULT_ID"
+```
+
+<Steps>
   <Step title="Apply Traffic Policy to your Cloud Endpoint">
+
     While viewing your new Cloud Endpoint in the dashboard, copy the policy below and paste it into the Traffic Policy editor.
     Make sure you change each of the following values:
 
@@ -218,29 +206,30 @@ Store your authentication and API secrets securely using [Traffic Policy Secrets
   </Step>
 
   <Step title="Try out your endpoint">
+
     <TryOut />
 
     Test a few of the features you added with Traffic Policy:
 
     ```bash
-    # Test WAF with a potentially malicious request
-    curl https://$NGROK_DOMAIN/files?name=../../../../etc/passwd"
-
-    # Test admin authentication (will redirect to OAuth)
-    curl "https://$NGROK_DOMAIN/admin/dashboard"
-
-    # Test API authentication (basic auth with base64 encoded credentials)
-    # First, base64 encode the $YOUR_ADMIN_USERNAME:your_admin_api_key_here pair
-    # Example: admin:secret-api-key becomes YWRtaW46c2VjcmV0LWFwaS1rZXk=
-    curl -H "Authorization: Basic YWRtaW46c2VjcmV0LWFwaS1rZXk=" \
-         "https://$NGROK_DOMAIN/api/stats"
-
-    # Test bot blocking (should get 404)
-    curl -H "User-Agent: GPTBot" \
-         "https://$NGROK_DOMAIN/"
-    ```
   </Step>
 </Steps>
+# Test WAF with a potentially malicious request
+curl https://$NGROK_DOMAIN/files?name=../../../../etc/passwd"
+
+# Test admin authentication (will redirect to OAuth)
+curl "https://$NGROK_DOMAIN/admin/dashboard"
+
+# Test API authentication (basic auth with base64 encoded credentials)
+# First, base64 encode the $YOUR_ADMIN_USERNAME:your_admin_api_key_here pair
+# Example: admin:secret-api-key becomes YWRtaW46c2VjcmV0LWFwaS1rZXk=
+curl -H "Authorization: Basic YWRtaW46c2VjcmV0LWFwaS1rZXk=" \
+     "https://$NGROK_DOMAIN/api/stats"
+
+# Test bot blocking (should get 404)
+curl -H "User-Agent: GPTBot" \
+     "https://$NGROK_DOMAIN/"
+```
 
 ## What's next?
 

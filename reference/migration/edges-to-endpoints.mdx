@@ -24,6 +24,7 @@ This guide walks you through manually migrating ngrok **Edge configurations** (H
 
 <Steps>
   <Step title="Set up environment">
+
     Make sure you have:
 
     - **NGROK_API_TOKEN** (your personal or organization token).
@@ -39,6 +40,7 @@ This guide walks you through manually migrating ngrok **Edge configurations** (H
   </Step>
 
   <Step title="List your edges">
+
     Use the ngrok API to list all existing edges:
 
     ```bash
@@ -64,6 +66,7 @@ This guide walks you through manually migrating ngrok **Edge configurations** (H
   </Step>
 
   <Step title="Determine the target URL">
+
     Each edge has one or more `hostports`. Use those to define a **Cloud Endpoint `url`**:
 
     | Edge Type | URL Format                   |
@@ -76,6 +79,7 @@ This guide walks you through manually migrating ngrok **Edge configurations** (H
   </Step>
 
   <Step title="Create a Traffic Policy">
+
     Each Cloud Endpoint will have a YAML Traffic Policy.
 
     Here is the base structure of a Traffic Policy:
@@ -90,6 +94,7 @@ This guide walks you through manually migrating ngrok **Edge configurations** (H
   </Step>
 
   <Step title="Migrate routes (HTTPS only)">
+
     HTTPS edges have routes, and each route needs to be converted to a CEL expression based on its `match_type` for use on every rule that is defined.
 
     Here are some example CEL expressions for routes based on the `match_type`:
@@ -103,6 +108,7 @@ This guide walks you through manually migrating ngrok **Edge configurations** (H
   </Step>
 
   <Step title="Convert modules to actions">
+
     Each module on the edge or its routes maps to one or more policy actions:
 
     | Module                    | Actions                                                  |
@@ -120,12 +126,13 @@ This guide walks you through manually migrating ngrok **Edge configurations** (H
 
     You’ll want to translate each Module configuration to Action Configuration:
 
-    - [📚 Guide: How to Migrate Each Endpoint Configuration Module to Traffic Policy Actions](/guides/migration/modules-to-traffic-policy-actions)
+    - [📚 Guide: How to Migrate Each Endpoint Configuration Module to Traffic Policy Actions](/reference/migration/modules-to-traffic-policy-actions)
 
     Add these actions under the correct phase (with matching route expressions when the endpoint is HTTP or HTTPS).
   </Step>
 
   <Step title="Convert backends">
+
     Your edge’s backend defines where traffic goes. These should be placed **after all other actions you defined above. These should be added to the end of the phase.**
 
     ### Tunnel group backends
@@ -136,11 +143,7 @@ This guide walks you through manually migrating ngrok **Edge configurations** (H
     - Forward traffic to each internal domain using the `forward-internal` action and fall through with the `forward-internal` action.
     - Run the agent or create a Cloud Endpoint with that internal domain to receive traffic.
 
-<<<<<<< HEAD:guides/migration/edges-to-endpoints.mdx
     **Example Policy (HTTPS):**
-=======
-- [📚 Guide: How to Migrate Each Endpoint Configuration Module to Traffic Policy Actions](/reference/migration/modules-to-traffic-policy-actions)
->>>>>>> origin/main:reference/migration/edges-to-endpoints.mdx
 
     ```yaml
     on_http_request:
@@ -302,7 +305,6 @@ This guide walks you through manually migrating ngrok **Edge configurations** (H
     ```
   </Step>
 </Steps>
-
 ## ✏️ 8. Create the Cloud Endpoint
 
 Each edge `hostport` should become a separate **Cloud Endpoint** with its configuration represented as **JSON**, and the `traffic_policy` embedded as **stringified YAML**.

@@ -25,15 +25,11 @@ This guide walks you through enabling mTLS on your ngrok hosted endpoints using 
 
 <Steps>
   <Step title="Provision your certificates and credentials">
-    Although ngrok can [automatically provision your certificates](/gateway/tls-certificates) when you use standard TLS, you'll have to provide your own TLS certificate authority (CA) for mTLS.
+
+    Although ngrok can [automatically provision your certificates](/gateway/domains/tls-certificates) when you use standard TLS, you'll have to provide your own TLS certificate authority (CA) for mTLS.
     The CA is responsible for issuing, digitally signing, and verifying the authenticity of client certificates.
 
-<<<<<<< HEAD:gateway/mtls-termination.mdx
     Keep in mind:
-=======
-Although ngrok can [automatically provision your certificates](/gateway/domains/tls-certificates) when you use standard TLS, you'll have to provide your own TLS certificate authority (CA) for mTLS.
-The CA is responsible for issuing, digitally signing, and verifying the authenticity of client certificates.
->>>>>>> origin/main:gateway/domains/mtls-termination.mdx
 
     1. ngrok uses the CA certificate to verify the client certificate.
     2. Once the CA signs a client certificate, the client certificate is used to grant the client access your endpoints.
@@ -50,27 +46,30 @@ The CA is responsible for issuing, digitally signing, and verifying the authenti
     With this approach you can generate multiple client certificates that are trusted by the CA if needed.
 
     ```bash
-    # 1. Generate CA private key (ca.key)
-    openssl genpkey -algorithm RSA -out ca.key -pkeyopt rsa_keygen_bits:2048
-
-    # 2. Generate CA certificate (ca.crt)
-    openssl req -x509 -new -nodes -key ca.key -sha256 -days 365 -out ca.crt -subj "/CN=ExampleCA"
-
-    # 3. Generate client private key (client.key)
-    openssl genpkey -algorithm RSA -out client.key -pkeyopt rsa_keygen_bits:2048
-
-    # 4. Generate client certificate signing request (CSR) (client.csr)
-    openssl req -new -key client.key -out client.csr -subj "/CN=ExampleClient"
-
-    # 5. Generate client certificate (client.crt)
-    openssl x509 -req -in client.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out client.crt -days 365 -sha256
-    ```
-
-    These commands result in five new files: `ca.key`, `ca.crt`, `client.key`, `client.csr`, and `client.key`.
-    You will use the contents of `ca.crt` in your Traffic Policy to validate requests via `curl`, which, in turn, uses `client.key` and `client.crt`.
   </Step>
+</Steps>
+# 1. Generate CA private key (ca.key)
+openssl genpkey -algorithm RSA -out ca.key -pkeyopt rsa_keygen_bits:2048
 
+# 2. Generate CA certificate (ca.crt)
+openssl req -x509 -new -nodes -key ca.key -sha256 -days 365 -out ca.crt -subj "/CN=ExampleCA"
+
+# 3. Generate client private key (client.key)
+openssl genpkey -algorithm RSA -out client.key -pkeyopt rsa_keygen_bits:2048
+
+# 4. Generate client certificate signing request (CSR) (client.csr)
+openssl req -new -key client.key -out client.csr -subj "/CN=ExampleClient"
+
+# 5. Generate client certificate (client.crt)
+openssl x509 -req -in client.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out client.crt -days 365 -sha256
+```
+
+These commands result in five new files: `ca.key`, `ca.crt`, `client.key`, `client.csr`, and `client.key`.
+You will use the contents of `ca.crt` in your Traffic Policy to validate requests via `curl`, which, in turn, uses `client.key` and `client.crt`.
+
+<Steps>
   <Step title="Create a Traffic Policy">
+
     Using the CA certificate generated in the previous step, you can specify the `mutual_tls_certificate_authorities` field in a Traffic Policy to trust the CA that issued the client certificate.
 
     <CodeGroup>
@@ -112,12 +111,14 @@ The CA is responsible for issuing, digitally signing, and verifying the authenti
   </Step>
 
   <Step title="Start an endpoint with the Traffic Policy">
+
     ```bash
     ngrok http 8080 --url $YOUR_DOMAIN --traffic-policy-file /path/to/policy.yml
     ```
   </Step>
 
   <Step title="Test your endpoint">
+
     Test out that everything works by making a request to your endpoint using the `--cert` and `--key` flags to specify the client certificate and private key.
 
     ```bash

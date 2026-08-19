@@ -25,6 +25,7 @@ In this guide, walk through setting up remote access to the systems in a single 
 
 <Steps>
   <Step title="Create a Service User and authtoken for Customer 1">
+
     First, you'll create a Service User and an associated authtoken for each of your customers.
 
     A Service User is intended for automated systems that programmatically interact with your ngrok account (other platforms sometimes call this concept a Service Account).
@@ -46,13 +47,13 @@ In this guide, walk through setting up remote access to the systems in a single 
   </Step>
 
   <Step title="Install the ngrok Agent within Customer 1's network and configure internal Agent endpoints in ngrok.yml">
+
     Configure the agent to create internal Agent Endpoints that point to the services you want to remotely access. This will connect the services to your ngrok account but nothing will be able to connect to them until completing the subsequent steps. Additionally, for the TLS endpoint, configure it so that mTLS is terminated at the ngrok agent and data remains encrypted through the ngrok cloud edge. The configuration to achieve this is shown below in the example agent configuration file.
 
-    **Internal Endpoints** are private endpoints that only receive traffic when forwarded through the [forward-internal Traffic Policy action](/traffic-policy/actions/forward-internal/). This allows you to route traffic to an application through ngrok without making it publicly addressable. Internal endpoint URL hostnames must end with `.internal`.
+    **Internal Endpoints** are private endpoints that only receive traffic when forwarded through the [forward-internal Traffic Policy action](/gateway/traffic-policy/actions/forward-internal/). This allows you to route traffic to an application through ngrok without making it publicly addressable. Internal endpoint URL hostnames must end with `.internal`.
 
     After installing the ngrok agent, define internal endpoints for each service you want to remotely access inside the ngrok configuration file. You can install ngrok and its configuration file in `/path/to/ngrok/ngrok.yml` and the executable in `/path/to/ngrok/ngrok`.
 
-<<<<<<< HEAD
     ```yaml
     version: 3
     agent: 
@@ -62,9 +63,6 @@ In this guide, walk through setting up remote access to the systems in a single 
         url: http://webapp.cust1.internal
         upstream:
           url: 8080
-=======
-**Internal Endpoints** are private endpoints that only receive traffic when forwarded through the [forward-internal Traffic Policy action](/gateway/traffic-policy/actions/forward-internal/). This allows you to route traffic to an application through ngrok without making it publicly addressable. Internal endpoint URL hostnames must end with `.internal`.
->>>>>>> origin/main
 
       - name: Internal Endpoint for Cust 1 Payment API
         url: tls://api.cust1.internal
@@ -83,6 +81,7 @@ In this guide, walk through setting up remote access to the systems in a single 
   </Step>
 
   <Step title="Install the ngrok Operator within your Kubernetes cluster">
+
     Enable applications in your cluster to connect to the remote services. To do this, install the ngrok Kubernetes Operator into your cluster. The Operator will create v1.Service objects that your apps can connect to for access to the remote services in your customer's network.
 
     First, create a separate Service User with an associated authtoken **and** API key specifically for the Operator.
@@ -107,17 +106,14 @@ In this guide, walk through setting up remote access to the systems in a single 
   </Step>
 
   <Step title="Create Kubernetes bound Cloud Endpoints and attach Traffic Policy">
-    Create a **Cloud Endpoint** with a [**Kubernetes binding](/gateway/bindings/).** This will create a privately addressable way to access the remote services. These endpoints will only be accessible within Kubernetes clusters where you install the ngrok Operator.
+
+    Create a **Cloud Endpoint** with a [**Kubernetes binding](/gateway/endpoints/bindings/).** This will create a privately addressable way to access the remote services. These endpoints will only be accessible within Kubernetes clusters where you install the ngrok Operator.
 
     Endpoints with a kubernetes binding are secure, private endpoints that are only addressable inside of Kubernetes clusters where you install the ngrok Operator. They enable you to connect to ngrok endpoints without making them publicly addressable. In this case, create Cloud Endpoints with a binding of kubernetes.
 
-<<<<<<< HEAD
     Cloud Endpoints are persistent, always-on endpoints whose creation, deletion, and configuration is managed centrally via the Dashboard or API. 
     They exist permanently until they are explicitly deleted. 
     Cloud Endpoints do not forward their traffic to an agent by default and instead only use their attached Traffic Policy to handle connections.
-=======
-Create a **Cloud Endpoint** with a [**Kubernetes binding](/gateway/endpoints/bindings/).** This will create a privately addressable way to access the remote services. These endpoints will only be accessible within Kubernetes clusters where you install the ngrok Operator.
->>>>>>> origin/main
 
     Create a kubernetes bound Cloud Endpoint in the ngrok dashboard by navigating to endpoints and clicking "new". Configure it as shown in the screenshot below:
 
@@ -129,62 +125,11 @@ Create a **Cloud Endpoint** with a [**Kubernetes binding](/gateway/endpoints/bin
 
     Click on your newly created web app Cloud Endpoint and replace the default Traffic Policy with:
 
-<<<<<<< HEAD
     ```yaml
     on_http_request:
       - actions:
           - type: forward-internal
             config:
-=======
-Once you've created these endpoints, check your acme-customers namespace in your kubernetes cluster, and you should see three v1.Service objects created named webapp-cust1, api-cust1, and database-cust1.
-
-Click on your newly created web app Cloud Endpoint and replace the default Traffic Policy with:
-
-```yaml
-on_http_request:
-  - actions:
-      - type: forward-internal
-        config:
-          url: http://webapp.cust1.internal
-```
-
-Click on your newly created API Cloud Endpoint and replace the default Traffic Policy with:
-
-```yaml
-on_tcp_connect:
-  - actions:
-      - type: forward-internal
-        config:
-          url: tls://api.cust1.internal
-```
-
-Click on your newly created database Cloud Endpoint and replace the default Traffic Policy with:
-
-```yaml
-on_tcp_connect:
-  - actions:
-      - type: forward-internal
-        config:
-          url: tcp://database.cust1.internal:5432
-```
-
-The [CloudEndpoint Kubernetes custom resource](/gateway/k8s/crds/cloudendpoint/) offers another way to create cluster-addressable endpoints. This infrastructure-as-code approach integrates naturally with Kubernetes workflows while maintaining the same automation capabilities as the ngrok API. By using custom resources, you can manage Cloud Endpoints declaratively—making them accessible only within your cluster while leveraging standard Kubernetes tooling for deployment and lifecycle management. Here's the CloudEndpoint custom resource config with the required Traffic Policy for the web app Cloud Endpoint:
-
-```yaml
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-kind: CloudEndpoint
-metadata:
-  name: acme-k8s-resource
-  namespace: acme-customers
-spec:
-  url: http://webapp-cust1.acme-customers
-  trafficPolicy:
-    policy:
-      on_http_request:
-        - actions:
-            - type: forward-internal
-              config:
->>>>>>> origin/main
               url: http://webapp.cust1.internal
     ```
 
@@ -208,7 +153,7 @@ spec:
               url: tcp://database.cust1.internal:5432
     ```
 
-    The [CloudEndpoint Kubernetes custom resource](/k8s/crds/cloudendpoint/) offers another way to create cluster-addressable endpoints. This infrastructure-as-code approach integrates naturally with Kubernetes workflows while maintaining the same automation capabilities as the ngrok API. By using custom resources, you can manage Cloud Endpoints declaratively—making them accessible only within your cluster while leveraging standard Kubernetes tooling for deployment and lifecycle management. Here's the CloudEndpoint custom resource config with the required Traffic Policy for the web app Cloud Endpoint:
+    The [CloudEndpoint Kubernetes custom resource](/gateway/k8s/crds/cloudendpoint/) offers another way to create cluster-addressable endpoints. This infrastructure-as-code approach integrates naturally with Kubernetes workflows while maintaining the same automation capabilities as the ngrok API. By using custom resources, you can manage Cloud Endpoints declaratively—making them accessible only within your cluster while leveraging standard Kubernetes tooling for deployment and lifecycle management. Here's the CloudEndpoint custom resource config with the required Traffic Policy for the web app Cloud Endpoint:
 
     ```yaml
     apiVersion: ngrok.k8s.ngrok.com/v1alpha1
@@ -230,7 +175,6 @@ spec:
     ```
   </Step>
 </Steps>
-
 ## Additional ngrok features
 
 ### Set up a custom connect URL

@@ -30,6 +30,7 @@ You need a way to expose these APIs to the public internet without the complexit
 
 <Steps>
   <Step title="Install the ngrok operator within each K8s cluster">
+
     The [ngrok Kubernetes Operator](https://ngrok.com/docs/k8s/index#kubernetes-operator) lets you declaratively expose cluster Services through ngrok by reconciling simple manifests into managed, secure endpoints. Before you install the operator, save your ngrok authtoken and API key as environment variables. 
 
     To install the operator, run this command from inside each of your Kubernetes clusters that host your backend APIs:  
@@ -45,6 +46,7 @@ You need a way to expose these APIs to the public internet without the complexit
   </Step>
 
   <Step title="Create an internal endpoint for each API">
+
     Use the [`AgentEndpoint` CRD](https://ngrok.com/docs/k8s/crds/agentendpoint) to register an **internal** endpoint per API in each cluster. 
 
     Internal endpoints are not internet-reachable; they're only targetable from other ngrok endpoints via the `forward-internal` Traffic Policy action—perfect for wiring a single public gateway to multiple cluster services. To make an endpoint internal, set `spec.bindings: ["internal"]` **and** end `spec.url` with `.internal`.
@@ -55,76 +57,79 @@ You need a way to expose these APIs to the public internet without the complexit
     <Tab title="EKS">
 
     ```yaml title="agentendpoints-eks.yaml"
-    # Orders API + Catalog API
-    apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-    kind: AgentEndpoint
-    metadata:
-      name: catalog-internal
-      namespace: default
-    spec:
-      bindings:
-        - internal
-      url: https://catalog-eks.internal
-      upstream:
-        url: http://catalog-svc.default:80
-
-    ---
-    apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-    kind: AgentEndpoint
-    metadata:
-      name: orders-internal
-      namespace: default
-    spec:
-      bindings:
-        - internal
-      url: https://orders-eks.internal
-      upstream:
-        url: http://orders-svc.default:8443
-    ```
-
-    </Tab>
-
-    <Tab title="GKE">
-    ```yaml title="agentendpoints-gke.yaml"
-    # agentendpoints-gke.yaml: Inventory API + Webhook API
-    apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-    kind: AgentEndpoint
-    metadata:
-      name: inventory-internal
-      namespace: default
-    spec:
-      bindings:
-        - internal
-      url: https://inventory-gke.internal
-      upstream:
-        url: http://inventory-svc.default:80
-
-    ---
-    apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-    kind: AgentEndpoint
-    metadata:
-      name: webhooks-internal
-      namespace: default
-    spec:
-      bindings:
-        - internal
-      url: https://webhook-gke.internal
-      upstream:
-        url: http://webhook-svc.default:9000
-    ```
-    </Tab>
-
-    </Tabs>
-
-    Now, apply each YAML config in each cluster:
-
-    ```bash
-    kubectl apply -f agentendpoints-eks.yaml --context eks
-    kubectl apply -f agentendpoints-gke.yaml --context gke
-    ```
   </Step>
+</Steps>
+# Orders API + Catalog API
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: AgentEndpoint
+metadata:
+  name: catalog-internal
+  namespace: default
+spec:
+  bindings:
+    - internal
+  url: https://catalog-eks.internal
+  upstream:
+    url: http://catalog-svc.default:80
+    
+---
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: AgentEndpoint
+metadata:
+  name: orders-internal
+  namespace: default
+spec:
+  bindings:
+    - internal
+  url: https://orders-eks.internal
+  upstream:
+    url: http://orders-svc.default:8443
+```
 
+</Tab>
+
+<Tab title="GKE">
+```yaml title="agentendpoints-gke.yaml"
+# agentendpoints-gke.yaml: Inventory API + Webhook API
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: AgentEndpoint
+metadata:
+  name: inventory-internal
+  namespace: default
+spec:
+  bindings:
+    - internal
+  url: https://inventory-gke.internal
+  upstream:
+    url: http://inventory-svc.default:80
+
+---
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: AgentEndpoint
+metadata:
+  name: webhooks-internal
+  namespace: default
+spec:
+  bindings:
+    - internal
+  url: https://webhook-gke.internal
+  upstream:
+    url: http://webhook-svc.default:9000
+```
+</Tab>
+
+</Tabs>
+
+Now, apply each YAML config in each cluster:
+
+```bash
+kubectl apply -f agentendpoints-eks.yaml --context eks
+kubectl apply -f agentendpoints-gke.yaml --context gke
+```
+
+<Steps>
   <Step title="Create a public Cloud Endpoint and attach Traffic Policy">
+
     Cloud Endpoints are persistent, always-on endpoints you manage centrally via the [dashboard](https://dashboard.ngrok.com/) or [API](https://ngrok.com/docs/api). Cloud Endpoints don't forward their traffic to an agent by default and instead only use their attached Traffic Policy to handle connections. 
 
     In this case, this single Cloud Endpoint will act as the gateway to receive incoming requests and  route them to the correct internal endpoint based on a header (`X-Acme-Api`) sent with the request.
@@ -146,12 +151,9 @@ You need a way to expose these APIs to the public internet without the complexit
     This Traffic Policy will read the value of the request header for `X-Acme-Api` and route it to that corresponding internal endpoint. For example, a request sent with the header `X-Acme-Api: catalog-eks` will route to `https://catalog-eks.internal`, which is configured to point to the Catalog API in your EKS cluster. 
   </Step>
 
-<<<<<<< HEAD:guides/api-gateway/multicloud.mdx
   <Step title="Attach Traffic Policy to authenticate your Cloud Endpoint">
+
     Traffic Policy is ngrok's configuration language for endpoints. In this example, the Traffic Policy for your Cloud Endpoint handles routing rules (seen in step 3), rate limiting, authentication, and firewall rules. A full list of available Traffic Policy actions can be seen [here](https://ngrok.com/docs/traffic-policy/actions/). Use these actions by themselves or layered on top of each other (executed sequentially from top to bottom). 
-=======
-Load balancing at ngrok is done with [endpoint pooling](https://ngrok.com/docs/endpoints/endpoint-pooling/). When multiple ngrok endpoints are created with the same URL and with the *pooling_enabled* flag, ngrok automatically balances traffic across them. 
->>>>>>> origin/main:gateway/api-gateway/multicloud.mdx
 
     Here's how your Traffic Policy YAML might look for your Cloud Endpoint:
 
@@ -199,14 +201,14 @@ Load balancing at ngrok is done with [endpoint pooling](https://ngrok.com/docs/e
   </Step>
 
   <Step title="Load balance with endpoint pooling">
-    Load balancing at ngrok is done with [endpoint pooling](https://ngrok.com/docs/gateway/endpoint-pooling/). When multiple ngrok endpoints are created with the same URL and with the *pooling_enabled* flag, ngrok automatically balances traffic across them. 
+
+    Load balancing at ngrok is done with [endpoint pooling](https://ngrok.com/docs/endpoints/endpoint-pooling/). When multiple ngrok endpoints are created with the same URL and with the *pooling_enabled* flag, ngrok automatically balances traffic across them. 
 
     For AgentEndpoint resources, pooling is always on: if more than one agent creates the same internal URL, requests are balanced across them. 
 
     Nothing changes in your Cloud Endpoint config—and ngrok now spreads requests across the pooled internal endpoints. 
   </Step>
 </Steps>
-
 ## Recap
 
 You've successfully unified your APIs across EKS and GKE. A single public ngrok Cloud Endpoint points to 2 pools of internal endpoints, and Traffic Policy is handling routing, authorization, and security. To recap:

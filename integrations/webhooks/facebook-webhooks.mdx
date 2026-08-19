@@ -33,6 +33,7 @@ By integrating ngrok with Facebook, you can:
 
 <Steps>
   <Step title="Start your app">
+
     For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
 
     To install the sample, run the following in a terminal:
@@ -56,6 +57,7 @@ By integrating ngrok with Facebook, you can:
   </Step>
 
   <Step title="Expose your app with ngrok">
+
     Once your app is running locally, you're ready to put it online securely using ngrok.
 
     - Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
@@ -89,69 +91,34 @@ By integrating ngrok with Facebook, you can:
   </Step>
 
   <Step title="Configure Facebook to send webhooks">
-    Facebook can send webhook requests to your app when page or account events occur in your account.
-    To register for those events you need a Facebook page and a Facebook app associated with that page; create them before continuing.
 
-    - Sign in to [Meta for Developers](https://developers.facebook.com/).
-    - Click **My Apps** and then click your app.
-    - On the app dashboard, click **Add Product** and then **Set up** inside the **Webhooks** tile.
-    - On the **Webhooks** page, select **Page** from the combo box and click **Subscribe to this object**.
-    - In the **Edit User subscription** popup, enter your ngrok URL with `/webhooks` at the end in the **Callback URL** field (for example, `https://myexample.ngrok.app/webhooks`).
-    - Enter `12345` in the **Verify token** field, set the **Include values** slider to **Yes**, and click **Verify and save**.
-    - Confirm your localhost app receives the validation request and logs `WEBHOOK_VERIFIED` in the terminal.
-    - Back on the **Webhooks** page, click **Subscribe** for the **feed** field.
+    Facebook delivers webhooks through a Meta app linked to a Facebook page.
+    Follow [Meta's Graph API webhooks documentation](https://developers.facebook.com/docs/graph-api/webhooks/getting-started) to add the Webhooks product to your app and subscribe to the **Page** object, and set the following:
+
+    - **Callback URL**: your ngrok URL with `/webhooks` at the end (for example, `https://myexample.ngrok.app/webhooks`).
+    - **Verify token**: a string of your choice (for this example, `12345`).
+    - **Fields**: choose which fields trigger the webhook (for this example, **feed**).
+
+    When you save the callback URL, Meta sends a verification request to your app.
+    Confirm your localhost app logs `WEBHOOK_VERIFIED` in the terminal, then set your app to live mode so it can send events.
 
     <Tip>
-      You can subscribe to multiple fields under the **Page** object and other objects; use the same URL for each.
+      You can subscribe to multiple fields on the **Page** object and other objects using the same URL.
     </Tip>
-
-<<<<<<< HEAD
-    - Click **Test** for the **feed** field, click **Send to My Server**, and confirm your localhost app receives the test post request.
-    - Set **App Mode** to **Live** at the top of your app page.
 
     ### Run webhooks with Facebook and ngrok
 
-    Facebook sends different request body contents depending on the object and field you subscribe to.
-    With the **feed** action you can test by creating a post on your page or liking a post:
+    After you subscribe to a field, Meta sends POST requests to your app when that field changes.
+    The request body varies by object and field.
 
-    - Under **Your Pages and profiles**, click your page.
-    - On the **Manage Page** screen, click **Create post**, add content, and click **Post**.
-
-    Confirm your localhost app receives the feed message and logs both headers and body in the terminal.
+    With the **feed** field, you can trigger a call by creating a post on your page.
+    Confirm your localhost app logs the request headers and body in the terminal.
 
     <InspectingRequests />
 
     <ReplayingRequests />
   </Step>
 </Steps>
-=======
-Facebook delivers webhooks through a Meta app linked to a Facebook page.
-Follow [Meta's Graph API webhooks documentation](https://developers.facebook.com/docs/graph-api/webhooks/getting-started) to add the Webhooks product to your app and subscribe to the **Page** object, and set the following:
-
-- **Callback URL**: your ngrok URL with `/webhooks` at the end (for example, `https://myexample.ngrok.app/webhooks`).
-- **Verify token**: a string of your choice (for this example, `12345`).
-- **Fields**: choose which fields trigger the webhook (for this example, **feed**).
-
-When you save the callback URL, Meta sends a verification request to your app.
-Confirm your localhost app logs `WEBHOOK_VERIFIED` in the terminal, then set your app to live mode so it can send events.
-
-<Tip>
-  You can subscribe to multiple fields on the **Page** object and other objects using the same URL.
-</Tip>
-
-### Run webhooks with Facebook and ngrok
-
-After you subscribe to a field, Meta sends POST requests to your app when that field changes.
-The request body varies by object and field.
-
-With the **feed** field, you can trigger a call by creating a post on your page.
-Confirm your localhost app logs the request headers and body in the terminal.
-
-<InspectingRequests />
-
-<ReplayingRequests />
->>>>>>> origin/main
-
 ## Secure webhook requests
 
 ngrok can verify that incoming requests are from your Facebook webhook so only that traffic reaches your app.

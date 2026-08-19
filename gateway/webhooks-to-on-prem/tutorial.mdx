@@ -43,60 +43,60 @@ In this tutorial, you'll build the shared front door in steps 1–4, then apply 
 
 <Steps>
   <Step title="Give the receiving service a private address">
-    Each service that handles webhooks gets an internal [Agent Endpoint](/gateway/agent-endpoints/): a private address that only receives traffic when it's forwarded through the [`forward-internal`](/traffic-policy/actions/forward-internal/) action. Internal endpoint hostnames must end with `.internal`.
 
-<<<<<<< HEAD:guides/webhooks-to-on-prem/tutorial.mdx
+    Each service that handles webhooks gets an internal [Agent Endpoint](/gateway/endpoints/agent-endpoints/): a private address that only receives traffic when it's forwarded through the [`forward-internal`](/gateway/traffic-policy/actions/forward-internal/) action. Internal endpoint hostnames must end with `.internal`.
+
     How you create it depends on where the service runs.
-=======
-Each service that handles webhooks gets an internal [Agent Endpoint](/gateway/endpoints/agent-endpoints/): a private address that only receives traffic when it's forwarded through the [`forward-internal`](/gateway/traffic-policy/actions/forward-internal/) action. Internal endpoint hostnames must end with `.internal`.
->>>>>>> origin/main:gateway/webhooks-to-on-prem/tutorial.mdx
-
-    <Tabs>
-      <Tab title="On a server or VM">
-        Run the agent next to your service. It connects outbound over TLS on port 443, so nothing needs to change on the firewall.
-
-        ```bash
-        ngrok http $SERVICE_PORT --url https://payment-service.internal
-        ```
-
-      </Tab>
-
-      <Tab title="In a cloud container">
-        Run the agent (or an [SDK](/agent-sdks)) inside the container alongside your app. The container only needs outbound network access—no ingress rule, no public IP—so a workload with an egress-only policy can still receive webhooks.
-
-        ```bash
-        ngrok http $SERVICE_PORT --url https://payment-service.internal
-        ```
-
-      </Tab>
-
-      <Tab title="In Kubernetes">
-        Let the [ngrok Operator](/k8s/) manage the endpoint as a version-controlled resource, so the platform team owns it in Git rather than in someone's shell history.
-
-        ```yaml
-        apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-        kind: AgentEndpoint
-        metadata:
-          name: payment-service
-          namespace: webhooks
-        spec:
-          url: https://payment-service.internal
-          upstream:
-            url: http://payment-service.webhooks:8080
-        ```
-
-      </Tab>
-    </Tabs>
-
-    Repeat for every service that will receive webhook, for example, `notif-service.internal` and `deploy-service.internal`.
   </Step>
+</Steps>
+<Tabs>
+  <Tab title="On a server or VM">
+    Run the agent next to your service. It connects outbound over TLS on port 443, so nothing needs to change on the firewall.
 
+    ```bash
+    ngrok http $SERVICE_PORT --url https://payment-service.internal
+    ```
+
+  </Tab>
+
+  <Tab title="In a cloud container">
+    Run the agent (or an [SDK](/agent-sdks)) inside the container alongside your app. The container only needs outbound network access—no ingress rule, no public IP—so a workload with an egress-only policy can still receive webhooks.
+
+    ```bash
+    ngrok http $SERVICE_PORT --url https://payment-service.internal
+    ```
+
+  </Tab>
+
+  <Tab title="In Kubernetes">
+    Let the [ngrok Operator](/gateway/k8s/) manage the endpoint as a version-controlled resource, so the platform team owns it in Git rather than in someone's shell history.
+
+    ```yaml
+    apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+    kind: AgentEndpoint
+    metadata:
+      name: payment-service
+      namespace: webhooks
+    spec:
+      url: https://payment-service.internal
+      upstream:
+        url: http://payment-service.webhooks:8080
+    ```
+
+  </Tab>
+</Tabs>
+
+Repeat for every service that will receive webhook, for example, `notif-service.internal` and `deploy-service.internal`.
+
+<Steps>
   <Step title="Create the front door">
-    Navigate to the [**Endpoints**](https://dashboard.ngrok.com/endpoints) section of the dashboard, click **New +**, then **Cloud Endpoint**, and enter the domain you want to use for your public URL. (In Kubernetes, you can create this as a [`CloudEndpoint`](/k8s/crds/cloudendpoint/) resource instead.)
+
+    Navigate to the [**Endpoints**](https://dashboard.ngrok.com/endpoints) section of the dashboard, click **New +**, then **Cloud Endpoint**, and enter the domain you want to use for your public URL. (In Kubernetes, you can create this as a [`CloudEndpoint`](/gateway/k8s/crds/cloudendpoint/) resource instead.)
   </Step>
 
   <Step title="(Optional) Store your signing secrets in a vault">
-    Each route verifies a provider's signature using that provider's signing secret. For production, keep those secrets in [Secrets for Traffic Policy](/traffic-policy/secrets) so they're encrypted and referenced by name rather than pasted in plaintext. This step is optional, but a vault keeps secrets out of your policy source and lets you rotate them without editing routes.
+
+    Each route verifies a provider's signature using that provider's signing secret. For production, keep those secrets in [Secrets for Traffic Policy](/gateway/traffic-policy/secrets) so they're encrypted and referenced by name rather than pasted in plaintext. This step is optional, but a vault keeps secrets out of your policy source and lets you rotate them without editing routes.
 
     ```bash
     ngrok api vaults create --name "webhook-secrets" --description "Webhook validation secrets"
@@ -112,157 +112,96 @@ Each service that handles webhooks gets an internal [Agent Endpoint](/gateway/en
   </Step>
 
   <Step title="Verify the sender and route inward">
-    On your Cloud Endpoint's Traffic Policy, each rule matches a provider by request path, verifies the signature with [`verify-webhook`](/traffic-policy/actions/verify-webhook), and forwards verified requests to the matching internal service with [`forward-internal`](/traffic-policy/actions/forward-internal/). A request with a bad or missing signature is rejected with a `403`.
 
-<<<<<<< HEAD:guides/webhooks-to-on-prem/tutorial.mdx
-    <Tabs>
-      <Tab title="Using vaults and secrets">
-        ```yaml
-        on_http_request:
-          - expressions:
-              - "req.url.path.startsWith('/github')"
-            actions:
-              - type: verify-webhook
-                config:
-                  provider: github
-                  secret: "${secrets.get('webhook-secrets', 'github-secret')}"
-              - type: forward-internal
-                config:
-                  url: https://deploy-service.internal
-=======
-  <Tab title="In Kubernetes">
-    Let the [ngrok Operator](/gateway/k8s/) manage the endpoint as a version-controlled resource, so the platform team owns it in Git rather than in someone's shell history.
->>>>>>> origin/main:gateway/webhooks-to-on-prem/tutorial.mdx
-
-          - expressions:
-              - "req.url.path.startsWith('/twilio')"
-            actions:
-              - type: verify-webhook
-                config:
-                  provider: twilio
-                  secret: "${secrets.get('webhook-secrets', 'twilio-secret')}"
-              - type: forward-internal
-                config:
-                  url: https://notif-service.internal
-
-          - expressions:
-              - "req.url.path.startsWith('/stripe')"
-            actions:
-              - type: verify-webhook
-                config:
-                  provider: stripe
-                  secret: "${secrets.get('webhook-secrets', 'stripe-secret')}"
-              - type: forward-internal
-                config:
-                  url: https://payment-service.internal
-        ```
-
-      </Tab>
-
-      <Tab title="Using plaintext secrets">
-        ```yaml
-        on_http_request:
-          - expressions:
-              - "req.url.path.startsWith('/github')"
-            actions:
-              - type: verify-webhook
-                config:
-                  provider: github
-                  secret: "your_github_webhook_secret_here"
-              - type: forward-internal
-                config:
-                  url: https://deploy-service.internal
-
-<<<<<<< HEAD:guides/webhooks-to-on-prem/tutorial.mdx
-          - expressions:
-              - "req.url.path.startsWith('/twilio')"
-            actions:
-              - type: verify-webhook
-                config:
-                  provider: twilio
-                  secret: "your_twilio_auth_token_here"
-              - type: forward-internal
-                config:
-                  url: https://notif-service.internal
-=======
-Navigate to the [**Endpoints**](https://dashboard.ngrok.com/endpoints) section of the dashboard, click **New +**, then **Cloud Endpoint**, and enter the domain you want to use for your public URL. (In Kubernetes, you can create this as a [`CloudEndpoint`](/gateway/k8s/crds/cloudendpoint/) resource instead.)
->>>>>>> origin/main:gateway/webhooks-to-on-prem/tutorial.mdx
-
-          - expressions:
-              - "req.url.path.startsWith('/stripe')"
-            actions:
-              - type: verify-webhook
-                config:
-                  provider: stripe
-                  secret: "your_stripe_secret_here"
-              - type: forward-internal
-                config:
-                  url: https://payment-service.internal
-        ```
-
-<<<<<<< HEAD:guides/webhooks-to-on-prem/tutorial.mdx
-      </Tab>
-    </Tabs>
-  </Step>
-=======
-Each route verifies a provider's signature using that provider's signing secret. For production, keep those secrets in [Secrets for Traffic Policy](/gateway/traffic-policy/secrets) so they're encrypted and referenced by name rather than pasted in plaintext. This step is optional, but a vault keeps secrets out of your policy source and lets you rotate them without editing routes.
->>>>>>> origin/main:gateway/webhooks-to-on-prem/tutorial.mdx
-
-  <Step title="Add the guardrail your use case needs">
-    The front door verifies and routes for everyone. Layer on additional security depending on what you need most.
-
-    <Tabs>
-      <Tab title="Behind a firewall">
-        Nothing more is required: the agent's connection is outbound-only over port 443, and your `.internal` services are only reachable through `forward-internal`.
-      </Tab>
-
-      <Tab title="Regulated workloads">
-        For PHI or other regulated data, keep the payload encrypted the whole way and make sure ngrok never retains it:
-
-        - **End-to-end encryption.** Terminate TLS within your network at [the ngrok agent](/agent/agent-tls-termination) or at your upstream service. With this configuration, ngrok forwards ciphertext rather than decrypting traffic at the edge.
-        - **No stored payloads.** Leave full traffic capture off. Use TCP or TLS endpoints to bypass all traffic capture, including most request metadata.
-
-<<<<<<< HEAD:guides/webhooks-to-on-prem/tutorial.mdx
-        Review ngrok's compliance posture and request a BAA through the [Trust Center](https://trust.ngrok.com) before sending regulated data.
-=======
-On your Cloud Endpoint's Traffic Policy, each rule matches a provider by request path, verifies the signature with [`verify-webhook`](/gateway/traffic-policy/actions/verify-webhook), and forwards verified requests to the matching internal service with [`forward-internal`](/gateway/traffic-policy/actions/forward-internal/). A request with a bad or missing signature is rejected with a `403`.
->>>>>>> origin/main:gateway/webhooks-to-on-prem/tutorial.mdx
-
-      </Tab>
-
-      <Tab title="Platform-governed">
-        Let the platform team issue ACL-bound authtokens and manage Traffic Policy config as code.
-
-        - **Scope the agent's authtoken with an ACL** so you define what endpoints that agent can start. See [Authtoken ACLs](/agent/cli-api) for the full syntax, but as an example:
-
-        ```
-        bind:deploy-service.internal
-        ```
-
-        - **Declare endpoints and policy as version-controlled resources**.
-      </Tab>
-    </Tabs>
-  </Step>
-
-  <Step title="Configure your webhook URL at each provider and test">
-    Add your ngrok URL and provider-specific webhook path within each provider's dashboard:
-
-    - **GitHub**: `https://$NGROK_DOMAIN/github`
-    - **Twilio**: `https://$NGROK_DOMAIN/twilio`
-    - **Stripe**: `https://$NGROK_DOMAIN/stripe`
-
-<<<<<<< HEAD:guides/webhooks-to-on-prem/tutorial.mdx
-    Most providers offer a "send test event" button. Trigger one and watch it flow through: a valid event is verified and forwarded to the matching internal service, while a request with a bad or missing signature is rejected at the front door. You can confirm what happened for each request in the [Traffic Inspector](https://dashboard.ngrok.com/traffic-inspector). If you turned the inspector off for a regulated endpoint, verify against your own service logs instead.
+    On your Cloud Endpoint's Traffic Policy, each rule matches a provider by request path, verifies the signature with [`verify-webhook`](/gateway/traffic-policy/actions/verify-webhook), and forwards verified requests to the matching internal service with [`forward-internal`](/gateway/traffic-policy/actions/forward-internal/). A request with a bad or missing signature is rejected with a `403`.
   </Step>
 </Steps>
-=======
+<Tabs>
+  <Tab title="Using vaults and secrets">
+    ```yaml
+    on_http_request:
+      - expressions:
+          - "req.url.path.startsWith('/github')"
+        actions:
+          - type: verify-webhook
+            config:
+              provider: github
+              secret: "${secrets.get('webhook-secrets', 'github-secret')}"
+          - type: forward-internal
+            config:
+              url: https://deploy-service.internal
+
+      - expressions:
+          - "req.url.path.startsWith('/twilio')"
+        actions:
+          - type: verify-webhook
+            config:
+              provider: twilio
+              secret: "${secrets.get('webhook-secrets', 'twilio-secret')}"
+          - type: forward-internal
+            config:
+              url: https://notif-service.internal
+
+      - expressions:
+          - "req.url.path.startsWith('/stripe')"
+        actions:
+          - type: verify-webhook
+            config:
+              provider: stripe
+              secret: "${secrets.get('webhook-secrets', 'stripe-secret')}"
+          - type: forward-internal
+            config:
+              url: https://payment-service.internal
+    ```
+
+  </Tab>
+
+  <Tab title="Using plaintext secrets">
+    ```yaml
+    on_http_request:
+      - expressions:
+          - "req.url.path.startsWith('/github')"
+        actions:
+          - type: verify-webhook
+            config:
+              provider: github
+              secret: "your_github_webhook_secret_here"
+          - type: forward-internal
+            config:
+              url: https://deploy-service.internal
+
+      - expressions:
+          - "req.url.path.startsWith('/twilio')"
+        actions:
+          - type: verify-webhook
+            config:
+              provider: twilio
+              secret: "your_twilio_auth_token_here"
+          - type: forward-internal
+            config:
+              url: https://notif-service.internal
+
+      - expressions:
+          - "req.url.path.startsWith('/stripe')"
+        actions:
+          - type: verify-webhook
+            config:
+              provider: stripe
+              secret: "your_stripe_secret_here"
+          - type: forward-internal
+            config:
+              url: https://payment-service.internal
+    ```
+
   </Tab>
 </Tabs>
 
-### 5. Add the guardrail your use case needs
+<Steps>
+  <Step title="Add the guardrail your use case needs">
 
-The front door verifies and routes for everyone. Layer on additional security depending on what you need most.
-
+    The front door verifies and routes for everyone. Layer on additional security depending on what you need most.
+  </Step>
+</Steps>
 <Tabs>
   <Tab title="Behind a firewall">
     Nothing more is required: the agent's connection is outbound-only over port 443, and your `.internal` services are only reachable through `forward-internal`.
@@ -291,17 +230,18 @@ The front door verifies and routes for everyone. Layer on additional security de
   </Tab>
 </Tabs>
 
-### 6. Configure your webhook URL at each provider and test
+<Steps>
+  <Step title="Configure your webhook URL at each provider and test">
 
-Add your ngrok URL and provider-specific webhook path within each provider's dashboard:
+    Add your ngrok URL and provider-specific webhook path within each provider's dashboard:
 
-- **GitHub**: `https://$NGROK_DOMAIN/github`
-- **Twilio**: `https://$NGROK_DOMAIN/twilio`
-- **Stripe**: `https://$NGROK_DOMAIN/stripe`
+    - **GitHub**: `https://$NGROK_DOMAIN/github`
+    - **Twilio**: `https://$NGROK_DOMAIN/twilio`
+    - **Stripe**: `https://$NGROK_DOMAIN/stripe`
 
-Most providers offer a "send test event" button. Trigger one and watch it flow through: a valid event is verified and forwarded to the matching internal service, while a request with a bad or missing signature is rejected at the front door. You can confirm what happened for each request in the [Traffic Inspector](https://dashboard.ngrok.com/traffic-inspector). If you turned the inspector off for a regulated endpoint, verify against your own service logs instead.
->>>>>>> origin/main:gateway/webhooks-to-on-prem/tutorial.mdx
-
+    Most providers offer a "send test event" button. Trigger one and watch it flow through: a valid event is verified and forwarded to the matching internal service, while a request with a bad or missing signature is rejected at the front door. You can confirm what happened for each request in the [Traffic Inspector](https://dashboard.ngrok.com/traffic-inspector). If you turned the inspector off for a regulated endpoint, verify against your own service logs instead.
+  </Step>
+</Steps>
 ## Verifying a provider that isn't on the supported list
 
 `verify-webhook` supports a fixed set of [providers](/gateway/traffic-policy/actions/verify-webhook/#supported-providers). If your webhook provider isn't on the list, here are your options:

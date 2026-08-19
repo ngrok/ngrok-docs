@@ -20,6 +20,7 @@ This guide walks you through how to configure `ngrokd`: an ngrok component that 
 
 <Steps>
   <Step title="Install ngrokd in your local environment, start it, and set your API key">
+
     `ngrokd` is a lightweight daemon that makes your ngrok endpoints privately accessible and locked down to your local services. It automatically discovers your endpoints, assigns them local addresses, and forwards traffic through ngrok's secure infrastructure, allowing your apps to reach remote services without any network configuration. Think of it as a local proxy that turns ngrok endpoints into services that feel like they're running on your machine.
 
     <Tabs>
@@ -62,6 +63,7 @@ This guide walks you through how to configure `ngrokd`: an ngrok component that 
   </Step>
 
   <Step title="Create a service user and authtoken for isolated network access">
+
     Create a service user and an associated authtoken for each of your remote networks.
     A service user is intended for automated systems that programmatically interact with your ngrok account (other platforms sometimes call this concept a Service Account).
     Create a separate service user and associated authtoken for each remote network so that:
@@ -73,16 +75,17 @@ This guide walks you through how to configure `ngrokd`: an ngrok component that 
 
     Navigate to the [Service Users](https://dashboard.ngrok.com/service-users) section of your dashboard and click **New Service User**.
 
-    <img src="img/cloud-to-device/cloud-to-device-service-user.png" alt="Service Users page with New Service User button" width="918" height="272" />
+    <img src="./img/cloud-to-device/cloud-to-device-service-user.png" alt="Service Users page with New Service User button" width="918" height="272" />
 
     Next, create an authtoken assigned to this specific service user.
 
-    <img src="img/cloud-to-device/cloud-to-device-authtoken.png" alt="Authtokens page showing a new authtoken assigned to a service user" width="1068" height="424" />
+    <img src="./img/cloud-to-device/cloud-to-device-authtoken.png" alt="Authtokens page showing a new authtoken assigned to a service user" width="1068" height="424" />
   </Step>
 
   <Step title="Install the ngrok agent within your remote network and configure private Agent Endpoints in ngrok.yml">
+
     First, install the agent in your remote network, either on a gateway or directly on a device.
-    Follow the [Agent CLI Quickstart](/gateway/agent-cli-quickstart/) for installation instructions.
+    Follow the [Agent CLI Quickstart](/gateway/endpoints/agent-cli-quickstart/) for installation instructions.
 
     Then, configure the agent to create private Agent Endpoints pointing to the devices you want to remotely access.
     This connects the devices to your ngrok account, and the configuration is shown in the example agent configuration file below.
@@ -121,6 +124,7 @@ This guide walks you through how to configure `ngrokd`: an ngrok component that 
   </Step>
 
   <Step title="Test end-to-end connectivity from your local environment to upstream devices">
+
     From the machine where `ngrokd` is running, run:
 
     ```bash
@@ -129,7 +133,7 @@ This guide walks you through how to configure `ngrokd`: an ngrok component that 
 
     You should see your private endpoints listed:
 
-    <img src="img/private-connectivity/ngrokctl-list-bound-endpoints.png" alt="ngrokctl list output showing private endpoints" width="908" height="314" />
+    <img src="./img/private-connectivity/ngrokctl-list-bound-endpoints.png" alt="ngrokctl list output showing private endpoints" width="908" height="314" />
 
     From here, you can curl your HTTP endpoint and verify you get the expected response.
     The same can be done for your TCP endpoint by connecting at the assigned hostname and port:
@@ -137,92 +141,8 @@ This guide walks you through how to configure `ngrokd`: an ngrok component that 
     ```bash
     ssh user@camera.example.com -p 22
     ```
-<<<<<<< HEAD:guides/device-gateway/private-connectivity.mdx
   </Step>
 </Steps>
-=======
-  </Tab>
-</Tabs>
-
-## 2. Create a service user and authtoken for isolated network access
-
-Create a service user and an associated authtoken for each of your remote networks.
-A service user is intended for automated systems that programmatically interact with your ngrok account (other platforms sometimes call this concept a Service Account).
-Create a separate service user and associated authtoken for each remote network so that:
-
-- Their usage of your ngrok account is isolated and scoped with a specific permission set
-- If an agent is compromised, you can revoke its access independently
-- Agent start/stop audit events are properly attributed to each network
-- Your ngrok agents don't stop working if the human user who set them up leaves your ngrok account
-
-Navigate to the [Service Users](https://dashboard.ngrok.com/service-users) section of your dashboard and click **New Service User**.
-
-<img src="./img/cloud-to-device/cloud-to-device-service-user.png" alt="Service Users page with New Service User button" width="918" height="272" />
-
-Next, create an authtoken assigned to this specific service user.
-
-<img src="./img/cloud-to-device/cloud-to-device-authtoken.png" alt="Authtokens page showing a new authtoken assigned to a service user" width="1068" height="424" />
-
-## 3. Install the ngrok agent within your remote network and configure private Agent Endpoints in ngrok.yml
-
-First, install the agent in your remote network, either on a gateway or directly on a device.
-Follow the [Agent CLI Quickstart](/gateway/endpoints/agent-cli-quickstart/) for installation instructions.
-
-Then, configure the agent to create private Agent Endpoints pointing to the devices you want to remotely access.
-This connects the devices to your ngrok account, and the configuration is shown in the example agent configuration file below.
-
-**Private Agent Endpoints** are private endpoints that can **only** receive traffic from services on your local network where `ngrokd` is installed.
-These endpoints are not publicly addressable anywhere on the internet, and access is **completely locked down** to your local environment.
-
-After installing the ngrok agent, define private Agent Endpoints for each service you want to remotely access inside the ngrok configuration file at `/path/to/ngrok/ngrok.yml`:
-
-```yaml
-version: 3
-
-agent:
-  authtoken: AUTHTOKEN_CREATED_IN_STEP_2
-
-endpoints:
-  - name: Internal Endpoint for Controller
-    url: http://controller.example.com
-    upstream:
-      url: 9080
-    bindings:
-      - kubernetes
-  - name: Internal Endpoint for Security Camera
-    url: tcp://camera.example.com:22
-    upstream:
-      url: 22
-    bindings:
-      - kubernetes
-```
-
-Once you've saved the configuration, activate your endpoints by running:
-
-```bash
-ngrok start --all
-```
-
-## 4. Test end-to-end connectivity from your local environment to upstream devices
-
-From the machine where `ngrokd` is running, run:
-
-```bash
-ngrokctl list
-```
-
-You should see your private endpoints listed:
-
-<img src="./img/private-connectivity/ngrokctl-list-bound-endpoints.png" alt="ngrokctl list output showing private endpoints" width="908" height="314" />
-
-From here, you can curl your HTTP endpoint and verify you get the expected response.
-The same can be done for your TCP endpoint by connecting at the assigned hostname and port:
-
-```bash
-ssh user@camera.example.com -p 22
-```
->>>>>>> origin/main:gateway/device-gateway/private-connectivity.mdx
-
 ## What's next
 
 - [Install ngrok as a background service](/gateway/site-to-site-connectivity/background-service) to ensure the agent starts on boot and recovers from failures.

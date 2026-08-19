@@ -23,6 +23,7 @@ ngrok's GSLB even works on top of Linode's internal load balancing mechanism, No
 
 <Steps>
   <Step title="Reserve your ngrok domain">
+
     First, [generate an API key](https://dashboard.ngrok.com/api-keys) in the ngrok dashboard.
     Make sure you save the API key before you close the modal, because it won't be displayed again.
 
@@ -57,24 +58,18 @@ ngrok's GSLB even works on top of Linode's internal load balancing mechanism, No
     **Custom domains within ngrok**
 
     Using CNAMEs, ngrok can host an endpoint on your domain while also managing the complete TLS certificate lifecycle on your behalf.
-    If you'd prefer to use a custom domain rather than an ngrok-managed one, [follow our guide](/gateway/custom-domains/) to set up your DNS and replace your custom domain in the `export` command above.
+    If you'd prefer to use a custom domain rather than an ngrok-managed one, [follow our guide](/gateway/domains/custom-domains/) to set up your DNS and replace your custom domain in the `export` command above.
     </Tip>
   </Step>
 
-<<<<<<< HEAD
   <Step title="Create a Cloud Endpoint">
-    With ngrok, you create a [Cloud Endpoint](/gateway/cloud-endpoints/) to manage a persistent public endpoint in the cloud.
-    A Cloud Endpoint's [Traffic Policy](/traffic-policy/) defines how requests are handled—including routing, authentication, and load balancing across your upstream services.
-=======
-Using CNAMEs, ngrok can host an endpoint on your domain while also managing the complete TLS certificate lifecycle on your behalf.
-If you'd prefer to use a custom domain rather than an ngrok-managed one, [follow our guide](/gateway/domains/custom-domains/) to set up your DNS and replace your custom domain in the `export` command above.
-</Tip>
->>>>>>> origin/main
+
+    With ngrok, you create a [Cloud Endpoint](/gateway/endpoints/cloud-endpoints/) to manage a persistent public endpoint in the cloud.
+    A Cloud Endpoint's [Traffic Policy](/gateway/traffic-policy/) defines how requests are handled—including routing, authentication, and load balancing across your upstream services.
 
     Save the following Traffic Policy to a file named `policy.yaml` on your local workstation.
     Replace `dc-atlanta`, `dc-osaka`, and `dc-frankfurt` with the location names you plan to use for your VMs—you'll use these same names when configuring the ngrok agent on each VM in step 3.
 
-<<<<<<< HEAD
     ```yaml
     on_http_request:
       - actions:
@@ -92,19 +87,14 @@ If you'd prefer to use a custom domain rather than an ngrok-managed one, [follow
               status_code: 503
               body: "No upstream available."
     ```
-=======
-With ngrok, you create a [Cloud Endpoint](/gateway/endpoints/cloud-endpoints/) to manage a persistent public endpoint in the cloud.
-A Cloud Endpoint's [Traffic Policy](/gateway/traffic-policy/) defines how requests are handled—including routing, authentication, and load balancing across your upstream services.
->>>>>>> origin/main
 
-    This policy randomly picks one of three [internal endpoints](/gateway/internal-endpoints/) on each request, distributing load equally across your VMs.
+    This policy randomly picks one of three [internal endpoints](/gateway/endpoints/internal-endpoints/) on each request, distributing load equally across your VMs.
     When a VM's agent is offline, `on_error: continue` falls through to the next action rather than returning an error to the client.
 
     <Tip>
-    To assign custom weights instead of equal distribution, see the [weighted backend migration guide](/guides/migration/edges-to-endpoints#weighted-backends--not-yet-supported) for a more advanced pattern using cumulative weights and the `rand.int()` macro.
+    To assign custom weights instead of equal distribution, see the [weighted backend migration guide](/reference/migration/edges-to-endpoints#weighted-backends--not-yet-supported) for a more advanced pattern using cumulative weights and the `rand.int()` macro.
     </Tip>
 
-<<<<<<< HEAD
     Now create the Cloud Endpoint with the Traffic Policy.
     `jq` handles escaping the YAML into a valid JSON string:
 
@@ -120,14 +110,6 @@ A Cloud Endpoint's [Traffic Policy](/gateway/traffic-policy/) defines how reques
       -H "Ngrok-Version: 2" \
       -d @-
     ```
-=======
-This policy randomly picks one of three [internal endpoints](/gateway/endpoints/internal-endpoints/) on each request, distributing load equally across your VMs.
-When a VM's agent is offline, `on_error: continue` falls through to the next action rather than returning an error to the client.
-
-<Tip>
-To assign custom weights instead of equal distribution, see the [weighted backend migration guide](/reference/migration/edges-to-endpoints#weighted-backends--not-yet-supported) for a more advanced pattern using cumulative weights and the `rand.int()` macro.
-</Tip>
->>>>>>> origin/main
 
     Export the `id` from the response for future use.
 
@@ -142,31 +124,25 @@ To assign custom weights instead of equal distribution, see the [weighted backen
   </Step>
 
   <Step title="Install the ngrok Agent and an example workload on each VM">
+
     To get some tunnels online and quickly see how ngrok's GSLB works, you'll use an [example API deployment](https://github.com/joelhans/ngrok-vps-gslb-demo).
     This demo deployment has four parts:
 
     - A straightforward Go-based API with a single endpoint at `/api`, which returns a randomly generated UUID and the machine's `hostname`, which should reflect the regions of your VMs.
     - A `Dockerfile` for containerizing said Go-based API.
     - A `docker-compose.yml` file for starting the API container and a containerized edition of the ngrok agent on the same network.
-    - A `ngrok.yml` [agent configuration file](/agent/config/v3/) to connect the agent to your ngrok account and the internal endpoint for that VM.
+    - A `ngrok.yml` [agent configuration file](/gateway/agent/config/v3/) to connect the agent to your ngrok account and the internal endpoint for that VM.
 
     Repeat the following steps on **each** VM:
 
     Clone the demo repository:
 
-<<<<<<< HEAD
     ```bash
     git clone https://github.com/joelhans/ngrok-vps-gslb-demo
     cd ngrok-vps-gslb-demo
     ```
-=======
-- A straightforward Go-based API with a single endpoint at `/api`, which returns a randomly generated UUID and the machine's `hostname`, which should reflect the regions of your VMs.
-- A `Dockerfile` for containerizing said Go-based API.
-- A `docker-compose.yml` file for starting the API container and a containerized edition of the ngrok agent on the same network.
-- A `ngrok.yml` [agent configuration file](/gateway/agent/config/v3/) to connect the agent to your ngrok account and the internal endpoint for that VM.
->>>>>>> origin/main
 
-    Edit the `ngrok.yml` [ngrok agent configuration file](/agent/config/) with your `<YOUR_NGROK_AUTHTOKEN>`, which you can find in the [ngrok dashboard](https://dashboard.ngrok.com/get-started/your-authtoken).
+    Edit the `ngrok.yml` [ngrok agent configuration file](/gateway/agent/config/) with your `<YOUR_NGROK_AUTHTOKEN>`, which you can find in the [ngrok dashboard](https://dashboard.ngrok.com/get-started/your-authtoken).
     Note that it's different from the API key you created in the first step.
     Set the `url` to the internal endpoint for that VM, matching the location names you used in the Traffic Policy in [step 2](#create-a-cloud-endpoint) (for example, `dc-atlanta`, `dc-osaka`, and `dc-frankfurt`):
 
@@ -183,18 +159,13 @@ To assign custom weights instead of equal distribution, see the [weighted backen
 
     Build and start the containerized API deployment, passing the hostname of the VM to the hostname of the Docker container:
 
-<<<<<<< HEAD
     ```bash
     HOSTNAME=$(hostname -f) docker compose up -d
     ```
   </Step>
-=======
-Edit the `ngrok.yml` [ngrok agent configuration file](/gateway/agent/config/) with your `<YOUR_NGROK_AUTHTOKEN>`, which you can find in the [ngrok dashboard](https://dashboard.ngrok.com/get-started/your-authtoken).
-Note that it's different from the API key you created in the first step.
-Set the `url` to the internal endpoint for that VM, matching the location names you used in the Traffic Policy in [step 2](#create-a-cloud-endpoint) (for example, `dc-atlanta`, `dc-osaka`, and `dc-frankfurt`):
->>>>>>> origin/main
 
   <Step title="Test out ngrok's Global Server Load Balancing">
+
     ngrok is now load-balancing your single API endpoint across all three distributed VMs.
 
     Ping your demo API at `<YOUR_NGROK_DOMAIN>/api` to see which backend responds.
@@ -242,7 +213,8 @@ Set the `url` to the internal endpoint for that VM, matching the location names 
   </Step>
 
   <Step title="(optional): Extend the Traffic Policy for API gateway features">
-    Your demo API is already globally load-balanced, but if you want to extend your ngrok usage even further, you can update the Traffic Policy on your Cloud Endpoint with additional [Traffic Policy actions](/traffic-policy/actions/).
+
+    Your demo API is already globally load-balanced, but if you want to extend your ngrok usage even further, you can update the Traffic Policy on your Cloud Endpoint with additional [Traffic Policy actions](/gateway/traffic-policy/actions/).
 
     For example, to add response headers that include the request's country code, update `policy.yaml` to add an `on_http_response` phase:
 
@@ -286,11 +258,7 @@ Set the `url` to the internal endpoint for that VM, matching the location names 
       -d @-
     ```
 
-<<<<<<< HEAD
     When you request your API again, the response includes the `country` header (with the appropriate code for where you're generating the request) and the `is-ngrok` header.
-=======
-Your demo API is already globally load-balanced, but if you want to extend your ngrok usage even further, you can update the Traffic Policy on your Cloud Endpoint with additional [Traffic Policy actions](/gateway/traffic-policy/actions/).
->>>>>>> origin/main
 
     ```bash
     curl -s -I -X GET https://<YOUR_NGROK_DOMAIN>/api
@@ -304,7 +272,6 @@ Your demo API is already globally load-balanced, but if you want to extend your 
     ```
   </Step>
 </Steps>
-
 ## What's next?
 
 You now have a globally load-balanced API deployment using three Linode VMs, three ngrok agents, three secure tunnels, one Cloud Endpoint, and a single convenient endpoint for your users.

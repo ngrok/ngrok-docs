@@ -29,6 +29,7 @@ By integrating ngrok with Amazon SNS, you can:
 
 <Steps>
   <Step title="Start your app">
+
     For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
 
     To install the sample, run the following in a terminal:
@@ -52,6 +53,7 @@ By integrating ngrok with Amazon SNS, you can:
   </Step>
 
   <Step title="Expose your app with ngrok">
+
     Once your app is running locally, you're ready to put it online securely using ngrok.
 
     - Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
@@ -71,62 +73,29 @@ By integrating ngrok with Amazon SNS, you can:
   </Step>
 
   <Step title="Configure Amazon SNS to send webhooks">
-    Amazon SNS can send HTTPS notifications to your app when messages are published to a topic.
-    To set this up:
 
-    - Sign in to [AWS](https://aws.amazon.com/).
-    - In the AWS console search bar, enter `sns` and open **Simple Notification Service**.
-    - On the SNS **Dashboard**, click **Topics** in the left menu and click **Create topic**.
-    - On **Create topic**, select **Standard**, enter a name (for example, `MyTopic`) in **Name**, and click **Create topic**.
-    - Click **Subscriptions** in the left menu and click **Create subscription**.
-    - On **Create subscription**, select your topic in **Topic ARN**, select **HTTPS** in **Protocol**, and paste the ngrok URL in **Endpoint** (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
-    - Click **Create subscription**.
-    - Confirm your localhost app receives a **SubscriptionConfirmation** notification and logs both headers and body in the terminal.
-    - From the request body, copy the value of **SubscribeURL**.
-    - On the SNS **Subscriptions** page, select the **Pending confirmation** subscription, click **Confirm subscription**, paste the **SubscribeURL** value in the **url** field, and click **Confirm subscription**.
+    Amazon SNS sends notifications to an HTTP/S endpoint that you subscribe to a topic.
+    Using a standard SNS topic, follow [AWS's documentation for subscribing an HTTPS endpoint to an SNS topic](https://docs.aws.amazon.com/sns/latest/dg/sns-subscribe-https-s-endpoints-to-topic.html), and set the following:
 
-    You should see **Subscription was confirmed successfully**.
+    - **Protocol**: `HTTPS`.
+    - **Endpoint**: your ngrok URL (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
 
-<<<<<<< HEAD
+    After you create the subscription, SNS sends a **SubscriptionConfirmation** request to your app.
+    Copy the **SubscribeURL** value from the request body your app logs, then confirm the subscription in SNS using that URL.
+    The subscription status changes to confirmed once you do.
+
     ### Run webhooks with Amazon SNS and ngrok
 
-    Publishing a message to your SNS topic triggers your HTTPS subscription.
-    To publish a message manually:
+    Publishing a message to your topic triggers your HTTPS subscription.
 
-    - In the AWS console, search for `sns` and open **Simple Notification Service**.
-    - On the SNS **Dashboard**, click **Topics** and open the topic you created.
-    - On the topic page, click **Publish message**, enter a subject in **Subject**, enter a body in **Message body to send to the endpoint**, and click **Publish message**.
-=======
-Amazon SNS sends notifications to an HTTP/S endpoint that you subscribe to a topic.
-Using a standard SNS topic, follow [AWS's documentation for subscribing an HTTPS endpoint to an SNS topic](https://docs.aws.amazon.com/sns/latest/dg/sns-subscribe-https-s-endpoints-to-topic.html), and set the following:
+    To trigger a webhook call, publish a message to the topic from SNS.
+    Confirm your app receives the notification and logs the headers and body in the terminal.
 
-- **Protocol**: `HTTPS`.
-- **Endpoint**: your ngrok URL (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
-
-After you create the subscription, SNS sends a **SubscriptionConfirmation** request to your app.
-Copy the **SubscribeURL** value from the request body your app logs, then confirm the subscription in SNS using that URL.
-The subscription status changes to confirmed once you do.
->>>>>>> origin/main
-
-    Confirm your localhost app receives a notification and logs both headers and body in the terminal.
-
-<<<<<<< HEAD
     <InspectingRequests />
 
     <ReplayingRequests />
   </Step>
 </Steps>
-=======
-Publishing a message to your topic triggers your HTTPS subscription.
-
-To trigger a webhook call, publish a message to the topic from SNS.
-Confirm your app receives the notification and logs the headers and body in the terminal.
-
-<InspectingRequests />
-
-<ReplayingRequests />
->>>>>>> origin/main
-
 ## Secure webhook requests
 
 ngrok can verify that incoming requests are from your Amazon SNS topic so only that traffic reaches your app.

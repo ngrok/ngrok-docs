@@ -29,49 +29,9 @@ This means:
 
 <Steps>
   <Step title="Set up the remote cluster">
+
     Install the ngrok Kubernetes Operator with bindings enabled:
 
-<<<<<<< HEAD:k8s/guides/local-projection.mdx
-=======
-Install the ngrok Kubernetes Operator with bindings enabled:
-
-```bash
-helm install ngrok-operator ngrok/ngrok-operator \
-  --namespace ngrok-operator \
-  --create-namespace \
-  --set bindings.enabled=true \
-  --set credentials.apiKey=$NGROK_API_KEY \
-  --set credentials.authtoken=$NGROK_AUTHTOKEN
-```
-
-Create a namespace for your projected services:
-
-```bash
-kubectl create ns staging
-```
-
-### Restrict which endpoints can be projected (optional)
-
-You can limit which Kubernetes-bound endpoints appear in your cluster using endpoint selectors.
-For example, to only allow endpoints matching `*.staging`:
-
-```bash
-helm upgrade ngrok-operator ngrok/ngrok-operator \
-  --namespace ngrok-operator \
-  --reuse-values \
-  --set 'bindings.endpointSelectors={endpoint.url.contains(".staging")}'
-```
-
-See [Restrict Kubernetes bound endpoints](/gateway/k8s/guides/bindings/#restrict-kubernetes-bound-endpoints) for more details.
-
-## 2. Project your local service
-
-With your local service running (for example, on port `8080`), create a Kubernetes-bound endpoint.
-The ngrok CLI works best if you're _not_ running the service in a [local K8s cluster](/gateway/k8s/guides/local-cluster), like [k3d](https://k3d.io/stable/) or [kind](https://kind.sigs.k8s.io/)—for that, use the ngrok Kubernetes Operator on the local cluster as well.
-
-<Tabs>
-  <Tab title="ngrok CLI">
->>>>>>> origin/main:gateway/k8s/guides/local-projection.mdx
     ```bash
     helm install ngrok-operator ngrok/ngrok-operator \
       --namespace ngrok-operator \
@@ -99,12 +59,13 @@ The ngrok CLI works best if you're _not_ running the service in a [local K8s clu
       --set 'bindings.endpointSelectors={endpoint.url.contains(".staging")}'
     ```
 
-    See [Restrict Kubernetes bound endpoints](/k8s/guides/bindings/#restrict-kubernetes-bound-endpoints) for more details.
+    See [Restrict Kubernetes bound endpoints](/gateway/k8s/guides/bindings/#restrict-kubernetes-bound-endpoints) for more details.
   </Step>
 
   <Step title="Project your local service">
+
     With your local service running (for example, on port `8080`), create a Kubernetes-bound endpoint.
-    The ngrok CLI works best if you're _not_ running the service in a [local K8s cluster](/k8s/guides/local-cluster), like [k3d](https://k3d.io/stable/) or [kind](https://kind.sigs.k8s.io/)—for that, use the ngrok Kubernetes Operator on the local cluster as well.
+    The ngrok CLI works best if you're _not_ running the service in a [local K8s cluster](/gateway/k8s/guides/local-cluster), like [k3d](https://k3d.io/stable/) or [kind](https://kind.sigs.k8s.io/)—for that, use the ngrok Kubernetes Operator on the local cluster as well.
 
     <Tabs>
       <Tab title="ngrok CLI">
@@ -137,6 +98,7 @@ The ngrok CLI works best if you're _not_ running the service in a [local K8s clu
   </Step>
 
   <Step title="Test the connection">
+
     Verify the projected service is accessible from within your *remote* cluster:
 
     ```bash
@@ -151,6 +113,7 @@ The ngrok CLI works best if you're _not_ running the service in a [local K8s clu
   </Step>
 
   <Step title="Redirect existing traffic to your local service">
+
     If other services in your cluster already communicate with a service you want to replace, you can redirect their traffic to an endpoint running on your local machine.
 
     For example, if a `frontend` deployment sends requests to a `backend` service configured via an environment variable:
@@ -175,7 +138,6 @@ The ngrok CLI works best if you're _not_ running the service in a [local K8s clu
     Test and iterate until you're ready to create a pull request and push more formally to your CI/CD pipeline, then revert the environment variable, perform another rollout, and stop your ngrok agent to clean everything up.
   </Step>
 </Steps>
-
 ## What's next
 
 - [Bindings](/gateway/k8s/guides/bindings/): Learn about all binding types and how they work with the Operator
