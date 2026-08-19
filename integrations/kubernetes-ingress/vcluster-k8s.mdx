@@ -20,7 +20,7 @@ This guide shows you how to use an existing Kubernetes cluster (or set up a loca
 - An existing remote or local Kubernetes cluster or minikube to create a new demo cluster locally.
 - An ngrok account.
 - kubectl and Helm 3.0.0+ installed on your local workstation.
-- The [ngrok Kubernetes Operator](/k8s/) installed on your cluster.
+- The [ngrok Kubernetes Operator](/gateway/k8s/) installed on your cluster.
 - A reserved domain from the ngrok [dashboard](https://dashboard.ngrok.com/domains) or [API](/api-reference/reserveddomains/list); this guide refers to it as `<NGROK_DOMAIN>`.
 
 ## Set up a local virtual cluster with vcluster
@@ -163,11 +163,11 @@ To demonstrate how the Operator simplifies routing external traffic to your prim
 
 To take your ingress a little further, assume you want to add security, in the form of Google OAuth, to the endpoint where your tinyllama application is running.
 
-With the [Traffic Policy system](/traffic-policy/) and the [`oauth` action](/traffic-policy/actions/oauth), ngrok manages OAuth protection entirely at ngrok.
+With the [Traffic Policy system](/gateway/traffic-policy/) and the [`oauth` action](/gateway/traffic-policy/actions/oauth), ngrok manages OAuth protection entirely at ngrok.
 This means you don't need to add any additional services to your cluster, or alter routes, to ensure ngrok's network authenticates and authorizes all requests before allowing ingress and access to your endpoint.
 
 To enable the `oauth` action, you'll create a new `NgrokTrafficPolicy` custom resource and apply it to your entire `Ingress` with an annotation.
-You can also apply the policy to just a specific backend or as the default backend for an `Ingress`—see the documentation on using the [Operator with Ingresses](/k8s/guides/using-ingresses/#using-ngroktrafficpolicy-with-ingress).
+You can also apply the policy to just a specific backend or as the default backend for an `Ingress`—see the documentation on using the [Operator with Ingresses](/gateway/k8s/guides/using-ingresses/#using-ngroktrafficpolicy-with-ingress).
 
 - Edit your existing `tinyllama.yaml` manifest with the following, leaving the `Service` and `Deployment` as they were.
   Note the new `annotations` field and the `NgrokTrafficPolicy` CR.
@@ -220,7 +220,7 @@ You can also apply the policy to just a specific backend or as the default backe
 - When you open your demo app again, you'll be asked to log in via Google.
   That's a start, but what if you want to authenticate only yourself or colleagues?
 
-- Use [expressions](/traffic-policy/how-it-works#expressions) and [CEL interpolation](/traffic-policy/how-it-works#cel-interpolation) to filter out and reject OAuth logins that don't contain `example.com`.
+- Use [expressions](/gateway/traffic-policy/how-it-works#expressions) and [CEL interpolation](/gateway/traffic-policy/how-it-works#cel-interpolation) to filter out and reject OAuth logins that don't contain `example.com`.
   Update the `NgrokTrafficPolicy` portion of your manifest after changing `example.com` to your domain.
 
    ```yaml
@@ -261,4 +261,4 @@ vcluster disconnect
 vcluster delete my-vcluster
 ```
 
-For next steps, explore the [Kubernetes docs](/k8s/) for more details on how the Operator works, different ways you can integrate ngrok with an existing production cluster, or use more advanced features like [bindings](/k8s/guides/bindings/) or [endpoint pooling](/k8s/guides/pooling/).
+For next steps, explore the [Kubernetes docs](/gateway/k8s/) for more details on how the Operator works, different ways you can integrate ngrok with an existing production cluster, or use more advanced features like [bindings](/gateway/k8s/guides/bindings/) or [endpoint pooling](/gateway/k8s/guides/pooling/).

@@ -82,6 +82,7 @@ By integrating ngrok with Autodesk, you can:
       Click the eye icon to reveal **Client Secret** or use the copy icon.
     </Tip>
 
+<<<<<<< HEAD
     - In **General Settings**, paste the ngrok URL in **Callback URL** (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
     - In **API Access**, select **Data Management API** and **Webhooks API**, then click **Save changes**.
 
@@ -125,12 +126,60 @@ By integrating ngrok with Autodesk, you can:
     For example, adding a file to a folder in Data Management triggers a webhook.
 
     - Open the folder you assigned to your webhook in Data Management, upload a text file, and confirm your localhost app receives a notification and logs both headers and body in the terminal.
+=======
+Autodesk Platform Services delivers events to a callback URL that you register with the Webhooks API.
+Follow [Autodesk's Webhooks API documentation](https://aps.autodesk.com/en/docs/webhooks/v1/developers_guide/overview/) to register a webhook, setting its callback URL to your ngrok URL.
+
+First, create an APS application to obtain a **Client ID** and **Client Secret**, set its callback URL to your ngrok URL (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`), and grant it access to the **Data Management API** and **Webhooks API**.
+This example uses Data Management; you can choose other APIs for different Autodesk services.
+
+Next, obtain an access token:
+
+```bash
+curl -v 'https://developer.api.autodesk.com/authentication/v1/authenticate' \
+  -X 'POST' \
+  -H 'Content-Type: application/x-www-form-urlencoded' \
+  -d 'client_id=CLIENT_ID&client_secret=CLIENT_SECRET&grant_type=client_credentials&scope=data:read'
+```
+
+Replace `CLIENT_ID` and `CLIENT_SECRET` with your application's values, and copy the `access_token` from the response.
+
+Then register a webhook with the Data Management API:
+
+```bash
+curl -X 'POST' \
+  -v 'https://developer.api.autodesk.com/webhooks/v1/systems/data/events/dm.*/hooks' \
+  -H 'Content-Type: application/json' \
+  -H 'authorization: Bearer ACCESS_TOKEN' \
+  -d '{
+    "callbackUrl": "CALLBACK_URL",
+    "scope": { "folder": "FOLDER_URN" },
+    "hookAttribute": { "projectId": "PROJECT_ID" },
+    "filter": "$[?(@.ext=='\''txt'\'')]"
+  }'
+```
+
+Replace `ACCESS_TOKEN` with your access token, `CALLBACK_URL` with your ngrok URL, `FOLDER_URN` with your Data Management folder URN, and `PROJECT_ID` with your project ID.
+A successful response returns `HTTP/1.1 201`.
+>>>>>>> origin/main
 
     <InspectingRequests />
 
+<<<<<<< HEAD
     <ReplayingRequests />
   </Step>
 </Steps>
+=======
+Autodesk sends different requests depending on the event.
+For this example, adding a file to the folder assigned to your webhook triggers a call.
+
+To trigger a webhook call, upload a text file to that folder.
+Confirm your app receives the notification and logs the headers and body in the terminal.
+
+<InspectingRequests />
+
+<ReplayingRequests />
+>>>>>>> origin/main
 
 ## Secure webhook requests
 

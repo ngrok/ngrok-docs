@@ -105,7 +105,7 @@ jobs:
                 continue
               fi
               path_without_ext="${file%.mdx}"
-              if echo "$navigation_string" | grep -q "$path_without_ext"; then
+              if echo "$navigation_string" | grep -qF -e "\"$path_without_ext\"" -e "\"/$path_without_ext\""; then
                 echo "::error file=$file::Deleted file exists in navigation but docs.json was not updated: $file"
                 files_in_nav_but_not_updated+=("$file")
               else
@@ -131,7 +131,7 @@ jobs:
           for file in "${filtered_added_files[@]}"; do
             path_without_ext="${file%.mdx}"
             echo "Checking if added file is in navigation: $path_without_ext"
-            if echo "$navigation_string" | grep -q "$path_without_ext"; then
+            if echo "$navigation_string" | grep -qF -e "\"$path_without_ext\"" -e "\"/$path_without_ext\""; then
               echo "✓ Found in navigation: $file"
             else
               echo "::error file=$file::Added file not found in docs.json navigation: $file (expected: $path_without_ext)"
@@ -145,7 +145,7 @@ jobs:
             fi
             path_without_ext="${file%.mdx}"
             echo "Checking if deleted file is removed from navigation: $path_without_ext"
-            if echo "$navigation_string" | grep -q "$path_without_ext"; then
+            if echo "$navigation_string" | grep -qF -e "\"$path_without_ext\"" -e "\"/$path_without_ext\""; then
               echo "::error file=$file::Deleted file still exists in docs.json navigation: $file (path: $path_without_ext)"
               missing_paths+=("- $file → $path_without_ext")
             else
