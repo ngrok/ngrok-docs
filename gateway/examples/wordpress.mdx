@@ -18,36 +18,38 @@ ngrok improves your existing Wordpress installation by:
 - Distributing and accelerating your blog on a global content delivery network
 - Protecting your blog from DDoS attacks with the firewall
 
-## 1. Reserve a domain
+<Steps>
+  <Step title="Reserve a domain">
+    <ReserveDomain domain="https://your-blog.ngrok.app" />
+  </Step>
 
-<ReserveDomain domain="https://your-blog.ngrok.app" />
+  <Step title="Create a Traffic Policy file">
+    On the system where Wordpress runs, create a file named `wordpress.yaml` and paste in the following policy:
 
-## 2. Create a Traffic Policy file
+    ```yaml
+    on_http_request:
+      - actions:
+          - type: add-headers
+            config:
+              headers:
+                host: localhost
+    ```
 
-On the system where Wordpress runs, create a file named `wordpress.yaml` and paste in the following policy:
+    **What's happening here?** This policy rewrites the `Host` header of every HTTP request to `localhost` so that Wordpress accepts the requests.
+  </Step>
 
-```yaml
-on_http_request:
-  - actions:
-      - type: add-headers
-        config:
-          headers:
-            host: localhost
-```
+  <Step title="Start your Wordpress endpoint">
+    On the same system where Wordpress runs, start the agent on port `80`, which is the default for Wordpress, and referencing the `wordpress.yaml` file you just created.
 
-**What's happening here?** This policy rewrites the `Host` header of every HTTP request to `localhost` so that Wordpress accepts the requests.
+    ```bash
+    ngrok http 80 --url https://your-service.ngrok.app --traffic-policy-file wordpress.yaml
+    ```
+  </Step>
 
-## 3. Start your Wordpress endpoint
-
-On the same system where Wordpress runs, start the agent on port `80`, which is the default for Wordpress, and referencing the `wordpress.yaml` file you just created.
-
-```bash
-ngrok http 80 --url https://your-service.ngrok.app --traffic-policy-file wordpress.yaml
-```
-
-## 4. Try out your Wordpress endpoint
-
-<TryOut />
+  <Step title="Try out your Wordpress endpoint">
+    <TryOut />
+  </Step>
+</Steps>
 
 ## Optional: Restrict access to the admin dashboard
 

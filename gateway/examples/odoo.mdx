@@ -16,116 +16,118 @@ This guide follows the style of the [n8n example](/gateway/examples/n8n/) and ad
 - Odoo running locally (default: `http://localhost:8069`).
 - (Recommended) Admin access in Odoo to change System Parameters.
 
-## 1. Reserve a static domain
+<Steps>
+  <Step title="Reserve a static domain">
+    A static domain ensures your URL doesn't change across restarts (important for Odoo links, redirects, and webhooks).
 
-A static domain ensures your URL doesn't change across restarts (important for Odoo links, redirects, and webhooks).
+    In the ngrok dashboard, go to **Domains** → **New +**.
+    Reserve a domain (this example uses `https://your-odoo.ngrok.app`) and save it as an environment variable:
 
-In the ngrok dashboard, go to **Domains** → **New +**.
-Reserve a domain (this example uses `https://your-odoo.ngrok.app`) and save it as an environment variable:
+    ```bash
+    export NGROK_DOMAIN=your-odoo.ngrok.app
+    ```
 
-```bash
-export NGROK_DOMAIN=your-odoo.ngrok.app
-```
+    <Info>
+    Why a static domain?
+    Odoo stores and uses absolute links.
+    A stable host prevents broken links in emails, reports, and third-party callbacks.
+    </Info>
+  </Step>
 
-<Info>
-Why a static domain?
-Odoo stores and uses absolute links.
-A stable host prevents broken links in emails, reports, and third-party callbacks.
-</Info>
+  <Step title="Start the ngrok endpoint for Odoo">
+    Expose Odoo on port `8069` at your static domain:
 
-## 2. Start the ngrok endpoint for Odoo
+    ```bash
+    ngrok http --domain=$NGROK_DOMAIN 8069
+    ```
 
-Expose Odoo on port `8069` at your static domain:
+    Open `https://$NGROK_DOMAIN` to see the Odoo login page (`/web/login`).
+  </Step>
 
-```bash
-ngrok http --domain=$NGROK_DOMAIN 8069
-```
+  <Step title="(Recommended) Configure Odoo for a proxy and stable URLs">
+    Make sure Odoo generates correct HTTPS links and doesn't rewrite your base URL.
 
-Open `https://$NGROK_DOMAIN` to see the Odoo login page (`/web/login`).
+    ### Enable proxy mode
 
-## 3. (Recommended) Configure Odoo for a proxy and stable URLs
+    If ngrok (or any reverse proxy) terminates TLS, enable Odoo's proxy mode:
 
-Make sure Odoo generates correct HTTPS links and doesn't rewrite your base URL.
+    ```ini title="odoo.conf"
+    [options]
+    proxy_mode = True
+    ```
 
-### Enable proxy mode
+    Restart Odoo after changing the config.
 
-If ngrok (or any reverse proxy) terminates TLS, enable Odoo's proxy mode:
+    ### Freeze the base URL
 
-```ini title="odoo.conf"
-[options]
-proxy_mode = True
-```
+    Odoo updates `web.base.url` based on the host used at login. To keep it stable:
 
-Restart Odoo after changing the config.
+    In Odoo, go to **Settings** → **Technical** → **System Parameters** (enable developer mode if needed).
 
-### Freeze the base URL
+    Create or update:
 
-Odoo updates `web.base.url` based on the host used at login. To keep it stable:
+    - `web.base.url` → `https://$NGROK_DOMAIN`
+    - `web.base.url.freeze` → `True`
 
-In Odoo, go to **Settings** → **Technical** → **System Parameters** (enable developer mode if needed).
+    This prevents unexpected rewrites if someone visits via a different hostname.
+  </Step>
 
-Create or update:
+  <Step title="Apply a Traffic Policy (secure your admin)">
+    Protect sensitive paths like `/web` and `/web/login` using Traffic Policy.
+    Create a policy file (such as `odoo-policy.yaml`) and run the agent with `--traffic-policy-file`.
 
-- `web.base.url` → `https://$NGROK_DOMAIN`
-- `web.base.url.freeze` → `True`
+    ### Option A: Restrict admin to your IP
 
-This prevents unexpected rewrites if someone visits via a different hostname.
+    ```yaml title="odoo-policy.yaml"
+    on_http_request:
+      - if: request.path.startsWith("/web")
+        actions:
+          - type: restrict-ips
+            config:
+              # Replace with your public IP/CIDR, such as "203.0.113.7/32"
+              allow: ["$YOUR_IP_CIDR"]
+    ```
 
-## 4. Apply a Traffic Policy (secure your admin)
+    Run:
 
-Protect sensitive paths like `/web` and `/web/login` using Traffic Policy.
-Create a policy file (such as `odoo-policy.yaml`) and run the agent with `--traffic-policy-file`.
+    ```bash
+    ngrok http --domain=$NGROK_DOMAIN 8069 \
+      --traffic-policy-file odoo-policy.yaml
+    ```
 
-### Option A: Restrict admin to your IP
+    Only the allowed IPs can reach `/web*`; other requests are blocked before they hit Odoo.
 
-```yaml title="odoo-policy.yaml"
-on_http_request:
-  - if: request.path.startsWith("/web")
-    actions:
-      - type: restrict-ips
-        config:
-          # Replace with your public IP/CIDR, such as "203.0.113.7/32"
-          allow: ["$YOUR_IP_CIDR"]
-```
+    ### Option B: Require Basic Auth on admin
 
-Run:
+    ```yaml title="odoo-policy.yaml"
+    on_http_request:
+      - if: request.path.startsWith("/web")
+        actions:
+          - type: basic-auth
+            config:
+              realm: "Odoo Admin"
+              credentials:
+                - "admin:changeMeNow123"
+    ```
 
-```bash
-ngrok http --domain=$NGROK_DOMAIN 8069 \
-  --traffic-policy-file odoo-policy.yaml
-```
+    Run with the same `--traffic-policy-file` flag.
+    Visitors to `/web*` must pass HTTP Basic Auth before Odoo's own login.
 
-Only the allowed IPs can reach `/web*`; other requests are blocked before they hit Odoo.
+    <Tip>
+    You can combine rules—for example, applying Basic Auth for `/web*` and providing unrestricted access for public website paths.
+    </Tip>
+  </Step>
 
-### Option B: Require Basic Auth on admin
+  <Step title="Test your endpoint">
+    From a terminal:
 
-```yaml title="odoo-policy.yaml"
-on_http_request:
-  - if: request.path.startsWith("/web")
-    actions:
-      - type: basic-auth
-        config:
-          realm: "Odoo Admin"
-          credentials:
-            - "admin:changeMeNow123"
-```
+    ```bash
+    curl -I https://$NGROK_DOMAIN
+    ```
 
-Run with the same `--traffic-policy-file` flag.
-Visitors to `/web*` must pass HTTP Basic Auth before Odoo's own login.
-
-<Tip>
-You can combine rules—for example, applying Basic Auth for `/web*` and providing unrestricted access for public website paths.
-</Tip>
-
-## 5. Test your endpoint
-
-From a terminal:
-
-```bash
-curl -I https://$NGROK_DOMAIN
-```
-
-Expected: HTTP/2 200 and Odoo's login route (`/web/login`) when loaded in a browser.
+    Expected: HTTP/2 200 and Odoo's login route (`/web/login`) when loaded in a browser.
+  </Step>
+</Steps>
 
 ## Troubleshooting
 

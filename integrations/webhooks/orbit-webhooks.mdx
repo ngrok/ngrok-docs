@@ -1,7 +1,7 @@
 ---
-title: Intercom Webhooks
-sidebarTitle: Intercom
-description: Develop and test Intercom webhooks from localhost.
+title: Orbit Webhooks
+sidebarTitle: Orbit
+description: Develop and test Orbit webhooks from localhost.
 ---
 
 import RequestWebhookProvider from "/snippets/_request-webhook-provider.mdx";
@@ -10,14 +10,14 @@ import ReplayingRequests from "/snippets/integrations/_replaying-requests.mdx";
 
 <RequestWebhookProvider />
 
-This guide explains how to use ngrok to receive Intercom webhooks on your localhost app.
+This guide shows you how to use ngrok to receive Orbit webhooks on your localhost app.
 
-By integrating ngrok with Intercom, you can:
+By integrating ngrok with Orbit, you can:
 
-- Develop and test Intercom webhooks locally without deploying to a public environment or setting up HTTPS.
-- Inspect and troubleshoot requests from Intercom in real time via the inspection UI and API.
-- Modify and replay Intercom webhook requests with a single click instead of reproducing events manually in your Intercom account.
-- Secure your app with Intercom webhook validation provided by ngrok.
+- Develop and test Orbit webhooks locally without deploying to a public environment or setting up HTTPS.
+- Inspect and troubleshoot requests from Orbit in real time via the inspection UI and API.
+- Modify and replay Orbit webhook requests with a single click instead of reproducing events manually in your Orbit account.
+- Secure your app with Orbit webhook validation provided by ngrok.
   Invalid requests are blocked by ngrok before reaching your app.
 
 ## What you'll need
@@ -25,11 +25,10 @@ By integrating ngrok with Intercom, you can:
 - An [ngrok account](https://ngrok.com/signup) and your [authtoken](https://dashboard.ngrok.com/get-started/your-authtoken).
 - The [ngrok agent](https://ngrok.com/download) installed.
 - [Node.js](https://nodejs.org/) installed (for the sample app, or use your own app).
-- An Intercom account.
+- An Orbit account.
 
 <Steps>
   <Step title="Start your app">
-
     For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
 
     To install the sample, run the following in a terminal:
@@ -53,7 +52,6 @@ By integrating ngrok with Intercom, you can:
   </Step>
 
   <Step title="Expose your app with ngrok">
-
     Once your app is running locally, you're ready to put it online securely using ngrok.
 
     - Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
@@ -69,40 +67,39 @@ By integrating ngrok with Intercom, you can:
       ```
 
     - Copy the URL ngrok displays.
-      Your app is now exposed at that URL for use with Intercom.
+      Your app is now exposed at that URL for use with Orbit.
   </Step>
 
-  <Step title="Configure Intercom to send webhooks">
+  <Step title="Configure Orbit to send webhooks">
+    Orbit can send webhook requests to your app when events occur in your account.
+    To register for those events:
 
-    Webhook subscriptions in Intercom belong to an app, so create an internal integration app in your [Developer Hub](https://developers.intercom.com/) first.
+    - Sign in to [Orbit](https://app.orbit.love/).
+    - Click **Workspace Settings** and then **Webhooks**.
+    - On the **Webhooks** page, click **+ New Webhook**.
+    - On **New webhook**, enter a name in **Webhook Name**, select **a new activity is added to a member** in **Event Subscription**, and enter your ngrok URL in **Webhook URL** (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
+    - Click **Create Webhook**.
 
-    Follow [Intercom's documentation for setting up webhooks](https://developers.intercom.com/docs/webhooks/setting-up-webhooks), and set the following:
+    ### Run webhooks with Orbit and ngrok
 
-    - **Your request endpoint URL**: your ngrok URL (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
-    - **Webhook topics**: choose the topics that trigger the webhook (for this example, **contact.user.created**).
+    Orbit sends different request body contents depending on the event.
+    To trigger new calls from Orbit to your app:
 
-    After you save, Intercom sends a test request to your app.
-    Confirm your localhost app receives it in the terminal.
-    You can send another test request from Intercom's webhook settings.
-
-    ### Run webhooks with Intercom and ngrok
-
-    With **contact.user.created** selected, create a user in Intercom to trigger a call.
+    - In [Orbit](https://app.orbit.love/), click **Members** and then one of your members.
+    - On the **Member** popup, click **Actions** and **Add Activity**.
+    - On **Add activity**, select an **Activity Type**, enter a **Title** (for example, `Test`), and click **Submit**.
 
     Confirm your localhost app receives the event and logs both headers and body in the terminal.
-
-    <Tip>
-      Intercom sends different request body contents depending on the topics you selected when registering the webhook.
-    </Tip>
 
     <InspectingRequests />
 
     <ReplayingRequests />
   </Step>
 </Steps>
+
 ## Secure webhook requests
 
-ngrok can verify that incoming requests are from your Intercom webhook so only that traffic reaches your app.
+ngrok can verify that incoming requests are from your Orbit webhook so only that traffic reaches your app.
 
 <Note>
   Webhook verification is limited to 500 validations per month on free accounts.
@@ -112,26 +109,27 @@ ngrok can verify that incoming requests are from your Intercom webhook so only t
 
 To add verification:
 
-- In the Intercom **Developer Hub**, click your app and then **Basic information**.
-- Copy the **Client secret** value.
-- Create a Traffic Policy file named `intercom_policy.yml`.
-  Replace `{your client secret}` with the value you copied:
+- In [Orbit](https://app.orbit.love/), go to **Workspace Settings** and **Webhooks**.
+- Click the three dots for your webhook and **Update**.
+- On **Update Webhook**, enter a value in **Webhook Secret** (for example, `12345`) and click **Save Changes**.
+- Create a Traffic Policy file named `orbit_policy.yml`.
+  Replace `{your webhook secret}` with the value you entered:
 
   ```yaml
   on_http_request:
     - actions:
         - type: verify-webhook
           config:
-            provider: intercom
-            secret: "{your client secret}"
+            provider: orbit
+            secret: "{your webhook secret}"
   ```
 
 - Restart ngrok with the policy file:
 
   ```bash
-  ngrok http 3000 --traffic-policy-file intercom_policy.yml
+  ngrok http 3000 --traffic-policy-file orbit_policy.yml
   ```
 
-- Create a new contact in Intercom to trigger the webhook.
+- Add an activity to a member in Orbit to trigger the webhook.
 
 Your app should receive the request and log it in the terminal.

@@ -16,70 +16,72 @@ This guide walks you through creating a Google OAuth 2.0 application for your ng
 - A [Google Cloud Platform](https://console.cloud.google.com) account and project.
 - Your ngrok authtoken and an endpoint with the OAuth action in its Traffic Policy.
 
-## 1. Configure the consent screen
+<Steps>
+  <Step title="Configure the consent screen">
+    ngrok configures its OAuth settings in the [Google Auth Platform](https://console.cloud.google.com/auth/overview), which replaces the former OAuth consent screen.
+    Follow [Google's OAuth 2.0 setup documentation](https://support.google.com/cloud/answer/6158849?hl=en) to configure the consent screen, and set the following for ngrok:
 
-ngrok configures its OAuth settings in the [Google Auth Platform](https://console.cloud.google.com/auth/overview), which replaces the former OAuth consent screen.
-Follow [Google's OAuth 2.0 setup documentation](https://support.google.com/cloud/answer/6158849?hl=en) to configure the consent screen, and set the following for ngrok:
+    - **Authorized domains**: add `ngrok.com` along with your application's homepage domain.
+    - **Scopes**: keep the `email` and `profile` scopes selected, and add any additional scopes your application requires. Save the full scope URIs for later. See [possible scope URIs](https://developers.google.com/identity/protocols/oauth2/scopes) for options.
+    - **Audience**: select whether your application is an [internal or external app](https://support.google.com/cloud/answer/6158849?hl=en#public-and-internal).
 
-- **Authorized domains**: add `ngrok.com` along with your application's homepage domain.
-- **Scopes**: keep the `email` and `profile` scopes selected, and add any additional scopes your application requires. Save the full scope URIs for later. See [possible scope URIs](https://developers.google.com/identity/protocols/oauth2/scopes) for options.
-- **Audience**: select whether your application is an [internal or external app](https://support.google.com/cloud/answer/6158849?hl=en#public-and-internal).
+    <Note>
+    Applications that require Google verification cannot complete setup and are not supported by ngrok.
+    </Note>
+  </Step>
 
-<Note>
-Applications that require Google verification cannot complete setup and are not supported by ngrok.
-</Note>
+  <Step title="Create credentials for ngrok">
+    Create an OAuth **Web application** client (see [Google's documentation](https://developers.google.com/identity/protocols/oauth2/web-server)), and set the following:
 
-## 2. Create credentials for ngrok
+    - **Authorized redirect URIs**: `https://idp.ngrok.com/oauth2/callback`
 
-Create an OAuth **Web application** client (see [Google's documentation](https://developers.google.com/identity/protocols/oauth2/web-server)), and set the following:
+    Securely store the **Client ID** and **Client secret** from the final screen for use in your Traffic Policy below. The client secret is shown only once.
+  </Step>
 
-- **Authorized redirect URIs**: `https://idp.ngrok.com/oauth2/callback`
+  <Step title="Update your ngrok endpoint Traffic Policy">
+    <UpdatePolicyInstructions />
 
-Securely store the **Client ID** and **Client secret** from the final screen for use in your Traffic Policy below. The client secret is shown only once.
+    <CodeGroup>
+    ```yaml policy.yml
+    on_http_request:
+      - actions:
+          - type: oauth
+            config:
+              provider: google
+              client_id: '{your app''s oauth client id}'
+              client_secret: '{your app''s oauth client secret}'
+              scopes:
+                - https://www.googleapis.com/auth/userinfo.profile
+                - https://www.googleapis.com/auth/userinfo.email
+    ```
 
-## 3. Update your ngrok endpoint Traffic Policy
-
-<UpdatePolicyInstructions />
-
-<CodeGroup>
-```yaml policy.yml
-on_http_request:
-  - actions:
-      - type: oauth
-        config:
-          provider: google
-          client_id: '{your app''s oauth client id}'
-          client_secret: '{your app''s oauth client secret}'
-          scopes:
-            - https://www.googleapis.com/auth/userinfo.profile
-            - https://www.googleapis.com/auth/userinfo.email
-```
-
-```json policy.json
-{
-  "on_http_request": [
+    ```json policy.json
     {
-      "actions": [
+      "on_http_request": [
         {
-          "type": "oauth",
-          "config": {
-            "provider": "google",
-            "client_id": "{your app's oauth client id}",
-            "client_secret": "{your app's oauth client secret}",
-            "scopes": [
-              "https://www.googleapis.com/auth/userinfo.profile",
-              "https://www.googleapis.com/auth/userinfo.email"
-            ]
-          }
+          "actions": [
+            {
+              "type": "oauth",
+              "config": {
+                "provider": "google",
+                "client_id": "{your app's oauth client id}",
+                "client_secret": "{your app's oauth client secret}",
+                "scopes": [
+                  "https://www.googleapis.com/auth/userinfo.profile",
+                  "https://www.googleapis.com/auth/userinfo.email"
+                ]
+              }
+            }
+          ]
         }
       ]
     }
-  ]
-}
-```
-</CodeGroup>
+    ```
+    </CodeGroup>
 
-<ConfigAccessControl />
+    <ConfigAccessControl />
+  </Step>
+</Steps>
 
 ## Further resources
 

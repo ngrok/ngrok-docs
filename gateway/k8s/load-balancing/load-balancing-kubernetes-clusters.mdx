@@ -37,114 +37,118 @@ ngrok custom resources, Ingress objects, or Gateway API resources. This guide us
 resources](/gateway/k8s/guides/using-crds) to create endpoints for your services.
 </Tip>
 
-## 1. Install the ngrok Kubernetes Operator
+<Steps>
+  <Step title="Install the ngrok Kubernetes Operator">
 
-Check out the [installation instructions](/gateway/k8s/installation/helm/) for
-details on how to use Helm to deploy the open-source Operator to each cluster
-you'd like to load-balance between.
+    Check out the [installation instructions](/gateway/k8s/installation/helm/) for
+    details on how to use Helm to deploy the open-source Operator to each cluster
+    you'd like to load-balance between.
+  </Step>
 
-## 2. Create internal Agent Endpoints on your first cluster
+  <Step title="Create internal Agent Endpoints on your first cluster">
 
-The following YAML manifest creates three internal Agent Endpoints, each of which
-will proxy traffic to your `foo`, `bar`, and `baz` pods, respectively. When you
-use custom resources to create Agent Endpoints, pooling is [enabled
-automatically](/gateway/k8s/guides/pooling/#endpoint-pooling-with-agentendpoints).
+    The following YAML manifest creates three internal Agent Endpoints, each of which
+    will proxy traffic to your `foo`, `bar`, and `baz` pods, respectively. When you
+    use custom resources to create Agent Endpoints, pooling is [enabled
+    automatically](/gateway/k8s/guides/pooling/#endpoint-pooling-with-agentendpoints).
 
-```yaml
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-kind: AgentEndpoint
-metadata:
-  name: foo
-  namespace: default
-spec:
-  upstream:
-    url: http://foo.default:8001
-  url: https://foo.internal
----
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-kind: AgentEndpoint
-metadata:
-  name: bar
-  namespace: default
-spec:
-  upstream:
-    url: http://bar.default:8002
-  url: https://bar.internal
----
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-kind: AgentEndpoint
-metadata:
-  name: baz
-  namespace: default
-spec:
-  upstream:
-    url: http://baz.default:8003
-  url: https://baz.internal
-```
+    ```yaml
+    apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+    kind: AgentEndpoint
+    metadata:
+      name: foo
+      namespace: default
+    spec:
+      upstream:
+        url: http://foo.default:8001
+      url: https://foo.internal
+    ---
+    apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+    kind: AgentEndpoint
+    metadata:
+      name: bar
+      namespace: default
+    spec:
+      upstream:
+        url: http://bar.default:8002
+      url: https://bar.internal
+    ---
+    apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+    kind: AgentEndpoint
+    metadata:
+      name: baz
+      namespace: default
+    spec:
+      upstream:
+        url: http://baz.default:8003
+      url: https://baz.internal
+    ```
 
-Save it to your local workstation as `ingress.yaml` and apply to your cluster
-with `kubectl apply -f ingress.yaml`.
+    Save it to your local workstation as `ingress.yaml` and apply to your cluster
+    with `kubectl apply -f ingress.yaml`.
 
-These internal Agent Endpoints won't yet be available to public traffic, because
-they are only accessible through other ngrok endpoints in your account, but
-you'll fix that in the next two steps.
+    These internal Agent Endpoints won't yet be available to public traffic, because
+    they are only accessible through other ngrok endpoints in your account, but
+    you'll fix that in the next two steps.
 
-Repeat the process on any other clusters you want to load balance traffic
-between.
+    Repeat the process on any other clusters you want to load balance traffic
+    between.
+  </Step>
 
-## 4. Create a Cloud Endpoint and add routing with Traffic Policy
+  <Step title="Create a Cloud Endpoint and add routing with Traffic Policy">
 
-If you don't yet have a reserved domain, go ahead and [reserve
-one](https://dashboard.ngrok.com/domains) in the dashboard.
+    If you don't yet have a reserved domain, go ahead and [reserve
+    one](https://dashboard.ngrok.com/domains) in the dashboard.
 
-The easiest way to create a Cloud Endpoint is in the [**Endpoint**
-section](https://dashboard.ngrok.com/endpoints) of your ngrok dashboard.
+    The easiest way to create a Cloud Endpoint is in the [**Endpoint**
+    section](https://dashboard.ngrok.com/endpoints) of your ngrok dashboard.
 
-Click **New**, then **Cloud Endpoint**. Leave the binding as **Public** and
-fill in the full URL of the domain you reserved, then click **Create Cloud
-Endpoint**.
+    Click **New**, then **Cloud Endpoint**. Leave the binding as **Public** and
+    fill in the full URL of the domain you reserved, then click **Create Cloud
+    Endpoint**.
 
-The following Traffic Policy example:
+    The following Traffic Policy example:
 
-1. Uses the [`forward-internal`
-   action](/gateway/traffic-policy/actions/forward-internal/) to route all requests to
-   the `/foo` path to the pool you created at `https://foo.internal`. - The pooled endpoints then proxy requests proxies the request to the `foo`
-   Service/Deployment in your cluster.
-2. Does the same for the paths `/bar` and `/baz`.
-3. Denies all traffic to paths that don't (yet) have a service.
+    1. Uses the [`forward-internal`
+       action](/gateway/traffic-policy/actions/forward-internal/) to route all requests to
+       the `/foo` path to the pool you created at `https://foo.internal`. - The pooled endpoints then proxy requests proxies the request to the `foo`
+       Service/Deployment in your cluster.
+    2. Does the same for the paths `/bar` and `/baz`.
+    3. Denies all traffic to paths that don't (yet) have a service.
 
-```yaml
-on_http_request:
-  - expressions:
-      - req.url.path.startsWith('/foo')
-    actions:
-      - type: forward-internal
-        config:
-          url: https://foo.internal
-  - expressions:
-      - req.url.path.startsWith('/bar')
-    actions:
-      - type: forward-internal
-        config:
-          url: https://bar.internal
-  - expressions:
-      - req.url.path.startsWith('/baz')
-    actions:
-      - type: forward-internal
-        config:
-          url: https://baz.internal
-  - actions:
-      - type: deny
-        config:
-          status_code: 404
-```
+    ```yaml
+    on_http_request:
+      - expressions:
+          - req.url.path.startsWith('/foo')
+        actions:
+          - type: forward-internal
+            config:
+              url: https://foo.internal
+      - expressions:
+          - req.url.path.startsWith('/bar')
+        actions:
+          - type: forward-internal
+            config:
+              url: https://bar.internal
+      - expressions:
+          - req.url.path.startsWith('/baz')
+        actions:
+          - type: forward-internal
+            config:
+              url: https://baz.internal
+      - actions:
+          - type: deny
+            config:
+              status_code: 404
+    ```
 
-Paste the YAML above into the dashboard and click **Save**.
+    Paste the YAML above into the dashboard and click **Save**.
 
-Now, when you request `https://api.example.com/foo` or any other route, your
-traffic will be automatically load-balanced between replicas of your services on
-multiple Kubernetes clusters.
-
+    Now, when you request `https://api.example.com/foo` or any other route, your
+    traffic will be automatically load-balanced between replicas of your services on
+    multiple Kubernetes clusters.
+  </Step>
+</Steps>
 ## What's next?
 
 With load balancing solved for, you can now add new services or entire

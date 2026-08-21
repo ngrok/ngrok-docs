@@ -23,91 +23,93 @@ In this mode, users access ngrok endpoints and are redirected to JumpCloud for a
 - A JumpCloud account with administrative rights to create apps.
 - An ngrok Pay-as-you-go account with an authtoken or admin access to configure endpoints with OpenID Connect.
 
-## 1. Configure JumpCloud 
+<Steps>
+  <Step title="Configure JumpCloud">
+    ### Add the ngrok app in JumpCloud
 
-### Add the ngrok app in JumpCloud
+    - Access the JumpCloud Console and sign in using your JumpCloud administrator account.
+    - On the left menu, click **SSO**, click **Get Started** or **+ Add New Application**, and then click **Custom OIDC App**.
+    - On the **New Application** popup, enter `ngrok oidc` in the **Display Label** field.
+    - Click the **SSO** tab, enter `https://idp.ngrok.com/oauth2/callback` in the **Redirect URIs** field, select **Client Secret Basic** as the **Client Authentication Type**, and enter the URL provided by the ngrok agent to expose your application to the internet in the **Login URL** (for example, `https://myexample.ngrok.app`).
+    - Click **Activate**.
+    - On the **Application Saved** popup, copy the value of both the **Client ID** and the **Client Secret** fields, and then click **Got It**.
 
-- Access the JumpCloud Console and sign in using your JumpCloud administrator account.
-- On the left menu, click **SSO**, click **Get Started** or **+ Add New Application**, and then click **Custom OIDC App**.
-- On the **New Application** popup, enter `ngrok oidc` in the **Display Label** field.
-- Click the **SSO** tab, enter `https://idp.ngrok.com/oauth2/callback` in the **Redirect URIs** field, select **Client Secret Basic** as the **Client Authentication Type**, and enter the URL provided by the ngrok agent to expose your application to the internet in the **Login URL** (for example, `https://myexample.ngrok.app`).
-- Click **Activate**.
-- On the **Application Saved** popup, copy the value of both the **Client ID** and the **Client Secret** fields, and then click **Got It**.
+    ### Grant access to JumpCloud users
 
-### Grant access to JumpCloud users
+    JumpCloud allows administrators to restrict access to SSO apps—such as ngrok—via user group assignments.
+    By default, apps created in JumpCloud have no group assignments; in other words, nobody can use JumpCloud SSO to access ngrok until you assign a group to the app.
+    To assign JumpCloud groups to the ngrok app:
 
-JumpCloud allows administrators to restrict access to SSO apps—such as ngrok—via user group assignments.
-By default, apps created in JumpCloud have no group assignments; in other words, nobody can use JumpCloud SSO to access ngrok until you assign a group to the app.
-To assign JumpCloud groups to the ngrok app:
+    - On the left menu of the JumpCloud Console, click **SSO** and click the ngrok custom OIDC app you created.
+    - On the app popup, click the **User Groups** tab, click the checkbox of the **All Users** group, and then click **Save**.
+    Make sure to add JumpCloud users to this group when you create or manage users that need access to the ngrok app.
+  </Step>
 
-- On the left menu of the JumpCloud Console, click **SSO** and click the ngrok custom OIDC app you created.
-- On the app popup, click the **User Groups** tab, click the checkbox of the **All Users** group, and then click **Save**.
-Make sure to add JumpCloud users to this group when you create or manage users that need access to the ngrok app.
+  <Step title="Configure ngrok">
+    ngrok can use JumpCloud SSO in two ways:
 
-## 2. Configure ngrok 
+    - From the ngrok CLI (using the `--oidc` parameter)
+    - From the ngrok dashboard
 
-ngrok can use JumpCloud SSO in two ways:
+    ### **Option 1**: ngrok CLI
 
-- From the ngrok CLI (using the `--oidc` parameter)
-- From the ngrok dashboard
+    <Note>
+    This tutorial assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok client installed.
+    </Note>
 
-### **Option 1**: ngrok CLI
+    - Launch a terminal.
+    - Enter the following command to launch an ngrok tunnel with JumpCloud SSO:
 
-<Note>
-This tutorial assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok client installed.
-</Note>
+       ```bash
+       ngrok http 3000 --oidc=JUMPCLOUD_OAUTH_URL \
+       --oidc-client-id=JUMPCLOUD_CLIENT_ID \
+       --oidc-client-secret=JUMPCLOUD_CLIENT_SECRET \
+       ```
 
-- Launch a terminal.
-- Enter the following command to launch an ngrok tunnel with JumpCloud SSO:
+       Replace the following with values:
+       - JUMPCLOUD_OAUTH_URL: Your JumpCloud OIDC base URL (for example, `https://oauth.id.jumpcloud.com/`).
+       - JUMPCLOUD_CLIENT_ID: The client ID you copied from JumpCloud.
+       - JUMPCLOUD_CLIENT_SECRET: The client secret you copied from JumpCloud.
 
-   ```bash
-   ngrok http 3000 --oidc=JUMPCLOUD_OAUTH_URL \
-   --oidc-client-id=JUMPCLOUD_CLIENT_ID \
-   --oidc-client-secret=JUMPCLOUD_CLIENT_SECRET \
-   ```
+       Alternatively, add the `--url YOUR_DOMAIN` argument to get your custom URL, replacing `YOUR_DOMAIN` with your URL of preference.
+    - Copy the URL available next to **Forwarding** (for example, `https://jumpcloud-sso-test.ngrok.app`).
+    - Skip to **Step 3**.
 
-   Replace the following with values:
-   - JUMPCLOUD_OAUTH_URL: Your JumpCloud OIDC base URL (for example, `https://oauth.id.jumpcloud.com/`).
-   - JUMPCLOUD_CLIENT_ID: The client ID you copied from JumpCloud.
-   - JUMPCLOUD_CLIENT_SECRET: The client secret you copied from JumpCloud.
+    ### **Option 2**: Traffic Policy
 
-   Alternatively, add the `--url YOUR_DOMAIN` argument to get your custom URL, replacing `YOUR_DOMAIN` with your URL of preference.
-- Copy the URL available next to **Forwarding** (for example, `https://jumpcloud-sso-test.ngrok.app`).
-- Skip to **Step 3**.
+    <Note>
+    This tutorial assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok client installed.
+    </Note>
 
-### **Option 2**: Traffic Policy
+    Create a `policy.yaml` file with the following content, replacing the placeholder values with those copied from JumpCloud:
 
-<Note>
-This tutorial assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok client installed.
-</Note>
+    ```yaml
+    on_http_request:
+      - actions:
+          - type: openid-connect
+            config:
+              issuer_url: 'https://oauth.id.jumpcloud.com/'
+              client_id: 'YOUR_JUMPCLOUD_CLIENT_ID'
+              client_secret: 'YOUR_JUMPCLOUD_CLIENT_SECRET'
+              scopes:
+                - openid
+                - profile
+                - email
+    ```
 
-Create a `policy.yaml` file with the following content, replacing the placeholder values with those copied from JumpCloud:
+    Launch an ngrok tunnel with this policy:
 
-```yaml
-on_http_request:
-  - actions:
-      - type: openid-connect
-        config:
-          issuer_url: 'https://oauth.id.jumpcloud.com/'
-          client_id: 'YOUR_JUMPCLOUD_CLIENT_ID'
-          client_secret: 'YOUR_JUMPCLOUD_CLIENT_SECRET'
-          scopes:
-            - openid
-            - profile
-            - email
-```
+    ```bash
+    ngrok http 3000 --traffic-policy-file policy.yaml --url YOUR_DOMAIN
+    ```
 
-Launch an ngrok tunnel with this policy:
+    Copy the URL next to **Forwarding** (for example, `https://jumpcloud-sso-test.ngrok.app`).
+  </Step>
 
-```bash
-ngrok http 3000 --traffic-policy-file policy.yaml --url YOUR_DOMAIN
-```
-
-Copy the URL next to **Forwarding** (for example, `https://jumpcloud-sso-test.ngrok.app`).
-
-## 3. Test the integration
-
-- In your browser, launch an incognito window.
-- Access your ngrok tunnel (for example, `https://jumpcloud-sso-test.ngrok.app` or using the copied endpoint URL).
-- You should be prompted to log in with your JumpCloud credentials.
-- After logging in, you should be able to see your web app.
+  <Step title="Test the integration">
+    - In your browser, launch an incognito window.
+    - Access your ngrok tunnel (for example, `https://jumpcloud-sso-test.ngrok.app` or using the copied endpoint URL).
+    - You should be prompted to log in with your JumpCloud credentials.
+    - After logging in, you should be able to see your web app.
+  </Step>
+</Steps>

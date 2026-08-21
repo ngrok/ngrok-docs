@@ -33,174 +33,179 @@ In that case, you'll just need to reserve a domain and add your auth token as de
 - Your [ngrok auth token](https://dashboard.ngrok.com/get-started/your-authtoken).
 - [Rust installed](https://www.rust-lang.org/tools/install) on your machine. You can check this by running `rustc --version` in your terminal.
 
-## 1. Start your app or service
+<Steps>
+  <Step title="Start your app or service">
 
-Start up the app or service you'd like to put online.
-This is the app that your Agent Endpoint will forward online traffic to.
+    Start up the app or service you'd like to put online.
+    This is the app that your Agent Endpoint will forward online traffic to.
 
-If you don't have an app to work with, you can set up a basic HTTP server at port `8080`.
+    If you don't have an app to work with, you can set up a basic HTTP server at port `8080`.
 
-First, create a directory for your Rust project and navigate into it:
+    First, create a directory for your Rust project and navigate into it:
 
-```bash
-mkdir ngrok-rust-server
-cd ngrok-rust-server
-```
+    ```bash
+    mkdir ngrok-rust-server
+    cd ngrok-rust-server
+    ```
 
-Next, create a new Rust project:
+    Next, create a new Rust project:
 
-```bash
-cargo init
-```
+    ```bash
+    cargo init
+    ```
 
-Replace the contents of `src/main.rs` with the following code to set up a basic HTTP server:
+    Replace the contents of `src/main.rs` with the following code to set up a basic HTTP server:
 
-```rust title="ngrok-rust-server/src/main.rs"
-use std::io::{Read, Write};
-use std::net::{TcpListener, TcpStream};
+    ```rust title="ngrok-rust-server/src/main.rs"
+    use std::io::{Read, Write};
+    use std::net::{TcpListener, TcpStream};
 
-fn handle_connection(mut stream: TcpStream) {
-    let mut buffer = [0; 512];
+    fn handle_connection(mut stream: TcpStream) {
+        let mut buffer = [0; 512];
 
-    // Read from the stream
-    if let Ok(_) = stream.read(&mut buffer) {
-        let body = "Hello from Rust HTTP Server!";
-        let response = format!(
-            "HTTP/1.1 200 OK\r\n\
-             Content-Length: {}\r\n\
-             Content-Type: text/plain\r\n\
-             Connection: close\r\n\r\n\
-             {}",
-            body.len(),
-            body
-        );
+        // Read from the stream
+        if let Ok(_) = stream.read(&mut buffer) {
+            let body = "Hello from Rust HTTP Server!";
+            let response = format!(
+                "HTTP/1.1 200 OK\r\n\
+                 Content-Length: {}\r\n\
+                 Content-Type: text/plain\r\n\
+                 Connection: close\r\n\r\n\
+                 {}",
+                body.len(),
+                body
+            );
 
-        if let Err(e) = stream.write_all(response.as_bytes()) {
-            eprintln!("Write error: {}", e);
-        }
+            if let Err(e) = stream.write_all(response.as_bytes()) {
+                eprintln!("Write error: {}", e);
+            }
 
-        // Flush to make sure the response is sent
-        if let Err(e) = stream.flush() {
-            eprintln!("Flush error: {}", e);
-        }
-    }
-}
-
-fn main() -> std::io::Result<()> {
-    let listener = TcpListener::bind("127.0.0.1:8080")?;
-    println!("Server running at http://127.0.0.1:8080");
-
-    for stream in listener.incoming() {
-        match stream {
-            Ok(stream) => handle_connection(stream),
-            Err(e) => eprintln!("Connection failed: {}", e),
+            // Flush to make sure the response is sent
+            if let Err(e) = stream.flush() {
+                eprintln!("Flush error: {}", e);
+            }
         }
     }
 
-    Ok(())
-}
-```
+    fn main() -> std::io::Result<()> {
+        let listener = TcpListener::bind("127.0.0.1:8080")?;
+        println!("Server running at http://127.0.0.1:8080");
 
-Navigate to the root directory of the project and run the following command to start the server:
+        for stream in listener.incoming() {
+            match stream {
+                Ok(stream) => handle_connection(stream),
+                Err(e) => eprintln!("Connection failed: {}", e),
+            }
+        }
 
-```bash
-cargo run
-```
+        Ok(())
+    }
+    ```
 
-## 2. Install the Rust SDK
+    Navigate to the root directory of the project and run the following command to start the server:
 
-Open a new terminal, then run the following commands to create a new Rust project install the Rust SDK:
+    ```bash
+    cargo run
+    ```
+  </Step>
 
-```bash
-mkdir ngrok-rust-demo
-cd ngrok-rust-demo
-cargo init
-cargo add ngrok
-```
+  <Step title="Install the Rust SDK">
 
-Edit your `Cargo.toml` file to include the necessary dependencies:
+    Open a new terminal, then run the following commands to create a new Rust project install the Rust SDK:
 
-```toml title="ngrok-rust-demo/Cargo.toml"
-[package]
-name = "ngrok-rust-demo"
-version = "0.1.0"
-edition = "2021"
+    ```bash
+    mkdir ngrok-rust-demo
+    cd ngrok-rust-demo
+    cargo init
+    cargo add ngrok
+    ```
 
-[dependencies]
-ngrok = {version = "0.14.0"}
-tokio = { version = "1", features = [
-    "full"
-] }
-axum = { version = "0.7.4", features = ["tokio"] }
-async-trait = "0.1.59"
-hyper = {version = "1", features = ["full"]}
-hyper-util = { version = "0.1", features = [
-	"full"
-] }
-url = "2.5.4"
-```
+    Edit your `Cargo.toml` file to include the necessary dependencies:
 
-## 3. Create your endpoint
+    ```toml title="ngrok-rust-demo/Cargo.toml"
+    [package]
+    name = "ngrok-rust-demo"
+    version = "0.1.0"
+    edition = "2021"
 
-Create your Agent Endpoint, which will forward public traffic to your app.
+    [dependencies]
+    ngrok = {version = "0.14.0"}
+    tokio = { version = "1", features = [
+        "full"
+    ] }
+    axum = { version = "0.7.4", features = ["tokio"] }
+    async-trait = "0.1.59"
+    hyper = {version = "1", features = ["full"]}
+    hyper-util = { version = "0.1", features = [
+    	"full"
+    ] }
+    url = "2.5.4"
+    ```
+  </Step>
 
-In the `ngrok-rust-demo` directory you created in the previous step, add the following code to your `src/main.rs` file.
+  <Step title="Create your endpoint">
 
-This example:
+    Create your Agent Endpoint, which will forward public traffic to your app.
 
-- Starts an Agent endpoint that forwards from your reserved domain to your service running on port `8080`.
-- Secures the endpoint with a Traffic Policy that requires authentication via Google OAuth.
+    In the `ngrok-rust-demo` directory you created in the previous step, add the following code to your `src/main.rs` file.
 
-<Note>
-This example uses ngrok's default Google OAuth application.
-To use your own, see [the OAuth Traffic Policy Action documentation](/gateway/traffic-policy/actions/oauth/#google-example).
-</Note>
+    This example:
 
-```rust title="ngrok-rust-demo/src/main.rs"
-#![deny(warnings)]
-use ngrok::config::ForwarderBuilder;
-use url::Url;
+    - Starts an Agent endpoint that forwards from your reserved domain to your service running on port `8080`.
+    - Secures the endpoint with a Traffic Policy that requires authentication via Google OAuth.
 
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
-    // Set up ngrok tunnel
-    let session = ngrok::Session::builder()
-        .authtoken_from_env()
-        .connect()
-        .await?;
+    <Note>
+    This example uses ngrok's default Google OAuth application.
+    To use your own, see [the OAuth Traffic Policy Action documentation](/gateway/traffic-policy/actions/oauth/#google-example).
+    </Note>
 
-    let domain = "your-reserved-domain";
+    ```rust title="ngrok-rust-demo/src/main.rs"
+    #![deny(warnings)]
+    use ngrok::config::ForwarderBuilder;
+    use url::Url;
 
-    // Forward HTTP traffic from ngrok to the local server
-    let _listener = session
-        .http_endpoint()
-        .domain(domain)
-        .traffic_policy(r#"{"on_http_request": [{"actions": [{"type": "oauth","config": {"provider": "google"}}]}]}"#)
-        .listen_and_forward(Url::parse("http://localhost:8080").unwrap())
-        .await?;
+    #[tokio::main]
+    async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+        // Set up ngrok tunnel
+        let session = ngrok::Session::builder()
+            .authtoken_from_env()
+            .connect()
+            .await?;
 
-    println!("ngrok tunnel established at {}", domain);
+        let domain = "your-reserved-domain";
 
-    // Wait indefinitely
-    tokio::signal::ctrl_c().await?;
-    Ok(())
-}
-```
+        // Forward HTTP traffic from ngrok to the local server
+        let _listener = session
+            .http_endpoint()
+            .domain(domain)
+            .traffic_policy(r#"{"on_http_request": [{"actions": [{"type": "oauth","config": {"provider": "google"}}]}]}"#)
+            .listen_and_forward(Url::parse("http://localhost:8080").unwrap())
+            .await?;
 
-## 4. Test your endpoint
+        println!("ngrok tunnel established at {}", domain);
 
-Test your endpoint by running the following terminal command, swapping in [your auth token](https://dashboard.ngrok.com/get-started/your-authtoken):
+        // Wait indefinitely
+        tokio::signal::ctrl_c().await?;
+        Ok(())
+    }
+    ```
+  </Step>
 
-```bash
-NGROK_AUTHTOKEN=$YOUR_AUTHTOKEN_HERE cargo run
-```
+  <Step title="Test your endpoint">
 
-This should print your reserved domain URL to the terminal.
-When you visit the URL, you should be prompted to log in with Google.
-After logging in, you'll see your app or service.
+    Test your endpoint by running the following terminal command, swapping in [your auth token](https://dashboard.ngrok.com/get-started/your-authtoken):
 
-If you used the example app in this quickstart, you'll see **"Hello from Rust HTTP Server!"** displayed in your browser.
+    ```bash
+    NGROK_AUTHTOKEN=$YOUR_AUTHTOKEN_HERE cargo run
+    ```
 
+    This should print your reserved domain URL to the terminal.
+    When you visit the URL, you should be prompted to log in with Google.
+    After logging in, you'll see your app or service.
+
+    If you used the example app in this quickstart, you'll see **"Hello from Rust HTTP Server!"** displayed in your browser.
+  </Step>
+</Steps>
 ## What's next?
 
 In this guide, you learned how to use the Rust SDK to an create Agent Endpoint that forwards traffic to your localhost.

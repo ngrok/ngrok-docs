@@ -20,11 +20,14 @@ With this setup, you can:
 - Debug production-like traffic patterns before deploying
 - Share work-in-progress with teammates and stakeholders securely
 
-## 1. Create internal endpoints for your local services
+<Steps>
+  <Step title="Create internal endpoints for your local services">
 
-Start [Agent Endpoints](/gateway/endpoints/agent-endpoints/) for your local development services using internal URLs. Replace `$PORT` with your actual service ports.
+    Start [Agent Endpoints](/gateway/endpoints/agent-endpoints/) for your local development services using internal URLs. Replace `$PORT` with your actual service ports.
 
-```bash
+    ```bash
+  </Step>
+</Steps>
 # Backend API (for example, Express, Flask, FastAPI)
 ngrok http $BACKEND_PORT --url https://api-dev.internal
 
@@ -32,141 +35,147 @@ ngrok http $BACKEND_PORT --url https://api-dev.internal
 ngrok http $FRONTEND_PORT --url https://app-dev.internal
 ```
 
-## 2. Reserve a domain
+<Steps>
+  <Step title="Reserve a domain">
 
-<ReserveDomain />
+    <ReserveDomain />
 
-<Tip>
-Consider using a subdomain like `dev.yourcompany.com` or `staging.yourproject.com` to clearly distinguish from production.
-</Tip>
+    <Tip>
+    Consider using a subdomain like `dev.yourcompany.com` or `staging.yourproject.com` to clearly distinguish from production.
+    </Tip>
+  </Step>
 
-## 3. Create a Cloud Endpoint
+  <Step title="Create a Cloud Endpoint">
 
-<CloudEndpoint />
+    <CloudEndpoint />
+  </Step>
 
-## 4. Apply Traffic Policy for development gateway
+  <Step title="Apply Traffic Policy for development gateway">
 
-While viewing your new Cloud Endpoint in the dashboard, copy the policy below and paste it into the Traffic Policy editor.
-Make sure you change each of the following values:
+    While viewing your new Cloud Endpoint in the dashboard, copy the policy below and paste it into the Traffic Policy editor.
+    Make sure you change each of the following values:
 
-- `$GITHUB_OAUTH_CLIENT_ID`: Replace with your GitHub OAuth app client ID for development
-- `$GIBHUB_OAUTH_CLIENT_SECRET`: Replace with your GitHub OAuth app secret for development
-- `$YOUR_DEV_API_KEY`: Replace with an API key for development access
-- Internal service URLs: Replace with your actual internal endpoint URLs
+    - `$GITHUB_OAUTH_CLIENT_ID`: Replace with your GitHub OAuth app client ID for development
+    - `$GIBHUB_OAUTH_CLIENT_SECRET`: Replace with your GitHub OAuth app secret for development
+    - `$YOUR_DEV_API_KEY`: Replace with an API key for development access
+    - Internal service URLs: Replace with your actual internal endpoint URLs
 
-```yaml
-on_http_request:
-  # Development environment identification
-  - actions:
-      - type: add-headers
-        config:
-          headers:
-            x-environment: "development"
-            x-client-ip: "${conn.client_ip}"
-            x-client-location: "${conn.geo.city}, ${conn.geo.country}"
-            x-forwarded-host: "${req.host}"
+    ```yaml
+    on_http_request:
+      # Development environment identification
+      - actions:
+          - type: add-headers
+            config:
+              headers:
+                x-environment: "development"
+                x-client-ip: "${conn.client_ip}"
+                x-client-location: "${conn.geo.city}, ${conn.geo.country}"
+                x-forwarded-host: "${req.host}"
 
-  # OAuth authentication for protected development routes
-  - expressions:
-      - "req.url.path.startsWith('/admin') || req.url.path.startsWith('/dashboard')"
-    actions:
-      - type: oauth
-        config:
-          provider: google
-          client_id: "$GITHUB_OAUTH_CLIENT_ID"
-          client_secret: "$GITHUB_OAUTH_CLIENT_SECRET"
-          scopes:
-            - https://www.googleapis.com/auth/userinfo.email
+      # OAuth authentication for protected development routes
+      - expressions:
+          - "req.url.path.startsWith('/admin') || req.url.path.startsWith('/dashboard')"
+        actions:
+          - type: oauth
+            config:
+              provider: google
+              client_id: "$GITHUB_OAUTH_CLIENT_ID"
+              client_secret: "$GITHUB_OAUTH_CLIENT_SECRET"
+              scopes:
+                - https://www.googleapis.com/auth/userinfo.email
 
-  # API key authentication for external tools and AI assistants
-  - expressions:
-      - "req.url.path.startsWith('/api')"
-      - "!hasReqHeader('authorization')"
-    actions:
-      - type: basic-auth
-        config:
-          credentials:
-            - "dev-user:$YOUR_DEV_API_KEY"
+      # API key authentication for external tools and AI assistants
+      - expressions:
+          - "req.url.path.startsWith('/api')"
+          - "!hasReqHeader('authorization')"
+        actions:
+          - type: basic-auth
+            config:
+              credentials:
+                - "dev-user:$YOUR_DEV_API_KEY"
 
-  # Allow webhook testing without auth (for development only)
-  - expressions:
-      - "req.url.path.startsWith('/webhooks')"
-    actions:
-      - type: add-headers
-        config:
-          headers:
-            x-webhook-source: "${req.user_agent}"
-            x-webhook-timestamp: "${timestamp(time.now)}"
-            x-webhook-signature: "${getReqHeader('x-signature')[0]}"
+      # Allow webhook testing without auth (for development only)
+      - expressions:
+          - "req.url.path.startsWith('/webhooks')"
+        actions:
+          - type: add-headers
+            config:
+              headers:
+                x-webhook-source: "${req.user_agent}"
+                x-webhook-timestamp: "${timestamp(time.now)}"
+                x-webhook-signature: "${getReqHeader('x-signature')[0]}"
 
-  # Route API requests to backend
-  - expressions:
-      - "req.url.path.startsWith('/api')"
-    actions:
-      - type: forward-internal
-        config:
-          url: https://api-dev.internal
+      # Route API requests to backend
+      - expressions:
+          - "req.url.path.startsWith('/api')"
+        actions:
+          - type: forward-internal
+            config:
+              url: https://api-dev.internal
 
-  # Route webhook requests to backend
-  - expressions:
-      - "req.url.path.startsWith('/webhooks')"
-    actions:
-      - type: forward-internal
-        config:
-          url: https://api-dev.internal
+      # Route webhook requests to backend
+      - expressions:
+          - "req.url.path.startsWith('/webhooks')"
+        actions:
+          - type: forward-internal
+            config:
+              url: https://api-dev.internal
 
-  # Route admin/dashboard to backend with auth headers
-  - expressions:
-      - "req.url.path.startsWith('/admin') || req.url.path.startsWith('/dashboard')"
-    actions:
-      - type: add-headers
-        config:
-          headers:
-            x-authenticated-user: "${actions.ngrok.oauth.identity.email}"
-            x-auth-provider: "github"
-      - type: forward-internal
-        config:
-          url: https://app-dev.internal
+      # Route admin/dashboard to backend with auth headers
+      - expressions:
+          - "req.url.path.startsWith('/admin') || req.url.path.startsWith('/dashboard')"
+        actions:
+          - type: add-headers
+            config:
+              headers:
+                x-authenticated-user: "${actions.ngrok.oauth.identity.email}"
+                x-auth-provider: "github"
+          - type: forward-internal
+            config:
+              url: https://app-dev.internal
 
-  # Default route everything else to frontend
-  - actions:
-      - type: forward-internal
-        config:
-          url: https://app-dev.internal
+      # Default route everything else to frontend
+      - actions:
+          - type: forward-internal
+            config:
+              url: https://app-dev.internal
 
-on_http_response:
-  # Add development debugging headers
-  - actions:
-      - type: add-headers
-        config:
-          headers:
-            x-served-by: "ngrok-dev-gateway"
-            x-processing-timestamp: "${time.now}"
+    on_http_response:
+      # Add development debugging headers
+      - actions:
+          - type: add-headers
+            config:
+              headers:
+                x-served-by: "ngrok-dev-gateway"
+                x-processing-timestamp: "${time.now}"
 
-  # Enable CORS for development (be more restrictive in production)
-  - actions:
-      - type: add-headers
-        config:
-          headers:
-            access-control-allow-origin: "*"
-            access-control-allow-methods: "GET, POST, PUT, DELETE, OPTIONS, PATCH"
-            access-control-allow-headers: "Content-Type, Authorization, X-API-Key"
-            access-control-expose-headers: "X-Processing-Timestamp"
-```
+      # Enable CORS for development (be more restrictive in production)
+      - actions:
+          - type: add-headers
+            config:
+              headers:
+                access-control-allow-origin: "*"
+                access-control-allow-methods: "GET, POST, PUT, DELETE, OPTIONS, PATCH"
+                access-control-allow-headers: "Content-Type, Authorization, X-API-Key"
+                access-control-expose-headers: "X-Processing-Timestamp"
+    ```
 
-**What's happening here?**
-On every HTTP request, the policy adds environment identification headers for tracing, enforces OAuth authentication for admin/dashboard routes, requires API key authentication for API routes accessed by external tools and AI assistants, and allows webhook testing without authentication for easy debugging.
+    **What's happening here?**
+    On every HTTP request, the policy adds environment identification headers for tracing, enforces OAuth authentication for admin/dashboard routes, requires API key authentication for API routes accessed by external tools and AI assistants, and allows webhook testing without authentication for easy debugging.
 
-The gateway routes traffic based on URL paths—API requests go to your backend service, admin routes go to the backend with authentication headers, and everything else goes to your frontend.
-On responses, it adds development-specific headers for debugging, enables permissive CORS for local development, and timestamps responses for request tracking.
+    The gateway routes traffic based on URL paths—API requests go to your backend service, admin routes go to the backend with authentication headers, and everything else goes to your frontend.
+    On responses, it adds development-specific headers for debugging, enables permissive CORS for local development, and timestamps responses for request tracking.
+  </Step>
 
-## 5. Try out your development gateway
+  <Step title="Try out your development gateway">
 
-<TryOut />
+    <TryOut />
 
-Test different aspects of your development setup:
+    Test different aspects of your development setup:
 
-```bash
+    ```bash
+  </Step>
+</Steps>
 # Test your frontend application
 curl "https://$NGROK_DOMAIN/"
 

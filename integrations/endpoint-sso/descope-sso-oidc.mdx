@@ -23,87 +23,89 @@ In this mode, users access ngrok endpoints and are redirected to Descope for aut
 - A Descope account with administrative rights to a Descope Project.
 - An ngrok Pay-as-you-go account with an authtoken or admin access to configure endpoints with OpenID Connect.
 
-## 1. Configure Descope 
+<Steps>
+  <Step title="Configure Descope">
+    ### Add the ngrok app in Descope
 
-### Add the ngrok app in Descope
+    - Open the Descope Console.
+    - On the left menu, click **Applications**, and then click **+ Application** in the top right corner.
+    - In the popup window, enter `ngrok` in the **Name** field, make sure that `OIDC` is selected under **Authentication protocol**, and then click **Create**.
+    - On the **ngrok** application page, make a note of the **Issuer** URL.
+    - **Optional**: If you wish to change the Auth Hosting URL to use a different flow for ngrok SSO, you can change that on this page, and click **Save**.
 
-- Open the Descope Console.
-- On the left menu, click **Applications**, and then click **+ Application** in the top right corner.
-- In the popup window, enter `ngrok` in the **Name** field, make sure that `OIDC` is selected under **Authentication protocol**, and then click **Create**.
-- On the **ngrok** application page, make a note of the **Issuer** URL.
-- **Optional**: If you wish to change the Auth Hosting URL to use a different flow for ngrok SSO, you can change that on this page, and click **Save**.
+    ### Create a client secret in Descope
 
-### Create a client secret in Descope
+    - Go to **Access Keys** in the Descope Console.
+    - Click **+ Access Key** in the top right corner.
+    - In the popup window, enter `ngrok` in the **Name** field, change the **Expiration** time to whatever you prefer, and then click **Generate Key**.
+    - Once the **Access Key** has been created, make a note of it for later.
+  </Step>
 
-- Go to **Access Keys** in the Descope Console.
-- Click **+ Access Key** in the top right corner.
-- In the popup window, enter `ngrok` in the **Name** field, change the **Expiration** time to whatever you prefer, and then click **Generate Key**.
-- Once the **Access Key** has been created, make a note of it for later.
+  <Step title="Configure ngrok">
+    ngrok can use Descope SSO in two ways:
 
-## 2. Configure ngrok 
+    - From the ngrok CLI (using the `--oidc` parameter)
+    - From the ngrok dashboard
 
-ngrok can use Descope SSO in two ways:
+    ### **Option 1**: ngrok CLI
 
-- From the ngrok CLI (using the `--oidc` parameter)
-- From the ngrok dashboard
+    <Note>
+    This tutorial assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok client installed.
+    </Note>
 
-### **Option 1**: ngrok CLI
+    - Launch a terminal.
+    - Enter the following command to launch an ngrok tunnel with Descope SSO:
 
-<Note>
-This tutorial assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok client installed.
-</Note>
+      ```bash
+      ngrok http 3000 --oidc=DESCOPE_ISSUER_URL \
+      --oidc-client-id=DESCOPE_CLIENT_ID \
+      --oidc-client-secret=DESCOPE_CLIENT_SECRET \
+      ```
 
-- Launch a terminal.
-- Enter the following command to launch an ngrok tunnel with Descope SSO:
+      Replace the following with values:
+      - `DESCOPE_ISSUER_URL`: This is your Issuer URL that you copied from the **Applications** page earlier.
+      - `DESCOPE_CLIENT_ID`: This is your Descope Project ID, which can be found under **Project Settings** in the Descope Console.
+      - `DESCOPE_CLIENT_SECRET`: This is the Descope Access Key that you created from earlier.
 
-  ```bash
-  ngrok http 3000 --oidc=DESCOPE_ISSUER_URL \
-  --oidc-client-id=DESCOPE_CLIENT_ID \
-  --oidc-client-secret=DESCOPE_CLIENT_SECRET \
-  ```
+      Alternatively, add the `--url YOUR_DOMAIN` argument to get your custom URL, replacing `YOUR_DOMAIN` with your URL of preference.
+    - Copy the URL available next to **Forwarding** (for example, `https://descope-sso-test.ngrok.app`).
+    - Skip to **Step 3**.
 
-  Replace the following with values:
-  - `DESCOPE_ISSUER_URL`: This is your Issuer URL that you copied from the **Applications** page earlier.
-  - `DESCOPE_CLIENT_ID`: This is your Descope Project ID, which can be found under **Project Settings** in the Descope Console.
-  - `DESCOPE_CLIENT_SECRET`: This is the Descope Access Key that you created from earlier.
+    ### **Option 2**: Traffic Policy
 
-  Alternatively, add the `--url YOUR_DOMAIN` argument to get your custom URL, replacing `YOUR_DOMAIN` with your URL of preference.
-- Copy the URL available next to **Forwarding** (for example, `https://descope-sso-test.ngrok.app`).
-- Skip to **Step 3**.
+    <Note>
+    This tutorial assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok client installed.
+    </Note>
 
-### **Option 2**: Traffic Policy
+    Create a `policy.yaml` file with the following content, replacing the placeholder values with those copied from Descope:
 
-<Note>
-This tutorial assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok client installed.
-</Note>
+    ```yaml
+    on_http_request:
+      - actions:
+          - type: openid-connect
+            config:
+              issuer_url: 'YOUR_DESCOPE_ISSUER_URL'
+              client_id: 'YOUR_DESCOPE_PROJECT_ID'
+              client_secret: 'YOUR_DESCOPE_ACCESS_KEY'
+              scopes:
+                - openid
+                - profile
+                - email
+    ```
 
-Create a `policy.yaml` file with the following content, replacing the placeholder values with those copied from Descope:
+    Launch an ngrok tunnel with this policy:
 
-```yaml
-on_http_request:
-  - actions:
-      - type: openid-connect
-        config:
-          issuer_url: 'YOUR_DESCOPE_ISSUER_URL'
-          client_id: 'YOUR_DESCOPE_PROJECT_ID'
-          client_secret: 'YOUR_DESCOPE_ACCESS_KEY'
-          scopes:
-            - openid
-            - profile
-            - email
-```
+    ```bash
+    ngrok http 3000 --traffic-policy-file policy.yaml --url YOUR_DOMAIN
+    ```
 
-Launch an ngrok tunnel with this policy:
+    Copy the URL next to **Forwarding** (for example, `https://descope-sso-test.ngrok.app`).
+  </Step>
 
-```bash
-ngrok http 3000 --traffic-policy-file policy.yaml --url YOUR_DOMAIN
-```
-
-Copy the URL next to **Forwarding** (for example, `https://descope-sso-test.ngrok.app`).
-
-## 3. Test the integration
-
-- In your browser, launch an incognito window.
-- Access your ngrok endpoint (for example, `https://descope-sso-test.ngrok.app` or using the copied URL).
-- You should be prompted to log in with Descope.
-- After logging in, you should be able to see your web app.
+  <Step title="Test the integration">
+    - In your browser, launch an incognito window.
+    - Access your ngrok endpoint (for example, `https://descope-sso-test.ngrok.app` or using the copied URL).
+    - You should be prompted to log in with Descope.
+    - After logging in, you should be able to see your web app.
+  </Step>
+</Steps>

@@ -10,87 +10,92 @@ Sometimes you don't want everyone to be able to access the app at your [Endpoint
 
 This guide will walk you through protecting your apps with OAuth authentication via [Traffic Policy](/traffic-policy). All you need is [the ngrok agent CLI](/gateway/agent/cli).
 
-## 1. Pick your provider
+<Steps>
+  <Step title="Pick your provider">
 
-Decide which OAuth identity provider you want to use. If you don't have an OAuth application configured yet, you can use any of the following providers out of the box:
+    Decide which OAuth identity provider you want to use. If you don't have an OAuth application configured yet, you can use any of the following providers out of the box:
 
-- Google
-- GitHub
-- GitLab
-- LinkedIn
-- Microsoft
-- Twitch
+    - Google
+    - GitHub
+    - GitLab
+    - LinkedIn
+    - Microsoft
+    - Twitch
 
-This guide will use Google OAuth.
+    This guide will use Google OAuth.
 
-<Note>
-If you use any of the above providers without configuring your own OAuth application, your endpoint will use ngrok's managed OAuth application. This means you won't be able to customize the provider's authentication behavior.
-</Note>
+    <Note>
+    If you use any of the above providers without configuring your own OAuth application, your endpoint will use ngrok's managed OAuth application. This means you won't be able to customize the provider's authentication behavior.
+    </Note>
+  </Step>
 
-## 2. Create a Traffic Policy file
+  <Step title="Create a Traffic Policy file">
 
-The following is an example Traffic Policy file that executes the ['oauth' Traffic Policy action](/gateway/traffic-policy/actions/oauth/) on every request to your endpoint.
+    The following is an example Traffic Policy file that executes the ['oauth' Traffic Policy action](/gateway/traffic-policy/actions/oauth/) on every request to your endpoint.
 
-Create this Traffic Policy file in the same directory where you run your ngrok agent, or add its contents to your `ngrok.yml` agent config file as shown below.
+    Create this Traffic Policy file in the same directory where you run your ngrok agent, or add its contents to your `ngrok.yml` agent config file as shown below.
 
-<CodeGroup>
+    <CodeGroup>
 
-```yaml policy.yml
-on_http_request:
-- actions:
-  - type: oauth
-    config:
-      provider: google
-```
+    ```yaml policy.yml
+    on_http_request:
+    - actions:
+      - type: oauth
+        config:
+          provider: google
+    ```
 
-```json policy.json
-{
-  "on_http_request": [
+    ```json policy.json
     {
-      "actions": [
+      "on_http_request": [
         {
-          "type": "oauth",
-          "config": {
-            "provider": "google"
-          }
+          "actions": [
+            {
+              "type": "oauth",
+              "config": {
+                "provider": "google"
+              }
+            }
+          ]
         }
       ]
     }
-  ]
-}
-```
+    ```
 
-</CodeGroup>
+    </CodeGroup>
+  </Step>
 
-## 3. Restart your endpoint with the policy attached
+  <Step title="Restart your endpoint with the policy attached">
 
-<Tabs>
-<Tab title="Using a local file">
+    <Tabs>
+    <Tab title="Using a local file">
 
-If you saved your Traffic Policy in a local file like `oauth.yml`, add the `--traffic-policy-file` flag to your ngrok command when starting your agent as shown in the following example.
+    If you saved your Traffic Policy in a local file like `oauth.yml`, add the `--traffic-policy-file` flag to your ngrok command when starting your agent as shown in the following example.
 
-```bash
-ngrok http 3000 --traffic-policy-file oauth.yml
-```
+    ```bash
+    ngrok http 3000 --traffic-policy-file oauth.yml
+    ```
 
-</Tab>
-<Tab title="Using an Agent Config file">
+    </Tab>
+    <Tab title="Using an Agent Config file">
 
-If you've added the Traffic Policy to your agent config, run the following command in your terminal.
+    If you've added the Traffic Policy to your agent config, run the following command in your terminal.
 
-```bash
-ngrok start endpoint-name-here
-```
+    ```bash
+    ngrok start endpoint-name-here
+    ```
 
-</Tab>
-</Tabs>
+    </Tab>
+    </Tabs>
+  </Step>
 
-## 4. Verify in a browser
+  <Step title="Verify in a browser">
 
-Open your app's URL (for example `https://myapp.ngrok.app`).
+    Open your app's URL (for example `https://myapp.ngrok.app`).
 
-You should be immediately redirected to the Google sign-in page, and after authenticating you'll land back on your app.
-
+    You should be immediately redirected to the Google sign-in page, and after authenticating you'll land back on your app.
+  </Step>
+</Steps>
 ## Restrict access by email
 
 Authenticating users is often only half of what you want: a common next step is to allow only users from your own organization, so that anyone with a Google account can't get in.

@@ -27,88 +27,92 @@ By integrating ngrok with Pinwheel, you can:
 - [Node.js](https://nodejs.org/) installed (for the sample app, or use your own app).
 - A Pinwheel account.
 
-## 1. Start your app
+<Steps>
+  <Step title="Start your app">
 
-For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+    For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
 
-To install the sample, run the following in a terminal:
+    To install the sample, run the following in a terminal:
 
-```bash
-git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
-cd ngrok-webhook-nodejs-sample
-npm install
-```
+    ```bash
+    git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
+    cd ngrok-webhook-nodejs-sample
+    npm install
+    ```
 
-Then start the app:
+    Then start the app:
 
-```bash
-npm start
-```
+    ```bash
+    npm start
+    ```
 
-The app runs on port 3000 by default.
+    The app runs on port 3000 by default.
 
-You can confirm it's running by visiting `http://localhost:3000`.
-The app logs request headers and body in the terminal and shows a message in the browser.
+    You can confirm it's running by visiting `http://localhost:3000`.
+    The app logs request headers and body in the terminal and shows a message in the browser.
+  </Step>
 
-## 2. Expose your app with ngrok
+  <Step title="Expose your app with ngrok">
 
-Once your app is running locally, you're ready to put it online securely using ngrok.
+    Once your app is running locally, you're ready to put it online securely using ngrok.
 
-- Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
+    - Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
 
-<Tip>
-  The ngrok agent uses your authtoken to authenticate when you start a tunnel.
-</Tip>
+    <Tip>
+      The ngrok agent uses your authtoken to authenticate when you start a tunnel.
+    </Tip>
 
-- Start ngrok:
+    - Start ngrok:
 
-  ```bash
-  ngrok http 3000
-  ```
+      ```bash
+      ngrok http 3000
+      ```
 
-- Copy the URL ngrok displays.
-  Your app is now exposed at that URL for use with Pinwheel.
+    - Copy the URL ngrok displays.
+      Your app is now exposed at that URL for use with Pinwheel.
+  </Step>
 
-## 3. Configure Pinwheel to send webhooks
+  <Step title="Configure Pinwheel to send webhooks">
 
-Pinwheel registers webhook endpoints through its API rather than a dashboard form.
-Follow [Pinwheel's documentation for creating a webhook](https://docs.pinwheelapi.com/public/docs/webhooks-1) using your API secret and server URL from the Pinwheel Developer Portal, and set the following:
+    Pinwheel registers webhook endpoints through its API rather than a dashboard form.
+    Follow [Pinwheel's documentation for creating a webhook](https://docs.pinwheelapi.com/public/docs/webhooks-1) using your API secret and server URL from the Pinwheel Developer Portal, and set the following:
 
-- **url**: your ngrok URL.
-- **enabled_events**: the events you want to subscribe to (for this example, `account.added`, `employment.added`, `identity.added`, and `income.added`).
-- **status**: `active`.
+    - **url**: your ngrok URL.
+    - **enabled_events**: the events you want to subscribe to (for this example, `account.added`, `employment.added`, `identity.added`, and `income.added`).
+    - **status**: `active`.
 
-The request looks like this, with `SERVER_URL`, `API_SECRET`, and `NGROK_URL` replaced by your values:
+    The request looks like this, with `SERVER_URL`, `API_SECRET`, and `NGROK_URL` replaced by your values:
 
-```bash
-curl --request POST --url SERVER_URL/v1/webhooks \
---header 'x-api-secret: API_SECRET' \
---header 'Content-Type: application/json' --data '{
-    "url": "NGROK_URL",
-    "status": "active",
-    "enabled_events": [
-        "account.added",
-        "employment.added",
-        "identity.added",
-        "income.added"
-    ]
-}'
-```
+    ```bash
+    curl --request POST --url SERVER_URL/v1/webhooks \
+    --header 'x-api-secret: API_SECRET' \
+    --header 'Content-Type: application/json' --data '{
+        "url": "NGROK_URL",
+        "status": "active",
+        "enabled_events": [
+            "account.added",
+            "employment.added",
+            "identity.added",
+            "income.added"
+        ]
+    }'
+    ```
 
-Confirm the response JSON has a `status` attribute set to `active`.
+    Confirm the response JSON has a `status` attribute set to `active`.
 
-### Run webhooks with Pinwheel and ngrok
+    ### Run webhooks with Pinwheel and ngrok
 
-After you create the webhook, Pinwheel sends requests to your app when the events you subscribed to occur.
+    After you create the webhook, Pinwheel sends requests to your app when the events you subscribed to occur.
 
-Because this example subscribes to `account.added`, trigger calls by having users log into their payroll accounts through the Pinwheel API.
+    Because this example subscribes to `account.added`, trigger calls by having users log into their payroll accounts through the Pinwheel API.
 
-Confirm your localhost app receives the event and logs both the headers and body in the terminal.
+    Confirm your localhost app receives the event and logs both the headers and body in the terminal.
 
-<InspectingRequests />
+    <InspectingRequests />
 
-<ReplayingRequests />
-
+    <ReplayingRequests />
+  </Step>
+</Steps>
 ## Secure webhook requests
 
 ngrok can verify that incoming requests are from your Pinwheel webhook so only that traffic reaches your app.

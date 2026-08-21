@@ -20,65 +20,70 @@ By integrating Microsoft Entra ID with ngrok, you can:
 - An ngrok Pay-as-you-go account with an authtoken or admin access to configure endpoints with SAML.
 - A Microsoft Azure account with access to a Microsoft Entra ID tenant.
 
-## 1. Configure ngrok
+<Steps>
+  <Step title="Configure ngrok">
 
-<Warning>
-The SAML Traffic Policy action is currently in [developer preview](/gateway/traffic-policy/actions/saml/). [Request access](https://dashboard.ngrok.com/early-access) to configure SAML via Traffic Policy.
-</Warning>
+    <Warning>
+    The SAML Traffic Policy action is currently in [developer preview](/gateway/traffic-policy/actions/saml/). [Request access](https://dashboard.ngrok.com/early-access) to configure SAML via Traffic Policy.
+    </Warning>
 
-Once you have developer preview access, create a `policy.yaml` file with the following content, replacing `YOUR_IDP_METADATA_XML` with the IdP metadata XML from Microsoft Entra ID:
+    Once you have developer preview access, create a `policy.yaml` file with the following content, replacing `YOUR_IDP_METADATA_XML` with the IdP metadata XML from Microsoft Entra ID:
 
-```yaml
-on_http_request:
-  - actions:
-      - type: saml
-        config:
-          idp_metadata: 'YOUR_IDP_METADATA_XML'
-```
+    ```yaml
+    on_http_request:
+      - actions:
+          - type: saml
+            config:
+              idp_metadata: 'YOUR_IDP_METADATA_XML'
+    ```
 
-The SAML action generates your ngrok SP Entity ID and ACS URL based on your endpoint URL. Refer to the [SAML action documentation](/gateway/traffic-policy/actions/saml/) for how to retrieve these values to complete your IdP configuration.
+    The SAML action generates your ngrok SP Entity ID and ACS URL based on your endpoint URL. Refer to the [SAML action documentation](/gateway/traffic-policy/actions/saml/) for how to retrieve these values to complete your IdP configuration.
 
-Launch an ngrok tunnel with this policy:
+    Launch an ngrok tunnel with this policy:
 
-```bash
-ngrok http 3000 --traffic-policy-file policy.yaml --url YOUR_DOMAIN
-```
+    ```bash
+    ngrok http 3000 --traffic-policy-file policy.yaml --url YOUR_DOMAIN
+    ```
 
-Copy the URL next to **Forwarding**. You use this URL to test the integration.
+    Copy the URL next to **Forwarding**. You use this URL to test the integration.
+  </Step>
 
-## 2. Create a Microsoft Entra ID application 
+  <Step title="Create a Microsoft Entra ID application">
 
-- Go to your Microsoft Entra ID tenant in Azure.
-- Create an enterprise application:
-  - Starting from the sidebar, in the Manage section, click **Enterprise Applications > New application**.
-  - Give your application a name (for example, `www` for a website client).
-  Click **Create**.
-- To assign users/groups for this application, in the Getting Started section, click **1. Assign users and groups > Add user/group**.
-- Set up single sign-on with SAML:
-  - In the Getting Started section, click the box titled **2. Set up single sign on > SAML**.
-  - Configure SAML.
-  In the Basic SAML Configuration box, click **Edit**.
-  - Add Identifier (Entity ID) and Reply URL (Assertion Consumer Service URL) values using the previously generated ngrok Entity ID and ACS URL.
-  - Click **Save**.
-  - Download the Metadata XML.
-  In the SAML Certificates box > Token signing certificate section, click **Download** for the Federation Metadata XML.
+    - Go to your Microsoft Entra ID tenant in Azure.
+    - Create an enterprise application:
+      - Starting from the sidebar, in the Manage section, click **Enterprise Applications > New application**.
+      - Give your application a name (for example, `www` for a website client).
+      Click **Create**.
+    - To assign users/groups for this application, in the Getting Started section, click **1. Assign users and groups > Add user/group**.
+    - Set up single sign-on with SAML:
+      - In the Getting Started section, click the box titled **2. Set up single sign on > SAML**.
+      - Configure SAML.
+      In the Basic SAML Configuration box, click **Edit**.
+      - Add Identifier (Entity ID) and Reply URL (Assertion Consumer Service URL) values using the previously generated ngrok Entity ID and ACS URL.
+      - Click **Save**.
+      - Download the Metadata XML.
+      In the SAML Certificates box > Token signing certificate section, click **Download** for the Federation Metadata XML.
+  </Step>
 
-## 3. Update the ngrok configuration with the IdP metadata 
+  <Step title="Update the ngrok configuration with the IdP metadata">
 
-- Update the `idp_metadata` value in your `policy.yaml` with the Federation Metadata XML downloaded from Microsoft Entra ID, replacing the placeholder value you set earlier.
+    - Update the `idp_metadata` value in your `policy.yaml` with the Federation Metadata XML downloaded from Microsoft Entra ID, replacing the placeholder value you set earlier.
+  </Step>
 
-## 4. Test the integration 
-<Note>
-This step assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok client installed.
-</Note>
+  <Step title="Test the integration">
+    <Note>
+    This step assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok client installed.
+    </Note>
 
-Run: `ngrok http 3000 --traffic-policy-file policy.yaml --url YOUR_DOMAIN`
+    Run: `ngrok http 3000 --traffic-policy-file policy.yaml --url YOUR_DOMAIN`
 
-- Access your ngrok tunnel via your forwarding URL.
-- In your browser, launch an incognito window.
-- You should be prompted to log in with your Microsoft credentials.
-- After logging in, you should be able to see the application.
-
+    - Access your ngrok tunnel via your forwarding URL.
+    - In your browser, launch an incognito window.
+    - You should be prompted to log in with your Microsoft credentials.
+    - After logging in, you should be able to see the application.
+  </Step>
+</Steps>
 ## Bonus: Configure ngrok to enforce authorization based on Azure groups 
 
 - In Azure, configure the SAML response to include group claims.

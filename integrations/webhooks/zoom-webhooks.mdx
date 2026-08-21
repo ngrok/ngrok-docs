@@ -27,78 +27,82 @@ By integrating ngrok with Zoom, you can:
 - [Node.js](https://nodejs.org/) installed (for the sample app, or use your own app).
 - A Zoom account.
 
-## 1. Start your app
+<Steps>
+  <Step title="Start your app">
 
-For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+    For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
 
-To install the sample, run the following in a terminal:
+    To install the sample, run the following in a terminal:
 
-```bash
-git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
-cd ngrok-webhook-nodejs-sample
-npm install
-```
+    ```bash
+    git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
+    cd ngrok-webhook-nodejs-sample
+    npm install
+    ```
 
-Then start the app:
+    Then start the app:
 
-```bash
-npm start
-```
+    ```bash
+    npm start
+    ```
 
-The app runs on port 3000 by default.
+    The app runs on port 3000 by default.
 
-You can confirm it's running by visiting `http://localhost:3000`.
-The app logs request headers and body in the terminal and shows a message in the browser.
+    You can confirm it's running by visiting `http://localhost:3000`.
+    The app logs request headers and body in the terminal and shows a message in the browser.
+  </Step>
 
-## 2. Expose your app with ngrok
+  <Step title="Expose your app with ngrok">
 
-Once your app is running locally, you're ready to put it online securely using ngrok.
+    Once your app is running locally, you're ready to put it online securely using ngrok.
 
-- Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
+    - Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
 
-<Tip>
-  The ngrok agent uses your authtoken to authenticate when you start a tunnel.
-</Tip>
+    <Tip>
+      The ngrok agent uses your authtoken to authenticate when you start a tunnel.
+    </Tip>
 
-- Start ngrok:
+    - Start ngrok:
 
-  ```bash
-  ngrok http 3000
-  ```
+      ```bash
+      ngrok http 3000
+      ```
 
-- Copy the URL ngrok displays.
-  Your app is now exposed at that URL for use with Zoom.
+    - Copy the URL ngrok displays.
+      Your app is now exposed at that URL for use with Zoom.
+  </Step>
 
-## 3. Configure Zoom to send webhooks
+  <Step title="Configure Zoom to send webhooks">
 
-This guide uses the **Webhook Only** app type, which works with a free Zoom account.
-Follow [Zoom's documentation for setting up webhooks](https://developers.zoom.us/docs/api/webhooks/), and set the following:
+    This guide uses the **Webhook Only** app type, which works with a free Zoom account.
+    Follow [Zoom's documentation for setting up webhooks](https://developers.zoom.us/docs/api/webhooks/), and set the following:
 
-- **Event notification endpoint URL**: your ngrok URL (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
-- **Events**: select the events you want (for this example, **Start Meeting** and **End Meeting**).
+    - **Event notification endpoint URL**: your ngrok URL (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
+    - **Events**: select the events you want (for this example, **Start Meeting** and **End Meeting**).
 
-Zoom generates a **Secret Token** that you note for the [verification step](#secure-webhook-requests) below.
+    Zoom generates a **Secret Token** that you note for the [verification step](#secure-webhook-requests) below.
 
-<Note>
-  Before Zoom saves the webhook, it validates the endpoint URL by sending an `endpoint.url_validation` event that your app must answer within a few seconds.
-  The [sample app](#1-start-your-app) does not handle this, so use an app that responds to Zoom's validation request.
-  See [Zoom's webhook documentation](https://developers.zoom.us/docs/api/webhooks/) for how to build the response.
-</Note>
+    <Note>
+      Before Zoom saves the webhook, it validates the endpoint URL by sending an `endpoint.url_validation` event that your app must answer within a few seconds.
+      The the **Start your app** step does not handle this, so use an app that responds to Zoom's validation request.
+      See [Zoom's webhook documentation](https://developers.zoom.us/docs/api/webhooks/) for how to build the response.
+    </Note>
 
-### Run webhooks with Zoom and ngrok
+    ### Run webhooks with Zoom and ngrok
 
-Start a meeting in your Zoom account and end it after a few seconds to trigger both events.
-Confirm your localhost app receives the notifications and logs both the headers and body in the terminal.
+    Start a meeting in your Zoom account and end it after a few seconds to trigger both events.
+    Confirm your localhost app receives the notifications and logs both the headers and body in the terminal.
 
-<Tip>
-  Zoom sends different request body contents and headers depending on the event.
-  Each request includes an authorization header with the Secret Token, which you can validate in your app or with ngrok's webhook verification below.
-</Tip>
+    <Tip>
+      Zoom sends different request body contents and headers depending on the event.
+      Each request includes an authorization header with the Secret Token, which you can validate in your app or with ngrok's webhook verification below.
+    </Tip>
 
-<InspectingRequests />
+    <InspectingRequests />
 
-<ReplayingRequests />
-
+    <ReplayingRequests />
+  </Step>
+</Steps>
 ## Secure webhook requests
 
 ngrok can verify that incoming requests are from your Zoom webhook so only that traffic reaches your app.
@@ -111,7 +115,7 @@ ngrok can verify that incoming requests are from your Zoom webhook so only that 
 
 To add verification:
 
-- Use the **Secret Token** you copied when configuring the webhook (see [Configure Zoom to send webhooks](#3-configure-zoom-to-send-webhooks)).
+- Use the **Secret Token** you copied when configuring the webhook (see the **Configure Zoom to send webhooks** step).
 - Create a Traffic Policy file named `zoom_policy.yml`.
   Replace `{your secret token}` with that value:
 

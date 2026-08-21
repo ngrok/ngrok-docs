@@ -27,69 +27,73 @@ By integrating ngrok with Terraform Cloud, you can:
 - [Node.js](https://nodejs.org/) installed (for the sample app, or use your own app).
 - A Terraform Cloud account.
 
-## 1. Start your app
+<Steps>
+  <Step title="Start your app">
 
-For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+    For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
 
-To install the sample, run the following in a terminal:
+    To install the sample, run the following in a terminal:
 
-```bash
-git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
-cd ngrok-webhook-nodejs-sample
-npm install
-```
+    ```bash
+    git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
+    cd ngrok-webhook-nodejs-sample
+    npm install
+    ```
 
-Then start the app:
+    Then start the app:
 
-```bash
-npm start
-```
+    ```bash
+    npm start
+    ```
 
-The app runs on port 3000 by default.
+    The app runs on port 3000 by default.
 
-You can confirm it's running by visiting `http://localhost:3000`.
-The app logs request headers and body in the terminal and shows a message in the browser.
+    You can confirm it's running by visiting `http://localhost:3000`.
+    The app logs request headers and body in the terminal and shows a message in the browser.
+  </Step>
 
-## 2. Expose your app with ngrok
+  <Step title="Expose your app with ngrok">
 
-Once your app is running locally, you're ready to put it online securely using ngrok.
+    Once your app is running locally, you're ready to put it online securely using ngrok.
 
-- Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
+    - Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
 
-<Tip>
-  The ngrok agent uses your authtoken to authenticate when you start a tunnel.
-</Tip>
+    <Tip>
+      The ngrok agent uses your authtoken to authenticate when you start a tunnel.
+    </Tip>
 
-- Start ngrok:
+    - Start ngrok:
 
-  ```bash
-  ngrok http 3000
-  ```
+      ```bash
+      ngrok http 3000
+      ```
 
-- Copy the URL ngrok displays.
-  Your app is now exposed at that URL for use with Terraform Cloud.
+    - Copy the URL ngrok displays.
+      Your app is now exposed at that URL for use with Terraform Cloud.
+  </Step>
 
-## 3. Configure Terraform Cloud to send webhooks
+  <Step title="Configure Terraform Cloud to send webhooks">
 
-Follow [HashiCorp's documentation for creating a workspace notification](https://developer.hashicorp.com/terraform/cloud-docs/workspaces/settings/notifications), and set the following:
+    Follow [HashiCorp's documentation for creating a workspace notification](https://developer.hashicorp.com/terraform/cloud-docs/workspaces/settings/notifications), and set the following:
 
-- **Destination**: choose the **Webhook** type.
-- **Name**: a name for the notification (for example, `ngrok`).
-- **Webhook URL**: your ngrok URL (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
-- **Triggers**: choose which events send a notification (for this example, **All events**).
-- **Token**: set a token and note it for the [verification step](#secure-webhook-requests) below.
+    - **Destination**: choose the **Webhook** type.
+    - **Name**: a name for the notification (for example, `ngrok`).
+    - **Webhook URL**: your ngrok URL (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
+    - **Triggers**: choose which events send a notification (for this example, **All events**).
+    - **Token**: set a token and note it for the [verification step](#secure-webhook-requests) below.
 
-### Run webhooks with Terraform Cloud and ngrok
+    ### Run webhooks with Terraform Cloud and ngrok
 
-Terraform Cloud sends a different request body depending on the event.
-Start a new run in your workspace, or send a test notification, to trigger a request to your app.
+    Terraform Cloud sends a different request body depending on the event.
+    Start a new run in your workspace, or send a test notification, to trigger a request to your app.
 
-Confirm your localhost app receives event notifications and logs both headers and body in the terminal.
+    Confirm your localhost app receives event notifications and logs both headers and body in the terminal.
 
-<InspectingRequests />
+    <InspectingRequests />
 
-<ReplayingRequests />
-
+    <ReplayingRequests />
+  </Step>
+</Steps>
 ## Secure webhook requests
 
 ngrok can verify that incoming requests are from your Terraform Cloud webhook so only that traffic reaches your app.
