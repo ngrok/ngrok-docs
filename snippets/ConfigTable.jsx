@@ -20,7 +20,7 @@ export const ConfigField = ({
               </a>
             </div>
             <div className="font-semibold text-primary dark:text-primary-light overflow-wrap-anywhere">{title}</div>
-            <div className="inline items-center gap-2 text-xs font-medium [&_div]:inline [&_div]:mr-2 [&_div]:leading-5 [&_a]:inline [&_a]:mr-2 [&_a]:leading-5">
+            <div className="flex items-center flex-wrap gap-2 text-xs font-medium leading-5">
               {type && (<div className="flex items-center px-2 py-0.5 rounded-md bg-gray-100/50 dark:bg-white/5 break-all">
                 <span className="text-gray-600 dark:text-gray-200 !font-medium">{type}</span>
               </div>)}
@@ -92,7 +92,7 @@ export const OldConfigItem = ({
               </a>
             </div>
             <div className="font-semibold text-primary dark:text-primary-light overflow-wrap-anywhere">{title}</div>
-            <div className="inline items-center gap-2 text-xs font-medium [&_div]:inline [&_div]:mr-2 [&_div]:leading-5 [&_a]:inline [&_a]:mr-2 [&_a]:leading-5">
+            <div className="flex items-center flex-wrap gap-2 text-xs font-medium leading-5">
               {type && (<div className="flex items-center px-2 py-0.5 rounded-md bg-gray-100/50 dark:bg-white/5 break-all">
                 <span className="text-gray-600 dark:text-gray-200 !font-medium">{type}</span>
               </div>)}
