@@ -1,40 +1,58 @@
 ---
-title: Secure Tunnels
-sidebarTitle: Secure Tunnels
-description: Learn how ngrok creates encrypted tunnels between the internet and your local development machine.
+title: How Sharing Localhost Works
+sidebarTitle: How It Works
+icon: gears
+description: Learn what happens when you put a service running on your machine on the internet, and what that means for access and security.
 ---
 
-ngrok establishes secure tunnels between the ngrok cloud service and your local machine.
-These tunnels allow you to receive traffic from the internet on your localhost without exposing your machine directly or opening inbound ports.
+Your app runs on `localhost`, where only you can reach it.
+Sharing localhost gives it a public URL that anyone you choose can open, without deploying your code, changing your network, or opening a port on your machine.
 
-## How tunnels work
+## What happens when you share
 
-When you run `ngrok http <port>`, the ngrok agent on your machine opens an outbound TLS connection to the ngrok cloud.
-ngrok assigns a public URL and routes incoming requests through this encrypted tunnel to your local port.
+Start the ngrok agent and point it at the port your app already listens on:
 
-- **Outbound-only connections:** The agent connects outbound on port 443. No firewall changes or port forwarding required.
-- **TLS encryption:** All traffic between the ngrok cloud and your agent is encrypted with TLS.
-- **Automatic HTTPS:** ngrok automatically provisions and manages TLS certificates for your public endpoint.
+```bash
+ngrok http 8080
+```
 
-## Supported protocols
+The agent opens an outbound connection to ngrok's cloud service, which hands back a public URL.
+Requests to that URL travel over that connection and arrive at your app on `localhost:8080`.
 
-ngrok supports tunnels for multiple protocols:
+Your code keeps running where it always did.
+Edit a file, restart your server, and the next request at the same URL hits the new version.
 
-| Protocol | Command | Use case |
-|----------|---------|----------|
-| HTTP/S | `ngrok http 8080` | Web apps, APIs, webhooks |
-| TLS | `ngrok tls 8443` | TLS passthrough for custom certificates |
-| TCP | `ngrok tcp 3389` | Databases, RDP, game servers |
+Two things follow from the agent dialing out rather than listening:
 
-For more details, see the [protocols documentation](/gateway/endpoints/protocols).
+- **Your machine stays closed.** Nothing accepts inbound connections on it, so there are no ports to forward and no firewall rules to change. The connection works from home networks, coffee shop Wi-Fi, and corporate networks that block inbound traffic.
+- **The traffic is encrypted.** The connection between your machine and ngrok runs over TLS, and your public URL is served over HTTPS with a certificate ngrok provisions and renews for you.
 
-## Agent Endpoints
+## What you can share
 
-Each tunnel creates an [Agent Endpoint](/gateway/endpoints/agent-endpoints/): an endpoint that exists only while the agent is running.
-You can configure Agent Endpoints with [Traffic Policy](/gateway/traffic-policy/) to add authentication, rate limiting, header manipulation, and more.
+| What you're sharing | Command |
+|---|---|
+| A web app, API, or webhook receiver | `ngrok http 8080` |
+| A database, SSH server, RDP host, or game server | `ngrok tcp 3389` |
+| A service that presents its own TLS certificate | `ngrok tls 8443` |
+
+See the [protocols documentation](/gateway/endpoints/protocols) for the details of each.
+
+## Who can reach it
+
+Your URL is public as soon as it exists.
+Anyone who has it can open it, so treat it like a link to a live service rather than a private address — and remember that whatever you share is running on your own machine.
+
+You control access without changing your app:
+
+- [Add authentication](/share-localhost/auth) so visitors sign in before they reach you.
+- [Review the security model](/share-localhost/security) to understand what you expose and how to limit it.
+- [Apply a Traffic Policy](/gateway/traffic-policy/) to require credentials, restrict IP addresses, rate limit requests, or rewrite traffic in flight.
+
+When you stop the agent, the URL stops working and your machine is unreachable again.
+What you created while it ran is an [Agent Endpoint](/gateway/endpoints/agent-endpoints), an endpoint that exists only for the life of the agent process.
 
 ## Next steps
 
-- [Quickstart](/share-localhost/quickstart): create your first tunnel in minutes
-- [Agent CLI reference](/gateway/agent/cli/): full command reference for the ngrok agent
-- [Traffic Policy](/gateway/traffic-policy/): add security and traffic management to your tunnels
+- [Quickstart](/share-localhost/quickstart): share your first local service.
+- [Inspect traffic and replay requests](/share-localhost/inspection): see every request that reaches your app and send it again.
+- [Agent CLI reference](/gateway/agent/cli): the full set of commands and flags.
