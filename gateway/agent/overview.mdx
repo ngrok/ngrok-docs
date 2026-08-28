@@ -1,52 +1,64 @@
 ---
-title: Secure Tunnels Overview
+title: Connect Services the Internet Can't Reach
 sidebarTitle: Overview
-description: Learn about ngrok's secure tunnel agent for exposing local services, connecting devices, and creating secure remote access.
+description: Learn when you need the ngrok agent to reach services behind firewalls, NAT, and private networks, and what it gives you once they are connected.
 ---
 
-The ngrok agent is a lightweight command-line program that creates secure tunnels from ngrok's global network to your local services, devices, and applications.
-It enables you to expose services behind firewalls and NATs (including double NAT), connect remote devices, and create secure site-to-site connectivity without complex network configuration.
+The services you need to reach are not always reachable.
+They sit behind a corporate firewall, on a device you shipped to a customer, inside a private cluster, or on a laptop that joins a different network twice a day.
+None of them can accept an inbound connection, and giving them one usually means a VPN, a port forward, or a public IP address you would rather not hand out.
 
-- It runs as a standalone executable with zero runtime dependencies on all major operating systems.
-- It supports HTTP, HTTPS, TCP, and TLS protocols for any application or service.
-- You can run multiple endpoints simultaneously and manage them via configuration files or the CLI.
-- You can install it as a native OS service for automatic startup, crash recovery, and background operation.
+The ngrok agent reverses the direction instead.
+You run it next to your service, it dials out to ngrok's network over TLS, and traffic addressed to your endpoint travels back down that same connection.
+Your service stays exactly where it is, and nothing about its network has to change.
 
-## Concepts
+## When you need an agent
 
-Here are the core elements you should familiarize yourself with to make the most of ngrok's secure tunnels:
+Run an agent whenever the thing receiving traffic cannot be reached from ngrok's network on its own:
+
+- **Behind NAT or a firewall.** Home networks, guest Wi-Fi, corporate networks, and double NAT all work, because the connection is outbound on port 443.
+- **On hardware in the field.** Devices with no fixed address, no inbound ports, and no one on site to configure a router.
+- **Inside a private network.** A VPC, a Kubernetes cluster, or a customer's datacenter that you reach without peering or a VPN.
+- **On a developer machine.** A laptop that moves between networks and still needs a stable public URL.
+
+You may not need an agent at all.
+If what you are routing to is already reachable at a stable address, a [Cloud Endpoint](/gateway/endpoints/cloud-endpoints/) can route to it directly and stays up whether or not any process of yours is running.
+Endpoints an agent creates are [Agent Endpoints](/gateway/endpoints/agent-endpoints), and they exist only while that agent does.
+
+## What you get once it's connected
+
+- **Any protocol your service speaks.** HTTP, HTTPS, TCP, and TLS, so databases, SSH, and RDP work the same way web apps do.
+- **Many services from one agent.** Run several endpoints at once and [define them all in a configuration file](/gateway/agent/config/) instead of a shell command.
+- **Something that stays running.** [Install it as a native OS service](/gateway/agent/#running-ngrok-in-the-background) for automatic startup and crash recovery, then [stop, restart, or upgrade it remotely](/gateway/agent/#remote-management) from the API or dashboard.
+- **No runtime dependencies.** A single standalone executable on every major operating system.
+
+## Working with the agent
 
 <Columns cols={1}>
 	<Card title="Agent CLI" href="/gateway/agent/cli/" horizontal>
-		Use the command line to start endpoints, manage configuration, and interact with the ngrok API.
+		Start endpoints, manage configuration, and interact with the ngrok API from the command line.
 	</Card>
 	<Card title="Configuration File" href="/gateway/agent/config/" horizontal>
-		Define multiple endpoints, run multiple tunnels simultaneously, and manage complex tunnel configurations with YAML.
+		Define multiple endpoints and manage complex setups in YAML rather than command-line flags.
 	</Card>
 	<Card title="Authtokens" href="/gateway/agent/#authtokens" horizontal>
-		Authenticate your agent with ngrok and create endpoints using credentials scoped to your account.
+		Authenticate the agent with credentials scoped to your account.
 	</Card>
 	<Card title="TLS Termination" href="/gateway/agent/agent-tls-termination/" horizontal>
-		Secure traffic with end-to-end encryption by terminating TLS at the agent.
+		Terminate TLS at the agent so traffic stays encrypted end to end.
 	</Card>
 	<Card title="SSH Reverse Tunnel" href="/gateway/agent/ssh-reverse-tunnel-agent/" horizontal>
-		Create secure tunnels using SSH public key authentication for agent connections.
+		Connect using SSH public key authentication instead of installing the agent.
+	</Card>
+	<Card title="Custom Connect URLs" href="/gateway/agent/connect-url/" horizontal>
+		Point agents at your own branded hostname for white-label deployments.
+	</Card>
+	<Card title="Agent CLI API" href="/gateway/agent/cli-api/" horizontal>
+		Manage endpoints, domains, and other resources through the ngrok API without leaving the agent.
 	</Card>
 </Columns>
 
-## Features
-
-Here are the primary capabilities of ngrok's secure tunnel agent:
-
-- [Support for multiple protocols](/gateway/agent/) - Create HTTP, HTTPS, TCP, and TLS endpoints for any application or service.
-- [Background service](/gateway/agent/#running-ngrok-in-the-background) - Install as a native OS service with automatic startup and crash recovery.
-- [Remote management](/gateway/agent/#remote-management) - Stop, restart, or upgrade agents remotely via API or dashboard.
-- [Custom connect URLs](/gateway/agent/connect-url/) - Brand your agent connections with custom domains for white-label deployments.
-- [API integration](/gateway/agent/cli-api/) - Built-in CLI for the ngrok API to manage endpoints, domains, and resources programmatically.
-
-## Use cases
-
-Here are some of the most common use cases for ngrok's secure tunnel agent:
+## What people build with it
 
 <Columns cols={2}>
 	<Card
@@ -81,5 +93,5 @@ Here are some of the most common use cases for ngrok's secure tunnel agent:
 
 ## What's next?
 
-- Get started by [installing the ngrok agent](/gateway/endpoints/agent-cli-quickstart/) and creating your first tunnel.
-- Learn how to [configure multiple endpoints](/gateway/agent/config/) and run the agent as a service.
+- [Install the agent](/gateway/endpoints/agent-cli-quickstart/) and connect your first service.
+- [Configure multiple endpoints](/gateway/agent/config/) and run the agent as a service.
