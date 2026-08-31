@@ -27,15 +27,12 @@ jobs:
           token: ${{ steps.generate-token.outputs.token }}
           ref: main
 
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24'
+
       - name: Fetch and Update Changelog
-        run: |
-          CHANGELOG_URL="https://raw.githubusercontent.com/ngrok/ngrok-operator/refs/heads/main/CHANGELOG.md"
-          OUTPUT_PATH="snippets/k8s/_changelog.mdx"
-          
-          # Fetch and process using perl to remove the title and leading newlines exactly as the script did
-          curl -sSL --fail "$CHANGELOG_URL" | perl -0777 -pe 's/^# Changelog\n*//m' > "$OUTPUT_PATH"
-          
-          echo "Updated $OUTPUT_PATH"
+        run: node custom/scripts/fetch-k8s-changelog.js
 
       - name: Check for changes
         id: check
