@@ -1,430 +1,150 @@
 ---
 title: Ingress to Kubernetes apps deployed on Azure Kubernetes Service (AKS)
-description: Learn how to deploy a new Kubernetes cluster and demo app via AKS, then add ingress to applications with ngrok's Kubernetes Operator.
+description: Add public ingress to an app running on Azure Kubernetes Service (AKS) using ngrok's Kubernetes Operator, then secure it with Traffic Policy.
 sidebarTitle: Azure Kubernetes Service
 ---
 
-This guide walks you through launching a new cluster with Azure Kubernetes Service (AKS) and a demo app, then adding the ngrok Kubernetes Operator to route public traffic to your demo app through an encrypted tunnel.
-
-It covers the [ngrok Kubernetes Operator](https://github.com/ngrok/ngrok-operator) and AKS (a managed Kubernetes environment from Microsoft that simplifies deployment, health monitoring, and maintenance of cloud native applications in Azure, on-premises, or at the edge).
+This guide shows you how to add public ingress to an app running on Azure Kubernetes Service (AKS). You'll use the ngrok Kubernetes Operator to route public traffic to the app through an encrypted tunnel, then secure it with OAuth.
 
 ## What you'll need
 
-- An Azure account with permissions to create new Kubernetes clusters.
+- An AKS cluster with a demo app running. If you don't have one, Microsoft's [AKS quickstart](https://learn.microsoft.com/en-us/azure/aks/learn/quick-kubernetes-deploy-portal) covers creating a cluster and deploying the AKS Store demo app this guide uses.
 - An ngrok account.
-- kubectl and Helm 3.0.0+ installed on your local workstation.
+- `kubectl` and Helm 3.0.0+ installed on your local workstation.
 - The [ngrok Kubernetes Operator](/gateway/k8s/) installed on your cluster.
-- A reserved domain from the ngrok [dashboard](https://dashboard.ngrok.com/domains) or [API](/api-reference/reserveddomains/list); this guide refers to it as `<NGROK_DOMAIN>`.
+- A reserved domain from the ngrok [dashboard](https://dashboard.ngrok.com/domains) or [API](/api-reference/reserveddomains/list); this guide refers to it as `NGROK_DOMAIN`.
 
-## Create your cluster in AKS 
+## Set up your cluster and demo app
 
-Start by creating a new managed Kubernetes cluster in AKS.
-If you already have one, you can skip to [Add ngrok's Kubernetes ingress to your demo app](#add-ngroks-kubernetes-ingress-to-your-demo-app).
+This guide assumes an AKS cluster reachable with `kubectl` and a `store-front` service listening on port `80`, which the AKS Store demo app provides.
 
-1. In your Azure console, go to Kubernetes services and click **Create**, then **Create a Kubernetes cluster**.
+If you don't have this yet, follow Microsoft's [AKS quickstart](https://learn.microsoft.com/en-us/azure/aks/learn/quick-kubernetes-deploy-portal) to create a cluster, connect to it with `kubectl`, and deploy the demo app. To expose a different app, deploy it now and adjust the service name and port in the ingress below.
 
-2. Configure your new cluster with the wizard.
-   Default options are generally fine; you can adjust cluster configuration (production vs dev/test), region, and AKS pricing tier (the **Free** tier works well with fewer than 10 nodes).
+Confirm your workloads are running before continuing:
 
-3. Click **Review + create** and wait for Azure to validate your configuration.
-   If you see a **Validation failed** warning, check the errors (often related to quota limits).
-   When ready, click **Create**; deployment can take a while.
-
-4. When AKS completes the deployment, click **Go to deployment**, then **Connect** for kubectl connection options.
-   Use the Cloud shell or Azure CLI as instructed, then verify your cluster's services:
-
-   ```bash
-   kubectl get deployments --all-namespaces=true
-   NAMESPACE         NAME                      READY   UP-TO-DATE   AVAILABLE   AGE
-   calico-system     calico-kube-controllers   1/1     1            1           5m
-   calico-system     calico-typha              1/1     1            1           5m
-   kube-system       ama-metrics               1/1     1            1           5m
-   kube-system       ama-metrics-ksm           1/1     1            1           5m
-   kube-system       coredns                   2/2     2            2           5m
-   kube-system       coredns-autoscaler        1/1     1            1           5m
-   kube-system       konnectivity-agent        2/2     2            2           5m
-   kube-system       metrics-server            2/2     2            2           5m
-   tigera-operator   tigera-operator           1/1     1            1           5m
-   ```
-
-## Deploy a demo microservices app 
-
-To showcase this integration, deploy the AKS Store demo app (a microservices architecture connecting frontend UI to API-like services with RabbitMQ and MongoDB) directly in the Azure Portal.
-
-<Tip>
-If you prefer the CLI, save the YAML below to a `.yaml` file on your local workstation and deploy with `kubectl apply -f ...`.
-</Tip>
-
-- Click **Create**, then **Apply a YAML**.
-
-- Copy and paste the YAML below into the editor.
-
-   ```yaml showLineNumbers collapsible
-   apiVersion: apps/v1
-   kind: Deployment
-   metadata:
-     name: rabbitmq
-   spec:
-     replicas: 1
-     selector:
-       matchLabels:
-         app: rabbitmq
-     template:
-       metadata:
-         labels:
-           app: rabbitmq
-       spec:
-         nodeSelector:
-           "kubernetes.io/os": linux
-         containers:
-           - name: rabbitmq
-             image: mcr.microsoft.com/mirror/docker/library/rabbitmq:3.10-management-alpine
-             ports:
-               - containerPort: 5672
-                 name: rabbitmq-amqp
-               - containerPort: 15672
-                 name: rabbitmq-http
-             env:
-               - name: RABBITMQ_DEFAULT_USER
-                 value: "username"
-               - name: RABBITMQ_DEFAULT_PASS
-                 value: "password"
-             resources:
-               requests:
-                 cpu: 10m
-                 memory: 128Mi
-               limits:
-                 cpu: 250m
-                 memory: 256Mi
-             volumeMounts:
-               - name: rabbitmq-enabled-plugins
-                 mountPath: /etc/rabbitmq/enabled_plugins
-                 subPath: enabled_plugins
-         volumes:
-           - name: rabbitmq-enabled-plugins
-             configMap:
-               name: rabbitmq-enabled-plugins
-               items:
-                 - key: rabbitmq_enabled_plugins
-                   path: enabled_plugins
-   ---
-   apiVersion: v1
-   data:
-     rabbitmq_enabled_plugins: |
-       [rabbitmq_management,rabbitmq_prometheus,rabbitmq_amqp1_0].
-   kind: ConfigMap
-   metadata:
-     name: rabbitmq-enabled-plugins
-   ---
-   apiVersion: v1
-   kind: Service
-   metadata:
-     name: rabbitmq
-   spec:
-     selector:
-       app: rabbitmq
-     ports:
-       - name: rabbitmq-amqp
-         port: 5672
-         targetPort: 5672
-       - name: rabbitmq-http
-         port: 15672
-         targetPort: 15672
-     type: ClusterIP
-   ---
-   apiVersion: apps/v1
-   kind: Deployment
-   metadata:
-     name: order-service
-   spec:
-     replicas: 1
-     selector:
-       matchLabels:
-         app: order-service
-     template:
-       metadata:
-         labels:
-           app: order-service
-       spec:
-         nodeSelector:
-           "kubernetes.io/os": linux
-         containers:
-           - name: order-service
-             image: ghcr.io/azure-samples/aks-store-demo/order-service:latest
-             ports:
-               - containerPort: 3000
-             env:
-               - name: ORDER_QUEUE_HOSTNAME
-                 value: "rabbitmq"
-               - name: ORDER_QUEUE_PORT
-                 value: "5672"
-               - name: ORDER_QUEUE_USERNAME
-                 value: "username"
-               - name: ORDER_QUEUE_PASSWORD
-                 value: "password"
-               - name: ORDER_QUEUE_NAME
-                 value: "orders"
-               - name: FASTIFY_ADDRESS
-                 value: "0.0.0.0"
-             resources:
-               requests:
-                 cpu: 1m
-                 memory: 50Mi
-               limits:
-                 cpu: 75m
-                 memory: 128Mi
-         initContainers:
-           - name: wait-for-rabbitmq
-             image: busybox
-             command:
-               [
-                 "sh",
-                 "-c",
-                 "until nc -zv rabbitmq 5672; do echo waiting for rabbitmq; sleep 2; done;",
-               ]
-             resources:
-               requests:
-                 cpu: 1m
-                 memory: 50Mi
-               limits:
-                 cpu: 75m
-                 memory: 128Mi
-   ---
-   apiVersion: v1
-   kind: Service
-   metadata:
-     name: order-service
-   spec:
-     type: ClusterIP
-     ports:
-       - name: http
-         port: 3000
-         targetPort: 3000
-     selector:
-       app: order-service
-   ---
-   apiVersion: apps/v1
-   kind: Deployment
-   metadata:
-     name: product-service
-   spec:
-     replicas: 1
-     selector:
-       matchLabels:
-         app: product-service
-     template:
-       metadata:
-         labels:
-           app: product-service
-       spec:
-         nodeSelector:
-           "kubernetes.io/os": linux
-         containers:
-           - name: product-service
-             image: ghcr.io/azure-samples/aks-store-demo/product-service:latest
-             ports:
-               - containerPort: 3002
-             resources:
-               requests:
-                 cpu: 1m
-                 memory: 1Mi
-               limits:
-                 cpu: 1m
-                 memory: 7Mi
-   ---
-   apiVersion: v1
-   kind: Service
-   metadata:
-     name: product-service
-   spec:
-     type: ClusterIP
-     ports:
-       - name: http
-         port: 3002
-         targetPort: 3002
-     selector:
-       app: product-service
-   ---
-   apiVersion: apps/v1
-   kind: Deployment
-   metadata:
-     name: store-front
-   spec:
-     replicas: 1
-     selector:
-       matchLabels:
-         app: store-front
-     template:
-       metadata:
-         labels:
-           app: store-front
-       spec:
-         nodeSelector:
-           "kubernetes.io/os": linux
-         containers:
-           - name: store-front
-             image: ghcr.io/azure-samples/aks-store-demo/store-front:latest
-             ports:
-               - containerPort: 8080
-                 name: store-front
-             env:
-               - name: VUE_APP_ORDER_SERVICE_URL
-                 value: "http://order-service:3000/"
-               - name: VUE_APP_PRODUCT_SERVICE_URL
-                 value: "http://product-service:3002/"
-             resources:
-               requests:
-                 cpu: 1m
-                 memory: 200Mi
-               limits:
-                 cpu: 1000m
-                 memory: 512Mi
-   ---
-   apiVersion: v1
-   kind: Service
-   metadata:
-     name: store-front
-   spec:
-     ports:
-       - port: 80
-         targetPort: 8080
-     selector:
-       app: store-front
-     type: LoadBalancer
-   ```
-
-- Click **Add** to deploy the demo app.
-  To double-check services deployed successfully, click **Workloads** in the Azure Portal and look for `store-front`, `rabbitmq`, `product-service`, and `order-service` in the `default` namespace.
-  If you prefer the CLI, you can run `kubectl get pods` for the same information.
+```bash
+kubectl get pods
+```
 
 ## Add ngrok's Kubernetes ingress to your demo app
 
-Next, you'll configure and deploy the [ngrok Kubernetes Operator](https://github.com/ngrok/ngrok-operator) to expose your demo app to the public internet through ngrok.
+Deploy an `Ingress` resource that tells the [ngrok Kubernetes Operator](/gateway/k8s/) to route traffic arriving on your reserved domain to the `store-front` service on port `80`.
 
-- In the Azure Portal, click **Create**, then **Apply a YAML**.
+Save the following manifest as `store-ingress.yaml`, replacing `NGROK_DOMAIN` with the domain you reserved:
 
-- Copy and paste the YAML below into the editor.
-  This manifest defines how the ngrok Kubernetes Operator should route traffic arriving on `NGROK_DOMAIN` to the `store-front` service on port `80`, which you deployed in the previous step.
+```yaml showLineNumbers
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: store-ingress
+spec:
+  ingressClassName: ngrok
+  rules:
+    - host: NGROK_DOMAIN
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: store-front
+                port:
+                  number: 80
+```
 
-  <Tip>
-  Edit line `9` of the YAML below (the `NGROK_DOMAIN` variable) with the ngrok subdomain you created earlier.
-  </Tip>
+Apply it to your cluster:
 
-   ```yaml showLineNumbers
-   apiVersion: networking.k8s.io/v1
-   kind: Ingress
-   metadata:
-     name: store-ingress
-   spec:
-     ingressClassName: ngrok
-     rules:
-       - host: NGROK_DOMAIN
-         http:
-           paths:
-             - path: /
-               pathType: Prefix
-               backend:
-                 service:
-                   name: store-front
-                   port:
-                     number: 80
-   ```
+```bash
+kubectl apply -f store-ingress.yaml
+```
 
-- Click **Add** to deploy the ingress configuration.
-  Check ingress status in the Azure Portal under **Services and ingresses**, then **Ingresses**; you should see `store-ingress` and your ngrok subdomain.
-  To edit the ingress later, click the ingress and open the **YAML** tab.
+Confirm the ingress was created:
 
-- Navigate to your ngrok subdomain (for example, `https://NGROK_DOMAIN.ngrok.app`) in your browser to see the demo app.
-  ngrok routes requests to the ngrok Kubernetes Operator, which forwards them to the `store-front` service.
+```bash
+kubectl get ingress store-ingress
+```
 
-## Add OAuth authentication to your demo app 
+Open your reserved domain (for example, `https://NGROK_DOMAIN`) in a browser to see the demo app. ngrok routes requests to the ngrok Kubernetes Operator, which forwards them to the `store-front` service.
 
-Now that your demo app is publicly accessible through ngrok, you can quickly layer on [additional capabilities](/gateway/endpoints/http/), like authentication, without configuring and deploying complex infrastructure.
-The process for restricting access to individual Google accounts or any Google account under a specific domain name is outlined below.
+## Add OAuth authentication to your demo app
 
-With the [Traffic Policy system](/gateway/traffic-policy/) and the [`oauth` action](/gateway/traffic-policy/actions/oauth), ngrok manages OAuth protection entirely at ngrok.
-This means you don't need to add any additional services to your cluster, nor alter any routes, to ensure ngrok's network authenticates and authorizes all requests before allowing ingress and access to your endpoint.
+Now that your demo app is publicly accessible through ngrok, you can add [capabilities](/gateway/endpoints/http/) like authentication without deploying extra infrastructure. This section restricts access to Google accounts under a specific domain.
 
-To enable the `oauth` action, you'll create a new `NgrokTrafficPolicy` custom resource and apply it to your entire `Ingress` with an annotation.
-You can also apply the policy to just a specific backend or as the default backend for an `Ingress`—see the doc on using the [Operator with Ingresses](/gateway/k8s/guides/using-ingresses/#using-ngroktrafficpolicy-with-ingress).
+With the [Traffic Policy system](/gateway/traffic-policy/) and the [`oauth` action](/gateway/traffic-policy/actions/oauth), ngrok handles OAuth entirely on its network. You don't need to add services to your cluster or change any routes, because ngrok authenticates and authorizes requests before they reach your endpoint.
 
-- Edit your existing ingress YAML with the following.
-  Note the new `annotations` field and the `NgrokTrafficPolicy` CR.
+To enable the `oauth` action, create an `NgrokTrafficPolicy` custom resource and apply it to your `Ingress` with an annotation. You can also apply the policy to a specific backend or as the default backend for an `Ingress`. See the doc on using the [Operator with Ingresses](/gateway/k8s/guides/using-ingresses/#using-ngroktrafficpolicy-with-ingress) for details.
 
-   ```yaml
-    ...
-   ---
-   # Configuration for ngrok's Kubernetes Operator
-   apiVersion: networking.k8s.io/v1
-   kind: Ingress
-   metadata:
-     name: game-2048-ingress
-     namespace: default
-     annotations:
-       k8s.ngrok.com/traffic-policy: oauth
-   spec:
-     ingressClassName: ngrok
-     rules:
-       - host: <NGROK_DOMAIN>
-         http:
-           paths:
-             - path: /
-               pathType: Prefix
-               backend:
-                 service:
-                   name: game-2048
-                   port:
-                     number: 80
-   ---
-   # Traffic Policy configuration for OAuth
-   apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-   kind: NgrokTrafficPolicy
-   metadata:
-     name: oauth
-     namespace: default
-   spec:
-     policy:
-        on_http_request:
-          - type: oauth
-            config:
-              provider: google
-   ```
+- Edit your existing ingress YAML with the following. Note the new `annotations` field and the `NgrokTrafficPolicy` CR.
 
-- When you open your demo app again, you'll be asked to log in via Google.
-  That's a start, but what if you want to authenticate only yourself or colleagues?
+```yaml
+...
+---
+# Configuration for ngrok's Kubernetes Operator
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: store-ingress
+  namespace: default
+  annotations:
+    k8s.ngrok.com/traffic-policy: oauth
+spec:
+  ingressClassName: ngrok
+  rules:
+    - host: NGROK_DOMAIN
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: store-front
+                port:
+                  number: 80
+---
+# Traffic Policy configuration for OAuth
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: NgrokTrafficPolicy
+metadata:
+  name: oauth
+  namespace: default
+spec:
+  policy:
+    on_http_request:
+      - type: oauth
+        config:
+          provider: google
+```
 
-- You can use [expressions](/gateway/traffic-policy/how-it-works#expressions) and [CEL interpolation](/gateway/traffic-policy/how-it-works#cel-interpolation) to filter out and reject OAuth logins that don't contain `example.com`.
-  Update the `NgrokTrafficPolicy` portion of your manifest after changing `example.com` to your domain.
+- When you open your demo app again, ngrok asks you to log in with Google. To limit access to just yourself or your colleagues, tighten the policy.
 
-   ```yaml
-    # Traffic Policy configuration for OAuth
-    apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-    kind: NgrokTrafficPolicy
-    metadata:
-      name: oauth
-      namespace: default
-    spec:
-      policy:
-        on_http_request:
-          - type: oauth
-            config:
-              provider: google
-          - expressions:
-              - "!actions.ngrok.oauth.identity.email.endsWith('@example.com')"
-            actions:
-              - type: custom-response
-                config:
-                  body: Hey, no auth for you ${actions.ngrok.oauth.identity.name}!
-                  status_code: 400
-   ```
+- Use [expressions](/gateway/traffic-policy/how-it-works#expressions) and [CEL interpolation](/gateway/traffic-policy/how-it-works#cel-interpolation) to reject OAuth logins that aren't under `example.com`. Update the `NgrokTrafficPolicy` portion of your manifest after changing `example.com` to your domain.
 
-- Check out your deployed app once again.
-  If you log in with an email that doesn't match your domain, ngrok rejects your request.
+```yaml
+ # Traffic Policy configuration for OAuth
+ apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+ kind: NgrokTrafficPolicy
+ metadata:
+   name: oauth
+   namespace: default
+ spec:
+   policy:
+     on_http_request:
+       - type: oauth
+         config:
+           provider: google
+       - expressions:
+           - "!actions.ngrok.oauth.identity.email.endsWith('@example.com')"
+         actions:
+           - type: custom-response
+             config:
+               body: You are not authorized, ${actions.ngrok.oauth.identity.name}.
+               status_code: 400
+```
+
+- Check your deployed app again. If you log in with an email that isn't under your domain, ngrok rejects the request.
 
 ## What's next?
 
-You've now used the open source ngrok Kubernetes Operator to add public ingress to a demo app on a cluster managed in AKS without having to worry about complex Kubernetes networking configurations.
-Because ngrok handles ingress and middleware execution, you can follow a similar process to route public traffic to your next production-ready app.
+You've used the open source ngrok Kubernetes Operator to add public ingress to an app on AKS without managing complex Kubernetes networking. Because ngrok handles ingress and middleware execution, you can follow the same process for your production apps.
 
-For next steps, explore the [Kubernetes docs](/gateway/k8s/) for more details on how the Operator works, different ways you can integrate ngrok with an existing production cluster, or use more advanced features like [bindings](/gateway/k8s/guides/bindings/) or [endpoint pooling](/gateway/k8s/guides/pooling/).
-
+To go further, explore the [Kubernetes docs](/gateway/k8s/) for how the Operator works and how to integrate ngrok with an existing production cluster, or try [bindings](/gateway/k8s/guides/bindings/) and [endpoint pooling](/gateway/k8s/guides/pooling/).
