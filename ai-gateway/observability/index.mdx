@@ -18,6 +18,10 @@ Monitor AI Gateway usage from [app.ngrok.ai](https://app.ngrok.ai) and the AI Ga
   </Card>
 </CardGroup>
 
+## Identify a request
+
+Every gateway response carries `Ngrok-AIG-Request-Id`, plus `Ngrok-AIG-Attempts` and `Ngrok-AIG-Model` describing how the request was served. Record the request ID in your application logs so you can tie a client-side failure to gateway usage data later. See [Response headers](/ai-gateway/how-it-works#response-headers).
+
 ## Usage API
 
 Query usage with the AI Gateway API:
@@ -27,11 +31,18 @@ curl https://api.ngrok.ai/usage/overview \
   -H "Authorization: Bearer $AI_GATEWAY_API_KEY"
 ```
 
-List individual usage events with the [Usage API](/ai-gateway/observability#usage-api). View usage summaries in [app.ngrok.ai](https://app.ngrok.ai) when available.
+[List individual usage events](/ai-gateway/api-reference/usage/list) to see one record per upstream attempt. Each event reports the provider, model, status code, token counts, and a per-attempt cost breakdown. Attempts of the same client request share a `requestId`.
+
+By default the list returns only each request's terminal attempt. Pass `includeRetries=true` to see the retries the gateway made along the way.
+
+<Note>
+When a provider reports no usage of its own, `usageEstimated` is `true` and the provider-reported token fields are all zero. Read `inputTokensEstimate` and `outputTokensEstimate` on those attempts instead.
+</Note>
+
+View usage summaries in [app.ngrok.ai](https://app.ngrok.ai) when available.
 
 ## Roadmap
 
-- Provider and retry tracking in usage events
 - Token usage visualization in app.ngrok.ai
 - Cost analytics per access key
 

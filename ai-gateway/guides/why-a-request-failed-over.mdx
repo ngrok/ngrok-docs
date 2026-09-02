@@ -1,0 +1,151 @@
+---
+title: Find out why a request failed over
+sidebarTitle: Why a request failed over
+description: Trace one AI Gateway request through every upstream attempt to see which providers it tried, in what order, and which one served it.
+---
+
+{/* Unpublished: gated on ngrok PR #47372. Add to docs.json navigation when that merges. */}
+
+When the gateway answers, it does not say how much work that took. A response can come from the first upstream attempt or the fourth. This guide walks from a single response header to the full attempt chain behind it.
+
+## 1. Read the attempt count off the response
+
+Every gateway response carries `Ngrok-AIG-Attempts`. A value above 1 means the first candidate failed and the gateway moved on.
+
+```bash
+curl -i https://gateway.ngrok.ai/v1/chat/completions \
+  -H "Authorization: Bearer $NGROK_AI_ACCESS_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "gpt-4o",
+    "models": ["anthropic:claude-sonnet-4-5", "google:gemini-3.6-flash"],
+    "messages": [{"role": "user", "content": "Hello"}]
+  }'
+```
+
+```http
+HTTP/2 200
+ngrok-aig-request-id: rq_2abcDEF456
+ngrok-aig-attempts: 3
+ngrok-aig-model: gemini-3.6-flash
+```
+
+Three attempts, and the third one served. The served model is the third entry in the candidate list, so both earlier candidates failed.
+
+<Note>
+Read the model from `Ngrok-AIG-Model`, not from the `model` field in the response body. The gateway forwards bodies byte-for-byte, so the body keeps whatever the provider wrote there. On a multi-model failover the two can disagree, and the header is the authoritative one.
+</Note>
+
+## 2. Look the request up by ID
+
+Pass the `Ngrok-AIG-Request-Id` value to the attempts endpoint:
+
+```bash
+curl https://api.ngrok.ai/usage/requests/rq_2abcDEF456 \
+  -H "Authorization: Bearer $AI_GATEWAY_API_KEY"
+```
+
+You get every upstream attempt for that request, ordered by attempt number:
+
+```json
+{
+  "uri": "https://api.ngrok.ai/usage/requests/rq_2abcDEF456",
+  "requestId": "rq_2abcDEF456",
+  "attempts": [
+    {
+      "event": {
+        "attemptNumber": 1,
+        "provider": "openai",
+        "model": "gpt-4o",
+        "statusCode": 429,
+        "isError": true,
+        "keySource": "user"
+      },
+      "served": false,
+      "retryAction": "next_key",
+      "completion": "failed",
+      "upstreamDurationMs": 214
+    },
+    {
+      "event": {
+        "attemptNumber": 2,
+        "provider": "anthropic",
+        "model": "claude-sonnet-4-5",
+        "statusCode": 401,
+        "isError": true,
+        "keySource": "user"
+      },
+      "served": false,
+      "retryAction": "next_backend",
+      "completion": "failed",
+      "upstreamDurationMs": 88
+    },
+    {
+      "event": {
+        "attemptNumber": 3,
+        "provider": "google",
+        "model": "gemini-3.6-flash",
+        "statusCode": 200,
+        "isError": false,
+        "keySource": "ngrok"
+      },
+      "served": true,
+      "retryAction": "succeeded",
+      "completion": "succeeded",
+      "upstreamDurationMs": 1902
+    }
+  ]
+}
+```
+
+The endpoint is read-only and scoped to your account. A request belonging to another account reads as missing rather than forbidden.
+
+## 3. Read the verdict on each attempt
+
+Three fields carry the outcome of an attempt.
+
+`served` says whether this attempt produced the response your client received. At most one attempt of a request is served. Do not use the terminal attempt as a stand-in: a request that failed on its last attempt has a terminal attempt that never answered anyone.
+
+`completion` says how the attempt finished: `succeeded`, `failed`, `timed_out`, `stream_failed`, or `unknown`.
+
+`retryAction` is the verdict the gateway's retry loop reached after the attempt, which is what tells you why it moved on:
+
+| Value | What happened |
+|-------|---------------|
+| `succeeded` | This attempt served the response |
+| `next_key` | The credential failed, so the gateway tried the next key on the same provider |
+| `next_quota_pool` | The credential's quota pool was exhausted, so the gateway moved to a different pool |
+| `next_backend` | The provider or model failed, so the gateway moved to the next model in the failover list |
+| `managed_fallback` | A customer-owned key failed, so the gateway fell back to an ngrok-managed key |
+| `retry_same_backend` | The provider asked for a retry with `Retry-After`, so the gateway waited and retried the same backend |
+| `fail_fast` | The failure was not retryable, so the gateway stopped |
+| `exhausted` | No candidate remained |
+
+`retryAction` is optional. It is absent on attempts the gateway recorded before it began storing the verdict.
+
+In the example above, `next_key` on attempt 1 followed by `next_backend` on attempt 2 reads as: the OpenAI key hit a rate limit and no other OpenAI key was left to try, so the gateway advanced to the next model, whose key was rejected outright.
+
+## What this tells you to change
+
+| Pattern down the chain | What to do |
+|------------------------|------------|
+| `next_key` on every OpenAI attempt | Add more [provider keys](/ai-gateway/guides/attaching-provider-keys) for that provider, or raise your quota with them |
+| `next_backend` on the first candidate every time | Your primary model is the wrong default. Reorder the [fallback list](/ai-gateway/guides/configure-fallback-models) |
+| A single `fail_fast` attempt | The request itself was rejected. Check the status code and the [error code](/ai-gateway/reference/error-codes); failover would not have helped |
+| `exhausted` at the end | Every candidate failed. Widen the candidate list or attach credentials for more providers |
+| `managed_fallback` you did not expect | Your own key is failing and ngrok credits are absorbing the traffic. Check the key |
+
+## What is not on this endpoint
+
+Captured request and response bodies. Those hold the prompt and the answer, so they stay in [app.ngrok.ai](https://app.ngrok.ai) rather than on the API.
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Handle gateway errors" icon="triangle-exclamation" href="/ai-gateway/guides/error-handling">
+    How failover decides what to try next
+  </Card>
+  <Card title="Debug failed requests" icon="bug" href="/ai-gateway/guides/debugging">
+    Diagnose a failure from the response alone
+  </Card>
+</CardGroup>

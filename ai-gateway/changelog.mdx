@@ -5,6 +5,33 @@ description: AI Gateway feature updates and changes.
 rss: true
 ---
 
+<Update label="2026-08-20" description="Traffic Policy action retired" tags={["Breaking Change"]}>
+  ## The ai-gateway Traffic Policy action is retired
+
+  The AI Gateway no longer runs as a Traffic Policy action on your own endpoint. A policy that still contains the `ai-gateway` action fails validation with `ERR_NGROK_3820`.
+
+  - Send LLM traffic to `https://gateway.ngrok.ai` with an [access key](/ai-gateway/concepts/access-keys), and manage the gateway at [app.ngrok.ai](https://app.ngrok.ai).
+  - Existing credits were migrated to [app.ngrok.ai](https://app.ngrok.ai) automatically. No action is needed to keep your balance.
+  - Remove the `ai-gateway` action from any endpoint that still carries it.
+  - The action's result variables, such as `actions.ngrok.ai_gateway`, are gone. Read the [response headers](/ai-gateway/how-it-works#response-headers) and the [Usage API](/ai-gateway/api-reference/usage/list) instead.
+
+  Email [support@ngrok.com](mailto:support@ngrok.com) with questions about a migrated account.
+</Update>
+
+<Update label="2026-09-02" description="Response headers" tags={["General Availability"]}>
+  ## Request ID, attempt count, and served model on every response
+
+  Gateway responses now state how the request was handled:
+
+  - `Ngrok-AIG-Request-Id`: the request's ID, on every response including rejections and errors.
+  - `Ngrok-AIG-Attempts`: how many upstream attempts the gateway made.
+  - `Ngrok-AIG-Model`: the upstream model that produced the response.
+
+  All three are exposed through CORS, so browser clients can read them. They are ngrok's own headers, so managed-key and Bring Your Own Keys callers see the same values. See [Response headers](/ai-gateway/how-it-works#response-headers).
+
+  The native Gemini `generateContent` and `streamGenerateContent` surface returns these headers too, where it previously returned only `Content-Type`. Bodies on that surface are still forwarded byte-for-byte.
+</Update>
+
 <Update label="2026-06-23" description="app.ngrok.ai launch" tags={["General Availability"]}>
   ## app.ngrok.ai and gateway.ngrok.ai
 
@@ -14,7 +41,7 @@ rss: true
   - Send LLM traffic from your applications to **`https://gateway.ngrok.ai`** with an access key only—provider keys are stored server-side.
   - Updated the [Quickstart](/ai-gateway/quickstart), [Overview](/ai-gateway/overview), [How It Works](/ai-gateway/how-it-works), and [Access Keys](/ai-gateway/concepts/access-keys).
   - [Provider keys](/ai-gateway/guides/attaching-provider-keys) are now account-scoped in app.ngrok.ai BYOK.
-  - Endpoint-based Traffic Policy setup is deprecated. See [Migrating from endpoints](/ai-gateway/guides/migrating-from-endpoints) to move over.
+  - Endpoint-based Traffic Policy setup is deprecated.
 </Update>
 
 <Update label="2026-02-24" description="EA v0.0.5" tags={["Early Access"]}>

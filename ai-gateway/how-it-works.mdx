@@ -39,6 +39,32 @@ Every request must include a valid **access key**. Send it as `Authorization: Be
 
 Provider keys stay in [app.ngrok.ai](https://app.ngrok.ai). The AI Gateway injects those from your configuration after validating the access key.
 
+## Response headers
+
+Every response from `gateway.ngrok.ai` carries ngrok's own headers describing how the gateway handled the request.
+
+| Header | Value | When present |
+|--------|-------|--------------|
+| `Ngrok-AIG-Request-Id` | The request's ID. Use it to look the request up afterwards. | Every response, including rejections and errors. |
+| `Ngrok-AIG-Attempts` | How many upstream attempts the gateway made. | Once the attempt loop runs, on both success and failure. Absent when the request failed before any attempt, such as a malformed body or an unknown model. |
+| `Ngrok-AIG-Model` | The upstream model that produced the response. | Success only. |
+
+All three are exposed through CORS, so browser clients can read them.
+
+These are ngrok's headers rather than the provider's, so a managed-key caller and a [Bring Your Own Keys](/ai-gateway/concepts/bring-your-own-keys) caller see the same values. Provider rate-limit headers behave differently: the gateway forwards those only when the attempt used your own provider key.
+
+### The model header is authoritative
+
+The gateway passes the response body through byte-for-byte. The `model` or `modelVersion` field inside the body is the provider's own word and is never rewritten to name the model that served the response. On a multi-model failover the body can therefore name a different model than the header. Read `Ngrok-AIG-Model` when you need to know what answered.
+
+### Streamed responses
+
+On a streamed response the headers commit with the first flushed byte. The attempt count is final at that point, because the gateway cannot retry once bytes have reached your client.
+
+### Trace IDs are not a substitute
+
+`Ngrok-Trace-Id` is emitted only when the trace is sampled, it is not exposed through CORS, and it identifies the whole client request rather than a single attempt. Use `Ngrok-AIG-Request-Id` to identify a request.
+
 ## Model selection
 
 The gateway determines which model and provider to use from your request.

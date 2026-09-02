@@ -4,26 +4,24 @@ sidebarTitle: Debug failed requests
 description: Diagnose AI Gateway request failures on gateway.ngrok.ai.
 ---
 
-## gateway.ngrok.ai
+When troubleshooting a request to `https://gateway.ngrok.ai`:
 
-When troubleshooting issues with the current AI Gateway at `https://gateway.ngrok.ai`:
-
-1. Check the error code and message in the response body. See [Error Codes](/ai-gateway/reference/error-codes).
-2. Verify your app sends an [access key](/ai-gateway/concepts/access-keys)—not an upstream provider key.
-3. Confirm the access key's [configuration](/ai-gateway/guides/access-key-configurations) allows the provider and model you requested, with routing credentials attached.
-4. Review usage in [Observability](/ai-gateway/observability).
+1. Record the `Ngrok-AIG-Request-Id` [response header](/ai-gateway/how-it-works#response-headers). Every response carries it, errors included, and it identifies the request in usage data.
+2. Check the error code and message in the response body. See [Error Codes](/ai-gateway/reference/error-codes).
+3. Read `Ngrok-AIG-Attempts` to see whether failover ran. A count above 1 means the gateway tried more than one upstream candidate before it gave up, so the cause is upstream rather than in your request. An absent header means the request failed before any attempt, which points at the request body or the access key configuration.
+4. Verify your app sends an [access key](/ai-gateway/concepts/access-keys)—not an upstream provider key.
+5. Confirm the access key's [configuration](/ai-gateway/guides/access-key-configurations) allows the provider and model you requested, with routing credentials attached.
+6. Review usage in [Observability](/ai-gateway/observability).
 
 Common fixes:
 
 | Symptom | Check |
 |---------|--------|
 | 401 Unauthorized | Access key missing, malformed, or deleted |
-| 403 Forbidden | Credits exhausted — [purchase credits](/ai-gateway/concepts/credits) |
-| No API key found (3802) | Configuration missing routing rule or provider keys for the requested provider |
-| Model selection failed (3803) | Model or provider blocked by configuration access scope |
+| 403 Forbidden | Credits exhausted: [purchase credits](/ai-gateway/concepts/credits) |
+| No keys available for provider (27202) | Configuration missing a routing rule or provider keys for the requested provider |
+| Provider or model not allowed by the access policy (27231, 27232) | Model or provider blocked by the configuration's access scope |
+| All retries exhausted (27208) | Every candidate failed. See [Handle gateway errors](/ai-gateway/guides/error-handling) |
+| Response names a model you did not expect | Read `Ngrok-AIG-Model`, not the `model` field in the body. The body is passed through byte-for-byte and keeps the provider's own wording |
 
-See [Error Handling](/ai-gateway/guides/error-handling) for retry and failover behavior.
-
-## Legacy endpoint setup
-
-If you still run the AI Gateway as a Traffic Policy action on a custom ngrok endpoint, action result variables like `${actions.ngrok.ai_gateway}` are available in Traffic Policy expressions. See [Migrating from endpoints](/ai-gateway/guides/migrating-from-endpoints) to move to `gateway.ngrok.ai`.
+See [Handle gateway errors](/ai-gateway/guides/error-handling) for retry and failover behavior.
