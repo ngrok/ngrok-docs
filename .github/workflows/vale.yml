@@ -50,13 +50,16 @@ jobs:
             --jq '.[] | select(.status != "removed") | .filename' \
             > pr_files.txt
 
-          # Keep markdown only, excluding specific directories and files
+          # Keep markdown only, excluding specific directories and files.
+          # The agent CLI pages are generated from the ngrok monorepo, so Vale has
+          # nothing actionable to say about their prose. Both path forms are matched
+          # on purpose: the generator still writes agent/cli*.mdx, while the pages
+          # actually served live at gateway/agent/cli*.mdx after the #2299 reslug.
           grep -E '\.(mdx|md)$' pr_files.txt \
             | grep -v '^snippets/' \
             | grep -v '^errors/' \
             | grep -v '^\.skills/' \
-            | grep -v '^agent/cli-api.mdx$' \
-            | grep -v '^agent/cli.mdx$' \
+            | grep -vE '^(gateway/)?agent/cli(-api)?\.mdx$' \
             | grep -v '^style-guide.mdx$' \
             > changed_files.txt || true
 
