@@ -1,107 +1,89 @@
 ---
 title: Kubernetes ingress to apps/APIs on clusters managed by Canonical MicroK8s
-sidebarTitle: MicroK8s 
+sidebarTitle: MicroK8s
 description: Add ingress to any app running in a Kubernetes cluster managed by Canonical MicroK8s using the ngrok Kubernetes Operator.
 ---
 
-This guide walks you through launching a new Kubernetes cluster with Canonical's open-source MicroK8s and using the [ngrok Kubernetes Operator](https://github.com/ngrok/ngrok-operator) to securely ingress public traffic to an example app with the Kubernetes Gateway API.
-
-It covers the ngrok Kubernetes Operator, the Kubernetes Gateway API (a role-oriented mechanism for load-balancing and routing, well suited to organizations with defined roles for cluster vs application management), and Canonical MicroK8s (a low-ops, minimal, production-ready Kubernetes you can use for local development, CI, or IoT).
+This guide shows you how to add public ingress to an app running on a Canonical MicroK8s cluster. You'll use the [ngrok Kubernetes Operator](/gateway/k8s/) with the Kubernetes Gateway API to route public traffic to the app through an encrypted tunnel.
 
 ## What you'll need
 
-- MicroK8s installed locally.
+- A MicroK8s cluster reachable with `kubectl`. If you don't have one, Canonical's [MicroK8s get-started guide](https://canonical.com/microk8s/docs/getting-started) covers installing it.
 - An ngrok account.
-- kubectl and Helm 3.0.0+ installed on your local workstation.
-- The [ngrok Kubernetes Operator](/gateway/k8s/installation/helm/) installed on your cluster.
-- A reserved domain from the ngrok [dashboard](https://dashboard.ngrok.com/domains) or [API](/api-reference/reserveddomains/list); this guide refers to it as `<NGROK_DOMAIN>`.
+- `kubectl` and Helm 3.0.0+ installed on your local workstation.
+- The [ngrok Kubernetes Operator](/gateway/k8s/) installed on your cluster.
+- A reserved domain from the ngrok [dashboard](https://dashboard.ngrok.com/domains) or [API](/api-reference/reserveddomains/list); this guide refers to it as `NGROK_DOMAIN`.
 
-## Deploy a Kubernetes cluster with MicroK8s
+## Set up your MicroK8s cluster
 
-Start by deploying a new single-node MicroK8s Kubernetes cluster in your chosen environment.
-That could be your local workstation, an IoT device, a virtual machine in the cloud, or any system running one of [the supported Linux flavors](https://snapcraft.io/microk8s).
+This guide assumes a single-node MicroK8s cluster reachable with `kubectl`. MicroK8s runs on your local workstation, an IoT device, a virtual machine in the cloud, or any system running one of [the supported Linux flavors](https://snapcraft.io/microk8s).
 
-- Follow the MicroK8s get-started tutorial to install the binary for your target system.
-  Once MicroK8s is installed, it automatically deploys a single-node Kubernetes cluster.
+If you don't have a cluster yet, follow Canonical's [MicroK8s get-started guide](https://canonical.com/microk8s/docs/getting-started) to install the binary for your target system. MicroK8s deploys a single-node Kubernetes cluster automatically.
 
-- Run `microk8s status --wait-ready` to check on the state of your MicroK8s cluster.
+Confirm your cluster is ready before continuing:
 
-   ```bash
-   microk8s status --wait-ready
+```bash
+microk8s status --wait-ready
+```
 
-   microk8s is running
-   high-availability: no
-     datastore master nodes: 127.0.0.1:19001
-     datastore standby nodes: none
-   ...
-   ```
-
-   If you see `microk8s is ready`, your new cluster is ready.
+If you see `microk8s is running`, your cluster is ready.
 
 ## Install an example app
 
-Now you need a domain and Kubernetes service to ingress traffic to.
+Deploy the demo app you'll expose through ngrok.
 
-- If you don't have an ngrok static domain, create one.
-  Navigate to the [**Domains** section](https://dashboard.ngrok.com/domains) of the ngrok dashboard and click **Create Domain** or **New Domain**.
-  This static domain, which will look like `example.ngrok.app`, will be your `NGROK_DOMAIN` for the remainder of this guide.
+Create a new Kubernetes manifest (`tinyllama.yaml`) with the YAML below. This manifest defines the tinyllama demo LLM application from [ngrok-samples/tinyllama](https://github.com/ngrok-samples/tinyllama) as a service and deployment.
 
-  Creating a subdomain on the ngrok network provides a public route to accept HTTP, HTTPS, and TLS traffic.
+```yaml showLineNumbers
+apiVersion: v1
+kind: Service
+metadata:
+  name: tinyllama
+  namespace: default
+spec:
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+  selector:
+    app: tinyllama
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tinyllama
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tinyllama
+  template:
+    metadata:
+      labels:
+        app: tinyllama
+    spec:
+      containers:
+        - name: tinyllama
+          image: ghcr.io/ngrok-samples/tinyllama:main
+          ports:
+            - name: http
+              containerPort: 8080
+```
 
-- Create a new Kubernetes manifest (`tinyllama.yaml`) with the YAML below.
-  This manifest defines the tinyllama demo LLM application from [ngrok-samples/tinyllama](https://github.com/ngrok-samples/tinyllama) (service and deployment), then configures the ngrok Kubernetes Operator to connect the `tinyllama` service to the ngrok network via your `NGROK_DOMAIN`.
+Apply the manifest to your MicroK8s cluster:
 
-   ```yaml showLineNumbers
-   apiVersion: v1
-   kind: Service
-   metadata:
-     name: tinyllama
-     namespace: default
-   spec:
-     ports:
-       - name: http
-         port: 80
-         targetPort: 8080
-     selector:
-       app: tinyllama
-   ---
-   apiVersion: apps/v1
-   kind: Deployment
-   metadata:
-     name: tinyllama
-     namespace: default
-   spec:
-     replicas: 1
-     selector:
-       matchLabels:
-         app: tinyllama
-     template:
-       metadata:
-         labels:
-           app: tinyllama
-       spec:
-         containers:
-           - name: tinyllama
-             image: ghcr.io/ngrok-samples/tinyllama:main
-             ports:
-               - name: http
-                 containerPort: 8080
-   ```
-
-- Apply the `tinyllama.yaml` manifest to your MicroK8s cluster.
-
-   ```bash
-   kubectl apply -f tinyllama.yaml
-   ```
+```bash
+kubectl apply -f tinyllama.yaml
+```
 
 ## Configure the ngrok Kubernetes Operator
 
-With your example app running alongside the ngrok Kubernetes Operator, you now need to configure the new [Kubernetes Gateway API](/gateway/k8s/?k8s-install=gatewayAPI) to route traffic arriving from outside the cluster on `NGROK_DOMAIN` to the `tinyllama` service.
+With your example app running alongside the ngrok Kubernetes Operator, configure the [Kubernetes Gateway API](/gateway/k8s/?k8s-install=gatewayAPI) to route traffic arriving on `NGROK_DOMAIN` to the `tinyllama` service.
 
-First you'll create a [GatewayClass](https://gateway-api.sigs.k8s.io/api-types/gatewayclass/), which represents a class of cluster-level [Gateways](https://gateway-api.sigs.k8s.io/api-types/gateway/). 
-Then you'll configure the Gateway with a listener, and an [HTTPRoute](https://gateway-api.sigs.k8s.io/api-types/httproute/) to specify how the Gateway should route requests.
+First you'll create a [GatewayClass](https://gateway-api.sigs.k8s.io/api-types/gatewayclass/), which represents a class of cluster-level [Gateways](https://gateway-api.sigs.k8s.io/api-types/gateway/). Then you'll configure the Gateway with a listener and an [HTTPRoute](https://gateway-api.sigs.k8s.io/api-types/httproute/) that specifies how the Gateway routes requests.
 
-- Create a new file called `gatewayclass.yaml` on your workstation with the below YAML:
+- Create a new file called `gatewayclass.yaml` on your workstation with the following YAML:
 
    ```yaml
    apiVersion: gateway.networking.k8s.io/v1
@@ -118,7 +100,7 @@ Then you'll configure the Gateway with a listener, and an [HTTPRoute](https://ga
    kubectl apply -f gatewayclass.yaml
    ```
 
-- Create a new file named `tinyllama-gateway.yaml` on your workstation with the below YAML, replacing `<YOUR_NGROK_DOMAIN>`:
+- Create a new file named `tinyllama-gateway.yaml` on your workstation with the following YAML, replacing `NGROK_DOMAIN` with the domain you reserved:
 
    ```yaml showLineNumbers
    apiVersion: gateway.networking.k8s.io/v1
@@ -130,9 +112,9 @@ Then you'll configure the Gateway with a listener, and an [HTTPRoute](https://ga
      gatewayClassName: ngrok
      listeners:
        - name: tinyllama-web
-         protocol: HTTPS
+         protocol: HTTP
          port: 80
-         hostname: "<YOUR_NGROK_DOMAIN>"
+         hostname: "NGROK_DOMAIN"
          allowedRoutes:
            namespaces:
              from: Same
@@ -149,7 +131,7 @@ Then you'll configure the Gateway with a listener, and an [HTTPRoute](https://ga
          name: tinyllama-gateway
          namespace: default
      hostnames:
-       - "<YOUR_NGROK_DOMAIN>"
+       - "NGROK_DOMAIN"
      rules:
        - matches:
            - path:
@@ -161,11 +143,18 @@ Then you'll configure the Gateway with a listener, and an [HTTPRoute](https://ga
              port: 80
    ```
 
-   This YAML uses the [Gateway API](https://gateway-api.sigs.k8s.io/#introduction) to first define a [Gateway](https://gateway-api.sigs.k8s.io/api-types/gateway) that allows north/south traffic to enter the cluster from external requests, then uses an [HTTPRoute](https://gateway-api.sigs.k8s.io/concepts/api-overview/#httproute) to terminate the connection at the pod running the `tinyllama` service.
+   The `Gateway` allows north/south traffic to enter the cluster from external requests, and the `HTTPRoute` terminates the connection at the pod running the `tinyllama` service.
 
-- Access your tinyllama demo app by navigating to your ngrok domain, for example, `https://<YOUR_NGROK_DOMAIN>`.
-  ngrok's network and the ngrok Kubernetes Operator route traffic to your app from any device or external network.
+- Apply the Gateway and HTTPRoute:
+
+   ```bash
+   kubectl apply -f tinyllama-gateway.yaml
+   ```
+
+- Access your tinyllama demo app by navigating to your ngrok domain, for example, `https://NGROK_DOMAIN`. ngrok's network and the ngrok Kubernetes Operator route traffic to your app from any device or external network.
 
 ## What's next?
 
-To track the development of the ngrok Kubernetes Operator and its use of the new Kubernetes Gateway API, check out the [GitHub repository](https://github.com/ngrok/ngrok-operator) and give it a ⭐.
+You've used the open source ngrok Kubernetes Operator to add public ingress to an app on MicroK8s with the Kubernetes Gateway API. Because ngrok handles ingress and middleware execution, you can follow the same process for your production apps.
+
+To go further, explore the [Kubernetes docs](/gateway/k8s/) for how the Operator works and how to integrate ngrok with an existing production cluster, or try [bindings](/gateway/k8s/guides/bindings/) and [endpoint pooling](/gateway/k8s/guides/pooling/).

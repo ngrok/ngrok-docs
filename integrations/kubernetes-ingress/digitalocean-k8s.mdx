@@ -1,239 +1,158 @@
 ---
 title: Ingress to Kubernetes apps on clusters managed by DigitalOcean
-sidebarTitle: Overview
+sidebarTitle: DigitalOcean
 description: Add Kubernetes ingress to any app running in a cluster managed by DigitalOcean using the ngrok Kubernetes Operator.
 ---
 
-This guide shows you how to launch a new cluster on DigitalOcean and use the DigitalOcean Marketplace to provision the [ngrok Kubernetes Operator](https://marketplace.digitalocean.com/apps/ngrok-ingress-controller) to securely ingress public traffic to a demo app.
-
-It covers the ngrok Kubernetes Operator (ngrok's official controller for secure public ingress and middleware) and DigitalOcean (a cloud provider focused on developers and small-to-midsize businesses, with a Kubernetes solution suited to building or scaling platforms without large infrastructure).
+This guide shows you how to add public ingress to an app running on DigitalOcean Kubernetes (DOKS). You'll use the ngrok Kubernetes Operator to route public traffic to the app, then secure it with OAuth.
 
 ## What you'll need
 
+- A DOKS cluster reachable with `kubectl`. If you don't have one, DigitalOcean's [guide to creating clusters](https://docs.digitalocean.com/products/kubernetes/how-to/create-clusters/) covers the `doctl` CLI, API, and control panel.
 - A DigitalOcean account.
 - An ngrok account.
-- kubectl and Helm 3.0.0+ installed on your local workstation.
+- `kubectl` and Helm 3.0.0+ installed on your local workstation.
 - The [ngrok Kubernetes Operator](/gateway/k8s/) installed on your cluster.
-- A reserved domain from the ngrok [dashboard](https://dashboard.ngrok.com/domains) or [API](/api-reference/reserveddomains/list); this guide refers to it as `<NGROK_DOMAIN>`.
+- A reserved domain from the ngrok [dashboard](https://dashboard.ngrok.com/domains) or [API](/api-reference/reserveddomains/list); this guide refers to it as `NGROK_DOMAIN`.
 
-## Provision a new cluster on DigitalOcean with `doctl` 
+## Set up your cluster and demo app
 
-In this guide, the CLI is used as much as possible to showcase how tightly the ngrok Kubernetes Operator can integrate with DigitalOcean and how you might automate these steps in the future.
+This guide assumes a DOKS cluster reachable with `kubectl` and the ngrok Kubernetes Operator installed, as covered in the prerequisites above.
 
-- With `doctl` installed, check node sizes and specs (they affect monthly pricing):
+This guide uses the Bookinfo app from DigitalOcean's [sample Kubernetes apps repository](https://github.com/digitalocean/kubernetes-sample-apps). Clone the repository and deploy Bookinfo:
 
-  ```bash
-  doctl kubernetes options sizes
-  ```
+```bash
+git clone https://github.com/digitalocean/kubernetes-sample-apps.git
+cd kubernetes-sample-apps
+kubectl apply -k bookinfo-example/kustomize
+```
 
-- Provision your cluster with the command below, replacing `NODE_SIZE` and `CLUSTER_NAME` with your chosen size and a relevant name.
+Confirm the workloads are running before continuing:
 
-  ```bash
-  doctl kubernetes clusters create --size NODE_SIZE CLUSTER_NAME
-  ```
+```bash
+kubectl get all -n bookinfo
+```
 
-  ```bash
-  ...
-  Notice: Successfully kicked off addon job.
-  ID                                      Name        Region    Version        Auto Upgrade    Status     Node Pools
-  d62a17ca-32e0-4d8b-9260-2d0d1c582939    ngrokker    nyc1      1.29.1-do.0    false           running    ngrokker-default-pool
-  ```
+To expose a different app, deploy it now and adjust the service name and port in the ingress below.
 
-- Now you can install the ngrok Kubernetes Operator to provide ingress to services.
-  Check out the [Operator installation doc](/gateway/k8s/installation/helm/) for details on how to use Helm to install with your ngrok credentials.
+## Add ngrok's Kubernetes ingress to your demo app
 
-Your new Kubernetes cluster, managed by DigitalOcean, is all set up—and with the ngrok Kubernetes Operator installed with a single option on the CLI.
+Your Bookinfo app is running, but you have no way to reach it from outside the cluster. Deploy an `Ingress` resource that tells the ngrok Kubernetes Operator to route traffic arriving on your reserved domain to the `productpage` service on port `9080`, which serves the Bookinfo UI.
 
-## Deploy an example app on your DigitalOcean-managed cluster 
+Save the following manifest as `bookinfo-ingress.yaml`, replacing `NGROK_DOMAIN` with the domain you reserved:
 
-Explore how to add apps or services to your DigitalOcean-managed Kubernetes cluster.
-This guide uses the Bookinfo app from DigitalOcean's sample Kubernetes apps repository.
+```yaml showLineNumbers
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: bookinfo-ingress
+  namespace: bookinfo
+spec:
+  ingressClassName: ngrok
+  rules:
+    - host: NGROK_DOMAIN
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: productpage
+                port:
+                  number: 9080
+```
 
-- Clone the repository to your local workstation and `cd` into the new directory:
+Apply it to your cluster:
 
-  ```bash
-  git clone https://github.com/digitalocean/kubernetes-sample-apps.git
-  cd kubernetes-sample-apps
-  ```
+```bash
+kubectl apply -f bookinfo-ingress.yaml
+```
 
-- Deploy the Bookinfo app to your cluster:
+Open `https://NGROK_DOMAIN` in your browser to see your Bookinfo app, then click **Normal user** to explore. ngrok routes requests to the ngrok Kubernetes Operator, which forwards them to the `productpage` service.
 
-  ```bash
-  kubectl apply -k bookinfo-example/kustomize
-  ```
+## Add OAuth authentication to your demo app
 
-  You should see your cluster create a handful of new services, then verify everything is running correctly with `kubectl get all -n bookinfo`.
+Now that your demo app is publicly accessible through ngrok, you can add [capabilities](/gateway/endpoints/http/) like authentication without deploying extra infrastructure. This section restricts access to Google accounts under a specific domain.
 
-## Configure the ngrok Kubernetes Operator 
+With the [Traffic Policy system](/gateway/traffic-policy/) and the [`oauth` action](/gateway/traffic-policy/actions/oauth/), ngrok handles OAuth entirely on its network. You don't need to add services to your cluster or change any routes, because ngrok authenticates and authorizes requests before they reach your endpoint.
 
-Your Bookinfo app is running, but you have no means of accessing it.
-You could use `kubectl port-forward...`, but that's a fragile method of accessing your new app, and isn't appropriate for production use.
+To enable the `oauth` action, create an `NgrokTrafficPolicy` custom resource and apply it to your `Ingress` with an annotation. You can also apply the policy to a specific backend or as the default backend for an `Ingress`. See the doc on using the [Operator with Ingresses](/gateway/k8s/guides/using-ingresses/#using-ngroktrafficpolicy-with-ingress) for details.
 
-Instead, finish configuring the ngrok Kubernetes Operator to direct incoming requests to the user-facing Bookinfo container.
-The Bookinfo example uses the `productpage` service on port `9080`; use that to configure the ngrok Kubernetes Operator.
+Edit your `bookinfo-ingress.yaml` file with the following. Note the new `annotations` field and the `NgrokTrafficPolicy` CR, which must be in the same namespace as the `Ingress`.
 
-- Create a new file called `bookinfo-ingress.yaml` on your local workstation.
-  This configuration defines how the ngrok Kubernetes Operator routes traffic on `NGROK_DOMAIN` to the `productpage` service on port `9080`.
+```yaml showLineNumbers
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: bookinfo-ingress
+  namespace: bookinfo
+  annotations:
+    k8s.ngrok.com/traffic-policy: oauth
+spec:
+  ingressClassName: ngrok
+  rules:
+    - host: NGROK_DOMAIN
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: productpage
+                port:
+                  number: 9080
+---
+# Traffic Policy configuration for OAuth
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: NgrokTrafficPolicy
+metadata:
+  name: oauth
+  namespace: bookinfo
+spec:
+  policy:
+    on_http_request:
+      - type: oauth
+        config:
+          provider: google
+```
 
-  <Tip>
-  Edit line `10` of the YAML below (the `NGROK_DOMAIN` variable) with the ngrok domain you created earlier.
-  </Tip>
+Re-apply your configuration:
 
-   ```yaml showLineNumbers
-   ---
-   apiVersion: networking.k8s.io/v1
-   kind: Ingress
-   metadata:
-     name: bookinfo-ingress
-     namespace: bookinfo
-   spec:
-     ingressClassName: ngrok
-     rules:
-       - host: <NGROK_DOMAIN>
-         http:
-           paths:
-             - path: /
-               pathType: Prefix
-               backend:
-                 service:
-                   name: productpage
-                   port:
-                     number: 9080
-   ```
+```bash
+kubectl apply -f bookinfo-ingress.yaml
+```
 
-- Apply the new configuration to your cluster:
+When you open your demo app again, ngrok asks you to log in with Google. To limit access to just yourself or your colleagues, tighten the policy.
 
-  ```bash
-  kubectl apply -f bookinfo-ingress.yaml
-  ```
+Use [expressions](/gateway/traffic-policy/how-it-works#expressions) and [CEL interpolation](/gateway/traffic-policy/how-it-works#cel-interpolation) to reject OAuth logins that aren't under `example.com`. Update the `NgrokTrafficPolicy` portion of your manifest after changing `example.com` to your domain.
 
-  <Tip>
-  **Troubleshooting:** If you get an error when applying the manifest, double-check that you've updated the `<NGROK_DOMAIN>` value and try again.
-  </Tip>
-
-- Navigate to `https://<NGROK_DOMAIN>` in your browser to see your Bookinfo app.
-  Click **Normal user** to explore; it's a working Kubernetes app with secure ingress via the ngrok Kubernetes Operator.
-
-## Enable extra features of ngrok 
-
-To demonstrate ingress configuration and [OAuth support](/gateway/traffic-policy/actions/oauth/), you can launch an observability stack (for example, Prometheus, Grafana, and Alertmanager) on your cluster.
-
-- In the DigitalOcean console, go to the Kubernetes Clusters dashboard and click the cluster you created.
-
-- Click the **Marketplace** tab, find or search for **Kubernetes Monitoring Stack**, and click **Install**.
-  Confirm your choice.
-  In the background, DigitalOcean uses Helm to create a new integrated deployment for Prometheus, Grafana, and Alertmanager.
-
-- Create a new domain in the [ngrok dashboard](https://dashboard.ngrok.com/domains) at `monitoring.<NGROK_DOMAIN>`.
-
-- Edit your `bookinfo-ingress.yaml` file to add the configuration below, which routes traffic on `https://monitoring.NGROK_DOMAIN/` to the `kube-prometheus-stack-grafana` service on port `9090` in your cluster.
-
-   ```yaml showLineNumbers
-   ---
-   apiVersion: networking.k8s.io/v1
-   kind: Ingress
-   metadata:
-     name: monitoring-ingress
-     namespace: kube-prometheus-stack
-   spec:
-     ingressClassName: ngrok
-     rules:
-       - host: monitoring.<NGROK_DOMAIN>
-         http:
-           paths:
-             - path: /
-               pathType: Prefix
-               backend:
-                 service:
-                   name: kube-prometheus-stack-grafana
-                   port:
-                     number: 9090
-   ```
-
-- Visit a URL like `https://monitoring.NGROK_DOMAIN/alerts` to see data from Alertmanager.
-  For security, restrict who can access your metrics and alerts.
-
-- Edit your `bookinfo-ingress.yaml` file again to add OAuth, leaving the previous configurations untouched. 
-	Note the new `annotations` field and the `NgrokTrafficPolicy` CR.
-
-   ```yaml showLineNumbers
-   ---
-   apiVersion: networking.k8s.io/v1
-   kind: Ingress
-   metadata:
-     name: monitoring-ingress
-     namespace: kube-prometheus-stack
-     annotations:
-       k8s.ngrok.com/traffic-policy: oauth
-   spec:
-     ingressClassName: ngrok
-     rules:
-       - host: monitoring.<NGROK_DOMAIN>
-         http:
-           paths:
-             - path: /
-               pathType: Prefix
-               backend:
-                 service:
-                   name: kube-prometheus-stack-grafana
-                   port:
-                     number: 9090
-    ---
-   # Traffic Policy configuration for OAuth
-   apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-   kind: NgrokTrafficPolicy
-   metadata:
-     name: oauth
-     namespace: default
-   spec:
-     policy:
-        on_http_request:
-          - type: oauth
+```yaml
+# Traffic Policy configuration for OAuth
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: NgrokTrafficPolicy
+metadata:
+  name: oauth
+  namespace: bookinfo
+spec:
+  policy:
+    on_http_request:
+      - type: oauth
+        config:
+          provider: google
+      - expressions:
+          - "!actions.ngrok.oauth.identity.email.endsWith('@example.com')"
+        actions:
+          - type: custom-response
             config:
-              provider: google
-   ```
+              body: You are not authorized, ${actions.ngrok.oauth.identity.name}.
+              status_code: 400
+```
 
-- Re-apply your configuration.
-
-  ```bash
-  kubectl apply -f bookinfo-ingress.yaml
-  ```
-
-- When you open your demo app again, you'll be asked to log in via Google.
-  That's a start, but what if you want to authenticate only yourself or colleagues?
-
-- You can use [expressions](/gateway/traffic-policy/how-it-works#expressions) and [CEL interpolation](/gateway/traffic-policy/how-it-works#cel-interpolation) to filter out and reject OAuth logins that don't contain `example.com`.
-  Update the `NgrokTrafficPolicy` portion of your manifest after changing `example.com` to your domain.
-
-  ```yaml
-   # Traffic Policy configuration for OAuth
-   apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-   kind: NgrokTrafficPolicy
-   metadata:
-     name: oauth
-     namespace: default
-   spec:
-     policy:
-       on_http_request:
-         - type: oauth
-           config:
-             provider: google
-         - expressions:
-             - "!actions.ngrok.oauth.identity.email.endsWith('@example.com')"
-           actions:
-             - type: custom-response
-               config:
-                 body: Hey, no auth for you ${actions.ngrok.oauth.identity.name}!
-                 status_code: 400
-   ```
-
-- Check your deployed app again.
-  If you log in with an email that doesn't match your domain, ngrok rejects your request.
+Check your deployed app again. If you log in with an email that isn't under your domain, ngrok rejects the request.
 
 ## What's next?
 
-You've now used the open-source ngrok Kubernetes Operator to add public ingress to an example app on a Kubernetes cluster managed by DigitalOcean.
-Because ngrok handles ingress and middleware execution, and thanks to DigitalOcean's `doctl` tool, you can quickly deploy new clusters, apps, and helpful services without leaving your CLI.
+You've used the open source ngrok Kubernetes Operator to add public ingress to an app on a cluster managed by DigitalOcean without managing complex Kubernetes networking. Because ngrok handles ingress and middleware execution, you can follow the same process for your production apps.
 
-Learn more about the ngrok Kubernetes Operator, or contribute to its ongoing development, by checking out the [GitHub repository](https://github.com/ngrok/ngrok-operator).
-An extensive explainer is available for [how the Operator works](/gateway/k8s/how-it-works/), plus additional [documentation](/gateway/k8s/), which also includes details on using the Kubernetes Gateway API.
+To go further, explore the [Kubernetes docs](/gateway/k8s/) for how the Operator works and how to integrate ngrok with an existing production cluster, or try [bindings](/gateway/k8s/guides/bindings/) and [endpoint pooling](/gateway/k8s/guides/pooling/).
