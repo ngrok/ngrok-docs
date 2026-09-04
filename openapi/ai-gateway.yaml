@@ -18,11 +18,13 @@ tags:
   - name: AI Gateway API Keys
     description: Manage customer-facing AI Gateway API Keys.
   - name: AI Gateway Credits
-    description: Purchase AI Gateway credits via Stripe Checkout.
+    description: Purchase AI Gateway credits, via Stripe Checkout or a charge of the saved card, and read purchase/transaction history.
   - name: AI Gateway Providers
     description: Manage AI Gateway providers and the models they expose.
   - name: AI Gateway Custom Providers
     description: Manage custom AI Gateway providers and the models they expose.
+  - name: AI Gateway Models
+    description: Read-only listing of AI Gateway models available to the authenticated account.
   - name: AI Gateway Provider Keys
     description: Manage provider keys attached to AI Gateway managed access keys.
   - name: AI Gateway Usage
@@ -160,6 +162,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/BeforeID'
         - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/AccessKeyConfigurationIDFilter'
       responses:
         '200':
           description: A page of AI Gateway access keys.
@@ -178,6 +181,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/BeforeID'
         - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/AccessKeyConfigurationIDFilter'
       responses:
         '200':
           description: The AI Gateway access keys collection is available.
@@ -658,12 +662,32 @@ paths:
                 $ref: '#/components/schemas/Error'
         default:
           $ref: '#/components/responses/Error'
+  /v1/models:
+    get:
+      tags:
+        - AI Gateway Models
+      summary: List available AI Gateway models
+      description: |
+        List every model available to the authenticated account through the AI Gateway —
+        both built-in ngrok catalog models and the account's own user-defined provider
+        models. Shaped to align with the OpenAI/Anthropic `/v1/models` convention so
+        existing SDKs and tooling can consume it directly.
+      operationId: ListAIGatewayModels
+      responses:
+        '200':
+          description: The available AI Gateway models.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIGatewayModelList'
+        default:
+          $ref: '#/components/responses/Error'
   /credits/transactions:
     get:
       tags:
         - AI Gateway Credits
       summary: List credit transactions
-      description: Returns a merged, date-descending list of credit purchases and metered usage invoices for the account. Queried from Stripe in real time.
+      description: Returns a merged, date-descending list of credit purchases and metered usage invoices for the account. Read from the billing provider in real time. Each source returns its newest 100 rows, so the merged list may be incomplete below the point where any one source truncates.
       operationId: GetCreditTransactions
       responses:
         '200':
@@ -710,6 +734,93 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CheckoutSession'
+        default:
+          $ref: '#/components/responses/Error'
+  /credits/purchases:
+    post:
+      tags:
+        - AI Gateway Credits
+      summary: Start a credit purchase
+      description: |
+        Start an off-session charge of the account's saved card for the given
+        amount. A 200 response means the purchase started. It does not mean
+        credits were granted. There is no redirect and no hosted page, so poll the
+        GET endpoint for the terminal outcome. `pending` can also mean the charge's
+        outcome is not yet known, for example after an upstream timeout. Poll
+        instead of retrying, to avoid a second charge.
+
+        The account must already be provisioned for credit purchases. An account
+        that is not provisioned gets a 400 whose `details.reason` is
+        `metronome_not_provisioned`; use the checkout session endpoint for that
+        account. Credit billing can also be disabled entirely, which returns a
+        400.
+
+        The account must already have a saved card, set as its default payment
+        method. This API cannot save a card, so save one in the ngrok dashboard
+        first. A request for an account without one is rejected with a 400 whose
+        `details.reason` is `no_default_payment_method`.
+
+        `Idempotency-Key` is optional, so an existing client keeps working. A
+        client that moves money should always send it. Send a new key per purchase
+        attempt, including per retry of a declined purchase. A request that repeats
+        a key returns the attempt the first request started, in whatever state that
+        attempt is in, including one that already succeeded and one that already
+        failed. A repeated key therefore never starts a second charge. Concurrent
+        requests that share one key all return the same attempt. The response does
+        not say whether a request started the attempt or replayed it, so do not
+        depend on telling the two apart. The service trims leading and trailing
+        whitespace from the key, so `" k"` and `"k"` are one key.
+
+        A key longer than 255 characters is rejected with a 400 whose
+        `details.reason` is `invalid_idempotency_key`. A key sent with a
+        different `amount` is rejected with a 409 whose `details.reason` is
+        `idempotency_key_reuse`, and whose `details.purchase_id` names the attempt
+        the key already points at. A request that starts while another purchase for
+        the account is unresolved is rejected with a 409 whose `details.reason` is
+        `purchase_in_progress`. Poll the `details.purchase_id` it returns instead
+        of retrying.
+      operationId: CreateCreditPurchase
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreditPurchaseCreate'
+      responses:
+        '200':
+          description: The purchase attempt that was started.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreditPurchase'
+        default:
+          $ref: '#/components/responses/Error'
+  /credits/purchases/{id}:
+    parameters:
+      - $ref: '#/components/parameters/CreditPurchaseID'
+    get:
+      tags:
+        - AI Gateway Credits
+      summary: Get a credit purchase
+      description: |
+        Get a single credit purchase attempt by ID, so the caller can poll it to
+        a terminal state and read the decline reason recorded on failure.
+
+        A purchase leaves `pending` only when the payment gate resolves. An
+        asynchronous webhook records that, and a periodic sweep backstops a lost
+        webhook. Therefore `pending` means the outcome is not recorded yet. It does
+        not mean the charge is still in flight. A purchase can stay `pending` until
+        the next sweep runs, after the charge itself settles.
+      operationId: GetCreditPurchase
+      responses:
+        '200':
+          description: The credit purchase attempt.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreditPurchase'
         default:
           $ref: '#/components/responses/Error'
   /gateway-config:
@@ -858,6 +969,36 @@ paths:
                 $ref: '#/components/schemas/AIGatewayUsageOverview'
         default:
           $ref: '#/components/responses/Error'
+  /usage/requests/{requestId}:
+    get:
+      tags:
+        - AI Gateway Usage
+      summary: Get the upstream attempts of one AI Gateway request
+      description: |
+        Return every upstream attempt the AI Gateway made for one client
+        request, ordered by attempt number. Read-only and account-scoped.
+
+        The AI Gateway states the request ID on every response it sends, in the
+        `Ngrok-AIG-Request-Id` header. Pass that value here to see which
+        providers and models the request tried, in what order, and which one
+        served it.
+      operationId: GetAIGatewayRequestAttempts
+      parameters:
+        - name: requestId
+          in: path
+          required: true
+          description: The request ID from the `Ngrok-AIG-Request-Id` response header.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Every upstream attempt for the request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIGatewayRequest'
+        default:
+          $ref: '#/components/responses/Error'
 components:
   securitySchemes:
     bearerAuth:
@@ -888,6 +1029,13 @@ components:
       description: Unique identifier for an AI Gateway access key configuration.
       schema:
         type: string
+    AccessKeyConfigurationIDFilter:
+      name: accessKeyConfigurationId
+      in: query
+      required: false
+      description: When set, returns only access keys linked to this access key configuration.
+      schema:
+        type: string
     AIGatewayAccessKeyID:
       name: id
       in: path
@@ -914,6 +1062,27 @@ components:
       in: path
       required: true
       description: Unique identifier for an AI Gateway provider.
+      schema:
+        type: string
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: false
+      description: |
+        Optional caller-supplied key that makes a retry safe. A later request
+        that repeats the key returns the purchase attempt the first request
+        started, instead of starting a second charge. The key is scoped to the
+        account and to this operation. ngrok keeps the key for as long as the
+        purchase attempt record exists, and those records are not deleted, so treat
+        a key as permanently used. Accepts up to 255 characters. An absent or empty
+        header disables replay protection.
+      schema:
+        type: string
+    CreditPurchaseID:
+      name: id
+      in: path
+      required: true
+      description: Unique identifier for a credit purchase attempt.
       schema:
         type: string
   schemas:
@@ -1050,6 +1219,7 @@ components:
         - updatedAt
         - createdBy
         - lastUpdatedBy
+        - accessKeyCount
       properties:
         id:
           type: string
@@ -1057,6 +1227,10 @@ components:
         uri:
           type: string
           description: URI of this AI Gateway Access Key Configuration API resource.
+        accessKeyCount:
+          type: integer
+          format: int32
+          description: Number of access keys currently linked to this configuration. 0 when unused.
         name:
           type: string
           description: User-defined label for this configuration.
@@ -1357,7 +1531,15 @@ components:
         accessKeyConfigurationId:
           type: string
           nullable: true
-          description: ID of an access key configuration. Set to null to revert to allow-all scope.
+          description: |
+            ID of an access key configuration. PATCH: omit to preserve the
+            current link, send `null` to revert to allow-all scope, or send
+            an ID to link a configuration.
+          x-go-type: gatewayconfig.NullableString
+          x-go-type-import:
+            name: gatewayconfig
+            path: go.ngrok.com/svc/ai-gateway-control/gatewayconfig
+          x-go-type-skip-optional-pointer: true
     AIGatewayAPIKey:
       type: object
       additionalProperties: false
@@ -1618,6 +1800,9 @@ components:
             The specific API surface within the format (for example
             "chat-completions", "responses", or "messages"). Validated against
             ngrok's known surfaces at runtime.
+        baseUrl:
+          type: string
+          description: Optional per-surface upstream base URL. When omitted, the provider baseUrl is used.
         supportedParams:
           type: array
           description: Top-level request body parameters supported by this surface.
@@ -1629,13 +1814,24 @@ components:
       required:
         - id
         - modelId
+        - unsupportedParams
       properties:
         id:
           type: string
           description: Unique identifier for this model.
         modelId:
           type: string
-          description: Model identifier (for example "llama-3").
+          description: |
+            Model identifier (for example "llama-3"). Clients address it as
+            "<providerId>:<modelId>" in access-key configurations and model strings.
+        providerModelId:
+          type: string
+          description: Upstream model id sent to the provider when it differs from modelId. Omitted when unset.
+        unsupportedParams:
+          type: array
+          description: Request params this provider does not support for this model. Empty when none.
+          items:
+            type: string
     AIGatewayProvider:
       type: object
       additionalProperties: false
@@ -1720,6 +1916,18 @@ components:
           minLength: 1
           maxLength: 255
           description: Model identifier (for example "llama-3").
+        providerModelId:
+          type: string
+          maxLength: 255
+          description: |
+            Upstream model id sent to the provider when it differs from modelId.
+            Optional; omit to send modelId as-is.
+        unsupportedParams:
+          type: array
+          description: Request params this provider does not support for this model.
+          items:
+            type: string
+            maxLength: 255
     AIGatewayProviderCreate:
       type: object
       additionalProperties: false
@@ -1795,6 +2003,280 @@ components:
             full list to replace the existing set.
           items:
             $ref: '#/components/schemas/AIGatewayProviderModelCreate'
+    AIGatewayModelPricingRateConditions:
+      type: object
+      additionalProperties: false
+      properties:
+        ttl:
+          type: string
+          description: Cache lifetime, such as "5m" or "1h".
+        min_input_tokens:
+          type: integer
+          description: Minimum input-token count for this rate.
+        max_input_tokens:
+          type: integer
+          description: Maximum input-token count for this rate.
+        quality:
+          type: string
+          description: Image, audio, or video quality tier.
+        resolution:
+          type: string
+          description: Resolution associated with this rate.
+        service_tier:
+          type: string
+          description: Provider service tier associated with this rate.
+    AIGatewayModelPricingRate:
+      type: object
+      additionalProperties: false
+      required:
+        - type
+        - unit
+        - price
+      properties:
+        type:
+          type: string
+          description: Billing type, such as "prompt", "completion", or "input_cache_write".
+        unit:
+          type: string
+          description: Billing unit, such as "token", "request", "image", or "second".
+        price:
+          type: string
+          description: Cost per billing unit.
+        conditions:
+          $ref: '#/components/schemas/AIGatewayModelPricingRateConditions'
+    AIGatewayModelPricing:
+      type: object
+      additionalProperties: false
+      required:
+        - currency
+        - rates
+      properties:
+        currency:
+          type: string
+          description: Pricing currency; currently "USD".
+        rates:
+          type: array
+          description: Provider pricing rates.
+          items:
+            $ref: '#/components/schemas/AIGatewayModelPricingRate'
+    AIGatewayModelSupportedAPIFormat:
+      type: object
+      additionalProperties: false
+      required:
+        - format
+        - name
+        - path
+        - parameters
+      properties:
+        format:
+          type: string
+          description: API format identifier, such as "openai" or "anthropic".
+        name:
+          type: string
+          description: API surface name.
+          enum:
+            - chat-completions
+            - responses
+            - messages
+            - generate-content
+        path:
+          type: string
+          description: |
+            HTTP path for this API surface. The `generate-content` surface names
+            its model in the path, so that path holds this model's id. Its
+            streaming form replaces the `:generateContent` verb with
+            `:streamGenerateContent`.
+        parameters:
+          type: array
+          description: Parameters supported for this API surface and model.
+          items:
+            type: string
+    AIGatewayModelQuantiles:
+      type: object
+      additionalProperties: false
+      required:
+        - p50
+        - p95
+      properties:
+        p50:
+          type: number
+          format: double
+          description: 50th percentile.
+        p95:
+          type: number
+          format: double
+          description: 95th percentile.
+        window_minutes:
+          type: integer
+          format: int32
+          description: Length of the window that produced these quantiles, in minutes. A wider window is used when the last hour holds too few samples.
+        as_of:
+          type: string
+          format: date-time
+          description: When these quantiles were measured. Present only when the value comes from an earlier window because no recent window holds enough samples.
+    AIGatewayModelProviderMetrics:
+      type: object
+      additionalProperties: false
+      properties:
+        uptime_last_15m:
+          type: number
+          format: double
+          description: Percentage of eligible provider attempts that returned 2xx during the last 15 minutes. Omitted when the window has no eligible attempts.
+        uptime_last_1h:
+          type: number
+          format: double
+          description: Percentage of eligible provider attempts that returned 2xx during the last 60 minutes. Omitted when the window has no eligible attempts.
+        uptime_last_1d:
+          type: number
+          format: double
+          description: Percentage of eligible provider attempts that returned 2xx during the last 24 hours. Omitted when the window has no eligible attempts.
+        throughput_last_1h:
+          allOf:
+            - $ref: '#/components/schemas/AIGatewayModelQuantiles'
+          description: Output tokens per second during the last hour.
+        latency_last_1h:
+          allOf:
+            - $ref: '#/components/schemas/AIGatewayModelQuantiles'
+          description: Time to first token in milliseconds during the last hour.
+    AIGatewayModelProvider:
+      type: object
+      additionalProperties: false
+      required:
+        - model_id
+        - id
+        - display_name
+        - context_length
+        - status
+        - pricing
+        - supported_api_formats
+        - supports_implicit_caching
+      properties:
+        model_id:
+          type: string
+          description: Provider-qualified model ID.
+        id:
+          type: string
+          description: Provider ID.
+        display_name:
+          type: string
+          description: Provider name.
+        logo_url:
+          type: string
+        website_url:
+          type: string
+        context_length:
+          type: integer
+          description: Maximum context window in tokens; zero when unknown.
+        max_input_tokens:
+          type: integer
+        max_completion_tokens:
+          type: integer
+          description: Maximum output tokens the model supports, when known.
+        supports_implicit_caching:
+          type: boolean
+          description: Whether this provider caches repeated prompts automatically for this model.
+        status:
+          type: string
+          enum:
+            - active
+            - inactive
+        pricing:
+          $ref: '#/components/schemas/AIGatewayModelPricing'
+        supported_api_formats:
+          type: array
+          description: API formats supported by the provider for this model.
+          items:
+            $ref: '#/components/schemas/AIGatewayModelSupportedAPIFormat'
+        metrics:
+          $ref: '#/components/schemas/AIGatewayModelProviderMetrics'
+    AIGatewayModel:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - name
+        - created
+        - architecture
+        - slug
+        - object
+        - owned_by
+        - providers
+      properties:
+        id:
+          type: string
+          description: Model ID.
+        name:
+          type: string
+        created:
+          type: integer
+          format: int64
+          description: Inventory creation time as Unix seconds.
+        released:
+          type: integer
+          format: int64
+          description: Model release time as Unix seconds, when known.
+        description:
+          type: string
+        architecture:
+          type: object
+          additionalProperties: false
+          required:
+            - modality
+            - input_modalities
+            - output_modalities
+          properties:
+            modality:
+              type: string
+            input_modalities:
+              type: array
+              items:
+                type: string
+            output_modalities:
+              type: array
+              items:
+                type: string
+            tokenizer:
+              type: string
+            instruction_type:
+              type: string
+        slug:
+          type: string
+          description: Short model ID.
+        object:
+          type: string
+          enum:
+            - model
+          description: Object type; always "model".
+        owned_by:
+          type: string
+          enum:
+            - organization_owned
+            - ngrok
+          description: |
+            Catalog owner: "ngrok" for built-in catalog models, "organization_owned" for the
+            account's own user-defined provider models.
+        providers:
+          type: array
+          description: Providers offering this model.
+          items:
+            $ref: '#/components/schemas/AIGatewayModelProvider'
+    AIGatewayModelList:
+      type: object
+      additionalProperties: false
+      required:
+        - object
+        - data
+      properties:
+        object:
+          type: string
+          enum:
+            - list
+          description: Object type; always "list".
+        data:
+          type: array
+          description: The available AI Gateway models.
+          items:
+            $ref: '#/components/schemas/AIGatewayModel'
     CreditTransactionCredits:
       type: object
       additionalProperties: false
@@ -1825,6 +2307,11 @@ components:
           format: date-time
           nullable: true
           description: When the credit grant expires. Null if the grant does not expire.
+        invoiceUrl:
+          type: string
+          format: uri
+          nullable: true
+          description: Hosted invoice page URL for the charge that bought these credits. Null when the grant has no invoice, such as a promotional grant or a purchase made before the Metronome cutover.
         createdAt:
           type: string
           format: date-time
@@ -1841,8 +2328,6 @@ components:
         - totalCents
         - appliedCreditsCents
         - amountDueCents
-        - amountPaidCents
-        - amountRemainingCents
       properties:
         type:
           type: string
@@ -1865,15 +2350,15 @@ components:
           type: string
           format: uri
           nullable: true
-          description: Stripe-hosted invoice URL.
+          description: Hosted invoice payment page URL. Null when the invoice has no payable page.
         totalCents:
           type: integer
           format: int64
-          description: Invoice total before customer balance is applied.
+          description: Gross spend for the billing period, before credit grants are applied.
         appliedCreditsCents:
           type: integer
           format: int64
-          description: Amount of credits applied to this invoice (total minus amount_due).
+          description: Sum of the credit-grant drawdowns applied to this invoice.
         amountDueCents:
           type: integer
           format: int64
@@ -1881,11 +2366,11 @@ components:
         amountPaidCents:
           type: integer
           format: int64
-          description: Amount already paid.
+          description: Amount already paid. Absent when the billing provider does not observe this value.
         amountRemainingCents:
           type: integer
           format: int64
-          description: Amount still owed.
+          description: Amount still owed. Absent when the billing provider does not observe this value.
     CreditTransactionUsageInvoicePreview:
       type: object
       additionalProperties: false
@@ -1897,8 +2382,6 @@ components:
         - totalCents
         - appliedCreditsCents
         - amountDueCents
-        - amountPaidCents
-        - amountRemainingCents
       properties:
         type:
           type: string
@@ -1920,11 +2403,11 @@ components:
         totalCents:
           type: integer
           format: int64
-          description: Invoice total before customer balance is applied.
+          description: Gross spend for the billing period, before credit grants are applied.
         appliedCreditsCents:
           type: integer
           format: int64
-          description: Amount of credits applied to this invoice (total minus amount_due).
+          description: Sum of the credit-grant drawdowns applied to this invoice.
         amountDueCents:
           type: integer
           format: int64
@@ -1932,11 +2415,11 @@ components:
         amountPaidCents:
           type: integer
           format: int64
-          description: Amount already paid.
+          description: Amount already paid. Absent when the billing provider does not observe this value.
         amountRemainingCents:
           type: integer
           format: int64
-          description: Amount still owed.
+          description: Amount still owed. Absent when the billing provider does not observe this value.
     CreditTransactionItem:
       oneOf:
         - $ref: '#/components/schemas/CreditTransactionCredits'
@@ -1994,6 +2477,73 @@ components:
           type: string
           format: uri
           description: The hosted Stripe checkout URL to redirect the user to.
+    CreditPurchaseCreate:
+      type: object
+      additionalProperties: false
+      required:
+        - amount
+      properties:
+        amount:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 50000
+          description: Amount in cents to purchase. Must be a positive integer, and cannot exceed the credit balance cap.
+    CreditPurchase:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - status
+        - amountCents
+        - currency
+        - createdAt
+        - expiresAt
+      properties:
+        id:
+          type: string
+          description: Unique identifier for this credit purchase attempt.
+        status:
+          type: string
+          enum:
+            - pending
+            - actionRequired
+            - succeeded
+            - failed
+          description: |
+            Current state of the purchase. Poll GET until it reaches a terminal
+            state (succeeded or failed).
+
+            An asynchronous webhook records `succeeded` and `actionRequired`, and
+            a periodic sweep backstops a lost webhook. A purchase can therefore
+            stay `pending` until the next sweep runs, after the charge itself
+            settles.
+        amountCents:
+          type: integer
+          format: int64
+          description: Amount purchased, in cents.
+        currency:
+          type: string
+          description: ISO 4217 currency code, lowercase.
+        createdAt:
+          type: string
+          format: date-time
+          description: When the purchase attempt was started.
+        expiresAt:
+          type: string
+          format: date-time
+          description: When the purchased credits stop being usable.
+        failureCode:
+          type: string
+          nullable: true
+          description: |
+            Machine-readable decline reason. Set when status is failed, and also
+            set to `ambiguous_upstream` while status is pending if a prior
+            attempt's outcome could not be determined.
+        failureMessage:
+          type: string
+          nullable: true
+          description: Human-readable decline detail, set only when status is failed.
     AIGatewayConfig:
       type: object
       additionalProperties: false
@@ -2137,8 +2687,25 @@ components:
         - inputTokens
         - outputTokens
         - cacheReadTokens
+        - cacheWriteTokens
+        - cacheWrite5mTokens
+        - cacheWrite1hTokens
         - reasoningTokens
+        - inputTokensEstimate
+        - outputTokensEstimate
+        - usageEstimated
+        - processingFeeInputTokens
+        - processingFeeOutputTokens
+        - processingFeeUsageSource
+        - toolUsePromptTokens
         - totalCost
+        - inputTokenCost
+        - outputTokenCost
+        - ngrokProcessingFee
+        - cacheReadCost
+        - cacheWriteCost
+        - cacheWrite5mCost
+        - cacheWrite1hCost
         - keySource
       properties:
         id:
@@ -2201,13 +2768,82 @@ components:
           type: integer
           format: int64
           description: Tokens read from the provider cache.
+        cacheWriteTokens:
+          type: integer
+          format: int64
+          description: Tokens written to the provider cache.
+        cacheWrite5mTokens:
+          type: integer
+          format: int64
+          description: Tokens written to the provider cache with a 5-minute TTL.
+        cacheWrite1hTokens:
+          type: integer
+          format: int64
+          description: Tokens written to the provider cache with a 1-hour TTL.
         reasoningTokens:
           type: integer
           format: int64
           description: Reasoning tokens reported by the provider.
+        inputTokensEstimate:
+          type: integer
+          format: int64
+          description: Input tokens counted by ngrok's tokenizer.
+        outputTokensEstimate:
+          type: integer
+          format: int64
+          description: Output tokens counted by ngrok's tokenizer.
+        usageEstimated:
+          type: boolean
+          description: True when the provider reported no usage and the cost was derived from inputTokensEstimate and outputTokensEstimate. The provider-reported token fields are all zero on these attempts, so display the estimates instead.
+        processingFeeInputTokens:
+          type: integer
+          format: int64
+          description: Token count billed as ngrok processing-fee input.
+        processingFeeOutputTokens:
+          type: integer
+          format: int64
+          description: Token count billed as ngrok processing-fee output.
+        processingFeeUsageSource:
+          type: string
+          description: '`provider` when the processing fee used reported usage, `estimate` when it used ngrok''s tokenizer, or `unavailable` when the event did not record the source. `notApplicable` when no processing fee was billed.'
+          enum:
+            - provider
+            - estimate
+            - unavailable
+            - notApplicable
+          x-enum-varnames:
+            - ProcessingFeeUsageSourceProvider
+            - ProcessingFeeUsageSourceEstimate
+            - ProcessingFeeUsageSourceUnavailable
+            - ProcessingFeeUsageSourceNotApplicable
+        toolUsePromptTokens:
+          type: integer
+          format: int64
+          description: Hosted-tool prompt tokens counted as processing-fee input.
         totalCost:
           type: string
           description: Total cost in US dollars as a decimal string (5-place fractional precision).
+        inputTokenCost:
+          type: string
+          description: Base input-token cost, excluding cache reads and writes, in US dollars as a decimal string (5-place fractional precision).
+        outputTokenCost:
+          type: string
+          description: Output-token cost in US dollars as a decimal string (5-place fractional precision).
+        ngrokProcessingFee:
+          type: string
+          description: ngrok processing fee in US dollars as a decimal string (5-place fractional precision).
+        cacheReadCost:
+          type: string
+          description: Cache-read cost in US dollars as a decimal string (5-place fractional precision).
+        cacheWriteCost:
+          type: string
+          description: Cache-write cost in US dollars as a decimal string (5-place fractional precision).
+        cacheWrite5mCost:
+          type: string
+          description: 5-minute cache-write cost in US dollars as a decimal string (5-place fractional precision).
+        cacheWrite1hCost:
+          type: string
+          description: 1-hour cache-write cost in US dollars as a decimal string (5-place fractional precision).
         keySource:
           type: string
           description: Source of the provider credential. `ngrok` for managed keys, `user` for BYOK provider keys.
@@ -2301,6 +2937,81 @@ components:
             $ref: '#/components/schemas/AIGatewayUsageOverviewBucket'
         totals:
           $ref: '#/components/schemas/AIGatewayUsageOverviewTotals'
+    AIGatewayRetryAction:
+      type: string
+      description: |
+        The verdict the gateway's retry loop reached after one attempt, which says
+        why it moved on. Absent for an attempt the gateway recorded before it
+        stored the verdict.
+      enum:
+        - succeeded
+        - next_key
+        - next_quota_pool
+        - next_backend
+        - managed_fallback
+        - retry_same_backend
+        - fail_fast
+        - exhausted
+    AIGatewayAttemptCompletion:
+      type: string
+      description: How one upstream attempt finished. `stream_failed` means the stream broke after the first token reached the client.
+      enum:
+        - succeeded
+        - failed
+        - timed_out
+        - stream_failed
+        - unknown
+    AIGatewayRequestAttempt:
+      type: object
+      additionalProperties: false
+      required:
+        - event
+        - served
+        - completion
+      properties:
+        event:
+          $ref: '#/components/schemas/AIGatewayUsageEvent'
+        served:
+          type: boolean
+          description: Whether this attempt produced the response the client received. At most one attempt of a request is served.
+        retryAction:
+          $ref: '#/components/schemas/AIGatewayRetryAction'
+        completion:
+          $ref: '#/components/schemas/AIGatewayAttemptCompletion'
+        requestDurationMs:
+          type: integer
+          format: int64
+          nullable: true
+          description: Time from the gateway receiving the client request to the attempt completing, in milliseconds.
+        upstreamDurationMs:
+          type: integer
+          format: int64
+          nullable: true
+          description: Time the upstream provider took to answer, in milliseconds.
+        timeToFirstTokenMs:
+          type: integer
+          format: int64
+          nullable: true
+          description: Time to the first streamed token, in milliseconds. Null for a non-streaming attempt.
+    AIGatewayRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - uri
+        - requestId
+        - attempts
+      properties:
+        uri:
+          type: string
+          description: URI of this request resource.
+        requestId:
+          type: string
+          description: The request ID this resource describes.
+        attempts:
+          type: array
+          description: Every upstream attempt, ordered by attempt number.
+          items:
+            $ref: '#/components/schemas/AIGatewayRequestAttempt'
   responses:
     Error:
       description: API error response.
