@@ -53,54 +53,17 @@ The `model` field is tried first, then entries in `models` as fallbacks.
 Cross-provider failover requires the client to specify models from different providers, or model selection strategies that return candidates from multiple providers.
 </Note>
 
-## Error behavior configuration
-
-### `on_error: "halt"` (default)
-
-Stop processing and return the error to the client:
-
-```yaml
-on_http_request:
-  - type: ai-gateway
-    config:
-      on_error: "halt"
-```
-
-### `on_error: "continue"`
-
-Continue to the next action in the Traffic Policy, allowing custom error handling:
-
-```yaml
-on_http_request:
-  - type: ai-gateway
-    config:
-      on_error: "continue"
-  - type: custom-response
-    config:
-      status_code: 503
-      body: "AI service temporarily unavailable"
-```
-
-When using `on_error: "continue"`, you can inspect the error details using [action result variables](/ai-gateway/guides/debugging#legacy-endpoint-setup).
-
 ## Timeout configuration
 
-Control failover timing with these settings:
+Two timeouts bound failover.
+Set them for your account in [Account Settings](/ai-gateway/guides/account-settings), or through the [Configuration API](/ai-gateway/api-reference/gateway-config/get).
 
-```yaml
-on_http_request:
-  - type: ai-gateway
-    config:
-      per_request_timeout: "30s"   # Each provider attempt
-      total_timeout: "5m"          # All attempts combined
-```
+| Setting | Description |
+|---------|-------------|
+| Per-request timeout | Maximum time for a single provider attempt |
+| Total timeout | Maximum time for all failover attempts combined |
 
-| Setting | Default | Description |
-|---------|---------|-------------|
-| `per_request_timeout` | `30s` | Maximum time for a single provider attempt |
-| `total_timeout` | `5m` | Maximum time for all failover attempts combined |
-
-If `total_timeout` is reached, failover stops immediately even if more candidates remain.
+When the total timeout is reached, failover stops immediately even if more candidates remain.
 
 ## Errors that skip failover
 
@@ -124,8 +87,7 @@ Token limit and API key errors for a specific model trigger failover to the next
 1. **Configure multiple API keys** per provider for key-level failover
 2. **Use the `models` array** in client requests for cross-provider failover
 3. **Set appropriate timeouts** based on your latency requirements
-4. **Use `on_error: "continue"`** with custom responses for graceful degradation
-5. **Monitor with log exports** to track failover patterns
+4. **Monitor usage data** to track failover patterns
 
 ## Next steps
 
@@ -134,6 +96,6 @@ Token limit and API key errors for a specific model trigger failover to the next
     Error codes, causes, and solutions
   </Card>
   <Card title="Debugging" icon="bug" href="/ai-gateway/guides/debugging">
-    Inspect action results and diagnose issues
+    Diagnose failed requests
   </Card>
 </CardGroup>
