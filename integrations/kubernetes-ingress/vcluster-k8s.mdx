@@ -4,14 +4,18 @@ sidebarTitle: vcluster
 description: Set up a local virtual cluster to use the ngrok Kubernetes Operator with vcluster.
 ---
 
-This guide shows you how to add public ingress to an app running on a [vcluster](https://www.vcluster.com/) virtual cluster. You'll use the ngrok Kubernetes Operator to route public traffic to the app, then secure it with OAuth.
+This guide shows you how to add public ingress to an app running on a [vcluster](https://www.vcluster.com/) virtual cluster.
+You'll use the ngrok Kubernetes Operator to route public traffic to the app, then secure it with OAuth.
 
-vcluster is an open source project for creating virtual clusters that run inside the namespaces of a host cluster. The pods you deploy on a vcluster are scheduled on the underlying cluster, while other resources, such as deployments and CRDs, exist only inside the virtual cluster. This isolation makes vcluster useful for development environments, internal developer platforms, and experiments that still need to route external traffic.
+vcluster is an open source project for creating virtual clusters that run inside the namespaces of a host cluster.
+The pods you deploy on a vcluster are scheduled on the underlying cluster, while other resources, such as deployments and CRDs, exist only inside the virtual cluster.
+This isolation makes vcluster useful for development environments, internal developer platforms, and experiments that still need to route external traffic.
 
 ## What you'll need
 
 - The [vcluster CLI](https://www.vcluster.com/docs/vcluster/deploy/basics) installed locally.
-- A Kubernetes cluster to host the virtual cluster. If you don't have one, [minikube](https://minikube.sigs.k8s.io/docs/start/) creates a local cluster for testing.
+- A Kubernetes cluster to host the virtual cluster.
+  If you don't have one, [minikube](https://minikube.sigs.k8s.io/docs/start/) creates a local cluster for testing.
 - An ngrok account.
 - `kubectl` and Helm 3.0.0+ installed on your local workstation.
 - The [ngrok Kubernetes Operator](/gateway/k8s/) installed on your virtual cluster.
@@ -19,7 +23,8 @@ vcluster is an open source project for creating virtual clusters that run inside
 
 ## Set up a local virtual cluster with vcluster
 
-To follow this guide, you need a host Kubernetes cluster with a virtual cluster running on it. If you already have one, skip to [Install a sample application](#install-a-sample-application).
+To follow this guide, you need a host Kubernetes cluster with a virtual cluster running on it.
+If you already have one, skip to [Install a sample application](#install-a-sample-application).
 
 If you don't have a host cluster, create one locally with minikube:
 
@@ -27,7 +32,8 @@ If you don't have a host cluster, create one locally with minikube:
 minikube start --profile dc1 --memory 4096
 ```
 
-Create a virtual cluster named `my-vcluster`. This creates a namespace on the host cluster and switches your active kube context to the new virtual cluster:
+Create a virtual cluster named `my-vcluster`.
+This creates a namespace on the host cluster and switches your active kube context to the new virtual cluster:
 
 ```bash
 vcluster create my-vcluster --expose-local
@@ -39,7 +45,8 @@ Confirm the virtual cluster is running:
 kubectl get namespaces
 ```
 
-If your context is no longer pointed at the virtual cluster, run `vcluster connect my-vcluster` to reconnect. See vcluster's [deployment docs](https://www.vcluster.com/docs/vcluster/deploy/basics) for other ways to create and connect to a virtual cluster.
+If your context is no longer pointed at the virtual cluster, run `vcluster connect my-vcluster` to reconnect.
+See vcluster's [deployment docs](https://www.vcluster.com/docs/vcluster/deploy/basics) for other ways to create and connect to a virtual cluster.
 
 Install the [ngrok Kubernetes Operator](/getting-started/kubernetes/ingress) on the virtual cluster before continuing.
 
@@ -47,7 +54,9 @@ Install the [ngrok Kubernetes Operator](/getting-started/kubernetes/ingress) on 
 
 With the ngrok Kubernetes Operator running on your virtual cluster, deploy a sample application to see how the Operator routes external traffic to it.
 
-Create a Kubernetes manifest named `tinyllama.yaml` with the contents below. It defines the `tinyllama` demo app from [ngrok-samples/tinyllama](https://github.com/ngrok-samples/tinyllama) (a `Service` and `Deployment`), then adds an `Ingress` that tells the ngrok Kubernetes Operator to route `NGROK_DOMAIN` to the `tinyllama` service. Replace `NGROK_DOMAIN` with the domain you reserved:
+Create a Kubernetes manifest named `tinyllama.yaml` with the contents below.
+It defines the `tinyllama` demo app from [ngrok-samples/tinyllama](https://github.com/ngrok-samples/tinyllama) (a `Service` and `Deployment`), then adds an `Ingress` that tells the ngrok Kubernetes Operator to route `NGROK_DOMAIN` to the `tinyllama` service.
+Replace `NGROK_DOMAIN` with the domain you reserved:
 
 ```yaml
 apiVersion: v1
@@ -116,17 +125,23 @@ kubectl apply -f tinyllama.yaml
 **Troubleshooting:** If you get an error when applying the manifest, confirm that you've replaced `NGROK_DOMAIN` in `tinyllama.yaml` with your reserved domain and try again.
 </Tip>
 
-Open your reserved domain (for example, `https://NGROK_DOMAIN`) in a browser to see the demo app. ngrok routes requests to the ngrok Kubernetes Operator, which forwards them to the `tinyllama` service as long as your virtual cluster is running.
+Open your reserved domain (for example, `https://NGROK_DOMAIN`) in a browser to see the demo app.
+ngrok routes requests to the ngrok Kubernetes Operator, which forwards them to the `tinyllama` service as long as your virtual cluster is running.
 
 ## Add OAuth protection to your demo app
 
-Now that your demo app is publicly accessible through ngrok, you can add [capabilities](/gateway/endpoints/http/) like authentication without deploying extra infrastructure. This section restricts access to Google accounts under a specific domain.
+Now that your demo app is publicly accessible through ngrok, you can add [capabilities](/gateway/endpoints/http/) like authentication without deploying extra infrastructure.
+This section restricts access to Google accounts under a specific domain.
 
-With the [Traffic Policy system](/gateway/traffic-policy/) and the [`oauth` action](/gateway/traffic-policy/actions/oauth), ngrok handles OAuth entirely on its network. You don't need to add services to your cluster or change any routes, because ngrok authenticates and authorizes requests before they reach your endpoint.
+With the [Traffic Policy system](/gateway/traffic-policy/) and the [`oauth` action](/gateway/traffic-policy/actions/oauth), ngrok handles OAuth entirely on its network.
+You don't need to add services to your cluster or change any routes, because ngrok authenticates and authorizes requests before they reach your endpoint.
 
-To enable the `oauth` action, create an `NgrokTrafficPolicy` custom resource and apply it to your `Ingress` with an annotation. You can also apply the policy to a specific backend or as the default backend for an `Ingress`. See the doc on using the [Operator with Ingresses](/gateway/k8s/guides/using-ingresses/#using-ngroktrafficpolicy-with-ingress) for details.
+To enable the `oauth` action, create an `NgrokTrafficPolicy` custom resource and apply it to your `Ingress` with an annotation.
+You can also apply the policy to a specific backend or as the default backend for an `Ingress`.
+See the doc on using the [Operator with Ingresses](/gateway/k8s/guides/using-ingresses/#using-ngroktrafficpolicy-with-ingress) for details.
 
-Edit your `tinyllama.yaml` manifest with the following, leaving the `Service` and `Deployment` as they were. Note the new `annotations` field and the `NgrokTrafficPolicy` CR.
+Edit your `tinyllama.yaml` manifest with the following, leaving the `Service` and `Deployment` as they were.
+Note the new `annotations` field and the `NgrokTrafficPolicy` CR.
 
 ```yaml
 ...
@@ -173,9 +188,11 @@ Re-apply your manifest:
 kubectl apply -f tinyllama.yaml
 ```
 
-When you open your demo app again, ngrok asks you to log in with Google. To limit access to just yourself or your colleagues, tighten the policy.
+When you open your demo app again, ngrok asks you to log in with Google.
+To limit access to just yourself or your colleagues, tighten the policy.
 
-Use [expressions](/gateway/traffic-policy/how-it-works#expressions) and [CEL interpolation](/gateway/traffic-policy/how-it-works#cel-interpolation) to reject OAuth logins that aren't under `example.com`. Update the `NgrokTrafficPolicy` portion of your manifest after changing `example.com` to your domain:
+Use [expressions](/gateway/traffic-policy/how-it-works#expressions) and [CEL interpolation](/gateway/traffic-policy/how-it-works#cel-interpolation) to reject OAuth logins that aren't under `example.com`.
+Update the `NgrokTrafficPolicy` portion of your manifest after changing `example.com` to your domain:
 
 ```yaml
 # Traffic Policy configuration for OAuth
@@ -199,13 +216,16 @@ spec:
               status_code: 400
 ```
 
-Check your deployed app again. If you log in with an email that isn't under your domain, ngrok rejects the request.
+Check your deployed app again.
+If you log in with an email that isn't under your domain, ngrok rejects the request.
 
 ## What's next?
 
-You've used the open source ngrok Kubernetes Operator to add secure ingress to an app on a virtual cluster without managing IPs, network interfaces, or VPC routing. Because ngrok handles ingress and middleware execution, you can follow the same process for any Kubernetes environment, such as EKS, GKE, and OpenShift.
+You've used the open source ngrok Kubernetes Operator to add secure ingress to an app on a virtual cluster without managing IPs, network interfaces, or VPC routing.
+Because ngrok handles ingress and middleware execution, you can follow the same process for any Kubernetes environment, such as EKS, GKE, and OpenShift.
 
-To clean up, disconnect from your virtual cluster and delete it. This removes the namespace and all of its resources, returning the host cluster to its initial state:
+To clean up, disconnect from your virtual cluster and delete it.
+This removes the namespace and all of its resources, returning the host cluster to its initial state:
 
 ```bash
 vcluster disconnect

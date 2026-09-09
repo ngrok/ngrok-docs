@@ -4,9 +4,11 @@ sidebarTitle: Spectro Cloud Palette
 description: Add ingress to any app running in a Kubernetes cluster managed by Spectro Cloud's Palette platform using the ngrok Kubernetes Operator.
 ---
 
-This guide shows you how to add public ingress to an app running in a Kubernetes cluster managed by [Spectro Cloud's Palette](https://docs.spectrocloud.com/) platform. You'll use the ngrok Kubernetes Operator, which Palette ships as a ready-to-apply pack, to route public traffic to your app.
+This guide shows you how to add public ingress to an app running in a Kubernetes cluster managed by [Spectro Cloud's Palette](https://docs.spectrocloud.com/) platform.
+You'll use the ngrok Kubernetes Operator, which Palette ships as a ready-to-apply pack, to route public traffic to your app.
 
-Palette is a profile-based Kubernetes management platform that deploys clusters from reusable layers of Helm charts, manifests, and packs. You define the ngrok Kubernetes Operator and your app as add-on profiles, then attach them when you create a cluster.
+Palette is a profile-based Kubernetes management platform that deploys clusters from reusable layers of Helm charts, manifests, and packs.
+You define the ngrok Kubernetes Operator and your app as add-on profiles, then attach them when you create a cluster.
 
 ## What you'll need
 
@@ -19,15 +21,18 @@ Palette is a profile-based Kubernetes management platform that deploys clusters 
 
 Palette uses an infrastructure cluster profile to define the base layers of a Kubernetes cluster: the OS, Kubernetes version, network, and storage packs.
 
-If you already have a cluster profile, skip to [Create your cluster with Palette](#4-create-your-cluster-with-palette). If you already have a functioning cluster in Palette, skip to [Create an add-on cluster profile for an example app](#3-create-an-add-on-cluster-profile-for-an-example-app).
+If you already have a cluster profile, skip to [Create your cluster with Palette](#4-create-your-cluster-with-palette).
+If you already have a functioning cluster in Palette, skip to [Create an add-on cluster profile for an example app](#3-create-an-add-on-cluster-profile-for-an-example-app).
 
 Follow Palette's [Create Cluster Profiles](https://docs.spectrocloud.com/profiles/cluster-profiles/create-cluster-profiles/) documentation to create a `Full` infrastructure profile for your chosen cloud provider, leaving the pack defaults in place.
 
 ## 2. Create an add-on cluster profile for the ngrok Kubernetes Operator
 
-Your infrastructure profile defines the cluster's base layers, but not a way to handle ingress. Palette ships a ready-to-apply pack for the [ngrok Kubernetes Operator](/gateway/k8s/), the official controller for adding public and secure ingress to your Kubernetes services.
+Your infrastructure profile defines the cluster's base layers, but not a way to handle ingress.
+Palette ships a ready-to-apply pack for the [ngrok Kubernetes Operator](/gateway/k8s/), the official controller for adding public and secure ingress to your Kubernetes services.
 
-Create a new `Add-on` cluster profile and add the **ngrok Kubernetes Operator** pack from the **Ingress** section of the pack registry. See Palette's docs on [add-on profiles](https://docs.spectrocloud.com/profiles/cluster-profiles/create-cluster-profiles/create-addon-profile/) for the steps.
+Create a new `Add-on` cluster profile and add the **ngrok Kubernetes Operator** pack from the **Ingress** section of the pack registry.
+See Palette's docs on [add-on profiles](https://docs.spectrocloud.com/profiles/cluster-profiles/create-cluster-profiles/create-addon-profile/) for the steps.
 
 In the pack's YAML, find the `credentials` block and set `apiKey` and `authtoken` to the values from your ngrok account:
 
@@ -39,10 +44,13 @@ credentials:
   authtoken: ""
 ```
 
-To create an API key, go to the [**API Keys**](https://dashboard.ngrok.com/api-keys) page of the ngrok dashboard, create a new key, and copy it into `apiKey`. Find your authtoken under [**Your Authtoken**](https://dashboard.ngrok.com/get-started/your-authtoken) and copy it into `authtoken`. Palette hides these values after you enter them.
+To create an API key, go to the [**API Keys**](https://dashboard.ngrok.com/api-keys) page of the ngrok dashboard, create a new key, and copy it into `apiKey`.
+Find your authtoken under [**Your Authtoken**](https://dashboard.ngrok.com/get-started/your-authtoken) and copy it into `authtoken`.
+Palette hides these values after you enter them.
 
 <Tip>
-On a free ngrok account, you can run only one ngrok agent at a time. Set the pack's `replicaCount` parameter to `1` so the Operator works correctly.
+On a free ngrok account, you can run only one ngrok agent at a time.
+Set the pack's `replicaCount` parameter to `1` so the Operator works correctly.
 </Tip>
 
 Save the pack to add the layer to your profile.
@@ -51,7 +59,9 @@ Save the pack to add the layer to your profile.
 
 This section deploys the `tinyllama` demo app and an `Ingress` that tells the ngrok Kubernetes Operator to route your reserved domain to it.
 
-Create another `Add-on` cluster profile named `tinyllama`. Add a manifest layer, then add the deployment and service manifests below. See Palette's docs on [adding a manifest to a profile](https://docs.spectrocloud.com/profiles/cluster-profiles/create-cluster-profiles/create-addon-profile/create-manifest-addon/) for the steps.
+Create another `Add-on` cluster profile named `tinyllama`.
+Add a manifest layer, then add the deployment and service manifests below.
+See Palette's docs on [adding a manifest to a profile](https://docs.spectrocloud.com/profiles/cluster-profiles/create-cluster-profiles/create-addon-profile/create-manifest-addon/) for the steps.
 
 Deployment manifest:
 
@@ -122,17 +132,22 @@ Save the layer to finish the profile.
 
 You can now create the cluster and attach the profiles you built.
 
-Follow Palette's [Creating Clusters](https://docs.spectrocloud.com/clusters/) documentation for your provider (see [Public Cloud Clusters](https://docs.spectrocloud.com/clusters/public-cloud/) for EKS, AKS, and GKE). When Palette prompts you for cluster profiles, select the infrastructure profile from step 1, then attach the ngrok Kubernetes Operator and `tinyllama` add-on profiles.
+Follow Palette's [Creating Clusters](https://docs.spectrocloud.com/clusters/) documentation for your provider (see [Public Cloud Clusters](https://docs.spectrocloud.com/clusters/public-cloud/) for EKS, AKS, and GKE).
+When Palette prompts you for cluster profiles, select the infrastructure profile from step 1, then attach the ngrok Kubernetes Operator and `tinyllama` add-on profiles.
 
-Deployment can take several minutes depending on your profile, node pool, and region. Once Palette reports the cluster as `Running`, open your `NGROK_DOMAIN` in a browser. ngrok routes requests to the ngrok Kubernetes Operator, which forwards them to the `tinyllama` service.
+Deployment can take several minutes depending on your profile, node pool, and region.
+Once Palette reports the cluster as `Running`, open your `NGROK_DOMAIN` in a browser.
+ngrok routes requests to the ngrok Kubernetes Operator, which forwards them to the `tinyllama` service.
 
 ## What's next?
 
-You've used Spectro Cloud's Palette to build declarative cluster profiles and deploy an app with public ingress through the ngrok Kubernetes Operator. You can follow the same process to expose your own apps by swapping the manifests in step 3.
+You've used Spectro Cloud's Palette to build declarative cluster profiles and deploy an app with public ingress through the ngrok Kubernetes Operator.
+You can follow the same process to expose your own apps by swapping the manifests in step 3.
 
 ### Clean up
 
-Delete the cluster from its **Overview** in Palette. Palette sends the requests to your cloud provider to remove the cluster resources, and ngrok deletes the endpoint when the cluster goes away.
+Delete the cluster from its **Overview** in Palette.
+Palette sends the requests to your cloud provider to remove the cluster resources, and ngrok deletes the endpoint when the cluster goes away.
 
 ### Extend your ngrok Kubernetes Operator and Palette integration
 

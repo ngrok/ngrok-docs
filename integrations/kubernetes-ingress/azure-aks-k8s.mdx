@@ -4,11 +4,13 @@ description: Add public ingress to an app running on Azure Kubernetes Service (A
 sidebarTitle: Azure Kubernetes Service
 ---
 
-This guide shows you how to add public ingress to an app running on Azure Kubernetes Service (AKS). You'll use the ngrok Kubernetes Operator to route public traffic to the app through an encrypted tunnel, then secure it with OAuth.
+This guide shows you how to add public ingress to an app running on Azure Kubernetes Service (AKS).
+You'll use the ngrok Kubernetes Operator to route public traffic to the app through an encrypted tunnel, then secure it with OAuth.
 
 ## What you'll need
 
-- An AKS cluster with a demo app running. If you don't have one, Microsoft's [AKS quickstart](https://learn.microsoft.com/en-us/azure/aks/learn/quick-kubernetes-deploy-portal) covers creating a cluster and deploying the AKS Store demo app this guide uses.
+- An AKS cluster with a demo app running.
+  If you don't have one, Microsoft's [AKS quickstart](https://learn.microsoft.com/en-us/azure/aks/learn/quick-kubernetes-deploy-portal) covers creating a cluster and deploying the AKS Store demo app this guide uses.
 - An ngrok account.
 - `kubectl` and Helm 3.0.0+ installed on your local workstation.
 - The [ngrok Kubernetes Operator](/gateway/k8s/) installed on your cluster.
@@ -18,7 +20,8 @@ This guide shows you how to add public ingress to an app running on Azure Kubern
 
 This guide assumes an AKS cluster reachable with `kubectl` and a `store-front` service listening on port `80`, which the AKS Store demo app provides.
 
-If you don't have this yet, follow Microsoft's [AKS quickstart](https://learn.microsoft.com/en-us/azure/aks/learn/quick-kubernetes-deploy-portal) to create a cluster, connect to it with `kubectl`, and deploy the demo app. To expose a different app, deploy it now and adjust the service name and port in the ingress below.
+If you don't have this yet, follow Microsoft's [AKS quickstart](https://learn.microsoft.com/en-us/azure/aks/learn/quick-kubernetes-deploy-portal) to create a cluster, connect to it with `kubectl`, and deploy the demo app.
+To expose a different app, deploy it now and adjust the service name and port in the ingress below.
 
 Confirm your workloads are running before continuing:
 
@@ -64,17 +67,23 @@ Confirm the ingress was created:
 kubectl get ingress store-ingress
 ```
 
-Open your reserved domain (for example, `https://NGROK_DOMAIN`) in a browser to see the demo app. ngrok routes requests to the ngrok Kubernetes Operator, which forwards them to the `store-front` service.
+Open your reserved domain (for example, `https://NGROK_DOMAIN`) in a browser to see the demo app.
+ngrok routes requests to the ngrok Kubernetes Operator, which forwards them to the `store-front` service.
 
 ## Add OAuth authentication to your demo app
 
-Now that your demo app is publicly accessible through ngrok, you can add [capabilities](/gateway/endpoints/http/) like authentication without deploying extra infrastructure. This section restricts access to Google accounts under a specific domain.
+Now that your demo app is publicly accessible through ngrok, you can add [capabilities](/gateway/endpoints/http/) like authentication without deploying extra infrastructure.
+This section restricts access to Google accounts under a specific domain.
 
-With the [Traffic Policy system](/gateway/traffic-policy/) and the [`oauth` action](/gateway/traffic-policy/actions/oauth), ngrok handles OAuth entirely on its network. You don't need to add services to your cluster or change any routes, because ngrok authenticates and authorizes requests before they reach your endpoint.
+With the [Traffic Policy system](/gateway/traffic-policy/) and the [`oauth` action](/gateway/traffic-policy/actions/oauth), ngrok handles OAuth entirely on its network.
+You don't need to add services to your cluster or change any routes, because ngrok authenticates and authorizes requests before they reach your endpoint.
 
-To enable the `oauth` action, create an `NgrokTrafficPolicy` custom resource and apply it to your `Ingress` with an annotation. You can also apply the policy to a specific backend or as the default backend for an `Ingress`. See the doc on using the [Operator with Ingresses](/gateway/k8s/guides/using-ingresses/#using-ngroktrafficpolicy-with-ingress) for details.
+To enable the `oauth` action, create an `NgrokTrafficPolicy` custom resource and apply it to your `Ingress` with an annotation.
+You can also apply the policy to a specific backend or as the default backend for an `Ingress`.
+See the doc on using the [Operator with Ingresses](/gateway/k8s/guides/using-ingresses/#using-ngroktrafficpolicy-with-ingress) for details.
 
-- Edit your existing ingress YAML with the following. Note the new `annotations` field and the `NgrokTrafficPolicy` CR.
+- Edit your existing ingress YAML with the following.
+  Note the new `annotations` field and the `NgrokTrafficPolicy` CR.
 
 ```yaml
 ...
@@ -115,9 +124,11 @@ spec:
           provider: google
 ```
 
-- When you open your demo app again, ngrok asks you to log in with Google. To limit access to just yourself or your colleagues, tighten the policy.
+- When you open your demo app again, ngrok asks you to log in with Google.
+  To limit access to just yourself or your colleagues, tighten the policy.
 
-- Use [expressions](/gateway/traffic-policy/how-it-works#expressions) and [CEL interpolation](/gateway/traffic-policy/how-it-works#cel-interpolation) to reject OAuth logins that aren't under `example.com`. Update the `NgrokTrafficPolicy` portion of your manifest after changing `example.com` to your domain.
+- Use [expressions](/gateway/traffic-policy/how-it-works#expressions) and [CEL interpolation](/gateway/traffic-policy/how-it-works#cel-interpolation) to reject OAuth logins that aren't under `example.com`.
+  Update the `NgrokTrafficPolicy` portion of your manifest after changing `example.com` to your domain.
 
 ```yaml
  # Traffic Policy configuration for OAuth
@@ -141,10 +152,12 @@ spec:
                status_code: 400
 ```
 
-- Check your deployed app again. If you log in with an email that isn't under your domain, ngrok rejects the request.
+- Check your deployed app again.
+  If you log in with an email that isn't under your domain, ngrok rejects the request.
 
 ## What's next?
 
-You've used the open source ngrok Kubernetes Operator to add public ingress to an app on AKS without managing complex Kubernetes networking. Because ngrok handles ingress and middleware execution, you can follow the same process for your production apps.
+You've used the open source ngrok Kubernetes Operator to add public ingress to an app on AKS without managing complex Kubernetes networking.
+Because ngrok handles ingress and middleware execution, you can follow the same process for your production apps.
 
 To go further, explore the [Kubernetes docs](/gateway/k8s/) for how the Operator works and how to integrate ngrok with an existing production cluster, or try [bindings](/gateway/k8s/guides/bindings/) and [endpoint pooling](/gateway/k8s/guides/pooling/).

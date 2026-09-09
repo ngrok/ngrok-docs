@@ -4,13 +4,16 @@ sidebarTitle: GKE
 description: Learn how to use the ngrok Kubernetes Operator on Google Kubernetes Engine (GKE) to quickly add secure Kubernetes ingress to your apps or APIs.
 ---
 
-This guide shows you how to add public ingress to an app running on Google Kubernetes Engine (GKE). You'll use the ngrok Kubernetes Operator to route public traffic to the app through an encrypted tunnel, then secure it with OAuth.
+This guide shows you how to add public ingress to an app running on Google Kubernetes Engine (GKE).
+You'll use the ngrok Kubernetes Operator to route public traffic to the app through an encrypted tunnel, then secure it with OAuth.
 
-The [ngrok Kubernetes Operator](https://github.com/ngrok/ngrok-operator) is the official open source controller for adding public and secure ingress to your Kubernetes services. It works with a GKE cluster as long as the cluster has outbound access to the ngrok service.
+The [ngrok Kubernetes Operator](https://github.com/ngrok/ngrok-operator) is the official open source controller for adding public and secure ingress to your Kubernetes services.
+It works with a GKE cluster as long as the cluster has outbound access to the ngrok service.
 
 ## What you'll need
 
-- A GKE cluster. If you don't have one, Google's [cluster creation guide](https://docs.cloud.google.com/kubernetes-engine/docs/how-to/creating-a-zonal-cluster) covers provisioning one.
+- A GKE cluster.
+  If you don't have one, Google's [cluster creation guide](https://docs.cloud.google.com/kubernetes-engine/docs/how-to/creating-a-zonal-cluster) covers provisioning one.
 - An ngrok account.
 - `kubectl` and Helm 3.0.0+ installed on your local workstation.
 - The [ngrok Kubernetes Operator](/gateway/k8s/) installed on your cluster.
@@ -18,7 +21,8 @@ The [ngrok Kubernetes Operator](https://github.com/ngrok/ngrok-operator) is the 
 
 ## Connect kubectl to your GKE cluster
 
-GKE authenticates `kubectl` through the `gcloud` CLI and the `gke-gcloud-auth-plugin` credential helper. Google's [cluster access guide](https://docs.cloud.google.com/kubernetes-engine/docs/how-to/cluster-access-for-kubectl) covers installing the plugin and configuring cluster access.
+GKE authenticates `kubectl` through the `gcloud` CLI and the `gke-gcloud-auth-plugin` credential helper.
+Google's [cluster access guide](https://docs.cloud.google.com/kubernetes-engine/docs/how-to/cluster-access-for-kubectl) covers installing the plugin and configuring cluster access.
 
 Once you're authenticated, add the cluster to your `KUBECONFIG`:
 
@@ -34,11 +38,15 @@ kubectl get nodes
 
 ## Install the ngrok Kubernetes Operator
 
-If you haven't already, install the operator with Helm. See the [Kubernetes ingress quickstart](/getting-started/kubernetes/ingress) for the steps and how to pass your ngrok credentials.
+If you haven't already, install the operator with Helm.
+See the [Kubernetes ingress quickstart](/getting-started/kubernetes/ingress) for the steps and how to pass your ngrok credentials.
 
 ## Install a sample application
 
-Create a manifest file (for example, `ngrok-manifest.yaml`) with the following contents. This deploys the [tinyllama](https://github.com/ngrok-samples/tinyllama) demo LLM application. Replace `<NGROK_DOMAIN>` in the highlighted section with your reserved domain. On a free account, use a static subdomain; on a paid account, you can use a custom domain or a subdomain of `ngrok.app` or `ngrok.dev`.
+Create a manifest file (for example, `ngrok-manifest.yaml`) with the following contents.
+This deploys the [tinyllama](https://github.com/ngrok-samples/tinyllama) demo LLM application.
+Replace `<NGROK_DOMAIN>` in the highlighted section with your reserved domain.
+On a free account, use a static subdomain; on a paid account, you can use a custom domain or a subdomain of `ngrok.app` or `ngrok.dev`.
 
 <Tip>
 The first section creates the tinyllama demo app Service and Deployment; the highlighted section configures the ngrok Kubernetes Operator Ingress.
@@ -114,11 +122,15 @@ Open your reserved domain (for example, `https://my-awesome-k8s-cluster.ngrok.ap
 
 ## Add authentication to your app
 
-With the [Traffic Policy system](/gateway/traffic-policy/) and the [`oauth` action](/gateway/traffic-policy/actions/oauth), ngrok handles OAuth entirely on its network. You don't need to add services to your cluster or change any routes, because ngrok authenticates and authorizes requests before they reach your endpoint.
+With the [Traffic Policy system](/gateway/traffic-policy/) and the [`oauth` action](/gateway/traffic-policy/actions/oauth), ngrok handles OAuth entirely on its network.
+You don't need to add services to your cluster or change any routes, because ngrok authenticates and authorizes requests before they reach your endpoint.
 
-To enable the `oauth` action, create an `NgrokTrafficPolicy` custom resource and apply it to your `Ingress` with an annotation. You can also apply the policy to a specific backend or as the default backend for an `Ingress`. See the doc on using the [Operator with Ingresses](/gateway/k8s/guides/using-ingresses/#using-ngroktrafficpolicy-with-ingress) for details.
+To enable the `oauth` action, create an `NgrokTrafficPolicy` custom resource and apply it to your `Ingress` with an annotation.
+You can also apply the policy to a specific backend or as the default backend for an `Ingress`.
+See the doc on using the [Operator with Ingresses](/gateway/k8s/guides/using-ingresses/#using-ngroktrafficpolicy-with-ingress) for details.
 
-Edit your existing `ngrok-manifest.yaml`, leaving the `Service` and `Deployment` as they were. Note the new `annotations` field and the `NgrokTrafficPolicy` CR.
+Edit your existing `ngrok-manifest.yaml`, leaving the `Service` and `Deployment` as they were.
+Note the new `annotations` field and the `NgrokTrafficPolicy` CR.
 
 ```yaml
 ...
@@ -165,9 +177,11 @@ Re-apply your `ngrok-manifest.yaml` configuration:
 kubectl apply -f ngrok-manifest.yaml
 ```
 
-When you open your demo app again, ngrok asks you to log in with Google. To limit access to just yourself or your colleagues, tighten the policy.
+When you open your demo app again, ngrok asks you to log in with Google.
+To limit access to just yourself or your colleagues, tighten the policy.
 
-Use [expressions](/gateway/traffic-policy/how-it-works#expressions) and [CEL interpolation](/gateway/traffic-policy/how-it-works#cel-interpolation) to reject OAuth logins that aren't under `example.com`. Update the `NgrokTrafficPolicy` portion of your manifest after changing `example.com` to your domain.
+Use [expressions](/gateway/traffic-policy/how-it-works#expressions) and [CEL interpolation](/gateway/traffic-policy/how-it-works#cel-interpolation) to reject OAuth logins that aren't under `example.com`.
+Update the `NgrokTrafficPolicy` portion of your manifest after changing `example.com` to your domain.
 
 ```yaml
 # Traffic Policy configuration for OAuth
@@ -191,10 +205,12 @@ spec:
               status_code: 400
 ```
 
-Check your deployed tinyllama app again. If you log in with an email that isn't under your domain, ngrok rejects the request.
+Check your deployed tinyllama app again.
+If you log in with an email that isn't under your domain, ngrok rejects the request.
 
 ## What's next?
 
-You've used the open source ngrok Kubernetes Operator to add public ingress to an app on GKE without managing complex Kubernetes networking. Because ngrok handles ingress and middleware execution, you can follow the same process for your production apps.
+You've used the open source ngrok Kubernetes Operator to add public ingress to an app on GKE without managing complex Kubernetes networking.
+Because ngrok handles ingress and middleware execution, you can follow the same process for your production apps.
 
 To go further, explore the [Kubernetes docs](/gateway/k8s/) for how the Operator works and how to integrate ngrok with an existing production cluster, or try [bindings](/gateway/k8s/guides/bindings/) and [endpoint pooling](/gateway/k8s/guides/pooling/).
