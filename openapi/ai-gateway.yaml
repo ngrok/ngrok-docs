@@ -742,43 +742,42 @@ paths:
         - AI Gateway Credits
       summary: Start a credit purchase
       description: |
-        Start an off-session charge of the account's saved card for the given
-        amount. A 200 response means the purchase started. It does not mean
-        credits were granted. There is no redirect and no hosted page, so poll the
-        GET endpoint for the terminal outcome. `pending` can also mean the charge's
-        outcome is not yet known, for example after an upstream timeout. Poll
-        instead of retrying, to avoid a second charge.
+        Start a charge using the account's saved card. A `200` response means the
+        purchase has started, not that credits have been granted. Poll the GET
+        endpoint until the purchase reaches a terminal state. Do not retry a
+        `pending` purchase, since the charge may still be processing.
 
-        The account must already be provisioned for credit purchases. An account
-        that is not provisioned gets a 400 whose `details.reason` is
-        `metronome_not_provisioned`; use the checkout session endpoint for that
-        account. Credit billing can also be disabled entirely, which returns a
-        400.
+        The account must be provisioned for credit purchases and have a default
+        payment method. If the account is not provisioned, use the checkout
+        session endpoint instead. Cards cannot be added through this API and must
+        first be saved in the ngrok dashboard.
 
-        The account must already have a saved card, set as its default payment
-        method. This API cannot save a card, so save one in the ngrok dashboard
-        first. A request for an account without one is rejected with a 400 whose
-        `details.reason` is `no_default_payment_method`.
+        Send an `Idempotency-Key` with every purchase to prevent duplicate charges.
+        Use a new key for each purchase attempt, including when retrying a declined
+        purchase. Reusing a key returns the existing purchase instead of starting
+        another charge.
 
-        `Idempotency-Key` is optional, so an existing client keeps working. A
-        client that moves money should always send it. Send a new key per purchase
-        attempt, including per retry of a declined purchase. A request that repeats
-        a key returns the attempt the first request started, in whatever state that
-        attempt is in, including one that already succeeded and one that already
-        failed. A repeated key therefore never starts a second charge. Concurrent
-        requests that share one key all return the same attempt. The response does
-        not say whether a request started the attempt or replayed it, so do not
-        depend on telling the two apart. The service trims leading and trailing
-        whitespace from the key, so `" k"` and `"k"` are one key.
+        Idempotency keys:
+        - Are limited to 255 characters.
+        - Ignore leading and trailing whitespace.
+        - Cannot be reused with a different `amount`. This returns
+          `409 idempotency_key_reuse`.
+        - Can be safely used across concurrent requests, which will all return the
+          same purchase.
 
-        A key longer than 255 characters is rejected with a 400 whose
-        `details.reason` is `invalid_idempotency_key`. A key sent with a
-        different `amount` is rejected with a 409 whose `details.reason` is
-        `idempotency_key_reuse`, and whose `details.purchase_id` names the attempt
-        the key already points at. A request that starts while another purchase for
-        the account is unresolved is rejected with a 409 whose `details.reason` is
-        `purchase_in_progress`. Poll the `details.purchase_id` it returns instead
-        of retrying.
+        If another purchase for the account is still unresolved, the request
+        returns `409 purchase_in_progress`. Poll the returned
+        `details.purchase_id` instead of retrying.
+
+        Common errors include:
+        - `400 metronome_not_provisioned`: Use the checkout session endpoint.
+        - `400 no_default_payment_method`: Add a default payment method in the
+          ngrok dashboard.
+        - `400 invalid_idempotency_key`: The idempotency key is longer than 255
+          characters.
+        - `409 idempotency_key_reuse`: The key was already used with a different
+          amount.
+        - `409 purchase_in_progress`: Another purchase is still unresolved.
       operationId: CreateCreditPurchase
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'
