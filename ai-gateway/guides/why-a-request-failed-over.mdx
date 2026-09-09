@@ -98,33 +98,44 @@ You get every upstream attempt for that request, ordered by attempt number:
 
 This endpoint lets you only view requests from your account. It cannot modify them. If a request belongs to another account, the endpoint returns “not found” instead of “forbidden.”
 
-## 3. Read the verdict on each attempt
+## 3. Check why the AI Gateway retried or stopped
 
-Three fields carry the outcome of an attempt.
+For each attempt, check `completion` to see how it ended and `retryAction` to see what the AI Gateway decided to do next. Use `served` to identify the attempt that returned the response to your client.
 
-`served` says whether this attempt produced the response your client received.
-At most one attempt of a request is served.
-Do not use the terminal attempt as a stand-in: a request that failed on its last attempt has a terminal attempt that never answered anyone.
+### Identify the attempt that returned the response
 
-`completion` says how the attempt finished: `succeeded`, `failed`, `timed_out`, `stream_failed`, or `unknown`.
+Look for `served: true`. At most one attempt per request has this value.
 
-`retryAction` is the verdict the gateway's retry loop reached after the attempt, which is what tells you why it moved on:
+Do not assume the last attempt returned a response. A request can end with a failed attempt that did not produce a response for your client.
 
-| Value | What happened |
-|-------|---------------|
-| `succeeded` | This attempt served the response |
-| `next_key` | The credential failed, so the gateway tried the next key on the same provider |
-| `next_quota_pool` | The credential's quota pool was exhausted, so the gateway moved to a different pool |
-| `next_backend` | The provider or model failed, so the gateway moved to the next model in the failover list |
-| `managed_fallback` | A customer-owned key failed, so the gateway fell back to an ngrok-managed key |
-| `retry_same_backend` | The provider asked for a retry with `Retry-After`, so the gateway waited and retried the same backend |
-| `fail_fast` | The failure was not retryable, so the gateway stopped |
-| `exhausted` | No candidate remained |
+### Check how each attempt ended
 
-`retryAction` is optional.
-It is absent on attempts the gateway recorded before it began storing the verdict.
+The `completion` field has one of these values:
 
-In the example above, `next_key` on attempt 1 followed by `next_backend` on attempt 2 reads as: the OpenAI key hit a rate limit and no other OpenAI key was left to try, so the gateway advanced to the next model, whose key was rejected outright.
+- `succeeded`
+- `failed`
+- `timed_out`
+- `stream_failed`
+- `unknown`
+
+For failed attempts, read the error details to find the cause, then check `retryAction` to understand why the gateway retried or stopped.
+
+### Follow the retry decisions
+
+| `retryAction` | What happened |
+| --- | --- |
+| `succeeded` | The attempt produced the response your client received. |
+| `next_key` | The credential failed, so the gateway tried the next key for the same provider. |
+| `next_quota_pool` | The credential’s quota pool was exhausted, so the gateway moved to another pool. |
+| `next_backend` | The provider or model failed, so the gateway tried the next model in the failover list. |
+| `managed_fallback` | A customer-owned key failed, so the gateway switched to an ngrok-managed key. |
+| `retry_same_backend` | The provider requested a retry using `Retry-After`, so the gateway waited and retried the same backend. |
+| `fail_fast` | The failure could not be retried, so the gateway stopped. |
+| `exhausted` | No candidates remained to try. |
+
+`retryAction` is optional. It is absent from attempts recorded before the gateway began storing retry decisions.
+
+In the example above, `next_key` on attempt 1 means the gateway tried another key for the same provider. `next_backend` on attempt 2 means it then moved to the next model in the failover list. Check each attempt’s error details to see why it failed.
 
 ## What this tells you to change
 
