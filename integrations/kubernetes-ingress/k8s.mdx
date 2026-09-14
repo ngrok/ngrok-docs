@@ -22,8 +22,8 @@ When integrated, the ngrok Kubernetes Operator and Linkerd simplify your network
 
 ## Set up a local development cluster
 
-- Create a local Kubernetes cluster with minikube.
-  You will assign it a profile named `ngrok-linkerd` with `-p`, and for the best compatibility with Linkerd, use the `containerd` container runtime.
+- Create a local Kubernetes cluster with [minikube](https://minikube.sigs.k8s.io/docs/start/).
+  Assign it a profile named `ngrok-linkerd` with `-p`, and for the best compatibility with Linkerd, use the `containerd` container runtime.
 
   ```bash
   minikube start -p ngrok-linkerd --container-runtime=containerd
@@ -54,57 +54,16 @@ When integrated, the ngrok Kubernetes Operator and Linkerd simplify your network
 
 ## Deploy Linkerd's service mesh to your cluster
 
-- Verify your Linkerd CLI is working correctly with `linkerd version`, which should display the same output as below.
-  The `Server version: unavailable` is expected at this point.
+Install the Linkerd CLI and deploy the control plane by following Linkerd's [getting-started guide](https://linkerd.io/2/getting-started/), which covers `linkerd install --crds`, `linkerd install`, and the pre- and post-install validation with `linkerd check`.
 
-  ```bash
-  linkerd version
-  Client version: stable-2.14.2
-  Server version: unavailable
-  ```
-
-- Validate that your Kubernetes cluster is ready to deploy Linkerd with `linkerd check --pre`.
-  You should see the following output at the end:
-
-  ```bash
-  linkerd check --pre
-  ...
-  Status check results are √
-  ```
-
-- Generate and deploy the Kubernetes manifests required to run Linkerd on your cluster, starting with the CRDs.
-
-  ```bash
-  linkerd install --crds | kubectl apply -f -
-  ```
-
-  Followed by the core resources.
-
-  ```bash
-  linkerd install | kubectl apply -f -
-  ```
-
-- Check that Linkerd installed correctly with `linkerd check`.
-  You should see a number of successful checks in your terminal output, with a final verification at the end.
-
-  ```bash
-  linkerd check
-  ...
-  Status check results are √
-  ```
-
-<Note>
-These steps follow the Linkerd getting-started documentation for installing the service mesh.
-</Note>
+When `linkerd check` reports a healthy control plane, continue below to deploy a meshed application and route public traffic to it with ngrok.
 
 ## Deploy an example microservices-based application
 
 To demonstrate how Linkerd and the ngrok Kubernetes Operator integrate to add additional observability, security, and reliability into your cluster, you'll deploy the Emojivoto demo application, which was developed by Buoyant, the company that originally developed Linkerd.
 
-- Create an ngrok static subdomain for ingress if you don't have one already.
-  Go to the [**Domains** section](https://dashboard.ngrok.com/domains) of the ngrok dashboard and click **Create Domain** or **New Domain**.
-  This static subdomain will be your `NGROK_DOMAIN` for the remainder of this guide.
-  Creating a subdomain on the ngrok network provides a public route for HTTP, HTTPS, and TLS traffic.
+- Reserve an ngrok static subdomain for ingress from the [Domains](https://dashboard.ngrok.com/domains) page of the dashboard if you don't have one already.
+  This subdomain will be your `NGROK_DOMAIN` for the remainder of this guide, and it provides a public route for HTTP, HTTPS, and TLS traffic.
 
 - Deploy Emojivoto to the `emojivoto` namespace.
 
@@ -130,8 +89,8 @@ To demonstrate how Linkerd and the ngrok Kubernetes Operator integrate to add ad
   Status check results are √
   ```
 
-- Create a new `emojivoto-ingress.yaml` file and add the following YAML content (see Linkerd's ingress task documentation for the ngrok example).
-  It defines the ngrok Kubernetes Operator for routing traffic on your `NGROK_DOMAIN` to the `web-svc` deployment you created when deploying Emojivoto.
+- Create a new `emojivoto-ingress.yaml` file and add the following YAML content.
+  It tells the ngrok Kubernetes Operator to route traffic on your `NGROK_DOMAIN` to the `web-svc` service you created when deploying Emojivoto.
 
   <Tip>
   Edit line `9` of the manifest below (the `NGROK_DOMAIN` variable) with your ngrok subdomain (for example, `one-two-three.ngrok.app`).
@@ -174,7 +133,7 @@ To demonstrate how Linkerd and the ngrok Kubernetes Operator integrate to add ad
 
 ## Add Linkerd's dashboard to verify meshing and mTLS
 
-Given that one of the key benefits of a service mesh is increased observability, and the inherent security enhancements that come from mTLS connections between your microservices, you'll want to double-check that your deployments and pods are properly meshed.
+A service mesh adds observability and secures pod-to-pod traffic with mTLS, so confirm that your deployments and pods are properly meshed.
 
 - Install the Linkerd dashboard.
 
@@ -207,7 +166,7 @@ Given that one of the key benefits of a service mesh is increased observability,
 
 ## What's next?
 
-You've now integrated a demo microservices application with Linkerd's service mesh and ngrok's Kubernetes Operator to add multiple new layers of security and reliability without having to worry about configuring middleware, network interfaces, mTLS, or deploying new monitoring services for observing the external behavior of your code.
+You've integrated a demo microservices application with Linkerd's service mesh and ngrok's Kubernetes Operator, adding security and reliability without configuring middleware, network interfaces, mTLS, or new monitoring services yourself.
 
 After deploying this local demo, you have a few options for moving forward.
 
@@ -215,7 +174,7 @@ After deploying this local demo, you have a few options for moving forward.
 
 To clean up from the work you've done for this local demo, you can stop and delete your minikube cluster with the `minikube` CLI:
 
-```
+```bash
 minikube stop -p ngrok-linkerd
 minikube delete -p ngrok-linkerd
 ```
