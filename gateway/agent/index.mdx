@@ -1,62 +1,62 @@
 ---
 title: ngrok Agents Overview
 sidebarTitle: Overview
-description: Learn when to use the ngrok agent to reach services behind firewalls, NAT, and private networks—and what it gives you once they're connected.
+description: An agent is anything holding an active session with ngrok. Learn the four kinds, which one fits your service, and what every agent gives you.
 ---
+
+An agent is anything that holds an active session with the ngrok service.
+That includes the standalone ngrok agent, applications you build with an Agent SDK, Kubernetes Operators, and reverse SSH agents.
+They differ in how you run them, not in what they do: every agent dials out to ngrok, creates endpoints, and carries traffic back to your upstream services.
+
+## Why agents exist
 
 The services you need to reach are not always reachable.
 They sit behind a corporate firewall, on a device you shipped to a customer, inside a private cluster, or on a laptop that joins a different network twice a day.
 None of them can accept an inbound connection, and giving them one usually means a VPN, a port forward, or a public IP address you would rather not hand out.
 
-The ngrok agent reverses the direction instead.
-You run it next to your service, it dials out to ngrok's network over TLS, and traffic addressed to your endpoint travels back down that same connection.
+An agent reverses the direction instead.
+It runs next to your service, dials out to ngrok's network over TLS on port 443, and traffic addressed to your endpoint travels back down that same connection.
 Your service stays exactly where it is, and nothing about its network has to change.
 
-## When you need an agent
+## The four kinds of agent
 
-Run an agent whenever the thing receiving traffic cannot be reached from ngrok's network on its own:
-
-- **Behind NAT or a firewall.** Home networks, guest Wi-Fi, corporate networks, and double NAT all work, because the connection is outbound on port 443.
-- **On hardware in the field.** Devices with no fixed address, no inbound ports, and no one on site to configure a router.
-- **Inside a private network.** A VPC, a Kubernetes cluster, or a customer's datacenter that you reach without peering or a VPN.
-- **On a developer machine.** A laptop that moves between networks and still needs a stable public URL.
-
-You may not need an agent at all.
-If what you are routing to is already reachable at a stable address, a [Cloud Endpoint](/gateway/endpoints/cloud-endpoints/) can route to it directly and stays up whether or not any process of yours is running.
-Endpoints an agent creates are [Agent Endpoints](/gateway/endpoints/agent-endpoints), and they exist only while that agent does.
-
-## What you get once it's connected
-
-- **Any protocol your service speaks.** HTTP, HTTPS, TCP, and TLS, so databases, SSH, and RDP work the same way web apps do.
-- **Many services from one agent.** Run several endpoints at once and [define them all in a configuration file](/gateway/agent/config/) instead of a shell command.
-- **Something that stays running.** [Install it as a native OS service](/gateway/agent/service#running-ngrok-in-the-background) for automatic startup and crash recovery, then [stop, restart, or upgrade it remotely](/gateway/agent/service#remote-management) from the API or dashboard.
-- **No runtime dependencies.** A single standalone executable on every major operating system.
-
-## Working with the agent
-
-<Columns cols={1}>
-	<Card title="Agent CLI" href="/gateway/agent/cli/" horizontal>
-		Start endpoints, manage configuration, and interact with the ngrok API from the command line.
+<Columns cols={2}>
+	<Card title="ngrok Agent" icon="terminal" href="/gateway/agent/install">
+		A standalone executable you install and run next to your service. No runtime dependencies, and it can install itself as a native OS service.
 	</Card>
-	<Card title="Configuration File" href="/gateway/agent/config/" horizontal>
-		Define multiple endpoints and manage complex setups in YAML rather than command-line flags.
+	<Card title="Agent SDKs" icon="code" href="/agent-sdks/">
+		Libraries that embed ngrok directly in your application, so there is no separate process to bundle, ship, or supervise.
 	</Card>
-	<Card title="Authtokens" href="/gateway/agent/authtokens" horizontal>
-		Authenticate the agent with credentials scoped to your account.
+	<Card title="Kubernetes Operator" icon="cubes" href="/gateway/k8s/">
+		Runs inside your cluster and turns Ingresses, Gateway API resources, and ngrok CRDs into endpoints.
 	</Card>
-	<Card title="TLS Termination" href="/gateway/agent/agent-tls-termination/" horizontal>
-		Terminate TLS at the agent so traffic stays encrypted end to end.
-	</Card>
-	<Card title="SSH Reverse Tunnel" href="/gateway/agent/ssh-reverse-tunnel-agent/" horizontal>
-		Connect using SSH public key authentication instead of installing the agent.
-	</Card>
-	<Card title="Custom Connect URLs" href="/gateway/agent/connect-url/" horizontal>
-		Point agents at your own branded hostname for white-label deployments.
-	</Card>
-	<Card title="Agent CLI API" href="/gateway/agent/cli-api/" horizontal>
-		Manage endpoints, domains, and other resources through the ngrok API without leaving the agent.
+	<Card title="Reverse SSH" icon="key" href="/gateway/agent/ssh-reverse-tunnel-agent/">
+		Uses the `ssh` binary you already have, with no ngrok software installed at all.
 	</Card>
 </Columns>
+
+## Choosing one
+
+Start with the standalone agent.
+It is the fastest way to get a service online, it runs on every major platform, and everything you learn about endpoints, configuration, and Traffic Policy carries over to the other three.
+
+Choose a different agent when something about your environment makes a separate process awkward:
+
+- **You are shipping an application.** An Agent SDK removes the second process entirely, so there is nothing to bundle, distribute, or keep alive alongside your app. It also gives you programmatic control the CLI does not expose.
+- **Your workloads live in Kubernetes.** The Kubernetes Operator reads the resources your cluster already declares, so endpoints are created and reconciled the same way the rest of your infrastructure is.
+- **You cannot install anything.** A reverse SSH agent needs only an `ssh` client, which is useful on locked-down hosts or for a one-off connection.
+- **The agent will not run there.** If your target platform is unsupported, or its memory budget is tighter than the agent's, an SDK or reverse SSH will still work.
+
+You may not need an agent at all.
+If what you are routing to is already reachable at a stable address, a [Cloud Endpoint](/gateway/endpoints/cloud-endpoints/) routes to it directly and stays up whether or not any process of yours is running.
+Endpoints an agent creates are [Agent Endpoints](/gateway/endpoints/agent-endpoints), and they exist only while that agent does.
+
+## What every agent gives you
+
+- **Any protocol your service speaks.** HTTP, HTTPS, TCP, and TLS, so databases, SSH, and RDP work the same way web apps do.
+- **Endpoints you control.** Apply [Traffic Policy](/gateway/traffic-policy/) to authenticate, route, rewrite, and rate limit before traffic reaches your service.
+- **One outbound connection.** Everything travels over a single TLS connection on port 443, so there are no inbound ports to open.
+- **Visibility.** Sessions, endpoints, and traffic appear in the dashboard and the [Traffic Inspector](/obs/traffic-inspection/) no matter which agent created them.
 
 ## What people build with it
 
@@ -69,51 +69,35 @@ Endpoints an agent creates are [Agent Endpoints](/gateway/endpoints/agent-endpoi
 		Bridge localhost development with the public internet for AI coding tools, webhook testing, and real authentication flows.
 	</Card>
 	<Card
+		title="Device gateway"
+		icon="microchip"
+		href="/gateway/device-gateway/overview/"
+	>
+		Reach hardware in the field that has no fixed address and no inbound ports.
+	</Card>
+	<Card
+		title="Site-to-site connectivity"
+		icon="building"
+		href="/gateway/site-to-site-connectivity/"
+	>
+		Connect to a customer's network without peering, a VPN, or a public IP address.
+	</Card>
+	<Card
 		title="Secure developer environments"
 		icon="shield"
 		href="/gateway/examples/secure-developer-environments/"
 	>
 		Give each developer their own public URL to route traffic and webhooks into their local development environment.
 	</Card>
-	<Card
-		title="Webhook gateway"
-		icon="link"
-		href="/gateway/examples/webhook-gateway/"
-	>
-		Centralize webhook validation and routing from third-party providers to secure your integrations.
-	</Card>
-	<Card
-		title="API gateway"
-		icon="globe"
-		href="/gateway/api-gateway/get-started/"
-	>
-		Create an API gateway with internal Agent Endpoints and centralized traffic management policies.
-	</Card>
 </Columns>
-
-## Using ngrok without the Agent
-
-There are three ways to use ngrok without the agent:
-
-- [Agent SDKs](/agent-sdks/)
-- [Kubernetes Operator](/gateway/k8s/)
-- [SSH Reverse Tunnel](/gateway/agent/ssh-reverse-tunnel-agent/)
-
-You may want to use ngrok with one of the alternatives above if:
-
-- You don't want to manage the lifetime of a separate agent process
-- You don't want to bundle and distribute the ngrok agent
-- The ngrok agent doesn't run on your target platform
-- The ngrok agent's resource requirements are too high for your target platform
-- You want fine-grained programmatic control over the agent's functionality
 
 ## Agent pricing
 
-The ngrok agent is available to all ngrok users at no additional charge. 
-You only incur costs if the resources provisioned by the agent incur a cost. 
+Agents are available to all ngrok users at no additional charge.
+You only incur costs if the resources they provision incur a cost.
 For more information, see the [ngrok Pricing page](https://ngrok.com/pricing).
 
 ## What's next?
 
-- [Install the agent](/gateway/endpoints/agent-cli-quickstart/) and connect your first service.
-- [Configure multiple endpoints](/gateway/agent/config/) and run the agent as a service.
+- [Install the ngrok agent](/gateway/endpoints/agent-cli-quickstart/) and connect your first service.
+- [Learn how agents connect](/gateway/agent/connectivity) so you can diagnose them when they do not.
