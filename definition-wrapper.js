@@ -8,11 +8,32 @@ const terms = [
 		pluralEnding: "s",
 	},
 	{
+		titles: ["AI Gateway"],
+		meaning:
+			"An AI Gateway is a proxy layer that sits between applications and one or more AI model providers, giving a single integration point to route, secure, and observe inference traffic across hosted or self-hosted models.",
+		link: "https://ngrok.ai/",
+		pluralEnding: "s",
+	},
+	{
 		titles: ["ALPN"],
 		caseSensitive: true,
 		link: "https://en.wikipedia.org/wiki/Application-Layer_Protocol_Negotiation",
 		meaning:
 			"ALPN (Application-Layer Protocol Negotiation) allows a client and server to negotiate which application protocol (like HTTP/2 or HTTP/1.1) to use over a secure connection during the TLS handshake.",
+	},
+	{
+		titles: ["API Gateway"],
+		meaning:
+			"An API Gateway is a single entry point that sits in front of one or more backend services, handling routing, authentication, rate limiting, and traffic transformation before requests reach the upstream application.",
+		link: "/docs/gateway/api-gateway/get-started/",
+		pluralEnding: "s",
+	},
+	{
+		titles: ["BYOC", "Bring Your Own Cloud"],
+		caseSensitive: true,
+		meaning:
+			"BYOC (Bring Your Own Cloud) is a deployment model where a vendor's software runs inside the customer's own cloud account or infrastructure instead of the vendor's, so data and compute stay under the customer's control while the vendor still operates the service.",
+		link: "https://ngrok.com/security",
 	},
 	{
 		titles: ["CEL"],
@@ -51,6 +72,12 @@ const terms = [
 		pluralEnding: "s",
 	},
 	{
+		titles: ["Device Gateway"],
+		meaning:
+			"A Device Gateway is a managed connectivity layer for reaching a fleet of remote devices — kiosks, IoT hardware, edge servers — without opening inbound ports or managing a VPN per device. ngrok's Device Gateway gives each device a secure outbound tunnel and a stable way to reach it.",
+		link: "/docs/gateway/device-gateway/overview/",
+	},
+	{
 		titles: ["Endpoint Pooling", "Endpoint pool"],
 		meaning:
 			'When your create two ngrok endpoints with the same URL (and binding), those endpoints automatically form a "pool" and share incoming traffic.',
@@ -84,6 +111,12 @@ const terms = [
 		meaning:
 			"HMAC (Hash-based Message Authentication Code) is a cryptographic technique that uses a secret key and a hash function to verify both the integrity and authenticity of a message.",
 		link: "https://en.wikipedia.org/wiki/HMAC",
+	},
+	{
+		titles: ["Hybrid Cloud Connectivity"],
+		meaning:
+			"Hybrid cloud connectivity is networking between infrastructure that spans more than one environment — public cloud, private data center, or on-prem — so services in one location can securely reach services in another.",
+		link: "https://ngrok.com/use-cases/site-to-site-connectivity",
 	},
 	{
 		titles: ["IdP"],
@@ -135,10 +168,42 @@ const terms = [
 		link: "https://kubernetes.io/docs/concepts/overview/",
 	},
 	{
+		titles: ["Kubernetes Ingress"],
+		meaning:
+			"A Kubernetes Ingress is an API object that manages external HTTP(S) access to services running inside a Kubernetes cluster, typically handling routing, TLS termination, and load balancing at the cluster edge.",
+		link: "/docs/integrations/kubernetes-ingress/",
+		pluralEnding: "es",
+	},
+	{
+		titles: ["Kubernetes Operator"],
+		meaning:
+			"A Kubernetes Operator is a controller that extends the Kubernetes API to automate the deployment and lifecycle of an application through custom resources. The ngrok Kubernetes Operator manages ngrok endpoints, domains, and Traffic Policy as native Kubernetes resources.",
+		link: "/docs/gateway/k8s/",
+		pluralEnding: "s",
+	},
+	{
 		titles: ["Let's Encrypt", "Let's Encrypt", "LetsEncrypt", "Lets encrypt"],
 		meaning:
 			"A free, automated, and open certificate authority (CA) that provides digital certificates to enable HTTPS (SSL/TLS) for websites.",
 		link: "https://letsencrypt.org/about/",
+	},
+	{
+		titles: ["LLM Gateway"],
+		meaning:
+			"An LLM Gateway is another term for an AI Gateway: a single proxy endpoint that routes requests to one or more large language model providers, centralizing authentication, rate limiting, and failover.",
+		link: "https://ngrok.ai/",
+	},
+	{
+		titles: ["LLM Proxy"],
+		meaning:
+			"An LLM Proxy is a lightweight intermediary placed in front of a large language model API that forwards requests while adding logging, rate limiting, or credential management, without changing how the application calls the model.",
+		link: "/docs/ai-gateway/overview/",
+	},
+	{
+		titles: ["LLM Router"],
+		meaning:
+			"An LLM Router is the decision layer inside an AI Gateway that picks which model or provider handles a given request — for example based on cost, latency, capability, or a failover rule when a provider is down.",
+		link: "/docs/ai-gateway/overview/",
 	},
 	{
 		titles: ["MCP server", "MCP"],
@@ -202,6 +267,13 @@ const terms = [
 		meaning:
 			"Reverse proxies are an extra security layer between public traffic and your internal services. They live on servers or cloud services, and they intercept and forward traffic to upstream services.",
 	},
+	{
+		titles: ["Reverse Tunnel", "reverse tunnel"],
+		meaning:
+			"A reverse tunnel is a connection initiated outbound from a private network to a public relay, which then forwards inbound traffic back through that same connection. It lets a service behind a firewall or NAT become reachable without opening inbound ports — the mechanism the ngrok agent uses to expose local services.",
+		link: "https://en.wikipedia.org/wiki/Tunneling_protocol",
+		pluralEnding: "s",
+	},
   {
     titles: ["Service User", "Service Users"],
     caseSensitive: false,
@@ -228,6 +300,12 @@ const terms = [
 		meaning:
 			"Shadow IT refers to IT systems, software, and cloud services used by individuals within an organization without the IT department's knowledge or approval.",
 		link: "https://en.wikipedia.org/wiki/Shadow_IT",
+	},
+	{
+		titles: ["Site-to-Site VPN"],
+		meaning:
+			"A site-to-site VPN is an encrypted tunnel connecting two private networks — for example, a company's data center and a customer's on-prem network — so devices on either side can reach each other as if on the same LAN. It typically requires matching VPN appliances and firewall changes on both ends; ngrok's site-to-site connectivity reaches the same outcome without inbound firewall rules on either side.",
+		link: "/docs/gateway/site-to-site-connectivity/overview/",
 	},
 	{
 		titles: ["SSO"],
@@ -298,11 +376,24 @@ const terms = [
 			"A web application firewall (WAF) is an intermediary service in the cloud or on a server that protects web services by filtering and monitoring HTTP traffic.",
 	},
 	{
+		titles: ["Webhook Gateway"],
+		meaning:
+			"A Webhook Gateway is a managed entry point for receiving webhooks from third-party services and routing them to internal or on-prem systems, typically adding verification, retries, and observability in front of the receiving application.",
+		link: "/docs/gateway/webhooks-to-on-prem/overview/",
+	},
+	{
 		titles: ["WebSocket"],
 		meaning:
 			"WebSocket is a communication protocol that provides full-duplex (two-way) communication channels over a single TCP connection, enabling real-time data exchange between a client and server.",
 		link: "https://en.wikipedia.org/wiki/WebSocket",
 		pluralEnding: "s",
+	},
+	{
+		titles: ["ZTNA", "Zero Trust Network Access"],
+		caseSensitive: true,
+		meaning:
+			"ZTNA (Zero Trust Network Access) is a security model that grants access to specific applications or resources based on verified identity and policy for each request, rather than placing a user on a network and trusting everything reachable from it.",
+		link: "https://ngrok.com/use-cases/site-to-site-connectivity",
 	},
 ];
 
