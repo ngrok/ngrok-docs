@@ -9,7 +9,7 @@ It covers installing the module, configuring your authtoken, and declaring tunne
 
 ## What you'll need
 
-- Puppet installed.
+- Puppet installed. See [Installing Puppet](https://www.puppet.com/docs/puppet/7/install_puppet.html).
 - An [ngrok account](https://ngrok.com/signup).
 - Your [ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken).
 
@@ -23,12 +23,15 @@ puppet module install gabe-ngrok
 
 ## 2. Configure ngrok and declare a tunnel
 
-Include the `ngrok` class and declare at least one `ngrok::tunnel` resource.
+Configure the `ngrok` class with your authtoken, then declare at least one `ngrok::tunnel` resource.
+Current ngrok requires an authtoken for every endpoint, so set it even when you only tunnel HTTP.
 
 For example, declare a single HTTP tunnel to port `80`:
 
 ```puppet
-include ngrok
+class { 'ngrok':
+  authtoken => 'YOUR_AUTHTOKEN',
+}
 
 ngrok::tunnel { 'web traffic':
   proto => 'http',
@@ -36,13 +39,9 @@ ngrok::tunnel { 'web traffic':
 }
 ```
 
-If you need TCP tunnels, configure the `ngrok` class with your authtoken:
+To expose a raw TCP port instead, keep the `ngrok` class declaration above and set `proto` to `tcp` on the tunnel:
 
 ```puppet
-class { 'ngrok':
-  authtoken => 'YOUR_AUTHTOKEN',
-}
-
 ngrok::tunnel { 'webhook':
   proto => 'tcp',
   addr  => '8170',
