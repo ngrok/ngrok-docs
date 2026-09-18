@@ -1,0 +1,51 @@
+---
+title: How ngrok Agents Work
+sidebarTitle: How It Works
+description: What a session is, how agents create endpoints, and what happens when an agent stops or loses its connection.
+---
+
+Every kind of agent does the same three things: it opens a session with ngrok, it creates endpoints on that session, and it carries traffic back to your upstream service.
+Those three pieces explain most of the agent's behavior, including the parts that surprise people.
+
+## The session
+
+When an agent starts, it dials out to ngrok and establishes a long-lived TLS connection on port 443.
+That connection is the **session**, and it's the unit ngrok counts: the Agents page in your dashboard lists sessions, whether they were opened by the standalone agent, an application using an Agent SDK, a Kubernetes Operator, or a reverse SSH client.
+
+The session is outbound only.
+Nothing listens for inbound connections on your machine, which is why agents work behind NAT, corporate firewalls, and networks you don't control.
+It's also why there's nothing to port forward and no inbound firewall rule to add.
+
+The agent keeps the session alive with periodic heartbeats and reconnects on its own if the network drops.
+[Connectivity](/gateway/agent/connectivity) covers that machinery, and how to diagnose it when the session won't establish.
+
+## Endpoints on that session
+
+Once the session is up, the agent asks ngrok to create **endpoints** on it.
+An endpoint is the URL traffic arrives at, and the agent tells ngrok which upstream service to forward it to.
+
+Endpoints an agent creates are [Agent Endpoints](/gateway/endpoints/agent-endpoints), and they differ from [Cloud Endpoints](/gateway/endpoints/cloud-endpoints/) in ways that follow directly from living on a session:
+
+- **They last as long as the session does.** Stop the agent and the endpoint stops answering. A Cloud Endpoint is configured centrally and stays up whether or not any process of yours is running.
+- **The agent is authoritative.** The agent that created an endpoint owns its configuration. The dashboard and API give you a read-only view.
+- **Forwarding is implicit.** Traffic goes to the agent that created the endpoint, because that's the connection it arrived on.
+- **Traffic Policy is optional.** Anything a policy doesn't terminate goes to the agent.
+
+One agent can hold many endpoints on a single session, which is why [a configuration file](/gateway/agent/config/) is the usual way to run more than one service.
+
+## When an agent stops
+
+Because endpoints live on the session, an agent that exits takes its endpoints offline.
+That's the single most important consequence of the model, and most agent operations exist to manage it:
+
+- Run the agent [as a native OS service](/gateway/agent/service) so it starts on boot and restarts after a crash.
+- Give an endpoint a [reserved domain](/gateway/domains/) so its URL survives a restart instead of being reassigned.
+- Put two agents behind [endpoint pooling](/gateway/endpoints/endpoint-pooling/) so one can fail without taking the endpoint down.
+
+If you need the URL to stay up independently of any process you run, that's a Cloud Endpoint, not an agent.
+
+## What the agent doesn't do
+
+The agent is a connection and forwarding component, not a proxy you configure with rules.
+Authentication, routing, rewriting, and rate limiting are described by [Traffic Policy](/gateway/traffic-policy/), which ngrok applies in its own network before traffic reaches your agent.
+This is why the same policy works identically no matter which kind of agent created the endpoint.
