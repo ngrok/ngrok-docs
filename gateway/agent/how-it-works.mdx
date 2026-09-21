@@ -5,13 +5,12 @@ description: What a session is, how agents create endpoints, and what happens wh
 ---
 
 Every kind of agent does the same three things: it opens a session with ngrok, it creates endpoints on that session, and it carries traffic back to your upstream service.
-Those three pieces explain most of what an agent does, including the parts that catch people out.
+Those three pieces explain most of the agent's behavior, including the parts that surprise people.
 
 ## The session
 
 When an agent starts, it dials out to ngrok and establishes a long-lived TLS connection on port 443.
-That connection is the **session**, and it's what ngrok counts.
-The Agents page in your dashboard lists every one of them, whatever opened it: the `ngrok` agent, an app using an Agent SDK, a Kubernetes Operator, or a reverse SSH client.
+That connection is the **session**, and it's the unit ngrok counts: the Agents page in your dashboard lists sessions, whether they were opened by the standalone agent, an application using an Agent SDK, a Kubernetes Operator, or a reverse SSH client.
 
 The session is outbound only.
 Nothing listens for inbound connections on your machine, which is why agents work behind NAT, corporate firewalls, and networks you don't control.
@@ -40,16 +39,16 @@ One agent can hold many endpoints on a single session, which is why [a configura
 ## When an agent stops
 
 Endpoints live on the session, so they go offline when the agent does.
-That one fact drives most of how you run agents in production:
+That's the single most important consequence of the model, and most agent operations exist to manage it:
 
 - Run the agent [as a native OS service](/gateway/agent/service) so it starts on boot and restarts after a crash.
 - Give an endpoint a [reserved domain](/gateway/domains/) so its URL survives a restart instead of being reassigned.
 - Put two agents behind [endpoint pooling](/gateway/endpoints/endpoint-pooling/) so one can fail without taking the endpoint down.
 
-If you need the URL up whether or not your process is running, use a Cloud Endpoint instead.
+If you need the URL to stay up independently of any process you run, that's a Cloud Endpoint, not an agent.
 
 ## What the agent doesn't do
 
-The agent connects and forwards. It isn't a proxy you configure with rules.
+The agent is a connection and forwarding component, not a proxy you configure with rules.
 Authentication, routing, rewriting, and rate limiting are described by [Traffic Policy](/gateway/traffic-policy/), which ngrok applies in its own network before traffic reaches your agent.
 This is why the same policy works identically no matter which kind of agent created the endpoint.
