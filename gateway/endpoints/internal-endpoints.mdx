@@ -1,5 +1,5 @@
 ---
-title: Internal Agent Endpoints
+title: Internal Endpoints
 sidebarTitle: Internal Endpoints
 description: Learn about staging internal services and applications using internal endpoints.
 ---
@@ -17,7 +17,9 @@ Internal domains are [namespaced](#namespacing) to the accounts that create them
 
 A common practice is to use a [public](/gateway/endpoints/public-endpoints) [Cloud Endpoints](/gateway/endpoints/cloud-endpoints/) to manage a centralized Traffic Policy, then forward traffic to one or more internal [endpoints](/gateway/endpoints/). See [the guide on using Cloud Endpoints with internal endpoints](/gateway/endpoints/cloud-endpoints/forwarding-and-load-balancing) to learn more.
 
-## Quickstart
+## Create an internal endpoint
+
+### Agent Endpoint
 
 Create an internal Agent Endpoint by specifying a binding of `internal` when
 you create an endpoint.
@@ -26,7 +28,24 @@ you create an endpoint.
 ngrok http 8080 --url "https://example.internal" --binding internal
 ```
 
-##### `traffic-policy.yml`
+### Cloud Endpoint
+
+Cloud Endpoints also support the `internal` binding.
+Specify the internal URL and a Traffic Policy when you create the endpoint.
+
+```bash
+ngrok api create \
+  --type cloud \
+  --binding internal \
+  --url "https://example.internal" \
+  --traffic-policy "$(cat traffic-policy.yml)"
+```
+
+For example, this Traffic Policy returns a response from the internal endpoint:
+
+### Return a response from an internal endpoint
+
+Save this policy as `traffic-policy.yml`:
 
 ```yaml
 on_http_request:
@@ -39,7 +58,7 @@ on_http_request:
           body: "Hello world!"
 ```
 
-### Forwarding
+## Forwarding
 
 Internal endpoints aren’t directly accessible. To send traffic to an Internal Endpoint, you must create an endpoint that uses the Traffic Policy to forward traffic using the [`forward-internal` action](/gateway/traffic-policy/actions/forward-internal/).
 
@@ -52,7 +71,9 @@ ngrok api create \
   --traffic-policy "$(cat traffic-policy.yml)"
 ```
 
-##### `traffic-policy.yml`
+### Forward public traffic to an internal endpoint
+
+Save this policy as `traffic-policy.yml`:
 
 ```yaml
 on_http_request:
@@ -87,7 +108,7 @@ ngrok http 8080 --url "https://example.internal"
 Internal endpoints are namespaced on a per-account basis.
 This means that, two different accounts may have internal endpoints with the same URL (for example, `https://api.internal`) without conflict or interference in [endpoint pooling](/gateway/endpoints/endpoint-pooling). As a result, there is no need to reserve an internal domain.
 
-#### Examples
+### Examples
 
 - `https://example.internal`
 - `https://example.foo.bar.internal`
@@ -110,8 +131,6 @@ This is because when you use the [`forward-internal` action](/gateway/traffic-po
 ## API
 
 Internal endpoints can be managed programmatically. To get started, consult the
-[Endpoints API documentation](/api-reference/endpoints/list.
+[Endpoints API documentation](/api-reference/endpoints/list).
 
-## Internal endpoints pricing
-
-Internal endpoints are available on the Pay-as-you-go plan. Consult the [Endpoints Pricing](/pricing-limits/#endpoint-limits) documentation for billing details.
+For endpoint limits and usage charges, see [Endpoint pricing](/pricing-limits/#endpoint-limits).
