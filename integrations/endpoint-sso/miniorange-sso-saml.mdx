@@ -8,10 +8,10 @@ import Disclaimer from "/snippets/integrations/_endpoint-sso-disclaimer.mdx";
 
 <Disclaimer />
 
-This guide walks you through configuring miniOrange as the primary Identity Provider for ngrok tunnels using single sign-on (SSO).
+This guide walks you through configuring miniOrange as the primary Identity Provider for ngrok endpoints using single sign-on (SSO).
 By integrating miniOrange SSO with ngrok, you can:
 
-- Restrict access to ngrok tunnels only to users authenticated via miniOrange
+- Restrict access to ngrok endpoints only to users authenticated via miniOrange
 - Use miniOrange security policies and MFA authenticators
 - Use miniOrange's Dashboard to facilitate access to ngrok apps
 
@@ -20,19 +20,16 @@ By integrating miniOrange SSO with ngrok, you can:
 - A miniOrange account with administrative rights to create apps.
 - An ngrok Pay-as-you-go account with an authtoken or admin access to configure endpoints with SAML.
 
-## 1. Configure miniOrange 
+## 1. Configure miniOrange
 
-- Access miniOrange and sign in using your miniOrange administrator account.
-- On the **Dashboard** page, click **Apps** on the left menu, click **Add Application**, click the **SAML/WS-Fed** tile, and then click the **Custom SAML App** tile.
-- On the **Add App** page, enter `ngrok SAML` in the **Custom Application Name** field.
-- Click the **SSO** tab, enter temporary values (such as `https://temporary`) in both the **SP Entity ID or Issuer** and the **ACS URL** fields, and then click **Save**.
+In the miniOrange admin console, add a custom SAML application for ngrok. For the full steps, see miniOrange's guide to [adding a SAML app](https://www.miniorange.com/iam/content-library/admin-docs/how-to-add-saml-app).
 
-## 2. Download the IdP metadata 
+As you configure the app:
 
-- On the **View Apps** page, click **Select** in the **ngrok** app line, and then click **Metadata**.
-- On the **View IDP Metadata** page, click **Show Metadata Details**, click **Download Metadata**, and then save the XML file on your desktop.
+- Enter temporary values such as `https://temporary` in both the **SP Entity ID or Issuer** and **ACS URL** fields. You replace them with ngrok's values in a later step.
+- Download the miniOrange IdP metadata XML. You use it in the ngrok policy below.
 
-## 3. Configure ngrok 
+## 2. Configure ngrok
 
 <Warning>
 The SAML Traffic Policy action is currently in [developer preview](/gateway/traffic-policy/actions/saml/). [Request access](https://dashboard.ngrok.com/early-access) to configure SAML via Traffic Policy.
@@ -48,43 +45,31 @@ on_http_request:
           idp_metadata: 'YOUR_IDP_METADATA_XML'
 ```
 
-The SAML action generates your ngrok SP Entity ID and ACS URL based on your endpoint URL. Refer to the [SAML action documentation](/gateway/traffic-policy/actions/saml/) for how to retrieve these values to complete your IdP configuration.
-
-## 4. Obtain the SP metadata
-
-The SAML action generates your ngrok SP Entity ID and ACS URL based on your endpoint URL. Once you have [developer preview access](https://dashboard.ngrok.com/early-access), refer to the [SAML action documentation](/gateway/traffic-policy/actions/saml/) for how to retrieve these values.
-
-## 5. Link miniOrange with ngrok 
-
-- On the miniOrange Dashboard, click **Apps** on the left menu, click **Select** in the **ngrok SAML** app line, and then click **Edit**.
-- On the **Edit Application** page, enter the SP Entity ID and ACS URL from the [SAML action documentation](/gateway/traffic-policy/actions/saml/) (see [Obtain the SP metadata](#4-obtain-the-sp-metadata)) into the corresponding fields.
-- On the **Edit Application** page, click **Save**.
-
-## 6. Start a tunnel 
+The SAML action generates your ngrok SP Entity ID and ACS URL from your endpoint URL. See the [SAML action documentation](/gateway/traffic-policy/actions/saml/) for how to retrieve these values.
 
 <Note>
-This step assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok client installed.
+This step assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok agent installed.
 </Note>
 
-Run the following command, replacing `3000` with your local web app port and `YOUR_DOMAIN` with your ngrok domain:
+Start an endpoint with this policy, replacing `3000` with your local web app port and `YOUR_DOMAIN` with your ngrok domain:
 
 ```bash
 ngrok http 3000 --traffic-policy-file policy.yaml --url YOUR_DOMAIN
 ```
 
-Copy the URL next to **Forwarding**. You use this URL to test the miniOrange authentication.
+Copy the URL next to **Forwarding**. You use it to test miniOrange authentication.
 
-## Grant access to miniOrange users 
+## 3. Link miniOrange with ngrok
 
-miniOrange allows its users to access SAML-integrated apps.
-To create a user, follow the instructions below:
+- In the miniOrange admin console, open your ngrok SAML app and click **Edit**.
+- Replace the temporary values with the SP Entity ID and ACS URL that the SAML action generated.
+- Save the app.
 
-- On the left menu of the miniOrange Dashboard, click **Users** and then click **User List**.
-- On the **Users** page, click **Add User**, enter values for the **Email**, **Username**, **First Name**, **Last Name**, and **Password** fields, and then click **Create User**.
+To sign in, use a miniOrange account that is assigned to the app. Create a test user in miniOrange if you need one.
 
 ## Test the integration
 
 - In your browser, launch an incognito window.
-- Access your ngrok tunnel using the copied endpoint URL (for example, `https://miniorange-sso-test.ngrok.app`).
+- Access your ngrok endpoint using the copied URL (for example, `https://miniorange-sso-test.ngrok.app`).
 - You should be prompted to log in with your miniOrange credentials.
-- After logging in, you should be able to see your web app.
+- After logging in, you should see your web app.

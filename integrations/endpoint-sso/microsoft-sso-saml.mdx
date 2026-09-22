@@ -15,60 +15,35 @@ By integrating Microsoft Entra ID with ngrok, you can:
 - An ngrok account with administrative rights to modify account settings.
 - An ngrok Pay-as-you-go account with access to configure SAML SSO.
 
-## 1. Configure Microsoft Entra ID 
+## 1. Configure Microsoft Entra ID
 
-### Create the ngrok app in Microsoft Entra ID
+In the Microsoft Entra admin center, add an enterprise application for the ngrok Dashboard, then enable SAML single sign-on for it. See Microsoft's guides to [adding an enterprise application](https://learn.microsoft.com/en-us/entra/identity/enterprise-apps/add-application-portal) and [enabling SAML single sign-on](https://learn.microsoft.com/en-us/entra/identity/enterprise-apps/add-application-portal-setup-sso).
 
-- Access your Microsoft Entra ID dashboard as an administrator.
-- Click **Enterprise Applications**.
-- Click **New application** > **Create your own application**.
-- Provide a name for the app (for example, ngrok Dashboard) and choose the **Non-gallery** option and click **Create**.
-- Select **Single sign-on**, and then choose **SAML**.
-- Enter temporary values for **Identifier** and **Reply URL** and set **Unique User Identifier** to `user.mail`:
-  - **Identifier (Entity ID)**: `https://temporary`
-  - **Reply URL (Assertion Consumer Service URL)**: `https://temporary`
-  - **Unique User Identifier**: `user.mail`
+As you configure the app:
 
-<Tip>
-**Note**
+- Enter temporary values such as `https://temporary` for the **Identifier (Entity ID)** and the **Reply URL (Assertion Consumer Service URL)**. You replace them with ngrok's values in a later step.
+- Set the **Unique User Identifier** to `user.mail`. This value can vary based on your setup, but it must be an email address.
 
-This value can differ based on setup.
-It is required that this user property value is an email address.
-</Tip>
+Then download the app's **Federation Metadata XML** from the **SAML Certificates** section of its **Single sign-on** settings. You upload this file to ngrok in the next step.
 
-### Download the IdP metadata
+Microsoft Entra ID restricts access to the app through assignments, and new apps start with none. Assign the users and groups who should reach the ngrok Dashboard, and make sure your own account is assigned so you can test the integration.
 
-From the **Single sign-on** section on the ngrok Dashboard app, click the **Download** option for **Federation Metadata XML** and download the metadata XML.
-
-### Grant access to users and groups
-
-Microsoft Entra ID allows administrators to restrict access to SSO apps such as the ngrok Dashboard via assignments.
-By default, apps created in Microsoft Entra ID have no assignments; nobody can use Microsoft Entra ID SSO to access the ngrok Dashboard until you assign them to the app.
-To assign users and groups to the ngrok Dashboard app:
-
-- Navigate to **Users and groups** in the application.
-- Use the **Add user/group** button to associate groups and users with the ngrok app.
-  To test SSO with ngrok, make sure you're assigned to the app.
-
-## 2. Configure ngrok 
-
-### ngrok dashboard SSO
+## 2. Configure ngrok
 
 To configure ngrok Dashboard SSO with Microsoft Entra ID:
 
 - Go to the [ngrok Dashboard](https://dashboard.ngrok.com).
-- Click **Settings** > **Account**.
-- In the **Single Sign-On (SSO)** section, click **New Identity Provider** > **New SAML Provider**.
+- Click **Settings > Account**.
+- In the **Single Sign-On (SSO)** section, click **New Identity Provider > New SAML Provider**.
 - On the SAML Provider settings, provide a **Description** and click **Upload XML**.
-- Select your metadata file saved from the steps above and click **Save**.
-- After you save, the SP Metadata will appear.
-  Copy these values into the Microsoft Entra ID ngrok Dashboard app **Single sign-on** settings where temporary values were placed above.
+- Select the metadata file you downloaded and click **Save**.
+- After you save, the SP Metadata appears. Copy these values into the Microsoft Entra ID app's **Single sign-on** settings, replacing the temporary values you entered earlier.
 - Save the changes in Microsoft Entra ID.
 
-## 3. Test the integration 
+## 3. Test the integration
 
-- Navigate to the Microsoft Entra ID ngrok Dashboard app **Single sign-on** settings.
-- Scroll to the bottom of the settings and click **Test** > **Test sign in**.
+- Navigate to the Microsoft Entra ID app's **Single sign-on** settings.
+- Scroll to the bottom of the settings and click **Test > Test sign in**.
 - You should be redirected to the ngrok Dashboard.
-  - If the current user is not a member of the ngrok account and JIT is enabled, the user will be prompted to join.
-  - If the current user is already a member, they will be successfully authenticated into the ngrok Dashboard.
+  - If the current user is not a member of the ngrok account and JIT is enabled, the user is prompted to join.
+  - If the current user is already a member, they are authenticated into the ngrok Dashboard.
