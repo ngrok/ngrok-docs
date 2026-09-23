@@ -116,7 +116,7 @@ const terms = [
 		titles: ["Hybrid Cloud Connectivity"],
 		meaning:
 			"Hybrid cloud connectivity is networking between infrastructure that spans more than one environment — public cloud, private data center, or on-prem — so services in one location can securely reach services in another.",
-		link: "https://ngrok.com/use-cases/site-to-site-connectivity",
+		link: "https://ngrok.com/use-cases/saas-customer-connectivity",
 	},
 	{
 		titles: ["IdP"],
@@ -393,7 +393,7 @@ const terms = [
 		caseSensitive: true,
 		meaning:
 			"ZTNA (Zero Trust Network Access) is a security model that grants access to specific applications or resources based on verified identity and policy for each request, rather than placing a user on a network and trusting everything reachable from it.",
-		link: "https://ngrok.com/use-cases/site-to-site-connectivity",
+		link: "https://ngrok.com/use-cases/saas-customer-connectivity",
 	},
 ];
 
