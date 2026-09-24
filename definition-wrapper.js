@@ -618,7 +618,7 @@ const pricingTerms = [
 	{
 		titles: ["HIPAA / BAAs"],
 		meaning:
-			"HIPAA compliance is built in: ngrok handles the BAA so you can focus on building the app.",
+			"Self-serve Pay-as-you-go add-on: enable it from the dashboard billing page and sign the BAA yourself. Usage-based charges are billed at +50%.",
 	},
 	{
 		titles: ["SOC2"],
