@@ -8,10 +8,10 @@ import Disclaimer from "/snippets/integrations/_endpoint-sso-disclaimer.mdx";
 
 <Disclaimer />
 
-This guide walks you through configuring Wallix Trustelem as the primary Identity Provider for ngrok tunnels using single sign-on (SSO).
+This guide walks you through configuring Wallix Trustelem as the primary Identity Provider for ngrok endpoints using single sign-on (SSO).
 By integrating Wallix Trustelem SSO with ngrok, you can:
 
-- Restrict access to ngrok tunnels only to users authenticated via Wallix Trustelem
+- Restrict access to ngrok endpoints only to users authenticated via Wallix Trustelem
 - Use Wallix Trustelem security policies and MFA authenticators
 - Use Wallix Trustelem's Dashboard to facilitate access to ngrok apps
 
@@ -20,13 +20,13 @@ By integrating Wallix Trustelem SSO with ngrok, you can:
 - A Wallix Trustelem account with administrative rights to create apps.
 - An ngrok Pay-as-you-go account with an authtoken or admin access to configure endpoints with SAML.
 
-## 1. Configure Wallix Trustelem 
+## 1. Configure Wallix Trustelem
 
-- Access the WALLIX Trustelem administration console and sign in using your Trustelem account.
-- On the **Dashboard** page, click **Apps** on the left menu, click **Add an application** and click the **SAML 2 application** tile in the **Generic models** section.
-- On the **Settings** popup, enter `ngrok saml` in the **Name** field, click **Save**, click **Download metadata files**, save the XML file on your desktop, and then click **Close**.
+In the WALLIX Trustelem administration console, add a SAML 2 application from the generic models and download its metadata XML. See WALLIX's [SAML 2 application reference](https://trustelem-doc.wallix.com/books/trustelem-applications/page/saml-2) for the configuration details.
 
-## 2. Configure ngrok 
+You upload this metadata to ngrok in the next step, then return to the app to enter ngrok's SP Entity ID and ACS URL.
+
+## 2. Configure ngrok
 
 <Warning>
 The SAML Traffic Policy action is currently in [developer preview](/gateway/traffic-policy/actions/saml/). [Request access](https://dashboard.ngrok.com/early-access) to configure SAML via Traffic Policy.
@@ -42,40 +42,31 @@ on_http_request:
           idp_metadata: 'YOUR_IDP_METADATA_XML'
 ```
 
-The SAML action generates your ngrok SP Entity ID and ACS URL based on your endpoint URL. Refer to the [SAML action documentation](/gateway/traffic-policy/actions/saml/) for how to retrieve these values to complete your IdP configuration.
-
-## 3. Link Wallix Trustelem with ngrok 
-
-- On the WALLIX Trustelem administration console, click **Apps** on the left menu, and then click your application.
-- On the **Settings** popup, click **Edit**, paste the **SP Entity ID** in the **EntityID** field and the **ACS URL** in the **Assertion Consumer Service** field.
-  Retrieve both values from the [SAML action documentation](/gateway/traffic-policy/actions/saml/) (see [Configure ngrok](#2-configure-ngrok)).
-- Click **Save**.
-
-## 4. Start a tunnel 
+The SAML action generates your ngrok SP Entity ID and ACS URL from your endpoint URL. See the [SAML action documentation](/gateway/traffic-policy/actions/saml/) for how to retrieve these values.
 
 <Note>
-This step assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok client installed.
+This step assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok agent installed.
 </Note>
 
-Run the following command, replacing `3000` with your local web app port and `YOUR_DOMAIN` with your ngrok domain:
+Start an endpoint with this policy, replacing `3000` with your local web app port and `YOUR_DOMAIN` with your ngrok domain:
 
 ```bash
 ngrok http 3000 --traffic-policy-file policy.yaml --url YOUR_DOMAIN
 ```
 
-Copy the URL next to **Forwarding**. You use this URL to test the Wallix Trustelem authentication.
+Copy the URL next to **Forwarding**. You use it to test Wallix Trustelem authentication.
 
-## Grant access to Wallix Trustelem users 
+## 3. Link Wallix Trustelem with ngrok
 
-Wallix Trustelem allows their users to access SAML-integrated apps.
-To create a user, follow the instructions below:
+- In the WALLIX Trustelem administration console, click **Apps** and then click your application.
+- On the **Settings** popup, click **Edit**, then paste your ngrok **SP Entity ID** in the **EntityID** field and your ngrok **ACS URL** in the **Assertion Consumer Service** field.
+- Click **Save**.
 
-- On the left menu of the WALLIX Trustelem administration console, click **Users** and then click **Create User**.
-- Enter values for **First Name**, **Last Name**, and **Primary Email** fields, and then click **Save**.
+To sign in, use a Wallix Trustelem account that can reach the app. Create a test user in Trustelem if you need one.
 
 ## Test the integration
 
 - In your browser, launch an incognito window.
-- Access your ngrok tunnel (for example, `https://trustelem-sso-test.ngrok.app` or using the copied endpoint URL).
+- Access your ngrok endpoint (for example, `https://trustelem-sso-test.ngrok.app` or the copied URL).
 - You should be prompted to log in with your Wallix Trustelem credentials.
-- After logging in, you should be able to see your web app.
+- After logging in, you should see your web app.

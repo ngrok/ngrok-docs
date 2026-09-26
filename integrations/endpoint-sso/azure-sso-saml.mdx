@@ -11,7 +11,7 @@ import Disclaimer from "/snippets/integrations/_endpoint-sso-disclaimer.mdx";
 This guide walks you through configuring Azure AD B2C as an Identity Provider for your ngrok endpoints using single sign-on (SSO).
 By integrating Azure AD B2C with ngrok, you can:
 
-- Restrict access to ngrok tunnels to only users who authenticated via Azure AD B2C
+- Restrict access to ngrok endpoints to only users who authenticated via Azure AD B2C
 - Allow users to authenticate via a local account or federated accounts via Azure AD B2C
 
 ## What you'll need
@@ -26,7 +26,7 @@ By integrating Azure AD B2C with ngrok, you can:
 The SAML Traffic Policy action is currently in [developer preview](/gateway/traffic-policy/actions/saml/). [Request access](https://dashboard.ngrok.com/early-access) to configure SAML via Traffic Policy.
 </Warning>
 
-Once you have developer preview access, create a `policy.yaml` file with the following content, replacing `YOUR_IDP_METADATA_XML` with the IdP metadata XML from Azure AD B2C:
+Once you have developer preview access, create a `policy.yaml` file with the following content. Leave `YOUR_IDP_METADATA_XML` as a placeholder for now; you replace it with the metadata XML from Azure AD B2C in a later step.
 
 ```yaml
 on_http_request:
@@ -36,9 +36,9 @@ on_http_request:
           idp_metadata: 'YOUR_IDP_METADATA_XML'
 ```
 
-The SAML action generates your ngrok SP Entity ID and ACS URL based on your endpoint URL. Refer to the [SAML action documentation](/gateway/traffic-policy/actions/saml/) for how to retrieve these values to complete your IdP configuration.
+The SAML action generates your ngrok SP Entity ID and ACS URL based on your endpoint URL. Refer to the [SAML action documentation](/gateway/traffic-policy/actions/saml/) for how to retrieve these values, which you enter into Azure AD B2C in the next step.
 
-Launch an ngrok tunnel with this policy:
+Launch an endpoint with this policy:
 
 ```bash
 ngrok http 3000 --traffic-policy-file policy.yaml --url YOUR_DOMAIN
@@ -46,54 +46,34 @@ ngrok http 3000 --traffic-policy-file policy.yaml --url YOUR_DOMAIN
 
 Copy the URL next to **Forwarding**. You use this URL to test the integration.
 
-## 2. Configure Azure AD B2C custom policies
+## 2. Create a SAML application in Azure AD B2C
 
-- Follow the Azure AD B2C documentation to create user flows and custom policies.
-- Some hints:
-  - For a SAML application, you need to configure custom policies; user flows alone are not sufficient.
-  - You can use the Azure AD B2C custom policy starter pack or the IEF Setup App to automate these steps.
-  - To keep things simple, use the `LocalAccounts` starter pack.
-  This means users will sign up and log in as users in your Azure AD B2C tenant instead of with another identity provider.
-  This means you can skip configuring Facebook as an identity provider.
-  If you are using the IEF Setup App, click the checkbox for `Remove Facebook references` before you deploy the starter pack.
-  - Skip the steps of `Register a web application` and `Enable ID token implicit grant` unless you'd like to test this now.
-  A SAML application will be registered and tested later.
+Azure AD B2C does not support SAML applications through user flows, so you configure it as a SAML identity provider with custom policies.
+Follow Microsoft's guide, [Configure Azure AD B2C as a SAML IdP to your applications](https://learn.microsoft.com/en-us/azure/active-directory-b2c/saml-service-provider), to set up the custom policies, register your SAML application, and expose the Azure AD B2C SAML metadata endpoint.
 
-## 3. Create an Azure AD B2C SAML application
+When you register the application, use the following mapping to enter the ngrok values you retrieved in the previous step:
 
-- Follow the Azure AD B2C documentation to register your SAML application and configure custom policies for SAML.
-- Some hints:
-  - Update your previously created custom policies to use SAML.
-  You can either update the files in the starter pack repo or download the XML files for your existing policies from the Identity Experience Framework in the Azure portal.
-  - If you are using the `LocalAccounts` starter pack, remember to adjust the orchestration step order value to `4` as noted in these docs.
-  - Use the following mapping of Azure AD B2C configuration properties to ngrok generated values (retrieved from the SAML action as described in the [SAML action documentation](/gateway/traffic-policy/actions/saml/)) to configure your application:
+| Azure AD B2C      | ngrok         |
+| ----------------- | ------------- |
+| `RedirectURI`     | `ACS URL`     |
+| `identifierUri`   | `EntityID`    |
+| `samlMetadataUrl` | `SP Metadata` |
 
-    | Azure AD B2C      | ngrok         |
-    | ----------------- | ------------- |
-    | `RedirectURI`     | `ACS URL`     |
-    | `identifierUri`   | `EntityID`    |
-    | `samlMetadataUrl` | `SP Metadata` |
+## 3. Update the ngrok configuration with the IdP metadata
 
-## 4. Update the ngrok configuration with the IdP metadata
+- Retrieve the IdP metadata XML from the Azure AD B2C SAML metadata endpoint. The URL follows this format: `https://<tenant-name>.b2clogin.com/<tenant-name>.onmicrosoft.com/<policy-name>/Samlp/metadata`.
+- Update the `idp_metadata` value in your `policy.yaml` with the metadata XML, replacing the placeholder value you set earlier.
+- Restart the endpoint so it picks up the updated policy.
 
-- Retrieve the IdP Metadata XML from the IdP Saml Metadata URL. The URL follows this format: `https://<tenant-name>.b2clogin.com/<tenant-name>.onmicrosoft.com/<policy-name>/Samlp/metadata`.
-- Update the `idp_metadata` value in your `policy.yaml` with the real IdP metadata XML, replacing the placeholder value you set earlier.
-
-## 5. Test the integration
+## 4. Test the integration
 
 <Tip>
-This step assumes you have an app running locally (for example, at `localhost:3000`) with the ngrok client installed.
+This step assumes you have an app running locally (for example, at `localhost:3000`) with the ngrok agent installed.
 </Tip>
 
 Run: `ngrok http 3000 --traffic-policy-file policy.yaml --url YOUR_DOMAIN`
 
-- Access your ngrok tunnel via your forwarding URL.
+- Access your ngrok endpoint via your forwarding URL.
 - In your browser, launch an incognito window.
 - You should be prompted to log in or sign up.
 - After logging in, you should be able to see the application.
-
-## Bonus: Update your Azure AD B2C custom policies to support the password reset flow
-
-From the test, you may notice that the `Forgot your password?` link doesn't work.
-You will need to embed the password reset flow as part of your sign up / sign in custom policy for local accounts, as the `LocalAccounts` starter pack did not include this flow as part of the sign up / sign in policy.
-Azure AD B2C provides sample policies for the password reset flow; use those to configure this.
