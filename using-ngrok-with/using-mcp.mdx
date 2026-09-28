@@ -58,6 +58,13 @@ https://your-assigned-name.ngrok-free.app/mcp
 Open `http://localhost:4040` to see every request the client sends and every response your server returns.
 When a connector can't list tools, this is the fastest way to find out why.
 
+<Note>
+**Why not a Cloudflare quick tunnel?**
+Quick tunnels need no account, but [Cloudflare's docs](https://developers.cloudflare.com/cloudflare-one/networks/connectors/cloudflare-tunnel/do-more-with-tunnels/trycloudflare/) say they don't support Server-Sent Events (SSE), are limited to 200 in-flight requests, and are for testing only.
+MCP's Streamable HTTP transport uses SSE when a server streams a response, sends progress, or pushes notifications, so those servers break behind a quick tunnel.
+The quick-tunnel URL also changes every run.
+</Note>
+
 ## 3. Secure it before you share it
 
 Anyone with the URL can call your server, and MCP tools can act on your machine.
@@ -272,6 +279,7 @@ on_http_request:
 | `GET /` returns `404` or `405` | This is normal for MCP servers | Test with the `initialize` request in step 1. |
 | The tools list is empty | The server only speaks stdio | Run the server in HTTP mode or behind a stdio-to-HTTP bridge. |
 | The URL changed after a restart | You're using a random-URL tunnel or an old ngrok agent | ngrok dev domains are stable. Run `ngrok update`. |
+| Streamed responses or progress updates never arrive | You're on a tunnel that doesn't support Server-Sent Events, such as a Cloudflare quick tunnel | Use an ngrok agent endpoint, which passes SSE through. |
 
 ## What's next?
 
