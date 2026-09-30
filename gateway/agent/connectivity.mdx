@@ -1,0 +1,224 @@
+---
+title: ngrok Agent CLI and SDK Connectivity
+sidebarTitle: Connectivity
+description: How the ngrok Agent CLI and Agent SDKs reach the ngrok service, covering addresses, DNS resolution, TLS verification, heartbeats, and how to diagnose a session that won't start.
+---
+When the ngrok Agent CLI and Agent SDKs start, they establish long-lived TLS
+connections to the ngrok service through which they create new endpoints and
+receive connections from ngrok's cloud service that are intended for your upstream
+services.
+
+## Address
+
+By default, the latest ngrok Agent CLI dials the following Connect URL when it
+connects to the ngrok service.
+This address resolves to a [dynamic set of IP Addresses](/gateway/domains/ip-addresses/).
+
+```
+connect.ngrok-agent.com:443
+```
+
+<Note>
+All connections to ngrok servers are made on port 443.
+</Note>
+
+You can [customize the Connect URL](/gateway/agent/connect-url/) to brand it with
+your own domain.
+
+By default, the agent connects to one region.
+It can also connect to several at once and load balance traffic across them.
+[Contact Sales](https://ngrok.com/enterprise/contact) to turn this on.
+
+The complete list of addresses and IP addresses available for the agent to connect to ngrok can be found in the [ngrok DNS tunnel.json file](https://s3.amazonaws.com/dns.ngrok.com/tunnel.json).
+
+<Note>
+Prior to ngrok agent version 3.3.0, the ngrok agent connected to `tunnel.*.ngrok.com` domains.
+The latest agent uses `connect.*.ngrok-agent.com` domains.
+</Note>
+
+## Additional URLs
+
+In addition to the addresses used for connecting to the ngrok server, the ngrok agent may reach out to the following URLs.
+
+### Certificate revocation list (CRL) check
+
+The ngrok agent reaches out to the following domains to check for revoked certificates.
+This check can be disabled by adding `crl_noverify: true` to your ngrok agent config.
+
+- Prior to ngrok agent version 3.10.0: `http://crl.ngrok.com/ngrok.crl`
+- Latest versions: `http://crl.ngrok-agent.com/ngrok.crl`
+
+<Note>
+These connections use HTTP and port 80.
+</Note>
+
+You can download and decode the CRL using OpenSSL: `openssl crl -inform PEM -text -noout -in ngrok.crl`
+
+### ngrok Agent update check
+
+The ngrok agent will automatically look for updates when it starts up.
+This check can be disabled by adding `update_check: false` to your ngrok agent config.
+
+- `https://update.equinox.io`
+
+<Note>
+Equinox is fully owned by ngrok and used exclusively for building and distributing ngrok binaries.
+See [the FAQ page](/faq#does-ngrok-own-bin-equinox-io) for more details.
+</Note>
+
+## DNS resolution
+
+When the ngrok agent dials the ngrok service to establish its TLS connections,
+it resolves DNS for the [connection address](/gateway/agent/connect-url/) which is defined
+by the [`connect_url`](/gateway/agent/config/v3/#connect-url) configuration property.
+ngrok attempts to resolve DNS using multiple mechanisms so that it can
+establish connectivity even in network environments where DNS service is
+failing. ngrok attempts to resolve the IPs of its service using the following
+mechanisms:
+
+- Via the system's default DNS resolvers
+- Via Google's DNS servers (`8.8.8.8` and `8.8.4.4`)
+- Via Google's DNS-over-HTTPS service (https://developers.google.com/speed/public-dns/docs/doh)
+- Via a [file hosted on an ngrok-controlled S3 bucket](https://s3.amazonaws.com/dns.ngrok.com/tunnel.json)
+
+Instead of using the system's default DNS resolvers, you can configure
+the DNS servers the ngrok agent uses for resolution with the
+[`dns_resolver_ips`](/gateway/agent/config/v3/#dns-resolver-ips) configuration option.
+
+## TLS verification
+
+The ngrok agent connects to the ngrok service over TLS connections.
+The agent
+verifies the TLS Certificate returned by the ngrok service.
+The certificates
+returned by the ngrok service are signed by ngrok's own root certificate
+authority.
+The ngrok agent verifies the returned certificate against
+certificate authorities bundled into the agent itself.
+
+Lastly, the ngrok agent makes a request to `crl.ngrok-agent.com` to verify that the
+certificate returned by the ngrok service has not been revoked.
+It is possible to skip this step by setting `crl_noverify: true` in your configuration file.
+
+## Heartbeats
+
+Once the ngrok agent has established connectivity to the ngrok service, it
+periodically sends application-level heartbeat messages to validate the
+liveness of the connection.
+You may customize this behavior via the
+[`heartbeat_interval`](/gateway/agent/config/v3/#heartbeat-interval) and
+[`heartbeat_tolerance`](/gateway/agent/config/v3/#heartbeat-tolerance) configuration
+parameters.
+
+If the ngrok agent doesn't receive a response to its heartbeat within the
+tolerance window, it terminates the connection and begins reconnecting.
+
+ngrok's heartbeat mechanism allows it to recover from any type of network
+outage, even those caused by packet loss, dynamic IP changes, interface changes
+(for example, Wi-Fi to LTE) or complete network outages.
+
+The ngrok service also sends its own heartbeats to the agent which it uses to detect
+liveness and terminate dead connections.
+
+## Reconnection
+
+If the ngrok agent is disconnected for any reason, it will automatically begin
+reconnecting.
+Reconnecting begins the entire connection process over again,
+beginning with DNS resolution.
+The ngrok agent attempts to recover quickly and
+slowly backs off its reconnection attempts but always attempts to re-establish
+connectivity unless the ngrok service explicitly instructs it to stop
+reconnecting.
+
+## Troubleshooting
+
+If the agent can't reach ngrok it's often hard to tell why, because any of the steps above could be the one that failed.
+The `ngrok diagnose` command works through them in order and reports which one broke.
+
+```bash
+ngrok diagnose
+```
+
+The `ngrok diagnose` command runs a series of tests to diagnose potential connectivity issues between the ngrok agent and the remote ngrok service.
+See available flags [here](/gateway/agent/cli/#ngrok-diagnose).
+
+### Diagnostics
+
+The diagnose command gathers your environment information, including your sanitized configuration file.
+It then tests:
+
+- proxy connectivity, if `proxy_url` is configured
+- name resolution
+- general internet connectivity
+
+By default, `ngrok diagnose` tests IPv4 connectivity between the ngrok agent and the closest ngrok point of presence.
+To test IPv6 connectivity, add `--ipv6 true` to the command.
+To test connectivity between the ngrok agent and all ngrok points of presence, add `--region all`.
+
+#### Basic output
+
+The diagnose command prints a connectivity summary in your terminal.
+If you have full connectivity, your report will look like this:
+
+```bash
+Testing ngrok connectivity...
+
+Internet Connectivity
+  Name Resolution                           [ OK ]
+  TCP                                       [ OK ]
+  TLS                                       [ OK ]
+Localhost Connectivity
+  Name Resolution                           [ OK ]
+ngrok Connectivity - Region: Auto (lowest latency)
+  Name Resolution                           [ OK ]
+  TCP                                       [ OK ]
+  TLS                                       [ OK ]
+  Tunnel Protocol                           [ OK ]
+Successfully established ngrok connection! (region: 'auto', latency: 54.895145ms)
+```
+
+If there's a connectivity problem, your report will show warnings and errors that need to resolved before ngrok can work correctly:
+
+```
+Testing ngrok connectivity...
+
+Internet Connectivity
+  Name Resolution                         [ WARN ]
+  TCP                                       [ OK ]
+  TLS                                       [ OK ]
+
+Errors and warnings encountered during diagnostics:
+
+* Diagnostics
+  * Name Resolution
+    * Resolver: system
+      * Hostname: google.com
+        - Err: Failed to resolve host google.com: lookup google.com on
+               [::1]:53: read udp [::1]:48848->[::1]:53: read: connection
+               refused
+               (NGROK_ERR_8000)
+
+Error establishing ngrok connection:
+Failed to establish internet connectivity: resolver returned no IPs.
+```
+
+#### Verbose output
+
+For more detailed output, you can use the `--write-report`/`-w` flag to generate a verbose report:
+
+```bash
+ngrok diagnose -w out.txt
+```
+
+By default, `ngrok diagnose --region all` will generate a report.
+The `diagnose` output will print the report location:
+
+```
+Report written to /var/folders/yg/yzt44t813/T/ngrok-diagnose1080549118/diagnose.json
+```
+
+#### Kubernetes
+
+You can run `ngrok diagnose` within your Kubernetes cluster to troubleshoot network connectivity issues.
+See [Testing in a Kubernetes Cluster](/gateway/running-behind-firewalls/#testing-in-a-kubernetes-cluster).
