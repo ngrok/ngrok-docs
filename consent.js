@@ -14,8 +14,10 @@
  *    Google Tag Manager. The boot writes, the GPC plugin, the freshness
  *    rules, the environment match, and the cookie domain walk follow the
  *    Ketch SDK.
- * 2. The GTM loader. gtm.js loads at the first idle period after `load` and
- *    after the consent decision, so `docs.json` carries no `integrations.gtm`.
+ * 2. The GTM loader. gtm.js loads as soon as this file runs, from the top of
+ *    `<head>`, so `docs.json` carries no `integrations.gtm`. The GTM consent
+ *    template gates each tag on the cookie and the dataLayer, so the container
+ *    can load before the decision.
  * 3. The banner: the DOM of the React `ConsentBanner`, styled by `style.css`.
  *
  * Each section names the frontend file it ports. Change them together.
@@ -98,7 +100,7 @@
   /** The purposes the GPC signal denies when the purpose allows an opt-out. */
   const GPC_PURPOSE_CODES = ["analytics", "behavioral_advertising"];
 
-  /** The `window` event the client dispatches after each decision. The GTM loader waits on it. */
+  /** The `window` event the client dispatches after each decision. The app's GTM loader waits on it. */
   const CONSENT_DECISION_EVENT = "consentdecision";
 
   /** The identity space of the property. Each property owns one, named after it. */
@@ -1106,79 +1108,31 @@
 
   /* --------------------------------------------------------------------------
    * packages/ui/src/google-tag-manager-init.ts
+   *
+   * The app waits for `load` and the consent decision before it loads gtm.js.
+   * The docs do not. Google Tag Diagnostics reports a container that starts
+   * after the page is interactive as placed too low. Mintlify runs this file
+   * after hydration, so this is the earliest start the docs can make.
    * ----------------------------------------------------------------------- */
 
   /**
-   * Set up the dataLayer buffer, then load gtm.js at the first idle period
-   * after two gates open. The gates are the `load` event and
-   * `consentDecisionEvent` on `window`. gtm.js and the tags it fires then
-   * start after every eager resource has loaded. They also start after the
-   * banner tap, a new visitor's first interaction. When the client fails or
-   * stays silent for 10 s after `load`, the gate opens anyway. This runs
-   * before the client boots, so no decision precedes the listener.
+   * Set up the dataLayer buffer, then load gtm.js from the top of `<head>`.
+   * Runs at most once per page. gtm.js loads before any consent decision. The
+   * GTM consent template reads the `_ketch_consent_v1_` cookie and waits for
+   * `ketchPermitChanged` before a tag fires.
    */
-  function loadGtmBehindConsent(gtmId, consentDecisionEvent) {
+  function loadGtm(gtmId) {
     window.dataLayer = window.dataLayer || [];
-
-    /** Milliseconds after `load` to wait for the consent decision before loading anyway. */
-    const CONSENT_FALLBACK_MS = 10000;
-
-    let isDocumentLoaded = document.readyState === "complete";
-    let isConsentSettled = false;
-    let isScheduled = false;
-    let fallbackTimer;
-
-    /** Creates the gtm.js script element and appends it to <head>. Runs at most once. */
-    function loadGtm() {
-      if (window.__gtm_loaded__) {
-        return;
-      }
-      window.__gtm_loaded__ = true;
-      window.dataLayer.push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
-      const script = document.createElement("script");
-      script.async = true;
-      script.src = `https://www.googletagmanager.com/gtm.js?id=${gtmId}`;
-      document.head.appendChild(script);
+    if (window.__gtm_loaded__) {
+      return;
     }
-
-    /** Loads gtm.js at the next idle period, at most 2 s from now. */
-    function scheduleLoad() {
-      if ("requestIdleCallback" in window) {
-        requestIdleCallback(loadGtm, { timeout: 2000 });
-      } else {
-        setTimeout(loadGtm, 2000);
-      }
-    }
-
-    function scheduleWhenReady() {
-      if (isScheduled || !isDocumentLoaded || !isConsentSettled) {
-        return;
-      }
-      isScheduled = true;
-      scheduleLoad();
-    }
-
-    function settleConsent() {
-      isConsentSettled = true;
-      clearTimeout(fallbackTimer);
-      scheduleWhenReady();
-    }
-
-    function onDocumentLoaded() {
-      isDocumentLoaded = true;
-      if (!isConsentSettled) {
-        fallbackTimer = setTimeout(settleConsent, CONSENT_FALLBACK_MS);
-      }
-      scheduleWhenReady();
-    }
-
-    window.addEventListener(consentDecisionEvent, settleConsent, { once: true });
-
-    if (isDocumentLoaded) {
-      onDocumentLoaded();
-    } else {
-      window.addEventListener("load", onDocumentLoaded, { once: true });
-    }
+    window.__gtm_loaded__ = true;
+    window.dataLayer.push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
+    const script = document.createElement("script");
+    script.async = true;
+    script.src = `https://www.googletagmanager.com/gtm.js?id=${gtmId}`;
+    // The first child of <head> is the placement Google Tag Diagnostics asks for.
+    document.head.prepend(script);
   }
 
   /* --------------------------------------------------------------------------
@@ -1334,7 +1288,7 @@
 
   const client = createConsentClient(resolveEnvironment(location.href));
   window.__ngrokConsent__ = client;
-  loadGtmBehindConsent(GTM_ID, CONSENT_DECISION_EVENT);
+  loadGtm(GTM_ID);
   redirectLegacyPreferencesUrl(PREFERENCES_HREF);
   if (document.body != null) {
     mountConsentBanner(client, PREFERENCES_HREF);
