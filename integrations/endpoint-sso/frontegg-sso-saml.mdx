@@ -20,46 +20,15 @@ By integrating Frontegg SSO with ngrok, you can:
 - A Frontegg account with administrative rights to create apps.
 - An ngrok Pay-as-you-go account with an authtoken or admin access to configure endpoints with SAML.
 
-## 1. Download the IDP metadata 
+## 1. Create a SAML application in Frontegg and download the IdP metadata
 
-- Access the Frontegg Portal and sign in using your Frontegg administrator account.
-- On the left menu, click your environment under **Environments** and then click **Env settings**.
-- On the **General Settings** page, copy both the **Client ID** and **API Key** values.
-- Open a terminal window and run the following command to get an access token:
+Configure Frontegg as a SAML identity provider by following Frontegg's guide, [Frontegg as IDP via SAML](https://developers.frontegg.com/ciam/guides/management/frontegg-idp/via-saml).
 
-   ```bash
-   curl --request POST \
-     --url https://api.frontegg.com/auth/vendor/ \
-     --header 'accept: application/json' \
-     --header 'content-type: application/json' \
-     --data '{"clientId": "CLIENT_ID","secret": "API_KEY"}'
-   ```
+ngrok generates the SP Entity ID and ACS URL from your endpoint URL, which you do not have yet, so enter temporary values (such as `https://temporary`) for the entity ID and ACS URL for now. You replace them with the ngrok-generated values in step 3.
 
-   Replace the following with values:
-   - CLIENT_ID: The client ID value you copied before.
-   - API_KEY: The API key value you copied before.
-- Copy the value of the **token** attribute from the response.
-- In the same terminal window, run the following command to download the metadata XML file from Frontegg:
+Download the IdP metadata XML that Frontegg returns. You use it in the next step.
 
-   ```bash
-   curl --location --request POST 'https://api.frontegg.com/oauth/resources/configurations/saml/v1/https%3A%2F%2Ftemporary' \
-   --header 'frontegg-vendor-host: YOUR_FRONTEGG_HOST_URL' \
-   --header 'Authorization: Bearer TOKEN' \
-   --header 'Content-Type: application/json' \
-   --data-raw '{
-      "acsUrl": "https://temporary",
-      "entityId": "https://temporary"
-   }'
-   ```
-
-   Replace the following with values copied on previous steps:
-   - YOUR_FRONTEGG_HOST_URL: The value of the **Domain name** from the **Env settings > Domains** tab.
-   - TOKEN: The token you copied before.
-- Copy the response and save it as the `idp_metadata.xml` file locally on your desktop.
-The response starts with `<EntityDescriptor` and ends with `</EntityDescriptor>`.
-Anything different may be an error.
-
-## 2. Configure ngrok 
+## 2. Configure ngrok
 
 <Warning>
 The SAML Traffic Policy action is currently in [developer preview](/gateway/traffic-policy/actions/saml/). [Request access](https://dashboard.ngrok.com/early-access) to configure SAML via Traffic Policy.
@@ -75,9 +44,9 @@ on_http_request:
           idp_metadata: 'YOUR_IDP_METADATA_XML'
 ```
 
-The SAML action generates your ngrok SP Entity ID and ACS URL based on your endpoint URL. Refer to the [SAML action documentation](/gateway/traffic-policy/actions/saml/) for how to retrieve these values to complete your IdP configuration.
+The SAML action generates your ngrok SP Entity ID and ACS URL based on your endpoint URL. Refer to the [SAML action documentation](/gateway/traffic-policy/actions/saml/) for how to retrieve these values to complete your Frontegg configuration.
 
-Launch an ngrok tunnel with this policy:
+Launch an endpoint with this policy:
 
 ```bash
 ngrok http 3000 --traffic-policy-file policy.yaml --url YOUR_DOMAIN
@@ -85,41 +54,19 @@ ngrok http 3000 --traffic-policy-file policy.yaml --url YOUR_DOMAIN
 
 Copy the URL next to **Forwarding**. You use this URL to test the integration.
 
-## 3. Configure Frontegg 
+## 3. Update the Frontegg SAML configuration
 
-- In the same terminal window in which you ran the previous commands, run the following command to create a SAML configuration related to your ngrok SAML endpoint:
+Back in Frontegg, update the SAML configuration you created in step 1, replacing the temporary values with the ngrok values you retrieved from the [SAML action documentation](/gateway/traffic-policy/actions/saml/):
 
-   ```bash
-   curl --location --request POST 'https://api.frontegg.com/oauth/resources/configurations/saml/v1/URL-ENCODED-NGROK-ENTITY-ID' \
-   --header 'frontegg-vendor-host: YOUR_FRONTEGG_HOST_URL' \
-   --header 'Authorization: Bearer TOKEN' \
-   --header 'Content-Type: application/json' \
-   --data-raw '{
-      "acsUrl": "NGROK_ACS_URL",
-      "entityId": "NGROK_ENTITY_ID_URL"
-   }'
-   ```
+- Set the entity ID to your ngrok **SP Entity ID**.
+- Set the ACS URL to your ngrok **ACS URL**.
 
-   Replace the following with the values copied on previous steps:
-   - URL-ENCODED-NGROK-ENTITY-ID: URL-Encoded value of the ngrok **Entity ID** retrieved from the SAML action (see the [SAML action documentation](/gateway/traffic-policy/actions/saml/) for how to retrieve these values).
-   - YOUR_FRONTEGG_HOST_URL: The value of the **Domain name** from the **Env settings > Domains** tab.
-   - TOKEN: The Frontegg token you copied before.
-   - NGROK_ACS_URL: The value of the ngrok **ACS URL** retrieved from the SAML action developer preview docs.
-   - NGROK_ENTITY_ID_URL: The value of the ngrok **Entity ID** retrieved from the SAML action developer preview docs.
+If your Frontegg environment uses hosted login, also add your ngrok forwarding URL (for example, `https://123456789.ngrok.app/`) as an allowed login URL. Refer to the same Frontegg guide for where to configure this.
 
-## 4. Update Frontegg login method 
-
-- Access the Frontegg Portal and sign in using your Frontegg administrator account.
-- On the left menu, click your environment under **Environments**, click **Authentication**, and then click **Login method**.
-- On the **Select your login method** page, make sure **Hosted login** is selected, and click **Add new** twice.
-- In the first empty field, enter your ngrok forwarding URL (for example, `https://123456789.ngrok.app/`).
-  In the second field, enter the **ACS URL** retrieved from the SAML action (see the [SAML action documentation](/gateway/traffic-policy/actions/saml/)).
-- Click **Save**.
-
-## 5. Start a tunnel 
+## 4. Start an endpoint
 
 <Note>
-This step assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok client installed.
+This step assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok agent installed.
 </Note>
 
 Run the following command, replacing `3000` with your local web app port and `YOUR_DOMAIN` with your ngrok domain:
@@ -132,17 +79,12 @@ Copy the URL next to **Forwarding**. You use this URL to test the Frontegg authe
 
 ## Grant access to Frontegg users
 
-Create a Frontegg user:
-
-- On the left menu of the Frontegg Portal, click your environment, click **Backoffice**, click **Accounts**, and then click **Add New**.
-- On the **Add new account** popup, enter a name for the account, `ngrok.com` in the **Domain** field, and then click **Save**.
-- On the left menu, click **Backoffice**, click **Users**, and then click **Add New**.
-- On the **Add new user** popup, enter a name and email, select the account you have created, and then click **Save**.
-By default, the user is assigned the **Admin** role.
+Frontegg controls who can sign in through the accounts and users you manage in the Frontegg Portal Backoffice.
+Create an account and add the users who need access to ngrok, then confirm those users are assigned to your environment.
 
 ## Test the integration
 
 - In your browser, launch an incognito window.
-- Access your ngrok tunnel (for example, `https://frontegg-sso-test.ngrok.app` or using the copied endpoint URL).
+- Access your ngrok endpoint (for example, `https://frontegg-sso-test.ngrok.app` or using the copied endpoint URL).
 - You should be prompted to log in with your Frontegg credentials.
 - After logging in, you should be able to see your web app.

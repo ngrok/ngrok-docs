@@ -8,11 +8,11 @@ import Disclaimer from "/snippets/integrations/_endpoint-sso-disclaimer.mdx";
 
 <Disclaimer />
 
-This guide walks you through configuring Curity as the primary Identity Provider for ngrok tunnels using single sign-on (SSO).
+This guide walks you through configuring Curity as the primary Identity Provider for ngrok endpoints using single sign-on (SSO).
 By integrating Curity Identity Server with ngrok, you can:
 
-- Restrict access to ngrok tunnels to only users who authenticated via Curity
-- Use Curity security policies, MFA authenticators—including BankId, SITHS, and WebAuthn—to control access to ngrok tunnels
+- Restrict access to ngrok endpoints to only users who authenticated via Curity
+- Use Curity security policies and MFA authenticators, including BankId, SITHS, and WebAuthn, to control access to ngrok endpoints
 - Use Curity's Dashboard to facilitate access to ngrok apps
 
 ## What you'll need
@@ -20,83 +20,27 @@ By integrating Curity Identity Server with ngrok, you can:
 - A Curity account with administrative rights to create clients.
 - An ngrok Pay-as-you-go account with an authtoken or admin access to configure endpoints with OpenID Connect.
 
-## 1. Configure Curity authentication 
+## 1. Configure Curity
 
-The Curity Identity Server provides an authenticator called `html-form` that is suitable for setting up a login with username and password. It uses a Credential Manager to verify the credentials, which in turn uses a data-source. There are many options for stronger authentication than username and password; Curity documents possible authentication methods.
+In the Curity Identity Server admin UI, create an OAuth client that uses the code flow and OpenID Connect.
+For the full steps, including setting up an authenticator and generating a client secret, follow Curity's [Configure a Client](https://curity.io/resources/learn/configure-client/) tutorial.
 
-### Add authentication
+While configuring the client, set these values so it works with ngrok:
 
-- #### Add an Authenticator
-   - Navigate to Profiles > Authentication Service > Authenticators.
-   - Click **New Authenticator** on the authenticator page and give it a name.
-   - Select the `HTML-Form` Authenticator type in the grid of authenticators and click **Next**.
-   - Under **HTML Form Settings**, select the `default-account-manager` as account manager and `default-credential-manager` as credential manager.
+- Add `https://idp.ngrok.com/oauth2/callback` as a **Redirect URI**.
+- Under **Client Authentication**, select **secret** and generate a secret. Copy the secret, since it cannot be retrieved later.
+- Under **Scopes and Claims**, add the `openid` scope.
+- On the **Token Service** > **General** page, enable the **Expose Metadata** toggle. ngrok calls the `/.well-known/openid-configuration` endpoint at Curity to pull the configuration for your Authorization Server.
 
-- #### Commit the changes
-   - Commit the changes via the **Changes** menu.
+Commit the changes via the **Changes** menu, then copy the **Client ID** and **Client Secret**.
+You will use these values, along with your Curity issuer address (for example, `https://acme.com/oauth/v2/oauth-anonymous`), to configure ngrok.
 
-## 2. Configure Curity for OIDC 
+## 2. Configure ngrok
 
-### Add an openid client in Curity
-
-- #### Add New Client
-   - Navigate to **Profiles** > **Token Service** > **Clients** and click **+ New Client**.
-   - Give the client an ID (for example,  `www` for a website client) and click **Create**.
-
-- #### Add Capabilities
-   - Scroll down to the **Capabilities** section and click **Add capabilities**.
-   - Select the **Code Flow** capability and click **Next**.
-
-   - Enter `http://localhost/callback` as a **Redirect URI** and click **Add**.
-   - Enter `https://idp.ngrok.com/oauth2/callback` as a **Redirect URI** and click **Add**.
-   - Click **Next**.
-   - On the **Client Authentication** screen, select **secret**.
-   - Click **Generate** to generate a new secret.
-   - Copy the **secret** since it cannot be retrieved later again (but can be reset).
-   - On the **User Authentication** screen, select the `HTML-form` authenticator created in **[Step 1](#1-configure-curity-authentication)**.
-   - Click **Done**.
-   - Scroll down on the newly created client page to **Scopes and Claims**.
-   - Select `openid` from the list of scopes in the dropdown menu.
-
-- #### Expose the metadata url
-
-   ngrok makes a call to the `/.well-known/openid-configuration` endpoint at Curity to pull configuration data specific to your Authorization Server.
-   - Navigate to **Profiles** > **Token Service** > **General** page.
-   - Scroll down to the **OpenID Connect** section and enable the `Expose Metadata` toggle.
-
-- #### Commit the changes
-   - Commit the changes via the **Changes** menu.
-
-## 3. Configure ngrok 
-
-ngrok can use Curity Identity Server in two ways:
-
-- From the ngrok CLI (using the `--oidc` parameter)
-- From the ngrok dashboard
-
-### **Option 1**: ngrok CLI
+Secure your endpoint with the [OpenID Connect Traffic Policy action](/gateway/traffic-policy/actions/oidc).
 
 <Note>
-This tutorial assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok client installed.
-</Note>
-
-- Launch a terminal.
-- Enter the following command to launch an ngrok tunnel with Curity Identity Server.
-Replace `<curity_url>` with your Curity issuer address (for example, `https://acme.com/oauth/v2/oauth-anonymous`) and the `<curity_client_id>` and `<curity_client_secret>` with the respective values copied from the ngrok app registered at Curity:
-
-   ```bash
-   ngrok http 3000 --oidc <curity_url> \
-   --oidc-client-id <curity_client_id> \
-   --oidc-client-secret <curity_client_secret> \
-   --url curity-sso-test.ngrok.dev
-   ```
-
-- Skip to **Step 4** to test the integration.
-
-### **Option 2**: Traffic Policy
-
-<Note>
-This tutorial assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok client installed.
+This step assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok agent installed.
 </Note>
 
 Create a `policy.yaml` file with the following content, replacing the placeholder values with those copied from Curity Identity Server:
@@ -115,7 +59,7 @@ on_http_request:
             - email
 ```
 
-Launch an ngrok tunnel with this policy:
+Start an ngrok endpoint with this policy:
 
 ```bash
 ngrok http 3000 --traffic-policy-file policy.yaml --url YOUR_DOMAIN
@@ -123,9 +67,9 @@ ngrok http 3000 --traffic-policy-file policy.yaml --url YOUR_DOMAIN
 
 Copy the URL next to **Forwarding** (for example, `https://curity-sso-test.ngrok.app`).
 
-## 4. Test the integration
+## 3. Test the integration
 
-- In your browser, launch an incognito window.
-- Access your ngrok tunnel (for example, `https://curity-sso-test.ngrok.app` or using a copied URL).
+- In your browser, open an incognito window.
+- Access your ngrok endpoint (for example, `https://curity-sso-test.ngrok.app` or using a copied URL).
 - You should be prompted to log in with your Curity credentials.
 - After logging in, you should be able to see your web app.

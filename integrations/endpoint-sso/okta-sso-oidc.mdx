@@ -8,11 +8,11 @@ import Disclaimer from "/snippets/integrations/_endpoint-sso-disclaimer.mdx";
 
 <Disclaimer />
 
-This guide explains how to configure Okta as the primary Identity Provider for ngrok tunnels using single sign-on (SSO).
+This guide explains how to configure Okta as the primary Identity Provider for ngrok endpoints using single sign-on (SSO).
 By integrating Okta SSO with ngrok, you can:
 
-- Restrict access to ngrok tunnels only to users authenticated via Okta
-- Use Okta security policies, MFA authenticators—including Okta Verify, FastPass, and FIDO2—and ThreatInsights to control access to ngrok tunnels
+- Restrict access to your ngrok endpoints to only users authenticated via Okta
+- Use Okta security policies, MFA authenticators such as Okta Verify, FastPass, and FIDO2, and ThreatInsights to control access to ngrok endpoints
 - Use Okta's Dashboard to facilitate access to ngrok apps
 
 The ngrok integration with Okta supports SP-Initiated SSO.
@@ -23,67 +23,26 @@ In this mode, users access ngrok endpoints and are redirected to Okta for authen
 - An Okta account with administrative rights to create apps.
 - An ngrok Pay-as-you-go account with an authtoken or admin access to configure endpoints with OpenID Connect.
 
-## 1. Configure Okta 
+## 1. Configure Okta
 
-### Add the ngrok app in Okta
+Create an OpenID Connect app integration in Okta by following [Okta's guide to creating an app integration](https://developer.okta.com/docs/guides/create-an-app-integration/openidconnect/main/).
+When you configure the application, use these ngrok-specific values:
 
-- Access your Okta Dashboard as an administrator and then click **Admin**.
-- Click **Application > Applications**.
-- Click **Browse App Catalog**.
-- Search for `ngrok`, and then click **Add**.
-- Enter the **Application label** (this is the app name that will be displayed in the Okta dashboard for end users) and click **Next**.
-- Select **OpenID Connect**, and then enter the following:
-  - **Sign-in redirect URI**: `https://idp.ngrok.com/oauth2/callback`
-  - **Login initiated by**: Login initiated by app
-- Click **Done**.
-- Under the **Sign On** tab of the ngrok application, copy the **Client ID** and **Client Secret**.
-These values will be used at ngrok to complete the configuration.
-- In the ngrok configuration under Scopes, add the following OAuth Scopes: `openid,profile,email`
+- **Sign-in redirect URI**: `https://idp.ngrok.com/oauth2/callback`
+- **Login initiated by**: Login initiated by app
 
-### Grant access to Okta people and groups
+After you create the application, open its **Sign On** tab and copy the **Client ID** and **Client Secret**.
+You use these values when you configure ngrok, along with your Okta org URL as the issuer URL (for example, `https://acme.okta.com`).
 
-Okta allows administrators to restrict access to SSO apps—such as ngrok—via assignments.
-By default, apps created in Okta have no assignments; in other words, nobody can use Okta SSO to access ngrok until you assign them to the app.
-To assign Okta users and groups to the ngrok app:
+Assign the users and groups that need access to the application so those users can sign in through Okta.
+To test the integration yourself, make sure you are assigned to the app.
 
-- Click **Application > Applications**.
-- Search for and click the **ngrok app**.
-- Click **Assignments**.
-- Use the **Assign** button to associate groups and users with the ngrok app.
-To test the SSO with ngrok, make sure you're assigned to the app.
+## 2. Configure ngrok
 
-## 2. Configure ngrok 
-
-ngrok can use Okta SSO in two ways:
-
-- From the ngrok CLI (using the `--oidc` parameter)
-- From the ngrok dashboard
-
-### **Option 1**: ngrok CLI
+Use the [OpenID Connect Traffic Policy action](/gateway/traffic-policy/actions/oidc) to enforce Okta authentication on your endpoint.
 
 <Note>
-This tutorial assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok client installed.
-</Note>
-
-- Launch a terminal.
-- Enter the following command to launch an ngrok tunnel with Okta SSO.
-Replace `<okta_url>` with your Okta org address (for example, `https://acme.okta.com`) and the `<okta_client_id>` and `<okta_client_secret>` with the respective values copied from the ngrok app registered at Okta.
-Optionally, add the `--url <domain>` argument to get your own custom URL, replacing `<domain>` with your URL of preference:
-
-  ```bash
-  ngrok http 3000 --oidc <okta_url> \
-  --oidc-client-id <okta_client_id> \
-  --oidc-client-secret <okta_client_secret> \
-  --url <domain>
-  ```
-
-- Copy the URL available next to **Forwarding** (for example, `https://okta-sso-test.ngrok.app`).
-- Skip to **Step 3**.
-
-### **Option 2**: Traffic Policy
-
-<Note>
-This tutorial assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok client installed.
+This step assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok client installed.
 </Note>
 
 Create a `policy.yaml` file with the following content, replacing the placeholder values with those copied from Okta:
@@ -93,7 +52,7 @@ on_http_request:
   - actions:
       - type: openid-connect
         config:
-          issuer_url: 'https://acme.oktapreview.com'
+          issuer_url: 'https://acme.okta.com'
           client_id: 'YOUR_OKTA_CLIENT_ID'
           client_secret: 'YOUR_OKTA_CLIENT_SECRET'
           scopes:
@@ -102,7 +61,7 @@ on_http_request:
             - email
 ```
 
-Launch an ngrok tunnel with this policy:
+Start an ngrok endpoint with this policy, replacing `YOUR_DOMAIN` with your ngrok domain:
 
 ```bash
 ngrok http 3000 --traffic-policy-file policy.yaml --url YOUR_DOMAIN
@@ -113,6 +72,6 @@ Copy the URL next to **Forwarding** (for example, `https://okta-sso-test.ngrok.a
 ## 3. Test the integration
 
 - In your browser, launch an incognito window.
-- Access your ngrok tunnel (for example, `https://okta-sso-test.ngrok.app` or using a copied URL).
+- Access your ngrok endpoint (for example, `https://okta-sso-test.ngrok.app` or using a copied URL).
 - You should be prompted to log in with your Okta credentials.
 - After logging in, you should be able to see your web app.
