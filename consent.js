@@ -6,12 +6,13 @@
  * every root `.js` file on every page after the page becomes interactive.
  * Three parts, in source order:
  *
- * 1. The headless consent client. It resolves the visitor's jurisdiction and
- *    the purposes from the Ketch property config. It reads and writes the
- *    permit through `consent/get` and `consent/update`. It keeps the `_swb`
- *    and `_ketch_consent_v1_` cookies the GTM consent template reads, and it
- *    hands each decision to Google Tag Manager. The freshness rules, the GPC
- *    plugin, the environment match, and the cookie domain walk follow the
+ * 1. The headless consent client. It looks the visitor's region up through
+ *    `/ip`, then it resolves the jurisdiction and the purposes from the Ketch
+ *    property config. It reads and writes the permit through `consent/get`
+ *    and `consent/update`. It keeps the `_swb` and `_ketch_consent_v1_`
+ *    cookies the GTM consent template reads, and it hands each decision to
+ *    Google Tag Manager. The boot writes, the GPC plugin, the freshness
+ *    rules, the environment match, and the cookie domain walk follow the
  *    Ketch SDK.
  * 2. The GTM loader. gtm.js loads at the first idle period after `load` and
  *    after the consent decision, so `docs.json` carries no `integrations.gtm`.
@@ -102,9 +103,9 @@
   ];
 
   /**
-   * Pick the environment code for a page URL the way the Ketch SDK does: the
-   * longest pattern that matches `href` wins, and `production` is the
-   * fallback, so a preview deploy on another host records against production.
+   * Pick the environment code for a page URL the way the Ketch SDK does. The
+   * longest pattern that matches `href` wins. `production` is the fallback,
+   * so a preview deploy on another host records against production.
    */
   function resolveEnvironment(href) {
     let matched = null;
@@ -154,6 +155,8 @@
    * public suffix to a host-only cookie.
    */
   function writeCookie(name, value, maxAgeSeconds) {
+    // A copy of the value at another scope would pass the read-back below, so clear every scope first.
+    deleteCookie(name);
     const expires = new Date(Date.now() + maxAgeSeconds * 1000).toUTCString();
     const base = `${name}=${encodeURIComponent(value)}; path=/; expires=${expires}; SameSite=None; Secure`;
     const labels = location.hostname.split(".");
@@ -260,7 +263,12 @@
     personalization: ["personalization_storage", "ad_personalization"],
   };
 
-  /** Map decided purposes to Google consent types through each purpose's canonical codes. */
+  /**
+   * Map decided purposes to Google consent types through each purpose's
+   * canonical codes. A purpose with no canonical code, like `functional`,
+   * maps to nothing. A type two purposes share is granted when either is, as
+   * the SDK merges it.
+   */
   function toGoogleConsentUpdate(allowed, purposes) {
     const update = {};
     for (const purpose of purposes) {
@@ -270,7 +278,7 @@
       }
       for (const canonicalCode of purpose.canonicalPurposeCodes) {
         for (const consentType of GOOGLE_CONSENT_TYPES_BY_CANONICAL_PURPOSE[canonicalCode] || []) {
-          update[consentType] = status;
+          update[consentType] = update[consentType] === true || status;
         }
       }
     }
@@ -278,13 +286,13 @@
   }
 
   /**
-   * Hand a decision to Google Tag Manager the way the Ketch SDK does: each
-   * `gtmConsentListeners` callback gets the Google consent types, and the
-   * dataLayer gets `ketchPermitChanged` with the purpose codes. A listener
-   * that throws does not stop the others.
+   * Hand a decision to Google Tag Manager the way the Ketch SDK does. Each
+   * `gtmConsentListeners` callback gets the purpose codes and the Google
+   * consent types together. The dataLayer gets `ketchPermitChanged` with the
+   * purpose codes. A listener that throws does not stop the others.
    */
   function publishConsentToGtm(allowed, purposes) {
-    const update = toGoogleConsentUpdate(allowed, purposes);
+    const update = { ...allowed, ...toGoogleConsentUpdate(allowed, purposes) };
     for (const listener of window.gtmConsentListeners || []) {
       try {
         listener({ purposes: update });
@@ -300,29 +308,48 @@
    * packages/ui/src/consent/consent-api.ts
    * ----------------------------------------------------------------------- */
 
-  /**
-   * Fetch JSON from the Ketch API with `cache: "no-store"`. The config
-   * endpoint is cacheable for seven days and does not vary by IP, so a cached
-   * copy would keep a travelling visitor's old jurisdiction. Throws on a
-   * non-2xx status.
-   */
+  /** Fetch JSON from the Ketch API. Throws on a non-2xx status. */
   async function fetchJson(url, init) {
-    const response = await fetch(url, { ...init, cache: "no-store" });
+    const response = await fetch(url, init);
     if (!response.ok) {
       throw new Error(`[consent] ${(init && init.method) || "GET"} ${url} returned ${response.status}`);
     }
     return response.json();
   }
 
-  function configUrl(include) {
-    return `${API_BASE}/config/${ORGANIZATION_CODE}/${PROPERTY_CODE}/config.json?include=${include}`;
+  /**
+   * Fetch the un-pathed config for one region. Fastly caches the response per
+   * URL for seven days. Without the region in the URL, a POP serves every
+   * visitor the jurisdiction of its first visitor. `cache: "no-store"` keeps
+   * the browser from holding one config version that long.
+   */
+  function fetchConfig(include, region) {
+    const url = `${API_BASE}/config/${ORGANIZATION_CODE}/${PROPERTY_CODE}/config.json`;
+    return fetchJson(`${url}?include=${include}&region=${encodeURIComponent(region)}`, { cache: "no-store" });
+  }
+
+  /**
+   * The visitor's region as the SDK builds it from `/ip`. A US or Canadian
+   * visitor gets `US-CA`, everyone else the country code, and `US` when the
+   * lookup names no country. `/ip` is `private`: the browser caches it for 20
+   * minutes and no shared cache holds it. Throws when the lookup has no location.
+   */
+  async function fetchRegion() {
+    const body = await fetchJson(`${API_BASE}/ip`);
+    if (!isRecord(body) || !isRecord(body.location)) {
+      throw new Error("[consent] ip response is malformed");
+    }
+    const { countryCode, regionCode } = body.location;
+    if ((countryCode === "US" || countryCode === "CA") && typeof regionCode === "string" && regionCode !== "") {
+      return `${countryCode}-${regionCode}`;
+    }
+    return typeof countryCode === "string" && countryCode !== "" ? countryCode : "US";
   }
 
   /**
    * Narrow one purpose from the purposes endpoint. `requiresOptIn` and
-   * `allowsOptOut` are absent when false, and `canonicalPurposeCodes` and
-   * `cookies` are absent when empty. Throws on a purpose with no `code` or
-   * `legalBasisCode`.
+   * `allowsOptOut` are absent when false, and `canonicalPurposeCodes` is
+   * absent when empty. Throws on a purpose with no `code` or `legalBasisCode`.
    */
   function parsePurpose(value) {
     if (!isRecord(value) || typeof value.code !== "string" || typeof value.legalBasisCode !== "string") {
@@ -342,8 +369,10 @@
 
   /** The Ketch v3 API. Every call throws on a network failure or a malformed body. */
   const api = {
+    /** The jurisdiction and config version for the visitor's region, plus the region the purposes fetch reuses. */
     async fetchJurisdiction() {
-      const body = await fetchJson(configUrl("jurisdiction,deployment"));
+      const region = await fetchRegion();
+      const body = await fetchConfig("jurisdiction,deployment", region);
       if (!isRecord(body) || !isRecord(body.jurisdiction) || !isRecord(body.deployment)) {
         throw new Error("[consent] jurisdiction response is malformed");
       }
@@ -352,11 +381,17 @@
       if (typeof jurisdictionCode !== "string" || version == null) {
         throw new Error("[consent] jurisdiction response is malformed");
       }
-      return { jurisdictionCode, version };
+      return {
+        jurisdictionCode,
+        version,
+        region,
+        /** Permits collected before this unix time need consent again, or `null`. */
+        reconsentRequiredBefore: readNumber(body.deployment.reconsentRequiredBefore),
+      };
     },
 
-    async fetchPurposes() {
-      const body = await fetchJson(configUrl("purposes"));
+    async fetchPurposes(region) {
+      const body = await fetchConfig("purposes", region);
       if (!isRecord(body) || !Array.isArray(body.purposes)) {
         throw new Error("[consent] purposes response is malformed");
       }
@@ -378,6 +413,7 @@
           jurisdictionCode: context.jurisdictionCode,
           identities: { [IDENTITY_SPACE_CODE]: context.identity },
           purposes: requestPurposes,
+          isGpcEnabled: context.isGpcEnabled,
         }),
       });
       if (!isRecord(body)) {
@@ -486,13 +522,14 @@
     }
   }
 
+  /** An update the server has not accepted yet, with the body as it was sent, or `null`. */
   function parseStoredUpdate(raw) {
     if (raw == null) {
       return null;
     }
     try {
       const parsed = JSON.parse(raw);
-      return isRecord(parsed) && isRecord(parsed.purposes) ? parsed : null;
+      return isRecord(parsed) && isRecord(parsed.purposes) ? { serialized: raw, body: parsed } : null;
     } catch {
       return null;
     }
@@ -503,23 +540,20 @@
     return !purpose.allowsOptOut && !purpose.requiresOptIn;
   }
 
-  /** The jurisdiction's starting position: every purpose allowed except the ones that need an opt-in. */
-  function defaultAllowedPurposes(purposes) {
-    const allowed = {};
-    for (const purpose of purposes) {
-      allowed[purpose.code] = !purpose.requiresOptIn;
-    }
-    return allowed;
-  }
-
+  /** `true` when two decisions allow the same purposes: the same codes, each with the same flag. */
   function sameAllowed(left, right) {
     const keys = Object.keys(left);
     return keys.length === Object.keys(right).length && keys.every((key) => left[key] === right[key]);
   }
 
+  /** The raw Global Privacy Control signal. The SDK sends it on every `get` and `update`, in every jurisdiction. */
+  function gpcSignal() {
+    return navigator.globalPrivacyControl === true;
+  }
+
   /**
    * Create the consent client. `boot()` starts the load; the banner subscribes
-   * to the snapshot and calls the actions. The snapshot is one of:
+   * to the snapshot and calls the actions. The snapshot is
    * `{ status: "unresolved" }`, `{ status: "prompting", … }`,
    * `{ status: "ready", decision, pendingWrite, … }`, or `{ status: "error" }`.
    */
@@ -529,7 +563,11 @@
     let context = null;
     let bootPromise = null;
     let sendingUpdate = false;
-    /** Bumps on each visitor action, so the client discards a server read that lands afterwards. */
+    /** The update the server has not accepted yet. localStorage mirrors it for the next load. */
+    let pendingUpdate = null;
+    /** The source the next write carries after Ketch asked for the decision again. */
+    let sourceOverride = null;
+    /** Bumps on each write, so the client discards a server read that lands afterwards. */
     let actionSequence = 0;
     const listeners = new Set();
 
@@ -540,8 +578,9 @@
       }
     }
 
+    /** `true` while the `gpc` plugin applies: the signal is on and the jurisdiction is the one it covers. */
     function isGpcEnabled(resolved) {
-      return resolved.jurisdictionCode === GPC_JURISDICTION_CODE && navigator.globalPrivacyControl === true;
+      return resolved.jurisdictionCode === GPC_JURISDICTION_CODE && gpcSignal();
     }
 
     function setPrompting(resolved) {
@@ -571,28 +610,13 @@
 
     /**
      * Drop the local copy of the permit. The server said the visitor has no
-     * complete permit, so a stale cookie must not feed GTM old grants while
-     * the banner asks again.
+     * permit, so a stale cookie must not feed GTM old grants while the banner
+     * asks again.
      */
     function forgetDecision() {
       deleteCookie(CONSENT_COOKIE_NAME);
       writeStorage(CONSENT_COOKIE_NAME, null);
       writeStorage(DECISION_STORAGE_KEY, null);
-    }
-
-    /** Keep the GPC-mapped opt-out purposes denied while the signal is on. */
-    function withGpcDenials(resolved, allowed) {
-      if (!isGpcEnabled(resolved)) {
-        return allowed;
-      }
-      const next = { ...allowed };
-      for (const code of GPC_PURPOSE_CODES) {
-        const purpose = resolved.purposes.find((candidate) => candidate.code === code);
-        if (purpose && purpose.allowsOptOut) {
-          next[code] = false;
-        }
-      }
-      return next;
     }
 
     function persistDecision(resolved, decision) {
@@ -608,17 +632,21 @@
       window.dispatchEvent(new Event(CONSENT_DECISION_EVENT));
     }
 
-    async function sendUpdate(body) {
+    function storePendingUpdate(next) {
+      pendingUpdate = next;
+      writeStorage(PENDING_UPDATE_STORAGE_KEY, next != null ? next.serialized : null);
+    }
+
+    async function sendUpdate(pending) {
       if (sendingUpdate) {
         return;
       }
       sendingUpdate = true;
-      const serialized = JSON.stringify(body);
       try {
-        await api.updateConsent(body);
-        // A newer decision may have replaced the stored body while this one was in flight.
-        if (readStorage(PENDING_UPDATE_STORAGE_KEY) === serialized) {
-          writeStorage(PENDING_UPDATE_STORAGE_KEY, null);
+        await api.updateConsent(pending.body);
+        // A newer decision may have replaced the pending update while this one was in flight.
+        if (pendingUpdate != null && pendingUpdate.serialized === pending.serialized) {
+          storePendingUpdate(null);
           if (snapshot.status === "ready" && snapshot.pendingWrite) {
             setSnapshot({ ...snapshot, pendingWrite: false });
           }
@@ -630,17 +658,33 @@
         }
       } finally {
         sendingUpdate = false;
+        // A newer decision replaced the pending update during the flight. Send it now, not on the next visit.
+        if (pendingUpdate != null && pendingUpdate.serialized !== pending.serialized) {
+          void sendUpdate(pendingUpdate);
+        }
       }
     }
 
     function retryPendingUpdate() {
-      const body = parseStoredUpdate(readStorage(PENDING_UPDATE_STORAGE_KEY));
-      if (body != null) {
-        void sendUpdate(body);
+      if (pendingUpdate != null) {
+        void sendUpdate(pendingUpdate);
       }
     }
 
-    function commit(resolved, allowed, source) {
+    /** `true` when the pending update is this visitor's, in this jurisdiction. It is then newer than any server permit. */
+    function pendingUpdateBelongs(resolved, identity) {
+      return (
+        pendingUpdate != null &&
+        pendingUpdate.body.identities[IDENTITY_SPACE_CODE] === identity &&
+        pendingUpdate.body.jurisdictionCode === resolved.jurisdictionCode
+      );
+    }
+
+    /**
+     * Record a decision: keep or mint the identity, persist the cookie and
+     * the metadata, and queue the server write. The snapshot is the caller's.
+     */
+    function record(resolved, allowed, source) {
       actionSequence += 1;
       const identity = readCookie(IDENTITY_COOKIE_NAME) || crypto.randomUUID();
       writeCookie(IDENTITY_COOKIE_NAME, identity, IDENTITY_COOKIE_TTL_SECONDS);
@@ -655,8 +699,6 @@
         fetchedAt: collectedAt,
       };
       persistDecision(resolved, decision);
-      setReady(resolved, decision, false);
-      publish(resolved, decision);
 
       const purposes = {};
       for (const purpose of resolved.purposes) {
@@ -673,57 +715,123 @@
         identities: { [IDENTITY_SPACE_CODE]: identity },
         purposes,
         collectedAt,
-        isGpcEnabled: isGpcEnabled(resolved),
-        context: { source },
+        isGpcEnabled: gpcSignal(),
+        // The SDK tags the first write after a re-collection prompt with the reason for the prompt.
+        context: { source: sourceOverride || source },
       };
-      writeStorage(PENDING_UPDATE_STORAGE_KEY, JSON.stringify(body));
-      void sendUpdate(body);
+      sourceOverride = null;
+      const pending = { serialized: JSON.stringify(body), body };
+      storePendingUpdate(pending);
+      void sendUpdate(pending);
+      return decision;
     }
 
-    function currentAllowed() {
-      return snapshot.status === "ready" ? snapshot.decision.purposes : null;
+    /** The visitor's own action: record it, hide the banner, and open the GTM gate. */
+    function commit(resolved, allowed, source) {
+      const decision = record(resolved, allowed, source);
+      setReady(resolved, decision, false);
+      publish(resolved, decision);
     }
 
     /**
-     * The `gpc` plugin as the SDK runs it, on every load in `default`:
-     * remember the signal in the `gpcsignal` cookie, and on a newly true
-     * signal deny each mapped purpose that allows an opt-out and record that
-     * as a decision.
+     * Whether the visitor must decide, as the SDK's `_calculateNeedsConsent`
+     * reads a permit. Consent is needed for a purpose with no recorded value,
+     * a passed `showAfter`, or a permit older than `reconsentRequiredBefore`.
+     * The last two set the source of the next write.
      */
-    function applyGpc(resolved) {
-      if (resolved.jurisdictionCode !== GPC_JURISDICTION_CODE) {
-        return;
+    function needsConsent(resolved, recorded) {
+      if (recorded == null || resolved.purposes.some((purpose) => recorded.purposes[purpose.code] == null)) {
+        return true;
       }
-      const signal = navigator.globalPrivacyControl === true;
-      const remembered = readCookie(GPC_COOKIE_NAME);
-      if (remembered !== String(signal)) {
-        writeCookie(GPC_COOKIE_NAME, String(signal), GPC_COOKIE_TTL_SECONDS);
+      if (recorded.showAfter != null && now() >= recorded.showAfter) {
+        sourceOverride = "recollectAfterInterval";
+        return true;
       }
-      if (!signal) {
-        return;
+      const before = resolved.reconsentRequiredBefore;
+      if (before != null && before > 0 && recorded.collectedAt < before) {
+        sourceOverride = "recollectAfterDate";
+        return true;
       }
-      window.ketchGpcSignalEnabled = true;
-      if (remembered === "true") {
-        return;
-      }
-      const allowed = withGpcDenials(resolved, currentAllowed() || defaultAllowedPurposes(resolved.purposes));
-      commit(resolved, allowed, "plugins.gpc");
+      return false;
     }
 
-    async function loadPurposes(jurisdictionCode, version) {
+    /**
+     * The SDK's provisional consent, run on every load. The `gpc` plugin runs
+     * first: in its jurisdiction, a newly true Global Privacy Control signal
+     * denies each mapped purpose that allows an opt-out. Then every undecided
+     * purpose that needs no opt-in is allowed, the `legalBasisDefault` write.
+     * Returns the decision it recorded, or `null` when nothing changed.
+     */
+    function recordProvisional(resolved, recorded) {
+      const allowed = { ...recorded };
+      let source = "legalBasisDefault";
+      let changed = false;
+      if (resolved.jurisdictionCode === GPC_JURISDICTION_CODE) {
+        const signal = gpcSignal();
+        const remembered = readCookie(GPC_COOKIE_NAME) === "true";
+        if (remembered !== signal) {
+          writeCookie(GPC_COOKIE_NAME, String(signal), GPC_COOKIE_TTL_SECONDS);
+        }
+        if (signal && !remembered) {
+          for (const code of GPC_PURPOSE_CODES) {
+            const purpose = resolved.purposes.find((candidate) => candidate.code === code);
+            if (purpose && purpose.allowsOptOut) {
+              allowed[code] = false;
+              changed = true;
+              source = "plugins.gpc";
+            }
+          }
+        }
+      }
+      for (const purpose of resolved.purposes) {
+        if (allowed[purpose.code] == null && !purpose.requiresOptIn) {
+          allowed[purpose.code] = true;
+          changed = true;
+        }
+      }
+      return changed ? record(resolved, allowed, source) : null;
+    }
+
+    /**
+     * Settle the boot from the recorded permit, as the SDK's `_getConsent`
+     * does. The banner shows when the permit needs consent, and the
+     * provisional consent is recorded either way. A provisional write closes
+     * no banner and opens no GTM gate. The next load finds the permit recorded
+     * and skips the banner.
+     */
+    function settle(resolved, recorded, pendingWrite) {
+      const needs = needsConsent(resolved, recorded);
+      const provisional = recordProvisional(resolved, recorded != null ? recorded.purposes : {});
+      if (needs) {
+        setPrompting(resolved);
+        return;
+      }
+      const decision = provisional || recorded;
+      if (decision == null) {
+        return;
+      }
+      setReady(resolved, decision, provisional == null && pendingWrite);
+      publish(resolved, decision);
+    }
+
+    async function loadPurposes(jurisdiction) {
       const cached = parseStoredPurposes(readStorage(PURPOSES_STORAGE_KEY));
-      if (cached != null && cached.jurisdictionCode === jurisdictionCode && cached.version === version) {
+      if (
+        cached != null &&
+        cached.jurisdictionCode === jurisdiction.jurisdictionCode &&
+        cached.version === jurisdiction.version
+      ) {
         return cached.purposes;
       }
-      const purposes = await api.fetchPurposes();
-      writeStorage(PURPOSES_STORAGE_KEY, JSON.stringify({ jurisdictionCode, version, purposes }));
+      const purposes = await api.fetchPurposes(jurisdiction.region);
+      writeStorage(
+        PURPOSES_STORAGE_KEY,
+        JSON.stringify({ jurisdictionCode: jurisdiction.jurisdictionCode, version: jurisdiction.version, purposes }),
+      );
       return purposes;
     }
 
     function needsServerRead(resolved, identity, stored, cookieAllowed) {
-      if (cookieAllowed == null || stored == null) {
-        return true;
-      }
       if (stored.identity !== identity) {
         return true;
       }
@@ -744,11 +852,16 @@
       let permit;
       try {
         permit = await api.getConsent(
-          { environmentCode, jurisdictionCode: resolved.jurisdictionCode, identity },
+          {
+            environmentCode,
+            jurisdictionCode: resolved.jurisdictionCode,
+            identity,
+            isGpcEnabled: gpcSignal(),
+          },
           resolved.purposes,
         );
       } catch (error) {
-        // A repeat prompt is safer than a silent grant.
+        // A repeat prompt is safer than a silent grant. Nothing is written: a default write could bury a real permit.
         console.error("[consent] permit read failed; asking again", error);
         if (sequence === actionSequence) {
           setPrompting(resolved);
@@ -758,18 +871,26 @@
       if (sequence !== actionSequence) {
         return;
       }
-      const allowed = {};
+      const recorded = {};
       for (const purpose of resolved.purposes) {
         const entry = permit.purposes[purpose.code];
-        if (!entry || entry.isRecorded !== true) {
-          forgetDecision();
-          setPrompting(resolved);
-          return;
+        if (entry && entry.isRecorded === true) {
+          recorded[purpose.code] = entry.allowed;
         }
-        allowed[purpose.code] = entry.allowed;
+      }
+      // An update this browser could not deliver is newer than anything the server holds.
+      if (pendingUpdateBelongs(resolved, identity)) {
+        for (const [code, entry] of Object.entries(pendingUpdate.body.purposes)) {
+          recorded[code] = entry.allowed === "true";
+        }
+      }
+      if (Object.keys(recorded).length === 0) {
+        forgetDecision();
+        settle(resolved, null, false);
+        return;
       }
       const decision = {
-        purposes: allowed,
+        purposes: recorded,
         jurisdictionCode: resolved.jurisdictionCode,
         version: resolved.version,
         identity,
@@ -778,14 +899,16 @@
         fetchedAt: now(),
       };
       persistDecision(resolved, decision);
-      setReady(resolved, decision, readStorage(PENDING_UPDATE_STORAGE_KEY) != null);
-      publish(resolved, decision);
+      settle(resolved, decision, pendingUpdate != null);
     }
 
     /**
      * Re-read the cookie after another tab or a restored page may have
      * changed it. A cookie write fires no `storage` event, so this runs on
-     * `pageshow` and on `visibilitychange` to visible.
+     * `pageshow` and on `visibilitychange` to visible. Before a decision, the
+     * cookie counts only with a stored decision that passes the boot's
+     * freshness rules. A permit the server rejected, or could not confirm,
+     * keeps prompting.
      */
     function syncFromCookie() {
       if (context == null) {
@@ -796,21 +919,26 @@
       if (allowed == null) {
         return;
       }
-      if (snapshot.status === "ready" && sameAllowed(allowed, snapshot.decision.purposes)) {
-        return;
-      }
+      const identity = readCookie(IDENTITY_COOKIE_NAME);
       const stored = parseStoredDecision(readStorage(DECISION_STORAGE_KEY));
-      let base = null;
-      if (stored != null && stored.identity === readCookie(IDENTITY_COOKIE_NAME)) {
-        base = stored;
-      } else if (snapshot.status === "ready") {
-        base = snapshot.decision;
-      }
-      if (base == null) {
+      const ownStored = identity != null && stored != null && stored.identity === identity ? stored : null;
+      if (snapshot.status === "ready") {
+        if (sameAllowed(allowed, snapshot.decision.purposes)) {
+          return;
+        }
+        const decision = { ...(ownStored || snapshot.decision), purposes: allowed };
+        setReady(context, decision, snapshot.pendingWrite);
+        publish(context, decision);
         return;
       }
-      const decision = { ...base, purposes: allowed };
-      setReady(context, decision, snapshot.status === "ready" ? snapshot.pendingWrite : false);
+      if (identity == null || ownStored == null || needsServerRead(context, identity, ownStored, allowed)) {
+        return;
+      }
+      const decision = { ...ownStored, purposes: allowed };
+      if (needsConsent(context, decision)) {
+        return;
+      }
+      setReady(context, decision, false);
       publish(context, decision);
     }
 
@@ -826,6 +954,7 @@
 
     async function run() {
       installLifecycleListeners();
+      pendingUpdate = parseStoredUpdate(readStorage(PENDING_UPDATE_STORAGE_KEY));
       let jurisdiction;
       try {
         jurisdiction = await api.fetchJurisdiction();
@@ -835,12 +964,17 @@
       }
       let purposes;
       try {
-        purposes = await loadPurposes(jurisdiction.jurisdictionCode, jurisdiction.version);
+        purposes = await loadPurposes(jurisdiction);
       } catch (error) {
         fail("purposes fetch", error);
         return;
       }
-      const resolved = { ...jurisdiction, purposes };
+      const resolved = {
+        jurisdictionCode: jurisdiction.jurisdictionCode,
+        version: jurisdiction.version,
+        reconsentRequiredBefore: jurisdiction.reconsentRequiredBefore,
+        purposes,
+      };
       context = resolved;
 
       const identity = readCookie(IDENTITY_COOKIE_NAME);
@@ -850,14 +984,21 @@
 
       if (identity == null) {
         // No identity means no server permit, so there is nothing to read.
-        setPrompting(resolved);
-      } else if (stored == null || cookieAllowed == null || needsServerRead(resolved, identity, stored, cookieAllowed)) {
+        settle(resolved, null, false);
+      } else if (stored == null || cookieAllowed == null) {
+        await readServerPermit(resolved, identity);
+      } else if (
+        pendingUpdateBelongs(resolved, identity) &&
+        stored.identity === identity &&
+        sameAllowed(cookieAllowed, stored.purposes)
+      ) {
+        // The server has not accepted the local decision yet, so a read would answer with an older one.
+        settle(resolved, stored, true);
+      } else if (needsServerRead(resolved, identity, stored, cookieAllowed)) {
         await readServerPermit(resolved, identity);
       } else {
-        setReady(resolved, stored, readStorage(PENDING_UPDATE_STORAGE_KEY) != null);
-        publish(resolved, stored);
+        settle(resolved, stored, false);
       }
-      applyGpc(resolved);
       retryPendingUpdate();
     }
 
@@ -890,7 +1031,7 @@
           for (const purpose of resolved.purposes) {
             allowed[purpose.code] = true;
           }
-          commit(resolved, withGpcDenials(resolved, allowed), source);
+          commit(resolved, allowed, source);
         });
       },
       rejectAll(source) {
@@ -911,14 +1052,14 @@
 
   /**
    * Set up the dataLayer buffer, then load gtm.js at the first idle period
-   * after two gates open: the `load` event, and the consent decision. gtm.js
-   * and the tags it fires then start after every eager resource has loaded.
-   * They also start after the banner tap, a new visitor's first interaction.
-   * When the client fails or stays silent for 10 s after `load`, the gate
-   * opens anyway. This runs before the client boots, so no decision precedes
-   * the listener.
+   * after two gates open. The gates are the `load` event and
+   * `consentDecisionEvent` on `window`. gtm.js and the tags it fires then
+   * start after every eager resource has loaded. They also start after the
+   * banner tap, a new visitor's first interaction. When the client fails or
+   * stays silent for 10 s after `load`, the gate opens anyway. This runs
+   * before the client boots, so no decision precedes the listener.
    */
-  function loadGtmBehindConsent(gtmId) {
+  function loadGtmBehindConsent(gtmId, consentDecisionEvent) {
     window.dataLayer = window.dataLayer || [];
 
     /** Milliseconds after `load` to wait for the consent decision before loading anyway. */
@@ -973,7 +1114,7 @@
       scheduleWhenReady();
     }
 
-    window.addEventListener(CONSENT_DECISION_EVENT, settleConsent, { once: true });
+    window.addEventListener(consentDecisionEvent, settleConsent, { once: true });
 
     if (isDocumentLoaded) {
       onDocumentLoaded();
@@ -1024,13 +1165,15 @@
   }
 
   /**
-   * Send a URL that carries the Ketch SDK's `ketch_show` or `swb_show` query
-   * parameter to the preferences page. Older emails and links opened the
-   * SDK's preference center this way.
+   * Send a URL that asks the SDK for its preference center to the preferences
+   * page. The SDK read `ketch_show=preferences` or `swb_show=preferences`,
+   * and older emails and links still carry it. Any other value picked an SDK
+   * experience that no longer exists, so it does nothing.
    */
   function redirectLegacyPreferencesUrl(preferencesHref) {
     const params = new URLSearchParams(location.search);
-    if (!params.has("ketch_show") && !params.has("swb_show")) {
+    const requested = params.get("ketch_show") != null ? params.get("ketch_show") : params.get("swb_show");
+    if (requested !== "preferences") {
       return;
     }
     location.replace(preferencesHref);
@@ -1051,7 +1194,6 @@
     panel.className = "ngrok-consent-panel";
     panel.setAttribute("role", "group");
     panel.setAttribute("aria-label", "Cookie preferences");
-    panel.setAttribute("data-slot", "consent-banner");
     panel.setAttribute("data-state", "closed");
     panel.hidden = true;
 
@@ -1079,9 +1221,9 @@
     document.body.append(wrapper);
 
     /*
-     * The open and close choreography of mantle's `Sandbar`: a closed panel is
-     * hidden; an opening panel gets one painted frame at the closed pose so
-     * the transition has a start; a closing panel plays the ease-out, then
+     * The open and close choreography of mantle's `Sandbar`. A closed panel is
+     * hidden. An opening panel gets one painted frame at the closed pose, so
+     * the transition has a start. A closing panel plays the ease-out, then
      * hides. `presence` is "closed", "opening", "open", or "closing".
      */
     let presence = "closed";
@@ -1137,7 +1279,7 @@
 
   const client = createConsentClient(resolveEnvironment(location.href));
   window.__ngrokConsent__ = client;
-  loadGtmBehindConsent(GTM_ID);
+  loadGtmBehindConsent(GTM_ID, CONSENT_DECISION_EVENT);
   redirectLegacyPreferencesUrl(PREFERENCES_HREF);
   if (document.body != null) {
     mountConsentBanner(client, PREFERENCES_HREF);
