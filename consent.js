@@ -27,7 +27,6 @@
   const PROPERTY_CODE = "ngrok_ketch_tag";
   const GTM_ID = "GTM-P4F37ZW";
   const PREFERENCES_HREF = "https://ngrok.com/privacy-preferences";
-  const PRIVACY_HREF = "https://ngrok.com/privacy";
 
   // One client per page. A second run of this file must not boot a second
   // client or mount a second banner.
@@ -522,17 +521,34 @@
     }
   }
 
-  /** An update the server has not accepted yet, with the body as it was sent, or `null`. */
+  /**
+   * The stored update, with the body as it was sent, or `null` when the value
+   * is not one the client wrote. The guard covers every field the client
+   * reads back before the retry, so a tampered or stale value cannot fail the
+   * boot.
+   */
   function parseStoredUpdate(raw) {
     if (raw == null) {
       return null;
     }
+    let parsed;
     try {
-      const parsed = JSON.parse(raw);
-      return isRecord(parsed) && isRecord(parsed.purposes) ? { serialized: raw, body: parsed } : null;
+      parsed = JSON.parse(raw);
     } catch {
       return null;
     }
+    if (
+      !isRecord(parsed) ||
+      typeof parsed.jurisdictionCode !== "string" ||
+      !isRecord(parsed.identities) ||
+      !isRecord(parsed.purposes) ||
+      !Object.values(parsed.purposes).every(
+        (entry) => isRecord(entry) && (entry.allowed === "true" || entry.allowed === "false"),
+      )
+    ) {
+      return null;
+    }
+    return { serialized: raw, body: parsed };
   }
 
   /** `true` when the visitor can never turn the purpose off: no opt-out and no opt-in. */
@@ -1199,11 +1215,7 @@
 
     const message = document.createElement("p");
     message.className = "ngrok-consent-message";
-    const privacy = document.createElement("a");
-    privacy.className = "ngrok-consent-anchor";
-    privacy.href = PRIVACY_HREF;
-    privacy.textContent = "Privacy Policy";
-    message.append("We use cookies for analytics, advertising, and functionality. Read our ", privacy, ".");
+    message.textContent = "We use cookies.";
 
     const preferences = iconButton("a", "View preferences", "gear");
     preferences.href = preferencesHref;
