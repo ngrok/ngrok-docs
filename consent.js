@@ -79,6 +79,19 @@
   /** How long a server read stays fresh, the Ketch SDK's own `CACHED_CONSENT_TTL`. */
   const SERVER_READ_TTL_SECONDS = 300;
 
+  /**
+   * How long cached purposes stay valid. A publish that leaves
+   * `deployment.version` alone reaches a returning visitor within this window.
+   */
+  const PURPOSES_CACHE_TTL_SECONDS = 24 * 60 * 60;
+
+  /**
+   * The Ketch SDK's own consent cache: a cookie and two localStorage keys with
+   * a 300 s TTL. The client clears them on every write, so a page that still
+   * runs the SDK reads the server again instead of its stale copy.
+   */
+  const SDK_CACHE_KEYS = ["_swb_consent_", "_swb_consent__metadata"];
+
   /** The only jurisdiction the GPC signal applies to. The property's `gpc` plugin sets this. */
   const GPC_JURISDICTION_CODE = "default";
 
@@ -287,11 +300,14 @@
   /**
    * Hand a decision to Google Tag Manager the way the Ketch SDK does. Each
    * `gtmConsentListeners` callback gets the purpose codes and the Google
-   * consent types together. The dataLayer gets `ketchPermitChanged` with the
-   * purpose codes. A listener that throws does not stop the others.
+   * consent types together. `window.ketchConsent` holds the same keys for the
+   * templates that read it before the cookie. The dataLayer gets
+   * `ketchPermitChanged` with the purpose codes. A listener that throws does
+   * not stop the others.
    */
   function publishConsentToGtm(allowed, purposes) {
     const update = { ...allowed, ...toGoogleConsentUpdate(allowed, purposes) };
+    window.ketchConsent = { ...window.ketchConsent, ...update };
     for (const listener of window.gtmConsentListeners || []) {
       try {
         listener({ purposes: update });
@@ -506,6 +522,7 @@
       !isRecord(parsed) ||
       typeof parsed.jurisdictionCode !== "string" ||
       typeof parsed.version !== "number" ||
+      typeof parsed.fetchedAt !== "number" ||
       !Array.isArray(parsed.purposes)
     ) {
       return null;
@@ -514,6 +531,7 @@
       return {
         jurisdictionCode: parsed.jurisdictionCode,
         version: parsed.version,
+        fetchedAt: parsed.fetchedAt,
         purposes: parsed.purposes.map(parsePurpose),
       };
     } catch {
@@ -583,6 +601,8 @@
     let pendingUpdate = null;
     /** The source the next write carries after Ketch asked for the decision again. */
     let sourceOverride = null;
+    /** The last `collectedAt` written, so a tap in the same second as the boot write still sorts after it. */
+    let lastCollectedAt = 0;
     /** Bumps on each write, so the client discards a server read that lands afterwards. */
     let actionSequence = 0;
     const listeners = new Set();
@@ -633,12 +653,26 @@
       deleteCookie(CONSENT_COOKIE_NAME);
       writeStorage(CONSENT_COOKIE_NAME, null);
       writeStorage(DECISION_STORAGE_KEY, null);
+      clearSdkCache();
+    }
+
+    /** Drop the SDK's cached permit, so a page that still runs the SDK reads the server again. */
+    function clearSdkCache() {
+      for (const key of SDK_CACHE_KEYS) {
+        deleteCookie(key);
+        writeStorage(key, null);
+        try {
+          sessionStorage.removeItem(key);
+        } catch {
+          // Storage that throws holds no copy to drop.
+        }
+      }
     }
 
     function persistDecision(resolved, decision) {
       const encoded = encodeConsentCookie(decision.purposes, resolved.purposes);
       writeCookie(CONSENT_COOKIE_NAME, encoded, IDENTITY_COOKIE_TTL_SECONDS);
-      // The GTM template falls back to this localStorage copy when the cookie is missing.
+      // The www GTM template falls back to this localStorage copy when the cookie is missing.
       writeStorage(CONSENT_COOKIE_NAME, encoded);
       writeStorage(DECISION_STORAGE_KEY, JSON.stringify(decision));
     }
@@ -687,7 +721,10 @@
       }
     }
 
-    /** `true` when the pending update is this visitor's, in this jurisdiction. It is then newer than any server permit. */
+    /**
+     * `true` when the pending update is this visitor's, in this jurisdiction.
+     * It is then newer than any server permit.
+     */
     function pendingUpdateBelongs(resolved, identity) {
       return (
         pendingUpdate != null &&
@@ -702,9 +739,13 @@
      */
     function record(resolved, allowed, source) {
       actionSequence += 1;
+      // An unsent decision goes out before this one replaces it, so the server keeps the visitor's order.
+      retryPendingUpdate();
       const identity = readCookie(IDENTITY_COOKIE_NAME) || crypto.randomUUID();
       writeCookie(IDENTITY_COOKIE_NAME, identity, IDENTITY_COOKIE_TTL_SECONDS);
-      const collectedAt = now();
+      // Ketch drops a write stamped in the same second as an earlier one, so a tap right after the boot write moves on.
+      const collectedAt = Math.max(now(), lastCollectedAt + 1);
+      lastCollectedAt = collectedAt;
       const decision = {
         purposes: allowed,
         jurisdictionCode: resolved.jurisdictionCode,
@@ -715,6 +756,11 @@
         fetchedAt: collectedAt,
       };
       persistDecision(resolved, decision);
+      clearSdkCache();
+      if (readCookie(IDENTITY_COOKIE_NAME) !== identity) {
+        // With cookies blocked there is no identity to record under. The SDK records nothing there either.
+        return decision;
+      }
 
       const purposes = {};
       for (const purpose of resolved.purposes) {
@@ -835,14 +881,20 @@
       if (
         cached != null &&
         cached.jurisdictionCode === jurisdiction.jurisdictionCode &&
-        cached.version === jurisdiction.version
+        cached.version === jurisdiction.version &&
+        now() - cached.fetchedAt <= PURPOSES_CACHE_TTL_SECONDS
       ) {
         return cached.purposes;
       }
       const purposes = await api.fetchPurposes(jurisdiction.region);
       writeStorage(
         PURPOSES_STORAGE_KEY,
-        JSON.stringify({ jurisdictionCode: jurisdiction.jurisdictionCode, version: jurisdiction.version, purposes }),
+        JSON.stringify({
+          jurisdictionCode: jurisdiction.jurisdictionCode,
+          version: jurisdiction.version,
+          fetchedAt: now(),
+          purposes,
+        }),
       );
       return purposes;
     }
@@ -921,41 +973,30 @@
     /**
      * Re-read the cookie after another tab or a restored page may have
      * changed it. A cookie write fires no `storage` event, so this runs on
-     * `pageshow` and on `visibilitychange` to visible. Before a decision, the
-     * cookie counts only with a stored decision that passes the boot's
-     * freshness rules. A permit the server rejected, or could not confirm,
-     * keeps prompting.
+     * `pageshow` and on `visibilitychange` to visible. Only a decided client
+     * follows the cookie, as the SDK never closes an open banner from storage.
+     * A cookie the client wrote in another tab is adopted; any other change is
+     * read back from the server, which also carries a pending write.
      */
     function syncFromCookie() {
-      if (context == null) {
+      if (context == null || snapshot.status !== "ready") {
         return;
       }
       const cookie = readCookie(CONSENT_COOKIE_NAME);
       const allowed = cookie == null ? null : decodeConsentCookie(cookie);
-      if (allowed == null) {
+      if (allowed == null || sameAllowed(allowed, snapshot.decision.purposes)) {
         return;
       }
       const identity = readCookie(IDENTITY_COOKIE_NAME);
       const stored = parseStoredDecision(readStorage(DECISION_STORAGE_KEY));
-      const ownStored = identity != null && stored != null && stored.identity === identity ? stored : null;
-      if (snapshot.status === "ready") {
-        if (sameAllowed(allowed, snapshot.decision.purposes)) {
-          return;
-        }
-        const decision = { ...(ownStored || snapshot.decision), purposes: allowed };
-        setReady(context, decision, snapshot.pendingWrite);
-        publish(context, decision);
+      if (identity != null && stored != null && stored.identity === identity && sameAllowed(allowed, stored.purposes)) {
+        setReady(context, stored, snapshot.pendingWrite);
+        publish(context, stored);
         return;
       }
-      if (identity == null || ownStored == null || needsServerRead(context, identity, ownStored, allowed)) {
-        return;
+      if (identity != null) {
+        void readServerPermit(context, identity);
       }
-      const decision = { ...ownStored, purposes: allowed };
-      if (needsConsent(context, decision)) {
-        return;
-      }
-      setReady(context, decision, false);
-      publish(context, decision);
     }
 
     function installLifecycleListeners() {
@@ -997,6 +1038,7 @@
       const stored = parseStoredDecision(readStorage(DECISION_STORAGE_KEY));
       const cookie = readCookie(CONSENT_COOKIE_NAME);
       const cookieAllowed = cookie == null ? null : decodeConsentCookie(cookie);
+      lastCollectedAt = stored != null ? stored.collectedAt : 0;
 
       if (identity == null) {
         // No identity means no server permit, so there is nothing to read.
@@ -1286,7 +1328,8 @@
   }
 
   /* --------------------------------------------------------------------------
-   * packages/ui/src/consent/docs-entry.ts
+   * Entry. The apps mount the client from their root route; the docs mount
+   * it here.
    * ----------------------------------------------------------------------- */
 
   const client = createConsentClient(resolveEnvironment(location.href));
