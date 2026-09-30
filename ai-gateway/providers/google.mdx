@@ -32,20 +32,39 @@ Google is a **built-in provider** with ngrok.ai inference available, so a provid
   </Step>
 
   <Step title="Assign and send requests">
-    Assign the configuration to your access key and send requests with your access key:
+    Assign the configuration to your access key. Install the Google Gen AI SDK and set your ngrok access key:
+
+    ```bash
+    pip install --upgrade google-genai
+    export NGROK_AI_GATEWAY_KEY="ng-xxxxx-g1-xxxxx"
+    ```
+
+    Create a stateless interaction and print the response text:
 
     ```python
-    from openai import OpenAI
+    import os
+    from google import genai
+    from google.genai import types
 
-    client = OpenAI(
-        base_url="https://gateway.ngrok.ai/v1",
-        api_key="ng-xxxxx-g1-xxxxx",
+    client = genai.Client(
+        api_key=os.environ["NGROK_AI_GATEWAY_KEY"],
+        http_options=types.HttpOptions(
+            base_url="https://gateway.ngrok.ai",
+            api_version="v1beta",
+        ),
     )
 
-    response = client.chat.completions.create(
+    response = client.interactions.create(
         model="gemini-3.6-flash",
-        messages=[{"role": "user", "content": "Hello!"}]
+        input="Hello!",
+        store=False,
     )
+
+    for step in response.steps or []:
+        if step.type == "model_output":
+            for part in step.content:
+                if part.type == "text":
+                    print(part.text)
     ```
   </Step>
 </Steps>
