@@ -6,7 +6,7 @@ description: Use Google Gemini Chat Completions, GenerateContent, and Interactio
 [Google AI Studio](https://aistudio.google.com) provides Gemini models.
 The gateway supports three APIs:
 
-- OpenAI-compatible Chat Completions: send requests to `/v1/chat/completions` with an OpenAI client and change only the model name.
+- OpenAI-compatible Chat Completions: if your OpenAI client already uses the gateway URL and your ngrok access key, change only the model name and send requests to `/v1/chat/completions`.
 - Native Gemini GenerateContent: send requests to `/v1beta/models/{model}:generateContent` or `:streamGenerateContent` with a Gemini client.
 - Native Gemini Interactions: send stateless create requests to `/v1beta/interactions`, with a JSON response or a stream of server-sent events (SSE).
 
@@ -19,8 +19,8 @@ Google is a **built-in provider** with ngrok.ai inference available, so a provid
 ## Setup
 
 <Steps>
-  <Step title="Create an access key">
-    Follow the [quickstart](/ai-gateway/quickstart) to create an access key in [app.ngrok.ai](https://app.ngrok.ai).
+  <Step title="Create an access key and add credits">
+    Follow the [quickstart](/ai-gateway/quickstart) to create an access key and purchase [credits](/ai-gateway/concepts/credits) in [app.ngrok.ai](https://app.ngrok.ai).
   </Step>
 
   <Step title="Store your Google API key (optional)">
@@ -29,17 +29,11 @@ Google is a **built-in provider** with ngrok.ai inference available, so a provid
 
   <Step title="Create a configuration">
     [Create an access key configuration](/ai-gateway/guides/access-key-configurations#create-a-configuration) with a `google` routing rule and allow Google in the access scope.
+    To use your own Google key, set the routing rule to **Bring your own API key** and select your stored Google key.
   </Step>
 
   <Step title="Assign and send requests">
     Assign the configuration to your access key. Install the Google Gen AI SDK and set `GOOGLE_API_KEY` to your ngrok access key:
-
-    ```bash
-    pip install --upgrade google-genai
-    export GOOGLE_API_KEY="ng-xxxxx-g1-xxxxx"
-    ```
-
-    Create a stateless interaction and print the response text:
 
     ```python
     from google import genai
@@ -81,7 +75,7 @@ The gateway replaces client credentials with the selected Google provider creden
 
 <a id="native-gemini-api" />
 
-## Native Gemini `generateContent`
+## Native Gemini GenerateContent
 
 Point a Gemini client at `https://gateway.ngrok.ai` and send your access key using the credential rules above.
 Use `POST /v1beta/models/{model}:generateContent` for a JSON response.
@@ -96,8 +90,7 @@ curl "https://gateway.ngrok.ai/v1beta/models/gemini-3.6-flash:generateContent" \
 
 Use Google's native GenerateContent payload format. The gateway filters request parameters for the selected backend and applies output-token limits.
 
-The headers are ngrok's, though.
-Alongside `Content-Type`, responses on this surface carry `Ngrok-AIG-Request-Id`, `Ngrok-AIG-Attempts`, and `Ngrok-AIG-Model`.
+Responses include the gateway response headers: `Ngrok-AIG-Request-Id` on every response, `Ngrok-AIG-Attempts` once the upstream attempt loop runs, and `Ngrok-AIG-Model` on success.
 See [Response headers](/ai-gateway/how-it-works#response-headers).
 
 ## Native Gemini Interactions
@@ -106,259 +99,37 @@ Send `POST /v1beta/interactions` with `model` and `input` in the request body.
 The REST base URL is `https://gateway.ngrok.ai/v1beta/`.
 Omit `stream` or set it to `false` for a JSON response. Set `stream=true` for SSE.
 
-Interactions creates are stateless. The gateway sends every accepted create to Google with `store=false`, even if you omit `store` or set it to `null`.
-Set it explicitly in clients so the intended behavior is clear.
+Interactions through the gateway are stateless. The gateway rejects `store=true` and sends every valid request to Google with `store=false`, even if you omit `store` or set it to `null`. Set `store=false` explicitly to make the intended behavior clear.
 
-The gateway rewrites the selected model, removes gateway routing fields such as `models`, filters unsupported parameters, and applies output-token limits.
-It preserves payloads within permitted native fields, including function arguments and signatures in input steps.
+Both ngrok.ai inference and BYOK requests have these restrictions:
+
+- Stored conversation chaining (`previous_interaction_id`) and background execution (`background=true`) are unsupported.
+- Interaction retrieval, deletion, cancellation, and stream resumption are unsupported.
+- Agents, environments, webhooks, and triggers are unsupported.
+
+<Note>
+Managed Interactions through ngrok.ai inference supports text input and text or structured JSON output only. Use the Standard tier: omit `service_tier` or set it to `standard`.
+The `gemini-3.1-pro-preview` and `gemini-3.1-pro-preview-customtools` models require BYOK for Interactions because they use context-band pricing.
+With BYOK, supported input and output formats and service tiers depend on Google and the selected model.
+</Note>
+
 Responses use Google's native Interactions format and include the [gateway response headers](/ai-gateway/how-it-works#response-headers).
 
-### Install and configure the Python SDK
-
-Install the Google SDK and set your ngrok access key:
-
 ```bash
-pip install --upgrade google-genai
-export NGROK_AI_GATEWAY_KEY="ng-xxxxx-g1-xxxxx"
-```
-
-Create a client for the following Python examples:
-
-```python
-import os
-from google import genai
-from google.genai import types
-
-client = genai.Client(
-    api_key=os.environ["NGROK_AI_GATEWAY_KEY"],
-    http_options=types.HttpOptions(
-        base_url="https://gateway.ngrok.ai",
-        api_version="v1beta",
-    ),
-)
-```
-
-Use the gateway origin as the SDK's `base_url`. The SDK adds the API version and `/interactions` path.
-Including `/v1beta/` in the SDK base URL can duplicate the version path.
-
-### Create an interaction
-
-<CodeGroup>
-```python Python
-response = client.interactions.create(
-    model="gemini-3.6-flash",
-    input="Write a one-sentence greeting.",
-    store=False,
-)
-
-for step in response.steps or []:
-    if step.type == "model_output":
-        for part in step.content:
-            if part.type == "text":
-                print(part.text)
-```
-
-```bash cURL
-curl --fail-with-body "https://gateway.ngrok.ai/v1beta/interactions" \
-  -H "Authorization: Bearer $NGROK_AI_GATEWAY_KEY" \
+curl -X POST \
+  "https://gateway.ngrok.ai/v1beta/interactions" \
   -H "Content-Type: application/json" \
+  -H "X-Goog-Api-Key: ng-xxxxx-g1-xxxxx" \
   -d '{
     "model": "gemini-3.6-flash",
-    "input": "Write a one-sentence greeting.",
+    "input": "Hello!",
     "store": false
   }'
-```
-</CodeGroup>
-
-The cURL command prints the JSON response. Read text from `steps` entries with `type: "model_output"` and text content parts.
-Keep the full steps if you need to continue the conversation.
-
-### Stream an interaction
-
-<CodeGroup>
-```python Python
-stream = client.interactions.create(
-    model="gemini-3.6-flash",
-    input="Write a haiku about APIs.",
-    store=False,
-    stream=True,
-)
-
-for event in stream:
-    if event.event_type == "step.delta" and event.delta.type == "text":
-        print(event.delta.text, end="", flush=True)
-print()
-```
-
-```bash cURL
-curl --fail-with-body --no-buffer "https://gateway.ngrok.ai/v1beta/interactions" \
-  -H "Authorization: Bearer $NGROK_AI_GATEWAY_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "model": "gemini-3.6-flash",
-    "input": "Write a haiku about APIs.",
-    "store": false,
-    "stream": true
-  }'
-```
-</CodeGroup>
-
-The cURL command prints SSE events. Text arrives in `step.delta` events whose `delta.type` is `text`.
-The Python example displays text only. To retain conversation history, also collect complete steps, including thought signatures and function calls.
-A stream can end with an error or an incomplete interaction; receiving text does not guarantee completion.
-
-### Managed models and rates
-
-The following models support managed Interactions with flat Standard-tier text rates.
-Prices are USD per million tokens, before the [ngrok processing fee](/ai-gateway/concepts/credits#processing-fee).
-Cache-read tokens use the cache-read rate instead of the input rate. Output billing includes thought tokens.
-
-| Model | Input | Output | Cache read |
-| --- | ---: | ---: | ---: |
-| `gemini-3.8-flash` | $0.75 | $3.75 | $0.075 |
-| `gemini-3.7-flash` | $0.75 | $3.75 | $0.075 |
-| `gemini-3.6-flash` | $0.75 | $3.75 | $0.075 |
-| `gemini-3.5-flash` | $1.50 | $9.00 | $0.15 |
-| `gemini-3.5-flash-lite` | $0.30 | $2.50 | $0.03 |
-| `gemini-3.1-flash-lite` | $0.25 | $1.50 | $0.025 |
-| `gemini-3-flash-preview` | $0.50 | $3.00 | $0.05 |
-
-`GET /v1/models` advertises `/v1beta/interactions` for models that support it.
-Discovery describes model capabilities; it does not guarantee access through your key's scope, routing rules, or provider credentials.
-A Google route alone does not make a model support Interactions.
-
-Managed Interactions accepts text input and text or structured JSON output, including customer-defined function exchanges.
-It rejects image, audio, video, and document input, non-text output configuration, transcription, and unknown content or output formats.
-Use the Standard tier: omit `service_tier` or set it to `standard`.
-Managed requests cannot use context-band pricing, even for a short prompt.
-
-Both `gemini-3.1-pro-preview` and `gemini-3.1-pro-preview-customtools` require BYOK for Interactions because they use context-band pricing.
-With BYOK, supported multimodal inputs, output options, and service tiers depend on Google and the selected model.
-The stateless restrictions below still apply to BYOK.
-
-### Customer-defined functions
-
-Your application executes customer-defined functions locally.
-Keep the original input history, append every returned step, and add each function result with the matching `call_id`.
-Preserve thought signatures, function signatures, and arguments without rebuilding or editing the returned steps.
-Send the accumulated history in another create with `store=false`.
-
-This example uses the client configured above and a local inventory lookup:
-
-```python
-tools = [{
-    "type": "function",
-    "name": "lookup_inventory",
-    "description": "Look up the available quantity of an item.",
-    "parameters": {
-        "type": "object",
-        "properties": {"item": {"type": "string"}},
-        "required": ["item"],
-    },
-}]
-history = [{
-    "type": "user_input",
-    "content": [{"type": "text", "text": "How many blue mugs are available?"}],
-}]
-inventory = {"blue mug": 12}
-
-for _ in range(5):
-    response = client.interactions.create(
-        model="gemini-3.6-flash",
-        input=history,
-        tools=tools,
-        store=False,
-    )
-    steps = [
-        step.model_dump(mode="json", by_alias=True, exclude_none=True)
-        for step in response.steps or []
-    ]
-    history.extend(steps)
-    calls = [step for step in steps if step["type"] == "function_call"]
-    if not calls:
-        for step in steps:
-            if step["type"] == "model_output":
-                for part in step["content"]:
-                    if part["type"] == "text":
-                        print(part["text"])
-        break
-    for call in calls:
-        if call["name"] != "lookup_inventory":
-            raise ValueError(f"Unknown function: {call['name']}")
-        item = call["arguments"]["item"]
-        result = {"item": item, "quantity": inventory.get(item, 0)}
-        history.append({
-            "type": "function_result",
-            "name": call["name"],
-            "call_id": call["id"],
-            "result": result,
-            "is_error": False,
-        })
-else:
-    raise RuntimeError("The function exchange exceeded five requests")
-```
-
-### Functions, hosted tools, and billing
-
-Customer-defined `function` declarations add no hosted-tool fee. Model tokens and gateway processing still incur charges.
-
-With BYOK, Google bills hosted tools such as Google Search and code execution to your Google account under its pricing rules.
-The gateway charges its processing fee.
-
-Managed requests can also run hosted tools when the model supports them.
-Token charges still apply, and tool charges depend on the tool's rates and reported usage.
-If accounting is incomplete, the gateway records an `unmetered_hosted_tool` billing gap.
-Metered tool usage can suppress that gap. A gap does not mean that the tool is free or that Google did not charge for it.
-
-### Deferred features and migration
-
-These restrictions apply to managed and BYOK Interactions:
-
-| Feature | Current behavior | Migration |
-| --- | --- | --- |
-| Stored conversations | `store=true` returns `ERR_NGROK_27250`; `previous_interaction_id` returns `ERR_NGROK_27228`. | Keep history client-side and resend it with `store=false`. |
-| Background jobs | `background=true` returns `ERR_NGROK_27228`. | Use foreground unary or streaming create. |
-| Polling, get, delete, and cancel | Resource paths under `/v1beta/interactions/{id}` return `ERR_NGROK_27204`. | Consume and retain the original response. The gateway has no resource lifecycle. |
-| Agents | Create fields `agent` and `agent_config` return `ERR_NGROK_27228`; `/v1beta/agents` endpoints return `ERR_NGROK_27204`. | Use client-side orchestration or Google directly. |
-| Environments | The create field `environment` returns `ERR_NGROK_27228`; `/v1beta/environments` endpoints return `ERR_NGROK_27204`. | Manage execution in your application or use Google directly. |
-| Webhooks | The create field `webhook_config` returns `ERR_NGROK_27228`; `/v1beta/webhooks` endpoints return `ERR_NGROK_27204`. | Consume foreground responses or use Google directly. |
-| Triggers | `/v1beta/triggers` endpoints return `ERR_NGROK_27204`. | Schedule creates in your application or use Google directly. |
-| Stream resumption | There is no supported resume operation. | Start a new create with retained history. This is a new request, not a continuation of the interrupted stream. |
-
-### Error responses
-
-Gateway errors on Interactions create and resource paths use an Interactions envelope with a string `code`.
-For example, an unsupported resource request returns HTTP 400:
-
-```json
-{
-  "error": {
-    "code": "invalid_request",
-    "message": "[ERR_NGROK_27204] Unsupported API surface \"/v1beta/interactions/abc\"."
-  }
-}
-```
-
-Unsupported platform endpoints use the gateway's generic OpenAI-style envelope instead:
-
-```json
-{
-  "error": {
-    "message": "[ERR_NGROK_27204] Unsupported API surface \"/v1beta/triggers\".",
-    "type": "invalid_request_error",
-    "param": null,
-    "code": "unsupported_surface"
-  }
-}
 ```
 
 ## Available models
 
 See the [model catalog](/ai-gateway/reference/model-catalog#google).
-
-<Warning>
-`gemini-2.5-pro`, `gemini-2.5-flash`, and `gemini-2.5-flash-lite` need a Google project created before mid-2026. Newer projects get a 404 stating the model is no longer available to new users, and the ngrok-managed Google project postdates that cutoff. Reach these models with your own key on an older project, or use a Gemini 3 model instead.
-</Warning>
 
 ## Next steps
 
