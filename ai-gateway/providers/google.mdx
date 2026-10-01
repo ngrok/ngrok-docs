@@ -13,7 +13,8 @@ The gateway supports three APIs:
 The OpenAI Responses API (`/v1/responses`) does not reach Google models.
 
 <Note>
-Google is a **built-in provider** with ngrok.ai inference available, so a provider key is optional. Add your own Google key to bill usage to your Google account instead of your ngrok credits.
+Google is a **built-in provider** with ngrok.ai inference available, so a provider key is optional.
+Add your own Google key to bill usage to your Google account instead of your ngrok credits.
 </Note>
 
 ## Setup
@@ -24,7 +25,8 @@ Google is a **built-in provider** with ngrok.ai inference available, so a provid
   </Step>
 
   <Step title="Store your Google API key (optional)">
-    Skip this step to use ngrok.ai inference. To bring your own key, generate one at [aistudio.google.com](https://aistudio.google.com), then [add a provider key](/ai-gateway/guides/attaching-provider-keys#add-a-provider-key).
+    Skip this step to use ngrok.ai inference.
+    To bring your own key, generate one at [aistudio.google.com](https://aistudio.google.com), then [add a provider key](/ai-gateway/guides/attaching-provider-keys#add-a-provider-key).
   </Step>
 
   <Step title="Create a configuration">
@@ -32,7 +34,8 @@ Google is a **built-in provider** with ngrok.ai inference available, so a provid
   </Step>
 
   <Step title="Assign and send requests">
-    Assign the configuration to your access key. Install the Google Gen AI SDK and set `GOOGLE_API_KEY` to your ngrok access key:
+    Assign the configuration to your access key.
+    Install the Google Gen AI SDK and set `GOOGLE_API_KEY` to your ngrok access key:
 
     ```bash
     pip install --upgrade google-genai
@@ -73,9 +76,11 @@ The gateway checks credentials in this order:
 3. `X-Goog-Api-Key: <NGROK_AI_GATEWAY_KEY>`, which the Google SDK sets from `api_key`.
 
 The URL query parameter `key` fills an empty `X-Goog-Api-Key` header.
-It does not override a header credential. Prefer headers to keep credentials out of URLs.
+It does not override a header credential.
+Prefer headers to keep credentials out of URLs.
 
-Your access key identifies your gateway configuration. A Google provider key is a separate credential stored in the gateway.
+Your access key identifies your gateway configuration.
+A Google provider key is a separate credential stored in the gateway.
 For bring your own key (BYOK), attach the stored Google key to your configuration; continue to send your ngrok access key from the client.
 The gateway replaces client credentials with the selected Google provider credential before forwarding the request.
 
@@ -94,7 +99,8 @@ curl "https://gateway.ngrok.ai/v1beta/models/gemini-3.6-flash:generateContent" \
   -d '{"contents":[{"parts":[{"text":"Hello"}]}]}'
 ```
 
-Use Google's native GenerateContent payload format. The gateway filters request parameters for the selected backend and applies output-token limits.
+Use Google's native GenerateContent payload format.
+The gateway filters request parameters for the selected backend and applies output-token limits.
 
 The headers are ngrok's, though.
 Alongside `Content-Type`, responses on this surface carry `Ngrok-AIG-Request-Id`, `Ngrok-AIG-Attempts`, and `Ngrok-AIG-Model`.
@@ -104,9 +110,11 @@ See [Response headers](/ai-gateway/how-it-works#response-headers).
 
 Send `POST /v1beta/interactions` with `model` and `input` in the request body.
 The REST base URL is `https://gateway.ngrok.ai/v1beta/`.
-Omit `stream` or set it to `false` for a JSON response. Set `stream=true` for SSE.
+Omit `stream` or set it to `false` for a JSON response.
+Set `stream=true` for SSE.
 
-Interactions creates are stateless. The gateway sends every accepted create to Google with `store=false`, even if you omit `store` or set it to `null`.
+Interactions creates are stateless.
+The gateway sends every accepted create to Google with `store=false`, even if you omit `store` or set it to `null`.
 Set it explicitly in clients so the intended behavior is clear.
 
 The gateway rewrites the selected model, removes gateway routing fields such as `models`, filters unsupported parameters, and applies output-token limits.
@@ -138,7 +146,8 @@ client = genai.Client(
 )
 ```
 
-Use the gateway origin as the SDK's `base_url`. The SDK adds the API version and `/interactions` path.
+Use the gateway origin as the SDK's `base_url`.
+The SDK adds the API version and `/interactions` path.
 Including `/v1beta/` in the SDK base URL can duplicate the version path.
 
 ### Create an interaction
@@ -170,7 +179,8 @@ curl --fail-with-body "https://gateway.ngrok.ai/v1beta/interactions" \
 ```
 </CodeGroup>
 
-The cURL command prints the JSON response. Read text from `steps` entries with `type: "model_output"` and text content parts.
+The cURL command prints the JSON response.
+Read text from `steps` entries with `type: "model_output"` and text content parts.
 Keep the full steps if you need to continue the conversation.
 
 ### Stream an interaction
@@ -203,15 +213,18 @@ curl --fail-with-body --no-buffer "https://gateway.ngrok.ai/v1beta/interactions"
 ```
 </CodeGroup>
 
-The cURL command prints SSE events. Text arrives in `step.delta` events whose `delta.type` is `text`.
-The Python example displays text only. To retain conversation history, also collect complete steps, including thought signatures and function calls.
+The cURL command prints SSE events.
+Text arrives in `step.delta` events whose `delta.type` is `text`.
+The Python example displays text only.
+To retain conversation history, also collect complete steps, including thought signatures and function calls.
 A stream can end with an error or an incomplete interaction; receiving text does not guarantee completion.
 
 ### Managed models and rates
 
 The following models support managed Interactions with flat Standard-tier text rates.
 Prices are USD per million tokens, before the [ngrok processing fee](/ai-gateway/concepts/credits#processing-fee).
-Cache-read tokens use the cache-read rate instead of the input rate. Output billing includes thought tokens.
+Cache-read tokens use the cache-read rate instead of the input rate.
+Output billing includes thought tokens.
 
 | Model | Input | Output | Cache read |
 | --- | ---: | ---: | ---: |
@@ -300,7 +313,8 @@ else:
 
 ### Functions, hosted tools, and billing
 
-Customer-defined `function` declarations add no hosted-tool fee. Model tokens and gateway processing still incur charges.
+Customer-defined `function` declarations add no hosted-tool fee.
+Model tokens and gateway processing still incur charges.
 
 With BYOK, Google bills hosted tools such as Google Search and code execution to your Google account under its pricing rules.
 The gateway charges its processing fee.
@@ -308,7 +322,8 @@ The gateway charges its processing fee.
 Managed requests can also run hosted tools when the model supports them.
 Token charges still apply, and tool charges depend on the tool's rates and reported usage.
 If accounting is incomplete, the gateway records an `unmetered_hosted_tool` billing gap.
-Metered tool usage can suppress that gap. A gap does not mean that the tool is free or that Google did not charge for it.
+Metered tool usage can suppress that gap.
+A gap does not mean that the tool is free or that Google did not charge for it.
 
 ### Deferred features and migration
 
@@ -357,7 +372,9 @@ Unsupported platform endpoints use the gateway's generic OpenAI-style envelope i
 See the [model catalog](/ai-gateway/reference/model-catalog#google).
 
 <Warning>
-`gemini-2.5-pro`, `gemini-2.5-flash`, and `gemini-2.5-flash-lite` need a Google project created before mid-2026. Newer projects get a 404 stating the model is no longer available to new users, and the ngrok-managed Google project postdates that cutoff. Reach these models with your own key on an older project, or use a Gemini 3 model instead.
+`gemini-2.5-pro`, `gemini-2.5-flash`, and `gemini-2.5-flash-lite` need a Google project created before mid-2026.
+Newer projects get a 404 stating the model is no longer available to new users, and the ngrok-managed Google project postdates that cutoff.
+Reach these models with your own key on an older project, or use a Gemini 3 model instead.
 </Warning>
 
 ## Next steps
