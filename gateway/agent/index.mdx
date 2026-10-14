@@ -1,9 +1,104 @@
 ---
-title: ngrok Agent
-sidebarTitle: Usage
-description: The ngrok agent is a lightweight command-line program that forwards traffic from endpoints it creates on the ngrok cloud service to your upstream application services.
+title: ngrok Agents Overview
+sidebarTitle: Overview
+description: Learn what ngrok agents do, compare the four kinds, and choose the one that fits your service.
 ---
+An agent is anything that holds an active session with the ngrok service.
+That includes the `ngrok` command-line agent you run yourself, applications you build with an Agent SDK, Kubernetes Operators, and reverse SSH agents.
+They differ in how you run them, not in what they do: every agent dials out to ngrok, creates endpoints, and carries traffic back to your upstream services.
 
-import AgentContent from "/snippets/guides/agent-content.mdx";
+## Why use an ngrok agent
 
-<AgentContent />
+The services you need to reach aren't always reachable.
+They sit behind a corporate firewall, on a device you shipped to a customer, inside a private cluster, or on a laptop that joins a different network twice a day.
+None of them can accept an inbound connection, and giving them one usually means a VPN, a port forward, or a public IP address you would rather not hand out.
+
+An agent reverses the direction instead.
+It runs next to your service, dials out to ngrok's network over TLS on port 443, and traffic addressed to your endpoint travels back down that same connection.
+Your service stays put, and nothing about its network has to change.
+
+## What agents do
+
+- **Carry any protocol your service speaks.** HTTP, HTTPS, TCP, and TLS, so databases, SSH, and RDP work the same way web apps do.
+- **Create endpoints you control.** Apply [Traffic Policy](/gateway/traffic-policy/) to authenticate, route, rewrite, and rate limit before traffic reaches your service.
+- **Use one outbound connection.** Everything travels over a single TLS connection on port 443, so there are no inbound ports to open.
+- **Give you visibility.** Sessions, endpoints, and traffic appear in the dashboard and the [Traffic Inspector](/obs/traffic-inspection/) no matter which agent created them.
+
+## The four kinds of agent
+
+<Columns cols={2}>
+	<Card title="ngrok Agent CLI" icon="terminal" href="/gateway/agent/install">
+		A standalone executable you install and run next to your service. No runtime dependencies, and it can install itself as a native OS service.
+	</Card>
+	<Card title="Agent SDKs" icon="code" href="/agent-sdks/">
+		Libraries that embed ngrok directly in your application, so there's no separate process to bundle, ship, or supervise.
+	</Card>
+	<Card title="Kubernetes Operator" icon="cubes" href="/gateway/k8s/">
+		Runs inside your cluster and turns Ingresses, Gateway API resources, and ngrok CRDs into endpoints.
+	</Card>
+	<Card title="Reverse SSH" icon="key" href="/gateway/agent/ssh-reverse-tunnel-agent/">
+		Uses the `ssh` binary you already have, with no ngrok software installed at all.
+	</Card>
+</Columns>
+
+## Choosing one
+
+Start with the `ngrok` command-line agent.
+It is the fastest way to get a service online and runs on every major platform.
+Everything you learn about endpoints, configuration, and Traffic Policy carries over to the other three.
+
+Pick a different one if:
+
+- **You're shipping an application.** An Agent SDK runs ngrok inside your application, so there's no separate agent process to bundle, distribute, or keep alive.
+  It also gives you programmatic control the CLI doesn't expose.
+- **Your workloads live in Kubernetes.** The Kubernetes Operator reads the resources your cluster already declares, so endpoints are created and reconciled the same way the rest of your infrastructure is.
+- **You can't install anything.** A reverse SSH agent needs only an `ssh` client, which is useful on locked-down hosts or for a one-off connection.
+- **The agent won't run there.** If your target platform is unsupported, or its memory budget is tighter than the agent's, an SDK or reverse SSH will still work.
+
+You may not need an agent at all.
+If what you're routing to is already reachable at a stable address, a [Cloud Endpoint](/gateway/endpoints/cloud-endpoints/) routes to it directly and stays up whether or not any process of yours is running.
+Endpoints an agent creates are [Agent Endpoints](/gateway/endpoints/agent-endpoints), and they exist only while that agent does.
+
+## Common use cases
+
+<Columns cols={2}>
+	<Card
+		title="Agent-assisted gateway"
+		icon="code"
+		href="/gateway/examples/agent-assisted-gateway/"
+	>
+		Bridge localhost development with the public internet for AI coding tools, webhook testing, and real authentication flows.
+	</Card>
+	<Card
+		title="Device gateway"
+		icon="microchip"
+		href="/gateway/device-gateway/overview/"
+	>
+		Reach hardware in the field that has no fixed address and no inbound ports.
+	</Card>
+	<Card
+		title="Site-to-site connectivity"
+		icon="building"
+		href="/gateway/site-to-site-connectivity/"
+	>
+		Connect to a customer's network without peering, a VPN, or a public IP address.
+	</Card>
+	<Card
+		title="Secure developer environments"
+		icon="shield"
+		href="/gateway/examples/secure-developer-environments/"
+	>
+		Give each developer their own public URL to route traffic and webhooks into their local development environment.
+	</Card>
+</Columns>
+
+## Agent pricing
+
+Agents are available to all ngrok users at no additional charge.
+You only incur costs if the resources they provision incur a cost.
+For more information, see the [ngrok Pricing page](https://ngrok.com/pricing).
+
+## What's next?
+
+- [Install the ngrok agent](/gateway/endpoints/agent-cli-quickstart/) and connect your first service.
+- [Learn how agents connect](/gateway/agent/connectivity) so you can diagnose them when they don't.

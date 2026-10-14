@@ -1,0 +1,268 @@
+---
+title: Google Gen AI SDK
+sidebarTitle: Google Gen AI SDK
+description: Connect Google's Gen AI SDK to the ngrok AI Gateway with Python and TypeScript examples for GenerateContent, streaming, and stateless Interactions.
+---
+
+<Note>
+**Prerequisite**: Complete the [quickstart](/ai-gateway/quickstart) to create an [access key](/ai-gateway/concepts/access-keys).
+See [Google provider setup](/ai-gateway/providers/google#setup) to configure Google routing or bring your own Google key.
+</Note>
+
+Use Google's Gen AI SDK for [Python](https://googleapis.github.io/python-genai/) or [TypeScript](https://googleapis.github.io/js-genai/) with the AI Gateway.
+Set the base URL to `https://gateway.ngrok.ai`, use API version `v1beta`, and authenticate with your ngrok access key.
+
+<Note>
+Google models also work through OpenAI-compatible Chat Completions.
+See the [OpenAI SDK guide](/ai-gateway/sdks/openai) to use your existing OpenAI client with a Google model name.
+The OpenAI Responses API (`/v1/responses`) doesn't reach Google models.
+</Note>
+
+## Installation
+
+<CodeGroup>
+```bash Python
+pip install --upgrade google-genai
+```
+
+```bash TypeScript
+npm install @google/genai
+```
+</CodeGroup>
+
+## Basic usage
+
+Set `NGROK_AI_GATEWAY_KEY` to your ngrok access key, then send a GenerateContent request:
+
+<CodeGroup>
+```python Python highlight={7-11}
+import os
+
+from google import genai
+from google.genai import types
+
+client = genai.Client(
+    api_key=os.environ["NGROK_AI_GATEWAY_KEY"],
+    http_options=types.HttpOptions(
+        base_url="https://gateway.ngrok.ai",
+        api_version="v1beta",
+    ),
+)
+
+response = client.models.generate_content(
+    model="gemini-3.6-flash",
+    contents="Hello",
+)
+
+print(response.text)
+```
+
+```typescript TypeScript highlight={4-8}
+import { GoogleGenAI } from "@google/genai";
+
+const client = new GoogleGenAI({
+  apiKey: process.env.NGROK_AI_GATEWAY_KEY,
+  httpOptions: {
+    baseUrl: "https://gateway.ngrok.ai",
+    apiVersion: "v1beta",
+  },
+});
+
+const response = await client.models.generateContent({
+  model: "gemini-3.6-flash",
+  contents: "Hello",
+});
+
+console.log(response.text);
+```
+</CodeGroup>
+
+## Streaming
+
+Use the SDK's streaming method to print text as it arrives:
+
+<CodeGroup>
+```python Python highlight={14-19}
+import os
+
+from google import genai
+from google.genai import types
+
+client = genai.Client(
+    api_key=os.environ["NGROK_AI_GATEWAY_KEY"],
+    http_options=types.HttpOptions(
+        base_url="https://gateway.ngrok.ai",
+        api_version="v1beta",
+    ),
+)
+
+for chunk in client.models.generate_content_stream(
+    model="gemini-3.6-flash",
+    contents="Write a haiku about APIs",
+):
+    if chunk.text:
+        print(chunk.text, end="", flush=True)
+```
+
+```typescript TypeScript highlight={11-18}
+import { GoogleGenAI } from "@google/genai";
+
+const client = new GoogleGenAI({
+  apiKey: process.env.NGROK_AI_GATEWAY_KEY,
+  httpOptions: {
+    baseUrl: "https://gateway.ngrok.ai",
+    apiVersion: "v1beta",
+  },
+});
+
+const stream = await client.models.generateContentStream({
+  model: "gemini-3.6-flash",
+  contents: "Write a haiku about APIs",
+});
+
+for await (const chunk of stream) {
+  process.stdout.write(chunk.text ?? "");
+}
+```
+</CodeGroup>
+
+## Interactions
+
+Send `model` and `input` to create a stateless interaction.
+Set `store=false` explicitly:
+
+<CodeGroup>
+```python Python highlight={14-18}
+import os
+
+from google import genai
+from google.genai import types
+
+client = genai.Client(
+    api_key=os.environ["NGROK_AI_GATEWAY_KEY"],
+    http_options=types.HttpOptions(
+        base_url="https://gateway.ngrok.ai",
+        api_version="v1beta",
+    ),
+)
+
+response = client.interactions.create(
+    model="gemini-3.6-flash",
+    input="Hello",
+    store=False,
+)
+
+print(response.output_text)
+```
+
+```typescript TypeScript highlight={11-15}
+import { GoogleGenAI } from "@google/genai";
+
+const client = new GoogleGenAI({
+  apiKey: process.env.NGROK_AI_GATEWAY_KEY,
+  httpOptions: {
+    baseUrl: "https://gateway.ngrok.ai",
+    apiVersion: "v1beta",
+  },
+});
+
+const response = await client.interactions.create({
+  model: "gemini-3.6-flash",
+  input: "Hello",
+  store: false,
+});
+
+console.log(response.output_text);
+```
+</CodeGroup>
+
+Interactions through the gateway are stateless.
+The gateway rejects `store=true` and sends every valid request to Google with `store=false`, even if you omit `store` or set it to `null`.
+
+Both ngrok.ai inference and bring your own key (BYOK) requests have these restrictions:
+
+- Stored conversation chaining (`previous_interaction_id`) and background execution (`background=true`) are unsupported.
+- Interaction retrieval, deletion, cancellation, and stream resumption are unsupported.
+- Agents, environments, webhooks, and triggers are unsupported.
+
+<Note>
+Managed Interactions through ngrok.ai inference supports text input and text or structured JSON output only.
+Use the Standard tier: omit `service_tier` or set it to `standard`.
+The `gemini-3.1-pro-preview` and `gemini-3.1-pro-preview-customtools` models require BYOK for Interactions because they use context-band pricing.
+With BYOK, supported input and output formats and service tiers depend on Google and the selected model.
+</Note>
+
+## Authentication
+
+Use your ngrok access key to authenticate requests to the gateway.
+The gateway checks credentials in this order:
+
+1. `Authorization: Bearer <NGROK_AI_GATEWAY_KEY>`
+2. `X-Api-Key: <NGROK_AI_GATEWAY_KEY>`
+3. `X-Goog-Api-Key: <NGROK_AI_GATEWAY_KEY>`, which the Google SDK sets from `api_key` in Python or `apiKey` in TypeScript.
+
+The URL query parameter `key` fills an empty `X-Goog-Api-Key` header.
+It doesn't override a header credential.
+Prefer headers to keep credentials out of URLs.
+
+Your access key identifies your gateway configuration.
+A Google provider key is a separate credential stored in the gateway.
+For BYOK, attach the stored Google key to your configuration; continue to send your ngrok access key from the client.
+The gateway replaces client credentials with the selected Google provider credential before forwarding the request.
+
+## Supported endpoints
+
+The gateway supports these native Gemini endpoints:
+
+| Endpoint | Description |
+|----------|-------------|
+| `/v1beta/models/{model}:generateContent` | GenerateContent with a JSON response |
+| `/v1beta/models/{model}:streamGenerateContent?alt=sse` | Streaming GenerateContent |
+| `/v1beta/interactions` | Stateless Interactions with a JSON or streaming response |
+
+### Generate content requests
+
+Point a Gemini client at `https://gateway.ngrok.ai` and send your access key as described in [Authentication](#authentication).
+Use `POST /v1beta/models/{model}:generateContent` for a JSON response.
+For streaming, use `POST /v1beta/models/{model}:streamGenerateContent?alt=sse`.
+The `alt=sse` query parameter is required.
+
+```bash
+curl "https://gateway.ngrok.ai/v1beta/models/gemini-3.6-flash:generateContent" \
+  -H "X-Goog-Api-Key: ng-xxxxx-g1-xxxxx" \
+  -H "Content-Type: application/json" \
+  -d '{"contents":[{"parts":[{"text":"Hello"}]}]}'
+```
+
+Use Google's native GenerateContent payload format.
+The gateway filters request parameters for the selected backend and applies output-token limits.
+
+Responses include the gateway response headers: `Ngrok-AIG-Request-Id` on every response, `Ngrok-AIG-Attempts` once the upstream attempt loop runs, and `Ngrok-AIG-Model` on success.
+See [Response headers](/ai-gateway/how-it-works#response-headers).
+
+### Interactions requests
+
+Send `POST /v1beta/interactions` with `model` and `input` in the request body.
+The REST base URL is `https://gateway.ngrok.ai/v1beta/`.
+Omit `stream` or set it to `false` for a JSON response.
+Set `stream=true` for server-sent events (SSE).
+
+Responses use Google's native Interactions format and include the [gateway response headers](/ai-gateway/how-it-works#response-headers).
+
+```bash
+curl -X POST \
+  "https://gateway.ngrok.ai/v1beta/interactions" \
+  -H "Content-Type: application/json" \
+  -H "X-Goog-Api-Key: ng-xxxxx-g1-xxxxx" \
+  -d '{
+    "model": "gemini-3.6-flash",
+    "input": "Hello!",
+    "store": false
+  }'
+```
+
+## Next steps
+
+- [Configure Google as a provider](/ai-gateway/providers/google)
+- [Browse Google models](/ai-gateway/reference/model-catalog#google)
+- [Configure access keys](/ai-gateway/guides/access-key-configurations)
