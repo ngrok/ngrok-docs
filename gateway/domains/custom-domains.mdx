@@ -29,18 +29,22 @@ You can also add a domain via the [ngrok API](/api-reference/reserveddomains/lis
 The `CNAME` will be in the `"cname_target"` field of [the response object](/api-reference/reserveddomains/list).
 </Info>
 
-## 2. Add the CNAME record to your domain
+## 2. Configure DNS for your domain
 
-In a new browser tab, navigate to your domain hosting provider's dashboard and create a CNAME record.
+For a subdomain such as `app.example.com`, navigate to your DNS provider's dashboard and create a CNAME record in the `example.com` zone.
 (Check your provider's support content if you're unsure how to do this.)
 When configuring the record, use the following values:
 
 - **type**: `CNAME`
-- **name**: `@`
-- **value**: the `CNAME` value you copied from ngrok
+- **name**: `app` (or `app.example.com` if your provider requires the full hostname)
+- **value**: the `CNAME` target you copied from ngrok
 
-<Tip title="Test your CNAME record">
-Using a tool like [`dig`](https://www.digwebinterface.com/) or [`nslookup`](https://www.nslookup.io/), you can test your CNAME record in the terminal.
+For an apex domain such as `example.com`, follow the [apex domain instructions](#apex-domains) to configure an ALIAS, ANAME, or flattened CNAME record instead.
+A standard CNAME record cannot be used at a DNS zone apex.
+
+<Tip title="Test your DNS records">
+Using a tool like [`dig`](https://www.digwebinterface.com/) or [`nslookup`](https://www.nslookup.io/), you can test your DNS records in the terminal.
+For subdomains, check the CNAME record; for apex domains, check the A and AAAA responses, since aliasing or flattening returns IP addresses instead of a CNAME record.
 </Tip>
 
 ## 3. Start an endpoint using your domain
@@ -54,7 +58,7 @@ ngrok http --url your-domain-here.example.com 8080
 ## 4. Wait for the TLS certificate to provision
 
 After you add a custom domain, ngrok provisions a TLS certificate for it from an ACME provider such as Let's Encrypt.
-This typically completes within a few minutes once your CNAME record is resolvable, but can take longer depending on DNS propagation and the certificate authority.
+This typically completes within a few minutes once your DNS records are resolvable, but can take longer depending on DNS propagation and the certificate authority.
 
 While the certificate is still provisioning, ngrok terminates HTTPS connections to your domain using a default ngrok wildcard certificate that does **not** match your custom hostname.
 If you start an endpoint and open the custom domain in a browser before the certificate is ready, you'll see a certificate warning indicating that the hostname doesn't match the certificate.
@@ -69,7 +73,7 @@ You can see whether your certificate is still provisioning, ready, or blocked on
 - **API**: call [`GET /reserved_domains/{id}`](/api-reference/reserveddomains/get) and read `certificate_management_status.provisioning_job`.
   The `status` field tells you whether provisioning is in progress, valid, or has hit a recoverable or user-correctable error, and `retries_at` tells you when ngrok will try again.
 
-If `provisioning_job` reports a DNS error, double-check that the CNAME record from [step 2](#2-add-the-cname-record-to-your-domain) is published and resolvable with `dig` or `nslookup`.
+If `provisioning_job` reports a DNS error, double-check that the DNS records from [step 2](#2-configure-dns-for-your-domain) are published and resolvable with `dig` or `nslookup`.
 For wildcard custom domains, both CNAME records described in [TLS certificate provisioning](/gateway/domains/tls-certificates/#wildcard-domains) must exist before the certificate can be issued.
 </Tip>
 
@@ -79,7 +83,18 @@ If you bring your own [wildcard domain](/domains#wildcard-domains) (such as `*.e
 
 ## Apex domains
 
-ngrok does not currently support apex domains.
+An apex domain is the root of a DNS zone, such as `example.com`; `app.example.com` is a subdomain.
+ngrok supports apex domains with DNS providers that offer ALIAS, ANAME, or CNAME flattening.
+Check that your provider supports pointing these records to external hostnames.
+
+Add your apex domain in ngrok as described in [step 1](#1-add-your-domain-in-ngrok).
+In your DNS provider, create an ALIAS, ANAME, or flattened CNAME record at the apex, using `@` or your provider's equivalent for the name.
+Point the record to the `CNAME` target ngrok supplies for your domain.
+Your DNS provider resolves this target and returns A or AAAA records.
+
+Once DNS is configured correctly, ngrok automatically provisions a TLS certificate as described in [step 4](#4-wait-for-the-tls-certificate-to-provision).
+If your DNS provider doesn't support aliasing or flattening to ngrok's target, use a subdomain such as `app.example.com` with a standard CNAME record, or move your domain's DNS hosting to a compatible provider.
+You can keep your domain registered with your existing registrar.
 
 ## Using custom domains with TCP endpoints
 
