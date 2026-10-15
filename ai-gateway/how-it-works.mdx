@@ -25,7 +25,7 @@ sequenceDiagram
 1. **Your app sends a request** with your [access key](/ai-gateway/concepts/access-keys) to `https://gateway.ngrok.ai`
 2. **The gateway validates the key** and loads its [access key configuration](/ai-gateway/guides/access-key-configurations)
 3. **The gateway resolves the model** from your request body
-4. **Upstream credentials are selected** from the configuration's routing rules: a key ngrok supplies when you pay with credits, or your stored [provider keys](/ai-gateway/guides/attaching-provider-keys)
+4. **Provider credentials are selected** from the configuration's routing rules: a key ngrok supplies when you pay with credits, or your stored [provider keys](/ai-gateway/guides/attaching-provider-keys)
 5. **Unsupported parameters are stripped** for the chosen model before forwarding, and listed in the `Ngrok-AIG-Removed-Params` [response header](#response-headers)
 6. **The request is forwarded** to the upstream provider
 7. **On failure, the gateway retries** with the next provider key or model candidate
@@ -48,7 +48,7 @@ Every response from `gateway.ngrok.ai` carries ngrok's own headers describing ho
 | `Ngrok-AIG-Request-Id` | The request's ID. Use it to look the request up afterwards. | Every response, including rejections and errors. |
 | `Ngrok-AIG-Attempts` | How many upstream attempts the gateway made. | Once the attempt loop runs, on both success and failure. Absent when the request failed before any attempt, such as a malformed body or an unknown model. |
 | `Ngrok-AIG-Model` | The upstream model that produced the response. | Success only. |
-| `Ngrok-AIG-Rejected-Models` | Comma-separated models from your request that never ran, for example because the access scope blocks them or no credentials are available. Lists at most 4 models. | Once the attempt loop runs, when at least one requested model was dropped. |
+| `Ngrok-AIG-Rejected-Models` | Comma-separated models from your request that never ran, for example because the access scope blocks them or no credentials are available. Lists at most 4 models. | Once the gateway tries a provider, when at least one requested model was dropped. |
 | `Ngrok-AIG-Removed-Params` | Comma-separated request fields the gateway didn't send to the provider that served the response, because that provider or model doesn't support them. | Success only, when the gateway removed at least one field. |
 
 All five are exposed through CORS, so browser clients can read them.
@@ -104,19 +104,19 @@ The gateway retries automatically when upstream requests fail.
 ### What triggers failover?
 
 - Rate limits (HTTP 429)
-- Auth errors (HTTP 401 or 403) that the provider attributes to the key
+- Auth errors (HTTP 401 or 403) because the provider rejected the key
 - Timeouts, server errors (HTTP 5xx), and connection failures
 
-Other 4xx errors return to your client right away, because another candidate would fail the same way.
+Other 4xx errors return to your client right away, because another model would fail the same way.
 
 ### Failover order
 
-The next candidate depends on the error:
+What the gateway tries next depends on the error:
 
 - **Auth error or rate limit**: the next provider key in the routing rule step. When no keys are left and the rule has an `ngrok` step after the **Bring your own API key** step, the gateway falls back to paying with credits.
-- **Timeout, server error, or connection failure**: the gateway skips the remaining keys for that provider and moves to the next model candidate.
+- **Timeout, server error, or connection failure**: the gateway skips the remaining keys for that provider and moves to the next model.
 
-Model candidates come from the request's `models` array, and from other providers that serve the same model. See [Handle gateway errors](/ai-gateway/guides/error-handling) for the full order.
+The next model comes from your request's `models` array, or from another provider that serves the same model. See [Handle gateway errors](/ai-gateway/guides/error-handling) for the full order.
 
 A routing rule uses the first step that has usable credentials. The gateway doesn't try later steps, except an `ngrok` step after a **Bring your own API key** step.
 

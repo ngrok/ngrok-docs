@@ -160,10 +160,10 @@ API surface "`SURFACE`" is not implemented.
 501 Not Implemented
 
 **Causes**
-- The gateway recognizes the API surface but does not serve it yet
+- The gateway knows this endpoint but doesn't support it yet
 
 **Solutions**
-- Use a supported surface such as `/v1/chat/completions`. See [ERR_NGROK_27204](#err_ngrok_27204) for the full list
+- Use a supported endpoint such as `/v1/chat/completions`. See [ERR_NGROK_27204](#err_ngrok_27204) for the full list
 
 ---
 
@@ -316,7 +316,7 @@ ngrok can't serve "`MODELID`" on provider "`PROVIDERID`" with an ngrok-managed k
 503 Service Unavailable
 
 **Causes**
-- ngrok's managed key for that model and provider isn't set up to serve requests
+- You can't pay for this model with credits on that provider right now
 
 **Solutions**
 - Retry, or fail over to another model. See [Configure fallback models](/ai-gateway/guides/configure-fallback-models)
@@ -335,7 +335,7 @@ Model "`MODELID`" is not priced for managed billing yet for provider "`PROVIDERI
 400 Bad Request
 
 **Causes**
-- The model is in the catalog, but ngrok has no price for it on that provider, so a managed key can't bill it
+- You can't pay for this model with credits on that provider yet, because ngrok doesn't have a price for it
 
 **Solutions**
 - [Attach your own provider key](/ai-gateway/guides/attaching-provider-keys) for that provider
@@ -354,7 +354,7 @@ An ngrok-managed key can't serve this request, because ngrok can't bill `FEATURE
 400 Bad Request
 
 **Causes**
-- The request uses a feature, such as a hosted tool, that ngrok can't price for that model
+- The request uses a feature, such as a hosted tool, that you can't pay for with credits on that model
 
 **Solutions**
 - Remove the feature from the request
@@ -392,19 +392,18 @@ Your account has no `FILES` for provider "`PROVIDERID`". An ngrok-managed key ca
 404 Not Found
 
 **Causes**
-- The request references a file ID that your account didn't upload through the gateway
+- The request uses a file that wasn't uploaded from your account, so you can't pay for it with credits
 
 **Solutions**
-- Upload the file through the gateway's `/v1/files` endpoint first
 - [Attach your own provider key](/ai-gateway/guides/attaching-provider-keys) to use files stored in your provider account
 
 ---
 
 ## Upstream failures
 
-These arrive after at least one upstream attempt, so `Ngrok-AIG-Attempts` tells you how many candidates the gateway tried.
+These arrive after the gateway tries at least one provider, so `Ngrok-AIG-Attempts` tells you how many tries the gateway made.
 See [Handle gateway errors](/ai-gateway/guides/error-handling) for the order it tries them in.
-When every candidate fails, or the request hits the 10-attempt cap, the gateway returns the last candidate's error.
+When every model fails, or the request hits the 10-attempt cap, the gateway returns the last model's error.
 
 ### ERR_NGROK_27211
 
