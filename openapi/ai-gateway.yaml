@@ -26,7 +26,7 @@ tags:
   - name: AI Gateway Models
     description: Read-only listing of AI Gateway models available to the authenticated account.
   - name: AI Gateway Provider Keys
-    description: Manage provider keys attached to AI Gateway managed access keys.
+    description: Manage the provider keys your account stores for AI Gateway. Access key configurations reference them in routing rule steps.
   - name: AI Gateway Usage
     description: Read-only AI Gateway usage events and aggregated usage overview for the authenticated account.
 paths:
@@ -427,7 +427,7 @@ paths:
       tags:
         - AI Gateway Provider Keys
       summary: Create an AI Gateway provider key
-      description: Create a new AI Gateway provider key attached to a managed access key.
+      description: Create a new AI Gateway provider key for your account. Reference it from an access key configuration's routing rule steps to use it.
       operationId: CreateAIGatewayProviderAPIKey
       requestBody:
         required: true
@@ -747,6 +747,10 @@ paths:
         endpoint until the purchase reaches a terminal state. Do not retry a
         `pending` purchase, since the charge may still be processing.
 
+        If the card issuer asks for 3-D Secure approval, the purchase moves to
+        `actionRequired` and `completionUrl` links the page where the customer
+        approves the payment.
+
         The account must be provisioned for credit purchases and have a default
         payment method. If the account is not provisioned, use the checkout
         session endpoint instead. Cards cannot be added through this API and must
@@ -778,6 +782,8 @@ paths:
         - `409 idempotency_key_reuse`: The key was already used with a different
           amount.
         - `409 purchase_in_progress`: Another purchase is still unresolved.
+        - `400 balance_limit_exceeded`: The purchase would take the balance
+          over the $500 cap.
       operationId: CreateCreditPurchase
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'
@@ -1317,7 +1323,7 @@ components:
       required:
         - steps
       description: |
-        A routing rule. Scope it by `provider`, `model`, or both.
+        A routing rule. Scope it by exactly one of `provider` or `model`.
         Model rules take precedence over provider rules for the same upstream.
       properties:
         provider:
@@ -1910,7 +1916,7 @@ components:
           type: string
           minLength: 1
           maxLength: 255
-          description: Model identifier (for example "llama-3").
+          description: Model identifier (for example "llama-3"). Must be unique within the request's `models` list.
         providerModelId:
           type: string
           maxLength: 255
@@ -1919,9 +1925,12 @@ components:
             Optional; omit to send modelId as-is.
         unsupportedParams:
           type: array
-          description: Request params this provider does not support for this model.
+          maxItems: 100
+          uniqueItems: true
+          description: Request params this provider does not support for this model. Entries must be unique and non-empty.
           items:
             type: string
+            minLength: 1
             maxLength: 255
     AIGatewayProviderCreate:
       type: object
@@ -2020,6 +2029,30 @@ components:
         service_tier:
           type: string
           description: Provider service tier associated with this rate.
+        minimum_billable:
+          type: string
+          description: Smallest billable quantity, such as "5m" for a container.
+        tier:
+          type: string
+          description: Size this rate applies to, such as a container memory class.
+        model:
+          type: string
+          description: Model whose tokens this rate prices, when a tool bills in a second model's tokens rather than the entry's own.
+        tool_version:
+          type: string
+          description: Tool version this rate applies to, when a provider prices versions differently.
+        model_reasoning:
+          type: boolean
+          description: Whether this rate applies to a reasoning model.
+        with_tool_at_least:
+          type: string
+          description: Another tool, at this dated version or later, whose presence selects this rate.
+        content_tokens:
+          type: string
+          description: Whether the content the tool returns is billed or free under this rate.
+        session_minutes:
+          type: string
+          description: Length of one billed session block, such as "20" for a 20-minute container session. A partial block bills whole.
     AIGatewayModelPricingRate:
       type: object
       additionalProperties: false
@@ -2033,7 +2066,7 @@ components:
           description: Billing type, such as "prompt", "completion", or "input_cache_write".
         unit:
           type: string
-          description: Billing unit, such as "token", "request", "image", or "second".
+          description: Billing unit, such as "token", "request", "image", "hour", "gb_day", "query", "grounded_prompt", or "minute". A rate is only meaningful in the unit it states.
         price:
           type: string
           description: Cost per billing unit.
@@ -2074,6 +2107,7 @@ components:
             - responses
             - messages
             - generate-content
+            - interactions
         path:
           type: string
           description: |
@@ -2112,7 +2146,18 @@ components:
     AIGatewayModelProviderMetrics:
       type: object
       additionalProperties: false
+      required:
+        - scope
       properties:
+        scope:
+          type: string
+          enum:
+            - global
+            - account
+          x-enum-varnames:
+            - AIGatewayModelProviderMetricsScopeGlobal
+            - AIGatewayModelProviderMetricsScopeAccount
+          description: Traffic these metrics measure. `global` covers every account that uses this provider. `account` covers only the requesting account.
         uptime_last_15m:
           type: number
           format: double
@@ -2145,6 +2190,7 @@ components:
         - pricing
         - supported_api_formats
         - supports_implicit_caching
+        - supports_managed_keys
       properties:
         model_id:
           type: string
@@ -2170,6 +2216,9 @@ components:
         supports_implicit_caching:
           type: boolean
           description: Whether this provider caches repeated prompts automatically for this model.
+        supports_managed_keys:
+          type: boolean
+          description: Whether an ngrok-managed key can serve this model on this provider. When false, the request needs your own provider key.
         status:
           type: string
           enum:
@@ -2457,7 +2506,7 @@ components:
           type: integer
           format: int64
           minimum: 1
-          description: Amount in cents to purchase. Must be a positive integer.
+          description: Amount in cents to purchase. Must be a positive integer. The resulting balance cannot exceed the $500 (50000 cent) cap.
     CheckoutSession:
       type: object
       additionalProperties: false
@@ -2513,6 +2562,9 @@ components:
             a periodic sweep backstops a lost webhook. A purchase can therefore
             stay `pending` until the next sweep runs, after the charge itself
             settles.
+
+            `actionRequired` means the card issuer asked for 3-D Secure
+            approval. Open `completionUrl` to approve the payment.
         amountCents:
           type: integer
           format: int64
@@ -2539,6 +2591,10 @@ components:
           type: string
           nullable: true
           description: Human-readable decline detail, set only when status is failed.
+        completionUrl:
+          type: string
+          nullable: true
+          description: Stripe page where the customer approves the payment. Set only when status is actionRequired and the page can be fetched. Open it to finish the purchase.
     AIGatewayConfig:
       type: object
       additionalProperties: false
@@ -2556,16 +2612,16 @@ components:
           description: URI of this AI Gateway Configuration API resource.
         totalTimeout:
           type: string
-          description: Total timeout duration for a request through the AI Gateway (Go duration string, e.g. `30s`, `1m`).
+          description: Total timeout duration for a request through the AI Gateway (Go duration string, e.g. `30s`, `1m`). Defaults to `2m`. For a streaming response, the default bounds the stream only until its first byte, after which the stream can run for up to 15 minutes. A value you set applies to the whole stream.
         perRequestTimeout:
           type: string
-          description: Per-request timeout duration for individual upstream requests (Go duration string, e.g. `30s`, `1m`).
+          description: Per-request timeout duration for individual upstream requests (Go duration string, e.g. `30s`, `1m`). Defaults to `1m`. Must be less than or equal to `totalTimeout`, checked against the configuration as it will be after the update.
         maxInputTokens:
           type: integer
           format: int64
           nullable: true
           description: |
-            Maximum number of input tokens allowed per request.
+            Maximum number of input tokens allowed per request. Must be greater than zero.
             PATCH: omit to preserve, send `null` to clear the cap (no
             limit), or send a number to set it. Accounts that have not
             written a value read back the per-account default; once
@@ -2581,7 +2637,7 @@ components:
           format: int64
           nullable: true
           description: |
-            Maximum number of output tokens allowed per request.
+            Maximum number of output tokens allowed per request. Must be greater than zero.
             PATCH: omit to preserve, send `null` to clear the cap (no
             limit), or send a number to set it. Accounts that have not
             written a value read back the per-account default; once
@@ -2611,16 +2667,16 @@ components:
       properties:
         totalTimeout:
           type: string
-          description: Total timeout duration for a request through the AI Gateway (Go duration string, e.g. `30s`, `1m`).
+          description: Total timeout duration for a request through the AI Gateway (Go duration string, e.g. `30s`, `1m`). Defaults to `2m`. For a streaming response, the default bounds the stream only until its first byte, after which the stream can run for up to 15 minutes. A value you set applies to the whole stream.
         perRequestTimeout:
           type: string
-          description: Per-request timeout duration for individual upstream requests (Go duration string, e.g. `30s`, `1m`).
+          description: Per-request timeout duration for individual upstream requests (Go duration string, e.g. `30s`, `1m`). Defaults to `1m`. Must be less than or equal to `totalTimeout`, checked against the configuration as it will be after the update.
         maxInputTokens:
           type: integer
           format: int64
           nullable: true
           description: |
-            Maximum number of input tokens allowed per request.
+            Maximum number of input tokens allowed per request. Must be greater than zero.
             PATCH: omit to preserve, send `null` to clear the cap (no
             limit), or send a number to set it. Accounts that have not
             written a value read back the per-account default; once
@@ -2636,7 +2692,7 @@ components:
           format: int64
           nullable: true
           description: |
-            Maximum number of output tokens allowed per request.
+            Maximum number of output tokens allowed per request. Must be greater than zero.
             PATCH: omit to preserve, send `null` to clear the cap (no
             limit), or send a number to set it. Accounts that have not
             written a value read back the per-account default; once
@@ -2977,7 +3033,7 @@ components:
           type: integer
           format: int64
           nullable: true
-          description: Time from the gateway receiving the client request to the attempt completing, in milliseconds.
+          description: Time from the gateway receiving the client request to this attempt completing, in milliseconds. On a retried request the value also covers every earlier attempt, so it is not the duration of this attempt alone.
         upstreamDurationMs:
           type: integer
           format: int64
@@ -2987,7 +3043,7 @@ components:
           type: integer
           format: int64
           nullable: true
-          description: Time to the first streamed token, in milliseconds. Null for a non-streaming attempt.
+          description: Time from the gateway starting this attempt to the first streamed token, in milliseconds. The interval also covers the key resolution that runs before the upstream call. Null for a non-streaming attempt.
     AIGatewayRequest:
       type: object
       additionalProperties: false

@@ -124,7 +124,8 @@ Unsupported API surface "`PATH`".
 - The request path is not one the gateway serves
 
 **Solutions**
-- Post to `/v1/chat/completions`, `/v1/responses`, `/v1/messages`, or the native Gemini path `/v1beta/models/{model}:generateContent`
+- Post to `/v1/chat/completions`, `/v1/responses`, `/v1/messages`, the native Gemini path `/v1beta/models/{model}:generateContent`, or `/v1beta/interactions`
+- The gateway does not serve `/v1/embeddings`, `/v1/completions`, or image and audio endpoints
 - Point your SDK's base URL at `https://gateway.ngrok.ai/v1` rather than a full endpoint path
 
 ---
@@ -145,6 +146,42 @@ Provider "`PROVIDERID`" does not support API surface "`SURFACE`".
 **Solutions**
 - Call the surface the provider supports. See the provider's page under [Getting Started With](/ai-gateway/providers/openai)
 - Choose a different provider for that surface
+
+---
+
+### ERR_NGROK_27205
+
+**Message**
+
+API surface "`SURFACE`" is not implemented.
+
+**HTTP Status**
+
+501 Not Implemented
+
+**Causes**
+- The gateway knows this endpoint but doesn't support it yet
+
+**Solutions**
+- Use a supported endpoint such as `/v1/chat/completions`. See [ERR_NGROK_27204](#err_ngrok_27204) for the full list
+
+---
+
+### ERR_NGROK_27250
+
+**Message**
+
+ngrok doesn't store interactions yet, so "store" can't be true. Omit it or set it to false to send a stateless request.
+
+**HTTP Status**
+
+400 Bad Request
+
+**Causes**
+- An Interactions API request set `store` to `true`
+
+**Solutions**
+- Omit `store`, or set it to `false`. See [Google SDK](/ai-gateway/sdks/google)
 
 ---
 
@@ -187,26 +224,6 @@ Model "`MODELID`" is not allowed by the access policy.
 
 ---
 
-### ERR_NGROK_27001
-
-**Message**
-
-This account does not have access to AI Gateway access keys.
-
-**HTTP Status**
-
-403 Forbidden
-
-**Causes**
-- The account has no AI Gateway credits
-- The AI Gateway feature is not enabled for the account
-
-**Solutions**
-- [Purchase credits](https://app.ngrok.ai/credits) (minimum $5.00)
-- Contact ngrok support if you believe this is an error
-
----
-
 ## Credential and credit errors
 
 ### ERR_NGROK_27201
@@ -245,7 +262,7 @@ No keys available for provider "`PROVIDERID`".
 
 **Solutions**
 - Add a routing rule for the provider in the key's [access key configuration](/ai-gateway/guides/access-key-configurations)
-- [Attach a provider key](/ai-gateway/guides/attaching-provider-keys#add-a-provider-key), or use [ngrok.ai inference](/ai-gateway/guides/use-ngrok-ai-inference) where the provider supports it
+- [Attach a provider key](/ai-gateway/guides/attaching-provider-keys#add-a-provider-key), or [pay with credits](/ai-gateway/guides/pay-with-credits) where the provider supports it
 
 ---
 
@@ -260,31 +277,12 @@ Credit check failed: `REASON`
 402 Payment Required
 
 **Causes**
-- The request needs an ngrok-managed key and the account's credit check did not pass
+- The account's credit balance is zero or below, or billing is not set up for the account yet
+- Every request needs credits, even with your own provider keys, because each one pays a small processing fee
 
 **Solutions**
 - Check your balance with the [Credits API](/ai-gateway/api-reference/credits/balance)
-- [Purchase credits](https://app.ngrok.ai/credits), or attach your own [provider key](/ai-gateway/guides/attaching-provider-keys) so the request bills to the provider instead
-
----
-
-### ERR_NGROK_4026
-
-**Message**
-
-Your account has run out of credit.
-
-**HTTP Status**
-
-403 Forbidden
-
-**Causes**
-- The AI Gateway credit balance has reached zero
-- Credits have expired
-
-**Solutions**
-- [Purchase additional credits](https://app.ngrok.ai/credits) to restore access
-- See [Credits](/ai-gateway/concepts/credits) for details on credit management
+- [Purchase credits](https://app.ngrok.ai/billing). Your own provider key does not bypass this check
 
 ---
 
@@ -299,7 +297,7 @@ Model "`MODELID`" is not available with an ngrok-managed key for provider "`PROV
 400 Bad Request
 
 **Causes**
-- The model is not in ngrok's catalog, so ngrok has no pricing to bill it against
+- The model isn't in the ngrok.ai catalog, so ngrok.ai has no price for it
 
 **Solutions**
 - [Attach your own provider key](/ai-gateway/guides/attaching-provider-keys) for that provider
@@ -318,37 +316,94 @@ ngrok can't serve "`MODELID`" on provider "`PROVIDERID`" with an ngrok-managed k
 503 Service Unavailable
 
 **Causes**
-- ngrok's own capacity for that model and provider is temporarily unavailable
+- You can't pay for this model with credits on that provider right now
 
 **Solutions**
 - Retry, or fail over to another model. See [Configure fallback models](/ai-gateway/guides/configure-fallback-models)
-- [Attach your own provider key](/ai-gateway/guides/attaching-provider-keys) so the request does not depend on ngrok's capacity
+- [Attach your own provider key](/ai-gateway/guides/attaching-provider-keys) for that provider
+
+---
+
+### ERR_NGROK_27236
+
+**Message**
+
+Model "`MODELID`" is not priced for managed billing yet for provider "`PROVIDERID`"; add your own provider key to use it.
+
+**HTTP Status**
+
+400 Bad Request
+
+**Causes**
+- You can't pay for this model with credits on that provider yet, because ngrok.ai doesn't have a price for it
+
+**Solutions**
+- [Attach your own provider key](/ai-gateway/guides/attaching-provider-keys) for that provider
+- Pick another model from the [model catalog](/ai-gateway/reference/model-catalog)
+
+---
+
+### ERR_NGROK_27238
+
+**Message**
+
+An ngrok-managed key can't serve this request, because ngrok can't bill `FEATURE` for "`MODELID`" on provider "`PROVIDERID`". Add your own provider key to use it.
+
+**HTTP Status**
+
+400 Bad Request
+
+**Causes**
+- The request uses a feature, such as a hosted tool, that you can't pay for with credits on that model
+
+**Solutions**
+- Remove the feature from the request
+- [Attach your own provider key](/ai-gateway/guides/attaching-provider-keys) for that provider
+
+---
+
+### ERR_NGROK_27249
+
+**Message**
+
+ngrok doesn't offer "`MODELID`" on provider "`PROVIDERID`" with an ngrok-managed key. Add your own provider key to use it.
+
+**HTTP Status**
+
+400 Bad Request
+
+**Causes**
+- The model exists in the catalog, but you can't pay for it with credits on that provider
+
+**Solutions**
+- [Attach your own provider key](/ai-gateway/guides/attaching-provider-keys) for that provider
+- Pick a model you can pay for with credits. See the [model catalog](/ai-gateway/reference/model-catalog#billing-and-provider-credentials)
+
+---
+
+### ERR_NGROK_27240
+
+**Message**
+
+Your account has no `FILES` for provider "`PROVIDERID`". An ngrok-managed key can only use files your account uploaded. Upload the file first, or add your own provider key.
+
+**HTTP Status**
+
+404 Not Found
+
+**Causes**
+- The request uses a file that wasn't uploaded from your account, so you can't pay for it with credits
+
+**Solutions**
+- [Attach your own provider key](/ai-gateway/guides/attaching-provider-keys) to use files stored in your provider account
 
 ---
 
 ## Upstream failures
 
-These arrive after at least one upstream attempt, so `Ngrok-AIG-Attempts` tells you how many candidates the gateway tried.
+These arrive after the gateway tries at least one provider, so `Ngrok-AIG-Attempts` tells you how many tries the gateway made.
 See [Handle gateway errors](/ai-gateway/guides/error-handling) for the order it tries them in.
-
-### ERR_NGROK_27208
-
-**Message**
-
-All retries exhausted, last error: `LASTERROR`
-
-**HTTP Status**
-
-502 Bad Gateway
-
-**Causes**
-- Every candidate failed, or the request hit the 10-attempt cap
-
-**Solutions**
-- Read the attempt chain to see what each candidate returned. See [Debug failed requests](/ai-gateway/guides/debugging)
-- Attach more [provider keys](/ai-gateway/guides/attaching-provider-keys), or widen the candidate list with [fallback models](/ai-gateway/guides/configure-fallback-models)
-
----
+When every model fails, or the request hits the 10-attempt cap, the gateway returns the last model's error.
 
 ### ERR_NGROK_27211
 
@@ -489,6 +544,25 @@ Input too large: `INPUTTOKENS` tokens (max `MAXALLOWED`). Shorten your prompt.
 
 ---
 
+### ERR_NGROK_AI_GATEWAY_REQUEST_BODY_TOO_LONG
+
+**Message**
+
+Request body is too long. Max 32 MiB.
+
+**HTTP Status**
+
+413 Payload Too Large
+
+**Causes**
+- The request body is larger than 32 MiB
+
+**Solutions**
+- Send large inputs, such as documents and images, through the provider's files API instead of inline
+- Reduce the conversation history or embedded content
+
+---
+
 ## Retired setup
 
 ### ERR_NGROK_3820
@@ -534,9 +608,8 @@ Each has a page under [ngrok error codes](/errors):
 | `ERR_NGROK_27220` | Upstream provider is unavailable |
 | `ERR_NGROK_27221` | Upstream provider gateway timed out |
 | `ERR_NGROK_27222` | Upstream provider returned an unexpected status |
-| `ERR_NGROK_27223` | Network error contacting upstream provider |
 | `ERR_NGROK_27234` | Upstream returned a non-streaming response to a streaming request |
-| `ERR_NGROK_27235` | Upstream provider failed to respond |
+| `ERR_NGROK_27235` | Upstream provider failed to respond, for example a dropped connection |
 | `ERR_NGROK_27241` to `ERR_NGROK_27248` | Files API errors |
 
 ## SDK error handling
