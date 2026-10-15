@@ -20,25 +20,11 @@ To reach a model you run yourself through an [internal endpoint](/ai-gateway/con
 
 ## Purchasing credits
 
-Visit the [Billing page](https://app.ngrok.ai/billing) and purchase at least USD \$5.00. Your balance can't go above USD \$500.00, so a purchase that would take it over the cap is rejected.
+1. Open the [Billing page](https://app.ngrok.ai/billing) and select **Add credits**. If you haven't saved a card yet, you'll add one first.
+2. Pick an amount, or enter your own. The minimum is \$5, and your balance can be at most \$500.
+3. Select **Buy** to confirm.
 
-You can also buy credits with the AI Gateway API. The purchase charges the default card saved on your account, so save a card on the Billing page first:
-
-```bash
-curl -X POST https://api.ngrok.ai/credits/purchases \
-  -H "Authorization: Bearer $AI_GATEWAY_API_KEY" \
-  -H "Content-Type: application/json" \
-  -H "Idempotency-Key: $(uuidgen)" \
-  -d '{ "amount": 500 }'
-```
-
-The response returns a purchase with `status: pending`. Poll [`GET /credits/purchases/{id}`](/ai-gateway/api-reference/credits/purchase-get) until it reaches `succeeded` or `failed`. If the card issuer asks for 3D Secure approval, the status becomes `actionRequired` and `completionUrl` links the page where you approve the payment.
-
-Send a new `Idempotency-Key` for each purchase so a retried request never charges you twice.
-
-<Note>
-Some older accounts are billed through Stripe Checkout instead. For those accounts, the purchases endpoint returns `metronome_not_provisioned`; use [`POST /credits/checkout-session`](/ai-gateway/api-reference/credits/checkout-session) instead.
-</Note>
+To buy credits from code, use the [Credits API](/ai-gateway/api-reference/credits/purchase-create).
 
 Credits expire **one year** after purchase.
 
