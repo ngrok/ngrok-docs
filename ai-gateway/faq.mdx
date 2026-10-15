@@ -63,6 +63,14 @@ You may need a ngrok platform plan for platform features on the same account, su
 
 See [Credits](/ai-gateway/concepts/credits).
 
+### Can my team sign in with SSO?
+
+Yes. app.ngrok.ai uses your ngrok account to sign in, so it uses your account's single sign-on (SAML or OpenID Connect, with providers like Okta).
+
+SSO requires the Pay-as-you-go plan with the SSO & RBAC add-on. Set it up on your [ngrok account settings](https://dashboard.ngrok.com/settings). See [Dashboard Single Sign-On](/iam/sso).
+
+Role-based permissions inside app.ngrok.ai aren't available yet.
+
 ## Keys and credentials
 
 ### Which key do I put in my app?
@@ -121,6 +129,14 @@ It depends on the provider and how you want billing to work.
 For supported OpenAI and Anthropic models, you can use ngrok.ai credits without adding your own provider key.
 
 For other built-in providers, or if you want upstream usage billed to your own provider account, add a [provider key](/ai-gateway/guides/attaching-provider-keys).
+
+### Can I bring my own key for every provider?
+
+Yes. Every built-in provider accepts your own provider key, including OpenAI and Anthropic.
+
+ngrok-managed keys, where you pay with ngrok.ai credits instead of a provider account, are available for supported OpenAI and Anthropic models. All other providers need your own key.
+
+Add provider keys on the [Providers page](https://app.ngrok.ai/providers) in app.ngrok.ai or with the [Provider Keys API](/ai-gateway/api-reference/provider-keys/create). See [Bring your own provider key](/ai-gateway/guides/attaching-provider-keys).
 
 ### Are provider keys exposed to my app?
 
@@ -308,6 +324,17 @@ The gateway tries the primary model first, then each fallback model in order unt
 
 See [Configure fallback models](/ai-gateway/guides/configure-fallback-models).
 
+### Can I set fallbacks on the gateway instead of in each request?
+
+Not yet. Fallback models are set per request, in the `models` list.
+
+On the gateway side today, you can:
+
+* Attach multiple provider keys for the same provider, so the gateway [fails over between keys](/ai-gateway/guides/key-selection-failover) on rate limits, quota limits, or auth errors.
+* Use [access key configurations](/ai-gateway/guides/access-key-configurations) to control which providers and models each access key can reach.
+
+To change a default model for many clients without changing their code, put the `model` and `models` values in a shared client wrapper or config your apps already read.
+
 ### Can the gateway fail over to a different provider?
 
 Yes, if the request includes fallback models from different providers.
@@ -326,9 +353,17 @@ Each provider and model must be allowed by the access key configuration.
 
 ### How long does the gateway try before giving up?
 
-You can configure the **Total timeout** in [Account Settings](/ai-gateway/guides/account-settings) to cap the time spent across all failover attempts for a request.
+By default, each upstream attempt can take up to 60 seconds, and the whole request, including every failover attempt, up to 120 seconds. The gateway makes at most 10 upstream attempts per request.
 
-If the total timeout is reached, the gateway stops trying candidates and returns an error.
+| Bound | Default | Configurable |
+| - | - | - |
+| Per-request timeout (one upstream attempt) | 60s | Yes |
+| Total timeout (all attempts) | 120s | Yes |
+| Upstream attempts per request | 10 | No |
+
+Change the timeouts in [Account Settings](/ai-gateway/guides/account-settings) or with the [gateway configuration API](/ai-gateway/api-reference/gateway-config/update). You can also set account-wide input and output token limits there.
+
+If the total timeout is reached, the gateway stops trying candidates and returns an error. See [Handle gateway errors](/ai-gateway/guides/error-handling).
 
 ### Can I disable automatic failover?
 
@@ -346,7 +381,7 @@ The gateway only fails over between keys that are available to the request. See 
 
 ### Does ngrok.ai store request and response bodies?
 
-Only if you configure it to. By default, request and response bodies are processed in memory and not stored.
+The gateway processes request and response bodies in memory by default and doesn't store them unless you configure body capture.
 
 You can configure the gateway to capture request and response bodies. Captured bodies are kept for 30 days and then deleted.
 
@@ -539,6 +574,12 @@ For different clients or teams, create separate access keys with different confi
 ### Does the gateway support streaming?
 
 Yes. Streaming is supported, and the gateway forwards SSE streams transparently.
+
+### What happens if a stream fails partway through?
+
+A stream that fails partway through is billed, because its first bytes were already delivered to your client. If the provider doesn't report usage for that request, the gateway estimates token counts, and the usage event is marked `usageEstimated: true`.
+
+To see what happened, look up the request by its `Ngrok-AIG-Request-Id` with the [request attempts endpoint](/ai-gateway/api-reference/usage/request-attempts). See [Handle gateway errors](/ai-gateway/guides/error-handling).
 
 ## See also
 
