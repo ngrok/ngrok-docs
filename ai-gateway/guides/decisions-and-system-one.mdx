@@ -1,0 +1,121 @@
+---
+title: Typed-question APIs
+sidebarTitle: Decisions and System One
+description: Call OpenAI Decisions and Typesafe AI System One through ngrok.ai.
+---
+
+Some models don't chat. You send them some input and a list of typed questions, and they send back a typed answer to each one, such as true or false, one choice from a list, or a score.
+That's useful for routing support tickets, flagging content, or scoring urgency without parsing free-form text.
+
+ngrok.ai serves two of these APIs:
+
+| API | Endpoint | Provider | Models |
+|-----|----------|----------|--------|
+| [OpenAI Decisions](https://developers.openai.com/api/docs/guides/decisions) | `POST /v1/decisions` | OpenAI | `gpt-6-luna` |
+| [Typesafe AI System One](https://docs.typesafe.ai) | `POST /v1/systemone` | [Typesafe AI](/ai-gateway/providers/typesafeai) | `jev-latest`, `jev-preview`, `jev-1.13.0` |
+
+You can [pay with credits](/ai-gateway/guides/pay-with-credits) for both, or [bring your own provider key](/ai-gateway/guides/attaching-provider-keys) for OpenAI or Typesafe AI.
+
+## Decisions requests
+
+A Decisions request has an `input`, in the same message format as the Responses API, and an array of `questions`.
+Each question has a `type` (`predicate`, `choice`, or `score`), a `name`, and `instructions`.
+
+```bash
+curl https://gateway.ngrok.ai/v1/decisions \
+  -H "Authorization: Bearer ng-xxxxx-g1-xxxxx" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "gpt-6-luna",
+    "input": [
+      {
+        "role": "user",
+        "content": [
+          {"type": "input_text", "text": "I was charged twice for my March invoice and need one charge refunded today."}
+        ]
+      }
+    ],
+    "questions": [
+      {"type": "predicate", "name": "is_refund_request", "instructions": "Does the customer ask for a refund?"},
+      {
+        "type": "choice",
+        "name": "team",
+        "instructions": "Which team owns this ticket?",
+        "choices": [
+          {"value": "billing", "description": "Charges, invoices, and refunds."},
+          {"value": "technical", "description": "Product defects and outages."}
+        ]
+      }
+    ]
+  }'
+```
+
+The response has an `answers` array with one entry per question:
+
+```json
+{
+  "answers": [
+    {"name": "is_refund_request", "type": "predicate", "value": true},
+    {"name": "team", "type": "choice", "value": "billing"}
+  ],
+  "model": "gpt-6-luna",
+  "usage": {"input_tokens": 163, "output_tokens": 0, "total_tokens": 163}
+}
+```
+
+The gateway forwards `model`, `input`, `questions`, and `safety_identifier`. It removes any other top-level field and names it in the `Ngrok-AIG-Removed-Params` [response header](/ai-gateway/how-it-works#response-headers).
+See [OpenAI's Decisions guide](https://developers.openai.com/api/docs/guides/decisions) for every question type and option.
+
+`"model": "ngrok/auto"` also works and always picks `gpt-6-luna`. Any other model returns [`ERR_NGROK_27226`](/ai-gateway/reference/error-codes#err_ngrok_27226), because no other model serves Decisions.
+
+When you pay with credits, OpenAI bills a decision on input tokens only, at `gpt-6-luna`'s input rate.
+
+## Typesafe AI requests
+
+A System One request has a `state`, the text to evaluate, and a `questions` object that maps each question ID to a typed question.
+
+```bash
+curl https://gateway.ngrok.ai/v1/systemone \
+  -H "Authorization: Bearer ng-xxxxx-g1-xxxxx" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "jev-latest",
+    "state": "The server returned 500 for every request for ten minutes.",
+    "questions": {
+      "is_urgent": {
+        "type": "noul",
+        "instructions": "Is this an urgent production incident?"
+      }
+    }
+  }'
+```
+
+The response maps each question ID to its answer, with a calibrated probability:
+
+```json
+{
+  "model": "jev-1.13.0",
+  "answers": {"is_urgent": {"type": "noul", "noul": 0.91}},
+  "usage": {"input_tokens": 287, "output_tokens": 23}
+}
+```
+
+The gateway forwards `model`, `state`, and `questions`, and removes any other top-level field.
+See the [Typesafe AI API reference](https://docs.typesafe.ai) for question types such as `choice` and `score`, and the [Typesafe AI provider page](/ai-gateway/providers/typesafeai) for setup.
+
+Name a Jev model in the request. `ngrok/auto` doesn't pick Jev models, so it returns [`ERR_NGROK_27227`](/ai-gateway/reference/error-codes#err_ngrok_27227) on this endpoint.
+
+## What's different from chat requests
+
+Both APIs differ from Chat Completions and Messages in a few ways:
+
+- **No streaming**: A request with `"stream": true` returns `ERR_NGROK_27228` before reaching the provider.
+- **No fallback list**: The gateway reads only `model`. Each API has a single provider, so a `models` list is removed rather than used.
+- **POST only**: Each API has a single create endpoint. Other methods and paths below it return an error.
+- **Same billing model**: Every request pays the [processing fee](/ai-gateway/concepts/credits#processing-fee). When you pay with credits, credits also cover the model cost.
+
+## Next steps
+
+- [Typesafe AI](/ai-gateway/providers/typesafeai): Set up Typesafe AI with credits or your own key
+- [OpenAI](/ai-gateway/providers/openai): Set up OpenAI with credits or your own key
+- [How it works](/ai-gateway/how-it-works#response-headers): Read the gateway's response headers

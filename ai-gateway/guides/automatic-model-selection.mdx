@@ -1,0 +1,135 @@
+---
+title: Automatic model selection
+sidebarTitle: Automatic model selection
+description: Let ngrok.ai pick a model for each request with ngrok/auto.
+---
+
+Set the model to `ngrok/auto` when you want ngrok.ai to choose the model for each request.
+ngrok.ai reads the prompt, estimates how capable a model it needs, and tries the models your access key can reach in that order, starting with the cheapest model that fits.
+
+Use it when your traffic mixes simple and hard prompts and you'd rather not pay top-model prices for "hello" or a unit conversion.
+
+## Send a request
+
+Set `model` to `ngrok/auto`:
+
+<CodeGroup>
+```python Python highlight={9}
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://gateway.ngrok.ai/v1",
+    api_key="ng-xxxxx-g1-xxxxx",  # Your access key
+)
+
+response = client.chat.completions.create(
+    model="ngrok/auto",
+    messages=[{"role": "user", "content": "Explain the difference between TCP and UDP."}],
+)
+
+print(response.choices[0].message.content)
+```
+
+```bash curl
+curl https://gateway.ngrok.ai/v1/chat/completions \
+  -H "Authorization: Bearer ng-xxxxx-g1-xxxxx" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "ngrok/auto",
+    "messages": [{"role": "user", "content": "Explain the difference between TCP and UDP."}]
+  }'
+```
+</CodeGroup>
+
+On Chat Completions (`/v1/chat/completions`), Responses (`/v1/responses`), and Messages (`/v1/messages`), leaving out `model` entirely has the same effect.
+Most SDKs require a model, so `ngrok/auto` is the clearer choice.
+
+`ngrok/auto` also works on these endpoints:
+
+| Endpoint | How to ask for `ngrok/auto` |
+|----------|-----------------------------|
+| Gemini `generateContent` | Put it in the path: `/v1beta/models/ngrok/auto:generateContent` |
+| Gemini Interactions (`/v1beta/interactions`) | `"model": "ngrok/auto"` in the body |
+| OpenAI Decisions (`/v1/decisions`) | `"model": "ngrok/auto"`. Only `gpt-6-luna` serves Decisions, so this always picks it. See [Typed-question APIs](/ai-gateway/guides/decisions-and-system-one) |
+
+## How ngrok.ai picks the model
+
+ngrok.ai sorts models into three price bands by what they charge per million input tokens:
+
+| Band | Input price |
+|------|-------------|
+| Low | Under \$1 per million tokens |
+| Medium | \$1 to under \$5 per million tokens |
+| High | \$5 or more per million tokens |
+
+On Chat Completions and Messages, ngrok.ai first asks a small classifier model how much capability the prompt needs:
+
+- **Simple prompts**, like greetings, common facts, short rewrites, or a regex, go to the low band.
+- **Ordinary professional work**, like writing or fixing a small program, a SQL query, or summarizing a document, goes to the medium band. If that work needs little step-by-step reasoning, it goes to the high band instead, because the answer depends more on writing quality.
+- **Hard prompts**, like multi-step reasoning, competition-style math, rigorous proofs, or expert analysis, go to the high band.
+
+If the classifier can't answer quickly, the request starts at the low band instead of failing.
+
+On the other endpoints, ngrok.ai doesn't classify the prompt, so every request starts at the low band.
+
+### The order models are tried in
+
+Once ngrok.ai has a band, it orders every model your access key can use:
+
+1. Models from [custom providers](/ai-gateway/concepts/custom-providers) you've added a provider key for.
+2. The models that do best on that kind of prompt.
+3. The rest of the band, cheapest first.
+4. The bands above, cheapest first.
+5. The bands below, cheapest first.
+6. Models with no published price.
+
+The band sets where the list starts, not which models are allowed. If the first model fails, the gateway [fails over](/ai-gateway/guides/error-handling) down the list the same way it does for any other request.
+
+### Reasoning effort
+
+On Chat Completions and Messages, the classifier also picks a reasoning effort: low, medium, or high.
+For each model that has a reasoning setting the gateway can set, such as `reasoning_effort` or Anthropic's adaptive thinking effort, that level replaces any reasoning setting you sent.
+Models without one get your request unchanged.
+
+If the classifier can't decide, your own reasoning settings apply.
+
+## See which model answered
+
+Read the `Ngrok-AIG-Model` [response header](/ai-gateway/how-it-works#response-headers).
+It names the model that produced the response.
+The `model` field in the response body comes from the provider, so use the header when you need to know what answered.
+
+The models ngrok.ai prefers can change as new models launch and prices move, so don't depend on a particular model being picked.
+
+## Access key configurations still apply
+
+`ngrok/auto` only picks from models the access key can already reach:
+
+- The [access key configuration](/ai-gateway/guides/access-key-configurations) must allow the provider and model.
+- The model needs usable credentials: you [pay with credits](/ai-gateway/guides/pay-with-credits) or have [your own provider key](/ai-gateway/guides/attaching-provider-keys) routed to it.
+- The model must support the endpoint you called.
+- The model catalog must mark the model as available to `ngrok/auto`. Narrow-purpose models, such as translation or classifier models, and models past their deprecation date are left out.
+
+To keep `ngrok/auto` inside a set of providers or models, [restrict the access key](/ai-gateway/guides/restrict-providers-and-models).
+
+If none of the models the key can reach qualify, the request fails with [`ERR_NGROK_27227`](/ai-gateway/reference/error-codes#err_ngrok_27227). Name a model in the request instead.
+
+## Combining with fallback models
+
+`ngrok/auto` and a [`models` fallback list](/ai-gateway/guides/configure-fallback-models) are two different ways to pick models, so don't use them together:
+
+- On Chat Completions and Messages, if you list real models alongside `ngrok/auto`, the gateway ignores `ngrok/auto` and uses your list as an ordinary fallback list.
+- On the Gemini endpoints, combining them returns `ERR_NGROK_27228` with the message `Invalid request: models cannot be combined with ngrok/auto`.
+
+## Billing
+
+You pay for the model that served the response, the same as if you'd named it.
+
+The classifier isn't billed as model usage. Its input tokens count toward the [processing fee](/ai-gateway/concepts/credits#processing-fee) on that request, whether you pay with credits or use your own provider keys.
+Requests on endpoints that skip the classifier add nothing extra.
+
+## Next steps
+
+- [Choose a model](/ai-gateway/guides/model-selection-strategies): Pick a model yourself by ID or provider
+- [Configure fallback models](/ai-gateway/guides/configure-fallback-models): Control the failover order yourself
+- [Restrict providers and models](/ai-gateway/guides/restrict-providers-and-models): Limit what `ngrok/auto` can pick
