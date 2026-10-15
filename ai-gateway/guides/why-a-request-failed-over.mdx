@@ -8,7 +8,7 @@ The AI Gateway may make several attempts before returning a response. The respon
 
 ## 1. Read the attempt count off the response
 
-Every response through ngrok.ai includes the `Ngrok-AIG-Attempts` header, which shows how many attempts were made. A value greater than `1` means the first attempt failed and the gateway tried again.
+Every response where the gateway made at least one upstream attempt includes the `Ngrok-AIG-Attempts` header, which shows how many attempts were made. A value greater than `1` means the first attempt failed and the gateway tried again.
 
 ```bash
 curl -i https://gateway.ngrok.ai/v1/chat/completions \
@@ -55,34 +55,34 @@ You get every upstream attempt for that request, ordered by attempt number:
         "attemptNumber": 1,
         "provider": "openai",
         "model": "gpt-4o",
-        "statusCode": 429,
+        "statusCode": 401,
         "isError": true,
         "keySource": "user"
       },
       "served": false,
       "retryAction": "next_key",
       "completion": "failed",
-      "upstreamDurationMs": 214
+      "upstreamDurationMs": 88
     },
     {
       "event": {
         "attemptNumber": 2,
-        "provider": "anthropic",
-        "model": "claude-sonnet-4-5",
-        "statusCode": 401,
+        "provider": "openai",
+        "model": "gpt-4o",
+        "statusCode": 429,
         "isError": true,
         "keySource": "user"
       },
       "served": false,
       "retryAction": "next_backend",
       "completion": "failed",
-      "upstreamDurationMs": 88
+      "upstreamDurationMs": 214
     },
     {
       "event": {
         "attemptNumber": 3,
-        "provider": "google",
-        "model": "gemini-3.6-flash",
+        "provider": "anthropic",
+        "model": "claude-sonnet-4-6",
         "statusCode": 200,
         "isError": false,
         "keySource": "ngrok"
@@ -125,7 +125,7 @@ For failed attempts, read the error details to find the cause, then check `retry
 | `retryAction` | What happened |
 | --- | --- |
 | `succeeded` | The attempt produced the response your client received. |
-| `next_key` | The credential failed, so the gateway tried the next key for the same provider. |
+| `next_key` | The credential failed authentication, so the gateway tried the next key for the same provider. |
 | `next_quota_pool` | The credential’s quota pool was exhausted, so the gateway moved to another pool. |
 | `next_backend` | The provider or model failed, so the gateway tried the next model in the failover list. |
 | `managed_fallback` | A customer-owned key failed, so the gateway switched to an ngrok-managed key. |
@@ -135,7 +135,7 @@ For failed attempts, read the error details to find the cause, then check `retry
 
 `retryAction` is optional. It is absent from attempts recorded before the gateway began storing retry decisions.
 
-In the example above, `next_key` on attempt 1 means the gateway tried another key for the same provider. `next_backend` on attempt 2 means it then moved to the next model in the failover list. Check each attempt’s error details to see why it failed.
+In the example above, `next_key` on attempt 1 means the first OpenAI key failed authentication, so the gateway tried the second OpenAI key. That key hit a rate limit and no keys were left, so `next_backend` on attempt 2 means the gateway moved to the next model in the failover list. Check each attempt’s error details to see why it failed.
 
 ## What this tells you to change
 

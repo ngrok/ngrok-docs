@@ -11,8 +11,10 @@ Configure multiple provider keys in an [access key configuration](/ai-gateway/gu
 When a routing rule step lists multiple provider keys:
 
 1. The gateway tries the first key.
-2. On rate limit (429), auth failure, or certain upstream errors, it tries the next key.
-3. If all keys in the step fail, the gateway tries the next step in the rule (if any), or returns an error.
+2. On a rate limit (429), or an auth failure (401 or 403) that the provider attributes to the key, it tries the next key.
+3. When no keys are left, the gateway falls back to paying with credits if the rule has an `ngrok` step after this one. Otherwise it moves to the next model candidate, or returns the last error.
+
+Server errors (5xx), timeouts, and connection failures don't try the next key. Another key for the same provider would likely fail the same way, so the gateway moves straight to the next model candidate. To fail over on those errors, add [fallback models](/ai-gateway/guides/configure-fallback-models).
 
 Failover is configured per provider in the access key configuration—not in your application code.
 

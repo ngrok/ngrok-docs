@@ -9,7 +9,7 @@ Every request to `https://gateway.ngrok.ai` must include an [access key](/ai-gat
 Access key configurations control:
 
 - **Access scope**: which providers and models the key may call
-- **Routing rules**: whether to use ngrok.ai inference or your stored [provider keys](/ai-gateway/guides/attaching-provider-keys) for each provider
+- **Routing rules**: whether to pay with credits or use your stored [provider keys](/ai-gateway/guides/attaching-provider-keys) for each provider
 
 See [Create a configuration](#create-a-configuration) below, or the [Access Key Configurations API](/ai-gateway/api-reference/access-key-configurations/create).
 
@@ -19,7 +19,7 @@ See [Create a configuration](#create-a-configuration) below, or the [Access Key 
 flowchart LR
   App["Your app"] -->|"access key only"| Gateway["gateway.ngrok.ai"]
   Gateway --> Config["Access key configuration"]
-  Config --> Ngrok["ngrok.ai inference"]
+  Config --> Ngrok["Pay with credits"]
   Config --> BYOK["Stored provider keys"]
   Ngrok --> OpenAI["OpenAI / Anthropic"]
   BYOK --> Providers["Other built-in or custom providers"]
@@ -31,7 +31,7 @@ flowchart LR
 
 ## Default behavior
 
-An access key with **no configuration** (allow-all scope) can reach any provider and model your account supports. For built-in **OpenAI** and **Anthropic**, ngrok.ai inference is used automatically when you have [credits](/ai-gateway/concepts/credits).
+An access key with **no configuration** (allow-all scope) can reach any provider and model your account supports. For built-in models you [can pay for with credits](/ai-gateway/reference/model-catalog#billing-and-provider-credentials), ngrok's key is used automatically when you have [credits](/ai-gateway/concepts/credits).
 
 To use your own provider accounts, restrict scope, or control failover, create a configuration and assign it to the key.
 
@@ -44,7 +44,7 @@ To use your own provider accounts, restrict scope, or control failover, create a
 3. Set a name and optional description.
 4. Under **Access**, allow only the providers and models this key should use.
 5. Under **Routing**, add a rule per provider:
-   - **ngrok**: ngrok.ai inference supplies the credentials (built-in OpenAI and Anthropic only)
+   - **ngrok**: pay with credits. ngrok supplies the credentials ([supported providers](/ai-gateway/reference/model-catalog#billing-and-provider-credentials) only)
    - **Bring your own API key**: attach one or more stored provider keys (tried in order)
 6. Save the configuration.
 7. On **Keys**, edit an access key and assign the configuration.
@@ -93,20 +93,22 @@ See the [Access Key Configurations API reference](/ai-gateway/api-reference/acce
 
 ## Routing rules
 
-Each routing rule targets a **provider** or **model** and defines an ordered list of steps:
+Each routing rule targets exactly one **provider** or one **model** and defines an ordered list of steps. A model rule uses the provider-qualified form, such as `openai:openai/gpt-5.5`, and takes precedence over a provider rule for the same provider. A configuration can have at most one rule per provider.
 
 | Step type | Meaning |
 |-----------|---------|
-| `ngrok` | Use ngrok.ai inference (built-in OpenAI and Anthropic only) |
+| `ngrok` | Pay with credits. ngrok supplies the key ([supported providers](/ai-gateway/reference/model-catalog#billing-and-provider-credentials) only) |
 | `user` | Use attached provider keys, tried in list order |
 
-For built-in providers, you can use ngrok.ai inference, bring your own key, or list ngrok first with provider keys as fallback in later steps.
+For built-in providers, you can pay with credits, bring your own key, or list your own keys first with an `ngrok` step after them as a fallback. The gateway uses the first step that has usable credentials. The `ngrok` fallback only runs when your keys hit auth errors or rate limits.
+
+When a configuration has no rule for a provider, requests to that provider are paid with credits only. Stored provider keys are not used without a rule.
 
 Custom providers require a `user` step with at least one provider key when the upstream requires authentication.
 
 ## Multi-key failover
 
-Attach multiple provider keys to the same routing rule step. The gateway tries them in order when a key hits a rate limit or auth error. See [Multi-key failover](/ai-gateway/guides/key-selection-failover).
+Attach multiple provider keys to the same routing rule step. The gateway tries them in order when a key hits a rate limit or auth error. Server errors and timeouts move to the next model instead. See [Multi-key failover](/ai-gateway/guides/key-selection-failover).
 
 ## Restrict providers and models
 

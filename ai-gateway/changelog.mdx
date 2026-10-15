@@ -5,6 +5,52 @@ description: AI Gateway feature updates and changes.
 rss: true
 ---
 
+<Update label="2026-10-14" description="Request body limit and card approvals" tags={["General Availability"]}>
+  ## 32 MiB request body limit
+
+  The gateway now rejects inference request bodies larger than 32 MiB with HTTP 413 and `ERR_NGROK_AI_GATEWAY_REQUEST_BODY_TOO_LONG`.
+  See [Error codes](/ai-gateway/reference/error-codes#err_ngrok_ai_gateway_request_body_too_long).
+
+  ## 3D Secure approval for credit purchases
+
+  When a card issuer asks for 3D Secure approval, a [credit purchase](/ai-gateway/api-reference/credits/purchase-create) moves to `actionRequired` and its `completionUrl` links the page where you approve the payment.
+</Update>
+
+<Update label="2026-10-07" description="Removed params header" tags={["General Availability"]}>
+  ## See which request fields the gateway removed
+
+  Responses now carry `Ngrok-AIG-Removed-Params` when the gateway removed request fields that the serving provider or model doesn't support.
+  See [Response headers](/ai-gateway/how-it-works#response-headers).
+</Update>
+
+<Update label="2026-10-04" description="Longer streams" tags={["General Availability"]}>
+  ## Streams can run for up to 15 minutes
+
+  With the default total timeout, a streaming response can now run for up to 15 minutes after its first byte, as long as the provider sends data at least every 30 seconds.
+  A `totalTimeout` you set yourself still applies to the whole stream.
+  See [Streaming responses](/ai-gateway/guides/account-settings#streaming-responses).
+</Update>
+
+<Update label="2026-09-24" description="Pay with credits for more providers" tags={["General Availability"]}>
+  ## Pay with credits for more providers
+
+  You can now pay with credits for models from Google, DeepSeek, xAI, Moonshot AI, Z.ai, Qwen Cloud, MiniMax, and other providers, in addition to OpenAI and Anthropic.
+  Use them with an access key and [credits](/ai-gateway/concepts/credits), with no provider account.
+  The [model catalog](/ai-gateway/reference/model-catalog#billing-and-provider-credentials) shows which providers support it.
+</Update>
+
+<Update label="2026-09-04" description="Rejected models header and request lookup" tags={["General Availability"]}>
+  ## See which requested models never ran
+
+  Responses now carry `Ngrok-AIG-Rejected-Models` when the gateway dropped models from your request, for example because the access scope blocks them.
+  See [Response headers](/ai-gateway/how-it-works#response-headers).
+
+  ## Look up every attempt for one request
+
+  [`GET /usage/requests/{requestId}`](/ai-gateway/api-reference/usage/request-attempts) returns every upstream attempt for a request, with the gateway's retry decision for each.
+  See [Why a request failed over](/ai-gateway/guides/why-a-request-failed-over).
+</Update>
+
 <Update label="2026-09-02" description="Response headers" tags={["General Availability"]}>
   ## Request ID, attempt count, and served model on every response
 

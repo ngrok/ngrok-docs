@@ -11,7 +11,7 @@ ngrok.ai maintains a catalog of known providers and models. This catalog enables
 When you send a request with a model name like `gpt-4o`, the gateway automatically:
 
 1. Resolves the model using the catalog
-2. Determines the correct provider (for example, OpenAI) and applies the appropriate upstream credentials
+2. Finds every provider that serves the model, with the model author's own provider (for example, OpenAI) first, and applies the appropriate upstream credentials
 3. Routes the request to the provider’s endpoint
 
 If you want to explicitly select a provider, use the `provider:model` format in the model string. For example:
@@ -35,7 +35,7 @@ Send traffic using an [access key](/ai-gateway/concepts/access-keys). This key a
 
 The AI Gateway splits billing into two parts: using the gateway and paying the model provider.
 
-Some built-in providers don’t need a provider key. You can spot them in the tables above—if “Provider key required” says “No,” you can start using them right away as long as you have credits. The gateway takes care of authentication and charges your credits.
+Many built-in models don’t need a provider key. You can spot them in the tables below: if **Needs BYOK?** says “No,” you can use the model right away as long as you have credits. The gateway takes care of authentication and charges your credits. Availability is per model, so a provider can have some models you can pay for with credits and some you can't.
 
 Other providers do need a key. For those, add your provider key in app.ngrok.ai. The provider will bill you directly for model usage, and your credits will cover the gateway fee. This is often called BYOK (bring your own key).
 
@@ -46,52 +46,56 @@ Other providers do need a key. For those, add your provider key in app.ngrok.ai.
 | **Provider ID** | `openai` |
 | **Base URL** | `https://api.openai.com/v1/` |
 | **Website** | [openai.com](https://openai.com/) |
+| **API surfaces** | Responses, Chat Completions |
 | **Provider key required** | No |
 
 [How to use OpenAI →](/ai-gateway/providers/openai)
 
 #### OpenAI models
 
-| Model ID | Display Name | Context Window | Output Tokens | Modalities |
-|----------|--------------|----------------|---------------|------------|
-| `gpt-5.6-luna` | GPT-5.6 Luna | 1,050,000 | 128,000 | text, image |
-| `gpt-5.6-terra` | GPT-5.6 Terra | 1,050,000 | 128,000 | text, image |
-| `gpt-5.6-sol` | GPT-5.6 Sol | 1,050,000 | 128,000 | text, image |
-| `gpt-5.5-pro` | GPT-5.5 Pro | 1,050,000 | 128,000 | text, image |
-| `gpt-5.5` | GPT-5.5 | 1,050,000 | 128,000 | text, image |
-| `gpt-5.4-nano` | GPT-5.4 Nano | 400,000 | 128,000 | text, image |
-| `gpt-5.4-mini` | GPT-5.4 Mini | 400,000 | 128,000 | text, image |
-| `gpt-5.4-pro` | GPT-5.4 Pro | 1,050,000 | 128,000 | text, image |
-| `gpt-5.4` | GPT-5.4 | 1,050,000 | 128,000 | text, image |
-| `gpt-5.3-codex` | GPT-5.3-Codex | 400,000 | 128,000 | text, image |
-| `gpt-5.2-codex` | GPT-5.2-Codex | 400,000 | 128,000 | text, image |
-| `gpt-5.2-pro` | GPT-5.2 Pro | 400,000 | 128,000 | text, image |
-| `gpt-5.2-chat-latest` | GPT-5.2 Chat Latest | 128,000 | 16,384 | text, image |
-| `gpt-5.2` | GPT-5.2 | 400,000 | 128,000 | text, image |
-| `gpt-5.1-chat-latest` | GPT-5.1 Chat Latest | 128,000 | 16,384 | text, image |
-| `gpt-5.1` | GPT-5.1 | 400,000 | 128,000 | text, image |
-| `gpt-5-pro` | GPT-5 Pro | 400,000 | 272,000 | text, image |
-| `gpt-5-chat-latest` | GPT-5 Chat | 128,000 | 16,384 | text, image |
-| `gpt-5-nano` | GPT-5 Nano | 400,000 | 128,000 | text, image |
-| `gpt-5-mini` | GPT-5 Mini | 400,000 | 128,000 | text, image |
-| `gpt-5` | GPT-5 | 400,000 | 128,000 | text, image |
-| `o3-deep-research` | O3-Deep-Research | 200,000 | 100,000 | text, image |
-| `o4-mini-deep-research` | O4-Mini-Deep-Research | 200,000 | 100,000 | text, image |
-| `o3-pro` | O3-Pro | 200,000 | 100,000 | text, image |
-| `o3` | O3 | 200,000 | 100,000 | text, image |
-| `o4-mini` | O4-Mini | 200,000 | 100,000 | text, image |
-| `gpt-4.1-nano` | GPT-4.1 nano | 1,047,576 | 32,768 | text, image |
-| `gpt-4.1-mini` | GPT-4.1 mini | 1,047,576 | 32,768 | text, image |
-| `gpt-4.1` | GPT-4.1 | 1,047,576 | 32,768 | text, image |
-| `o1-pro` | O1-Pro | 200,000 | 100,000 | text, image |
-| `o3-mini` | O3 Mini | 200,000 | 100,000 | text |
-| `o1` | O1 | 200,000 | 100,000 | text, image |
-| `gpt-4o-mini` | GPT-4o Mini | 128,000 | 16,384 | text, image |
-| `gpt-4o` | GPT-4o | 128,000 | 16,384 | text, image |
-| `gpt-4-turbo` | GPT-4 Turbo | 128,000 | 4,096 | text, image |
-| `gpt-3.5-turbo-instruct` | GPT-3.5 Turbo Instruct | 4,096 | 4,096 | text |
-| `gpt-4` | GPT-4 | 8,192 | 8,192 | text |
-| `gpt-3.5-turbo` | GPT-3.5 Turbo | 16,385 | 4,096 | text |
+| Model ID | Context | Max Output | Modalities | <Tooltip tip="Needs your own provider key">Needs BYOK?</Tooltip> |
+|-------|---------|------------|------------|--------------------|
+| <Tooltip tip="GPT-6.1 Sol">`gpt-6.1-sol`</Tooltip> | <Tooltip tip="1,050,000 tokens">1M</Tooltip> | <Tooltip tip="128,000 tokens">128K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> | No |
+| <Tooltip tip="GPT-6 Luna">`gpt-6-luna`</Tooltip> | <Tooltip tip="1,050,000 tokens">1M</Tooltip> | <Tooltip tip="128,000 tokens">128K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> | No |
+| <Tooltip tip="GPT-6 Sol">`gpt-6-sol`</Tooltip> | <Tooltip tip="1,050,000 tokens">1M</Tooltip> | <Tooltip tip="128,000 tokens">128K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> | No |
+| <Tooltip tip="GPT-6 Astra">`gpt-6-astra`</Tooltip> | <Tooltip tip="1,050,000 tokens">1M</Tooltip> | <Tooltip tip="128,000 tokens">128K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> | No |
+| <Tooltip tip="GPT-5.6 Luna">`gpt-5.6-luna`</Tooltip> | <Tooltip tip="1,050,000 tokens">1M</Tooltip> | <Tooltip tip="128,000 tokens">128K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> | No |
+| <Tooltip tip="GPT-5.6 Sol">`gpt-5.6-sol`</Tooltip> | <Tooltip tip="1,050,000 tokens">1M</Tooltip> | <Tooltip tip="128,000 tokens">128K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> | No |
+| <Tooltip tip="GPT-5.6 Terra">`gpt-5.6-terra`</Tooltip> | <Tooltip tip="1,050,000 tokens">1M</Tooltip> | <Tooltip tip="128,000 tokens">128K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> | No |
+| <Tooltip tip="GPT-5.5">`gpt-5.5`</Tooltip> | <Tooltip tip="1,050,000 tokens">1M</Tooltip> | <Tooltip tip="128,000 tokens">128K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> | No |
+| <Tooltip tip="GPT-5.5 Pro">`gpt-5.5-pro`</Tooltip> | <Tooltip tip="1,050,000 tokens">1M</Tooltip> | <Tooltip tip="128,000 tokens">128K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> | No |
+| <Tooltip tip="GPT-5.4 Mini">`gpt-5.4-mini`</Tooltip> | <Tooltip tip="400,000 tokens">400K</Tooltip> | <Tooltip tip="128,000 tokens">128K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> | No |
+| <Tooltip tip="GPT-5.4 Nano">`gpt-5.4-nano`</Tooltip> | <Tooltip tip="400,000 tokens">400K</Tooltip> | <Tooltip tip="128,000 tokens">128K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> | No |
+| <Tooltip tip="GPT-5.4">`gpt-5.4`</Tooltip> | <Tooltip tip="1,050,000 tokens">1M</Tooltip> | <Tooltip tip="128,000 tokens">128K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> | No |
+| <Tooltip tip="GPT-5.4 Pro">`gpt-5.4-pro`</Tooltip> | <Tooltip tip="1,050,000 tokens">1M</Tooltip> | <Tooltip tip="128,000 tokens">128K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> | No |
+| <Tooltip tip="GPT-5.3-Codex">`gpt-5.3-codex`</Tooltip> | <Tooltip tip="400,000 tokens">400K</Tooltip> | <Tooltip tip="128,000 tokens">128K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> | No |
+| <Tooltip tip="GPT-5.2-Codex">`gpt-5.2-codex`</Tooltip> | <Tooltip tip="400,000 tokens">400K</Tooltip> | <Tooltip tip="128,000 tokens">128K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> | No |
+| <Tooltip tip="GPT-5.2">`gpt-5.2`</Tooltip> | <Tooltip tip="400,000 tokens">400K</Tooltip> | <Tooltip tip="128,000 tokens">128K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> | No |
+| <Tooltip tip="GPT-5.2 Chat Latest">`gpt-5.2-chat-latest`</Tooltip> | <Tooltip tip="128,000 tokens">128K</Tooltip> | <Tooltip tip="16,384 tokens">16K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> | No |
+| <Tooltip tip="GPT-5.2 Pro">`gpt-5.2-pro`</Tooltip> | <Tooltip tip="400,000 tokens">400K</Tooltip> | <Tooltip tip="128,000 tokens">128K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> | No |
+| <Tooltip tip="GPT-5.1 Chat Latest">`gpt-5.1-chat-latest`</Tooltip> | <Tooltip tip="128,000 tokens">128K</Tooltip> | <Tooltip tip="16,384 tokens">16K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> | No |
+| <Tooltip tip="GPT-5.1">`gpt-5.1`</Tooltip> | <Tooltip tip="400,000 tokens">400K</Tooltip> | <Tooltip tip="128,000 tokens">128K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> | No |
+| <Tooltip tip="GPT-5 Pro">`gpt-5-pro`</Tooltip> | <Tooltip tip="400,000 tokens">400K</Tooltip> | <Tooltip tip="272,000 tokens">272K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> | No |
+| <Tooltip tip="GPT-5">`gpt-5`</Tooltip> | <Tooltip tip="400,000 tokens">400K</Tooltip> | <Tooltip tip="128,000 tokens">128K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> | No |
+| <Tooltip tip="GPT-5 Chat">`gpt-5-chat-latest`</Tooltip> | <Tooltip tip="128,000 tokens">128K</Tooltip> | <Tooltip tip="16,384 tokens">16K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> | No |
+| <Tooltip tip="GPT-5 Mini">`gpt-5-mini`</Tooltip> | <Tooltip tip="400,000 tokens">400K</Tooltip> | <Tooltip tip="128,000 tokens">128K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> | No |
+| <Tooltip tip="GPT-5 Nano">`gpt-5-nano`</Tooltip> | <Tooltip tip="400,000 tokens">400K</Tooltip> | <Tooltip tip="128,000 tokens">128K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> | No |
+| <Tooltip tip="O3-Deep-Research">`o3-deep-research`</Tooltip> | <Tooltip tip="200,000 tokens">200K</Tooltip> | <Tooltip tip="100,000 tokens">100K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> | No |
+| <Tooltip tip="O4-Mini-Deep-Research">`o4-mini-deep-research`</Tooltip> | <Tooltip tip="200,000 tokens">200K</Tooltip> | <Tooltip tip="100,000 tokens">100K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> | No |
+| <Tooltip tip="O3-Pro">`o3-pro`</Tooltip> | <Tooltip tip="200,000 tokens">200K</Tooltip> | <Tooltip tip="100,000 tokens">100K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> | No |
+| <Tooltip tip="O3">`o3`</Tooltip> | <Tooltip tip="200,000 tokens">200K</Tooltip> | <Tooltip tip="100,000 tokens">100K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> | No |
+| <Tooltip tip="O4-Mini">`o4-mini`</Tooltip> | <Tooltip tip="200,000 tokens">200K</Tooltip> | <Tooltip tip="100,000 tokens">100K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> | No |
+| <Tooltip tip="GPT-4.1">`gpt-4.1`</Tooltip> | <Tooltip tip="1,047,576 tokens">1M</Tooltip> | <Tooltip tip="32,768 tokens">32K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> | No |
+| <Tooltip tip="GPT-4.1 mini">`gpt-4.1-mini`</Tooltip> | <Tooltip tip="1,047,576 tokens">1M</Tooltip> | <Tooltip tip="32,768 tokens">32K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> | No |
+| <Tooltip tip="GPT-4.1 nano">`gpt-4.1-nano`</Tooltip> | <Tooltip tip="1,047,576 tokens">1M</Tooltip> | <Tooltip tip="32,768 tokens">32K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> | No |
+| <Tooltip tip="O1-Pro">`o1-pro`</Tooltip> | <Tooltip tip="200,000 tokens">200K</Tooltip> | <Tooltip tip="100,000 tokens">100K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> | No |
+| <Tooltip tip="O3 Mini">`o3-mini`</Tooltip> | <Tooltip tip="200,000 tokens">200K</Tooltip> | <Tooltip tip="100,000 tokens">100K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> | No |
+| <Tooltip tip="O1">`o1`</Tooltip> | <Tooltip tip="200,000 tokens">200K</Tooltip> | <Tooltip tip="100,000 tokens">100K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> | No |
+| <Tooltip tip="GPT-4o Mini">`gpt-4o-mini`</Tooltip> | <Tooltip tip="128,000 tokens">128K</Tooltip> | <Tooltip tip="16,384 tokens">16K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> | No |
+| <Tooltip tip="GPT-4o">`gpt-4o`</Tooltip> | <Tooltip tip="128,000 tokens">128K</Tooltip> | <Tooltip tip="16,384 tokens">16K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> | No |
+| <Tooltip tip="GPT-4 Turbo">`gpt-4-turbo`</Tooltip> | <Tooltip tip="128,000 tokens">128K</Tooltip> | <Tooltip tip="4,096 tokens">4K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> | No |
+| <Tooltip tip="GPT-4">`gpt-4`</Tooltip> | <Tooltip tip="8,192 tokens">8K</Tooltip> | <Tooltip tip="8,192 tokens">8K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> | No |
+| <Tooltip tip="GPT-3.5 Turbo">`gpt-3.5-turbo`</Tooltip> | <Tooltip tip="16,385 tokens">16K</Tooltip> | <Tooltip tip="4,096 tokens">4K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> | No |
 
 ---
 
@@ -102,25 +106,30 @@ Other providers do need a key. For those, add your provider key in app.ngrok.ai.
 | **Provider ID** | `anthropic` |
 | **Base URL** | `https://api.anthropic.com/v1/` |
 | **Website** | [anthropic.com](https://anthropic.com/) |
+| **API surfaces** | Chat Completions, Messages |
 | **Provider key required** | No |
 
 [How to use Anthropic →](/ai-gateway/providers/anthropic)
 
 #### Anthropic models
 
-| Model ID | Display Name | Context Window | Output Tokens | Modalities |
-|----------|--------------|----------------|---------------|------------|
-| `claude-opus-5` | Claude Opus 5 | 1,000,000 | 128,000 | text, image, file |
-| `claude-sonnet-5` | Claude Sonnet 5 | 1,000,000 | 128,000 | text, image, file |
-| `claude-fable-5` | Claude Fable 5 | 1,000,000 | 128,000 | text, image, file |
-| `claude-opus-4-8` | Claude Opus 4.8 | 1,000,000 | 128,000 | text, image, file |
-| `claude-opus-4-7` | Claude Opus 4.7 | 1,000,000 | 128,000 | text, image, file |
-| `claude-sonnet-4-6` | Claude Sonnet 4.6 | 1,000,000 | 128,000 | text, image, file |
-| `claude-opus-4-6` | Claude Opus 4.6 | 1,000,000 | 128,000 | text, image, file |
-| `claude-opus-4-5` | Claude Opus 4.5 | 200,000 | 64,000 | text, image, file |
-| `claude-haiku-4-5` | Claude Haiku 4.5 | 200,000 | 64,000 | text, image, file |
-| `claude-sonnet-4-5` | Claude Sonnet 4.5 | 200,000 | 64,000 | text, image, file |
-| `claude-opus-4-1` | Claude Opus 4.1 | 200,000 | 32,000 | text, image, file |
+| Model ID | Context | Max Output | Modalities | <Tooltip tip="Needs your own provider key">Needs BYOK?</Tooltip> |
+|-------|---------|------------|------------|--------------------|
+| <Tooltip tip="Claude Haiku 5.5">`claude-haiku-5-5`</Tooltip> | <Tooltip tip="1,000,000 tokens">1M</Tooltip> | <Tooltip tip="128,000 tokens">128K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> <Tooltip tip="File"><Icon icon="file" size={16} /><span className="sr-only">File</span></Tooltip> | No |
+| <Tooltip tip="Claude Sonnet 5.5">`claude-sonnet-5-5`</Tooltip> | <Tooltip tip="1,000,000 tokens">1M</Tooltip> | <Tooltip tip="128,000 tokens">128K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> <Tooltip tip="File"><Icon icon="file" size={16} /><span className="sr-only">File</span></Tooltip> | No |
+| <Tooltip tip="Claude Opus 5.5">`claude-opus-5-5`</Tooltip> | <Tooltip tip="1,000,000 tokens">1M</Tooltip> | <Tooltip tip="128,000 tokens">128K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> <Tooltip tip="File"><Icon icon="file" size={16} /><span className="sr-only">File</span></Tooltip> | No |
+| <Tooltip tip="Claude Fable 5.1">`claude-fable-5-1`</Tooltip> | <Tooltip tip="1,000,000 tokens">1M</Tooltip> | <Tooltip tip="128,000 tokens">128K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> <Tooltip tip="File"><Icon icon="file" size={16} /><span className="sr-only">File</span></Tooltip> | No |
+| <Tooltip tip="Claude Opus 5">`claude-opus-5`</Tooltip> | <Tooltip tip="1,000,000 tokens">1M</Tooltip> | <Tooltip tip="128,000 tokens">128K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> <Tooltip tip="File"><Icon icon="file" size={16} /><span className="sr-only">File</span></Tooltip> | No |
+| <Tooltip tip="Claude Sonnet 5">`claude-sonnet-5`</Tooltip> | <Tooltip tip="1,000,000 tokens">1M</Tooltip> | <Tooltip tip="128,000 tokens">128K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> <Tooltip tip="File"><Icon icon="file" size={16} /><span className="sr-only">File</span></Tooltip> | No |
+| <Tooltip tip="Claude Fable 5">`claude-fable-5`</Tooltip> | <Tooltip tip="1,000,000 tokens">1M</Tooltip> | <Tooltip tip="128,000 tokens">128K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> <Tooltip tip="File"><Icon icon="file" size={16} /><span className="sr-only">File</span></Tooltip> | No |
+| <Tooltip tip="Claude Opus 4.8">`claude-opus-4-8`</Tooltip> | <Tooltip tip="1,000,000 tokens">1M</Tooltip> | <Tooltip tip="128,000 tokens">128K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> <Tooltip tip="File"><Icon icon="file" size={16} /><span className="sr-only">File</span></Tooltip> | No |
+| <Tooltip tip="Claude Opus 4.7">`claude-opus-4-7`</Tooltip> | <Tooltip tip="1,000,000 tokens">1M</Tooltip> | <Tooltip tip="128,000 tokens">128K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> <Tooltip tip="File"><Icon icon="file" size={16} /><span className="sr-only">File</span></Tooltip> | No |
+| <Tooltip tip="Claude Sonnet 4.6">`claude-sonnet-4-6`</Tooltip> | <Tooltip tip="1,000,000 tokens">1M</Tooltip> | <Tooltip tip="128,000 tokens">128K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> <Tooltip tip="File"><Icon icon="file" size={16} /><span className="sr-only">File</span></Tooltip> | No |
+| <Tooltip tip="Claude Opus 4.6">`claude-opus-4-6`</Tooltip> | <Tooltip tip="1,000,000 tokens">1M</Tooltip> | <Tooltip tip="128,000 tokens">128K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> <Tooltip tip="File"><Icon icon="file" size={16} /><span className="sr-only">File</span></Tooltip> | No |
+| <Tooltip tip="Claude Opus 4.5">`claude-opus-4-5`</Tooltip> | <Tooltip tip="200,000 tokens">200K</Tooltip> | <Tooltip tip="64,000 tokens">64K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> <Tooltip tip="File"><Icon icon="file" size={16} /><span className="sr-only">File</span></Tooltip> | No |
+| <Tooltip tip="Claude Haiku 4.5">`claude-haiku-4-5`</Tooltip> | <Tooltip tip="200,000 tokens">200K</Tooltip> | <Tooltip tip="64,000 tokens">64K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> <Tooltip tip="File"><Icon icon="file" size={16} /><span className="sr-only">File</span></Tooltip> | No |
+| <Tooltip tip="Claude Sonnet 4.5">`claude-sonnet-4-5`</Tooltip> | <Tooltip tip="200,000 tokens">200K</Tooltip> | <Tooltip tip="64,000 tokens">64K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> <Tooltip tip="File"><Icon icon="file" size={16} /><span className="sr-only">File</span></Tooltip> | No |
+| <Tooltip tip="Claude Opus 4.1">`claude-opus-4-1`</Tooltip> | <Tooltip tip="200,000 tokens">200K</Tooltip> | <Tooltip tip="32,000 tokens">32K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> <Tooltip tip="File"><Icon icon="file" size={16} /><span className="sr-only">File</span></Tooltip> | No |
 
 ---
 
@@ -131,27 +140,30 @@ Other providers do need a key. For those, add your provider key in app.ngrok.ai.
 | **Provider ID** | `google` |
 | **Base URL** | `https://generativelanguage.googleapis.com/v1beta/openai/` |
 | **Website** | [aistudio.google.com](https://aistudio.google.com/) |
-| **Provider key required** | No |
+| **API surfaces** | Chat Completions, Gemini GenerateContent, Interactions |
+| **Provider key required** | For some models. See **Needs BYOK?** |
 
 [How to use Google →](/ai-gateway/providers/google)
 
 #### Google models
 
-| Model ID | Display Name | Context Window | Output Tokens | Modalities |
-|----------|--------------|----------------|---------------|------------|
-| `gemini-3.5-flash-lite` | Gemini 3.5 Flash-Lite | 1,048,576 | 65,536 | text, image, audio, video, file |
-| `gemini-3.6-flash` | Gemini 3.6 Flash | 1,048,576 | 65,536 | text, image, audio, video, file |
-| `gemini-3.5-flash` | Gemini 3.5 Flash | 1,048,576 | 65,536 | text, image, audio, video, file |
-| `gemini-3.1-flash-lite` | Gemini 3.1 Flash-Lite | 1,048,576 | 65,536 | text, image, audio, video, file |
-| `gemini-3.1-pro-preview-customtools` | Gemini 3.1 Pro Preview Custom Tools | 1,048,576 | 65,536 | text, image, audio, video, file |
-| `gemini-3.1-pro-preview` | Gemini 3.1 Pro Preview | 1,048,576 | 65,536 | text, image, audio, video, file |
-| `gemini-3-flash-preview` | Gemini 3 Flash Preview | 1,048,576 | 65,536 | text, image, audio, video, file |
-| `gemini-2.5-flash-lite` | Gemini 2.5 Flash-Lite | 1,048,576 | 65,536 | text, image, audio, video, file |
-| `gemini-2.5-flash` | Gemini 2.5 Flash | 1,048,576 | 65,536 | text, image, audio, video, file |
-| `gemini-2.5-pro` | Gemini 2.5 Pro | 1,048,576 | 65,536 | text, image, audio, video, file |
+| Model ID | Context | Max Output | Modalities | <Tooltip tip="Needs your own provider key">Needs BYOK?</Tooltip> |
+|-------|---------|------------|------------|--------------------|
+| <Tooltip tip="Gemini 3.8 Flash">`gemini-3.8-flash`</Tooltip> | <Tooltip tip="1,048,576 tokens">1M</Tooltip> | <Tooltip tip="65,536 tokens">64K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> <Tooltip tip="Audio"><Icon icon="volume-high" size={16} /><span className="sr-only">Audio</span></Tooltip> <Tooltip tip="Video"><Icon icon="video" size={16} /><span className="sr-only">Video</span></Tooltip> <Tooltip tip="File"><Icon icon="file" size={16} /><span className="sr-only">File</span></Tooltip> | No |
+| <Tooltip tip="Gemini 3.7 Flash">`gemini-3.7-flash`</Tooltip> | <Tooltip tip="1,048,576 tokens">1M</Tooltip> | <Tooltip tip="65,536 tokens">64K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> <Tooltip tip="Audio"><Icon icon="volume-high" size={16} /><span className="sr-only">Audio</span></Tooltip> <Tooltip tip="Video"><Icon icon="video" size={16} /><span className="sr-only">Video</span></Tooltip> <Tooltip tip="File"><Icon icon="file" size={16} /><span className="sr-only">File</span></Tooltip> | No |
+| <Tooltip tip="Gemini 3.5 Flash-Lite">`gemini-3.5-flash-lite`</Tooltip> | <Tooltip tip="1,048,576 tokens">1M</Tooltip> | <Tooltip tip="65,536 tokens">64K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> <Tooltip tip="Audio"><Icon icon="volume-high" size={16} /><span className="sr-only">Audio</span></Tooltip> <Tooltip tip="Video"><Icon icon="video" size={16} /><span className="sr-only">Video</span></Tooltip> <Tooltip tip="File"><Icon icon="file" size={16} /><span className="sr-only">File</span></Tooltip> | No |
+| <Tooltip tip="Gemini 3.6 Flash">`gemini-3.6-flash`</Tooltip> | <Tooltip tip="1,048,576 tokens">1M</Tooltip> | <Tooltip tip="65,536 tokens">64K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> <Tooltip tip="Audio"><Icon icon="volume-high" size={16} /><span className="sr-only">Audio</span></Tooltip> <Tooltip tip="Video"><Icon icon="video" size={16} /><span className="sr-only">Video</span></Tooltip> <Tooltip tip="File"><Icon icon="file" size={16} /><span className="sr-only">File</span></Tooltip> | No |
+| <Tooltip tip="Gemini 3.5 Flash">`gemini-3.5-flash`</Tooltip> | <Tooltip tip="1,048,576 tokens">1M</Tooltip> | <Tooltip tip="65,536 tokens">64K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> <Tooltip tip="Audio"><Icon icon="volume-high" size={16} /><span className="sr-only">Audio</span></Tooltip> <Tooltip tip="Video"><Icon icon="video" size={16} /><span className="sr-only">Video</span></Tooltip> <Tooltip tip="File"><Icon icon="file" size={16} /><span className="sr-only">File</span></Tooltip> | No |
+| <Tooltip tip="Gemini 3.1 Flash-Lite">`gemini-3.1-flash-lite`</Tooltip> | <Tooltip tip="1,048,576 tokens">1M</Tooltip> | <Tooltip tip="65,536 tokens">64K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> <Tooltip tip="Audio"><Icon icon="volume-high" size={16} /><span className="sr-only">Audio</span></Tooltip> <Tooltip tip="Video"><Icon icon="video" size={16} /><span className="sr-only">Video</span></Tooltip> <Tooltip tip="File"><Icon icon="file" size={16} /><span className="sr-only">File</span></Tooltip> | No |
+| <Tooltip tip="Gemini 3.1 Pro Preview">`gemini-3.1-pro-preview`</Tooltip> | <Tooltip tip="1,048,576 tokens">1M</Tooltip> | <Tooltip tip="65,536 tokens">64K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> <Tooltip tip="Audio"><Icon icon="volume-high" size={16} /><span className="sr-only">Audio</span></Tooltip> <Tooltip tip="Video"><Icon icon="video" size={16} /><span className="sr-only">Video</span></Tooltip> <Tooltip tip="File"><Icon icon="file" size={16} /><span className="sr-only">File</span></Tooltip> | No |
+| <Tooltip tip="Gemini 3.1 Pro Preview Custom Tools">`gemini-3.1-pro-preview-customtools`</Tooltip> | <Tooltip tip="1,048,576 tokens">1M</Tooltip> | <Tooltip tip="65,536 tokens">64K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> <Tooltip tip="Audio"><Icon icon="volume-high" size={16} /><span className="sr-only">Audio</span></Tooltip> <Tooltip tip="Video"><Icon icon="video" size={16} /><span className="sr-only">Video</span></Tooltip> <Tooltip tip="File"><Icon icon="file" size={16} /><span className="sr-only">File</span></Tooltip> | No |
+| <Tooltip tip="Gemini 3 Flash Preview">`gemini-3-flash-preview`</Tooltip> | <Tooltip tip="1,048,576 tokens">1M</Tooltip> | <Tooltip tip="65,536 tokens">64K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> <Tooltip tip="Audio"><Icon icon="volume-high" size={16} /><span className="sr-only">Audio</span></Tooltip> <Tooltip tip="Video"><Icon icon="video" size={16} /><span className="sr-only">Video</span></Tooltip> <Tooltip tip="File"><Icon icon="file" size={16} /><span className="sr-only">File</span></Tooltip> | No |
+| <Tooltip tip="Gemini 2.5 Flash-Lite">`gemini-2.5-flash-lite`</Tooltip> | <Tooltip tip="1,048,576 tokens">1M</Tooltip> | <Tooltip tip="65,536 tokens">64K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> <Tooltip tip="Audio"><Icon icon="volume-high" size={16} /><span className="sr-only">Audio</span></Tooltip> <Tooltip tip="Video"><Icon icon="video" size={16} /><span className="sr-only">Video</span></Tooltip> <Tooltip tip="File"><Icon icon="file" size={16} /><span className="sr-only">File</span></Tooltip> | Yes |
+| <Tooltip tip="Gemini 2.5 Flash">`gemini-2.5-flash`</Tooltip> | <Tooltip tip="1,048,576 tokens">1M</Tooltip> | <Tooltip tip="65,536 tokens">64K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> <Tooltip tip="Audio"><Icon icon="volume-high" size={16} /><span className="sr-only">Audio</span></Tooltip> <Tooltip tip="Video"><Icon icon="video" size={16} /><span className="sr-only">Video</span></Tooltip> <Tooltip tip="File"><Icon icon="file" size={16} /><span className="sr-only">File</span></Tooltip> | Yes |
+| <Tooltip tip="Gemini 2.5 Pro">`gemini-2.5-pro`</Tooltip> | <Tooltip tip="1,048,576 tokens">1M</Tooltip> | <Tooltip tip="65,536 tokens">64K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> <Tooltip tip="Audio"><Icon icon="volume-high" size={16} /><span className="sr-only">Audio</span></Tooltip> <Tooltip tip="Video"><Icon icon="video" size={16} /><span className="sr-only">Video</span></Tooltip> <Tooltip tip="File"><Icon icon="file" size={16} /><span className="sr-only">File</span></Tooltip> | Yes |
 
 <Warning>
-Google serves the Gemini 2.5 models only to Google projects created before mid-2026. Newer projects get a 404 stating the model is no longer available to new users. The ngrok-managed Google project postdates that cutoff, so these three models are reachable only with your own key on an older project.
+Google serves the Gemini 2.5 models only to Google projects created before mid-2026. Newer projects get a 404 stating the model is no longer available to new users. The ngrok-managed Google project postdates that cutoff, so these models are reachable only with your own key on an older project.
 </Warning>
 
 ---
@@ -161,18 +173,42 @@ Google serves the Gemini 2.5 models only to Google projects created before mid-2
 | Field | Value |
 |-------|-------|
 | **Provider ID** | `deepseek` |
-| **Base URL** | `https://api.deepseek.com` |
+| **Base URL** | `https://api.deepseek.com/v1` |
 | **Website** | [deepseek.com](https://www.deepseek.com/) |
-| **Provider key required** | Yes |
+| **API surfaces** | Chat Completions, Responses, Messages |
+| **Provider key required** | No |
 
 [How to use DeepSeek →](/ai-gateway/providers/deepseek)
 
 #### DeepSeek models
 
-| Model ID | Display Name | Context Window | Output Tokens | Modalities |
-|----------|--------------|----------------|---------------|------------|
-| `deepseek-v4-flash` | DeepSeek V4 Flash | 1,000,000 | 384,000 | text |
-| `deepseek-v4-pro` | DeepSeek V4 Pro | 1,000,000 | 384,000 | text |
+| Model ID | Context | Max Output | Modalities | <Tooltip tip="Needs your own provider key">Needs BYOK?</Tooltip> |
+|-------|---------|------------|------------|--------------------|
+| <Tooltip tip="DeepSeek V4.1 Flash">`deepseek-flash`</Tooltip> | <Tooltip tip="1,000,000 tokens">1M</Tooltip> | <Tooltip tip="384,000 tokens">384K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> | No |
+| <Tooltip tip="DeepSeek V4 Flash">`deepseek-v4-flash`</Tooltip> | <Tooltip tip="1,000,000 tokens">1M</Tooltip> | <Tooltip tip="384,000 tokens">384K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> | No |
+| <Tooltip tip="DeepSeek V4 Pro">`deepseek-v4-pro`</Tooltip> | <Tooltip tip="1,000,000 tokens">1M</Tooltip> | <Tooltip tip="384,000 tokens">384K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> | No |
+
+---
+
+### xAI
+
+| Field | Value |
+|-------|-------|
+| **Provider ID** | `xai` |
+| **Base URL** | `https://api.x.ai/v1` |
+| **Website** | [x.ai](https://x.ai/) |
+| **API surfaces** | Chat Completions, Responses |
+| **Provider key required** | No |
+
+#### xAI models
+
+| Model ID | Context | Max Output | Modalities | <Tooltip tip="Needs your own provider key">Needs BYOK?</Tooltip> |
+|-------|---------|------------|------------|--------------------|
+| <Tooltip tip="Grok 4.7">`grok-4.7`</Tooltip> | <Tooltip tip="500,000 tokens">500K</Tooltip> |—| <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> | No |
+| <Tooltip tip="Grok 4.6">`grok-4.6`</Tooltip> | <Tooltip tip="500,000 tokens">500K</Tooltip> |—| <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> | No |
+| <Tooltip tip="Grok 4.5">`grok-4.5`</Tooltip> | <Tooltip tip="500,000 tokens">500K</Tooltip> |—| <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> | No |
+| <Tooltip tip="Grok Build 0.1">`grok-build-0.1`</Tooltip> | <Tooltip tip="256,000 tokens">256K</Tooltip> |—| <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> | No |
+| <Tooltip tip="Grok 4.3">`grok-4.3`</Tooltip> | <Tooltip tip="1,000,000 tokens">1M</Tooltip> |—| <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> | No |
 
 ---
 
@@ -183,6 +219,7 @@ Google serves the Gemini 2.5 models only to Google projects created before mid-2
 | **Provider ID** | `groq` |
 | **Base URL** | `https://api.groq.com/openai/v1` |
 | **Website** | [groq.com](https://groq.com/) |
+| **API surfaces** | Chat Completions, Responses |
 | **Provider key required** | Yes |
 
 [How to use Groq →](/ai-gateway/providers/groq)
@@ -191,23 +228,33 @@ Groq provides AI inference powered by their custom LPU (Language Processing Unit
 
 #### Groq models
 
-| Model ID | Display Name | Context Window | Output Tokens | Modalities |
-|----------|--------------|----------------|---------------|------------|
-| `openai/gpt-oss-safeguard-20b` | GPT-OSS Safeguard 20B | 131,072 | 65,536 | text |
-| `openai/gpt-oss-20b` | GPT OSS 20B | 131,072 | 65,536 | text |
-| `openai/gpt-oss-120b` | GPT OSS 120B | 131,072 | 65,536 | text |
-| `meta-llama/llama-prompt-guard-2-86m` | Llama Prompt Guard 2 86M | 512 | 512 | text |
-| `meta-llama/llama-prompt-guard-2-22m` | Llama Prompt Guard 2 22M | 512 | 512 | text |
-| `meta-llama/llama-3.3-70b-versatile` | Llama 3.3 70B Versatile | 131,072 | 32,768 | text |
-| `meta-llama/llama-3.1-8b-instant` | Llama 3.1 8B Instant | 131,072 | 131,072 | text |
+| Model ID | Context | Max Output | Modalities | <Tooltip tip="Needs your own provider key">Needs BYOK?</Tooltip> |
+|-------|---------|------------|------------|--------------------|
+| <Tooltip tip="GPT-OSS Safeguard 20B">`openai/gpt-oss-safeguard-20b`</Tooltip> | <Tooltip tip="131,072 tokens">128K</Tooltip> | <Tooltip tip="65,536 tokens">64K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> | Yes |
+| <Tooltip tip="GPT OSS 120B">`openai/gpt-oss-120b`</Tooltip> | <Tooltip tip="131,072 tokens">128K</Tooltip> | <Tooltip tip="65,536 tokens">64K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> | Yes |
+| <Tooltip tip="GPT OSS 20B">`openai/gpt-oss-20b`</Tooltip> | <Tooltip tip="131,072 tokens">128K</Tooltip> | <Tooltip tip="65,536 tokens">64K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> | Yes |
+| <Tooltip tip="Llama Prompt Guard 2 22M">`meta-llama/llama-prompt-guard-2-22m`</Tooltip> | 512 | 512 | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> | Yes |
+| <Tooltip tip="Llama Prompt Guard 2 86M">`meta-llama/llama-prompt-guard-2-86m`</Tooltip> | 512 | 512 | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> | Yes |
+| <Tooltip tip="Qwen3-32B">`qwen/qwen3-32b`</Tooltip> | <Tooltip tip="131,072 tokens">128K</Tooltip> | <Tooltip tip="40,960 tokens">40K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> | Yes |
+| <Tooltip tip="Llama 4 Scout 17B 16E Instruct">`meta-llama/llama-4-scout-17b-16e-instruct`</Tooltip> | <Tooltip tip="131,072 tokens">128K</Tooltip> | <Tooltip tip="8,192 tokens">8K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> | Yes |
 
-{/* Groq's supported-models page no
-longer lists these models, and its deprecation notice says both were shut down on July
-17, 2026.
+---
 
-| `qwen/qwen3-32b` | Qwen3-32B | 131,072 | 40,960 | text |
-| `meta-llama/llama-4-scout-17b-16e-instruct` | Llama 4 Scout 17B 16E Instruct | 131,072 | 8,192 | text, image |
-*/}
+### Mistral AI
+
+| Field | Value |
+|-------|-------|
+| **Provider ID** | `mistral` |
+| **Base URL** | `https://api.mistral.ai/v1` |
+| **Website** | [mistral.ai](https://mistral.ai) |
+| **API surfaces** | Chat Completions |
+| **Provider key required** | Yes |
+
+#### Mistral AI models
+
+| Model ID | Context | Max Output | Modalities | <Tooltip tip="Needs your own provider key">Needs BYOK?</Tooltip> |
+|-------|---------|------------|------------|--------------------|
+| <Tooltip tip="GLM-5.3">`z-ai/glm-5.3`</Tooltip> | <Tooltip tip="1,000,000 tokens">1M</Tooltip> | <Tooltip tip="131,072 tokens">128K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> | Yes |
 
 ---
 
@@ -218,16 +265,17 @@ longer lists these models, and its deprecation notice says both were shut down o
 | **Provider ID** | `moonshotai` |
 | **Base URL** | `https://api.moonshot.ai/v1` |
 | **Website** | [moonshot.ai](https://www.moonshot.ai/) |
-| **Provider key required** | Yes |
+| **API surfaces** | Chat Completions |
+| **Provider key required** | No |
 
 #### Moonshot AI models
 
-| Model ID | Display Name | Context Window | Output Tokens | Modalities |
-|----------|--------------|----------------|---------------|------------|
-| `kimi-k3` | Kimi K3 | 1,048,576 | 1,048,576 | text, image, video |
-| `kimi-k2.7-code-highspeed` | Kimi K2.7 Code HighSpeed | 262,144 | 262,144 | text, image, video |
-| `kimi-k2.7-code` | Kimi K2.7 Code | 262,144 | 262,144 | text, image, video |
-| `kimi-k2.6` | Kimi K2.6 | 262,144 | 262,144 | text, image, video |
+| Model ID | Context | Max Output | Modalities | <Tooltip tip="Needs your own provider key">Needs BYOK?</Tooltip> |
+|-------|---------|------------|------------|--------------------|
+| <Tooltip tip="Kimi K3">`kimi-k3`</Tooltip> | <Tooltip tip="1,048,576 tokens">1M</Tooltip> | <Tooltip tip="1,048,576 tokens">1M</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> <Tooltip tip="Video"><Icon icon="video" size={16} /><span className="sr-only">Video</span></Tooltip> | No |
+| <Tooltip tip="Kimi K2.7 Code">`kimi-k2.7-code`</Tooltip> | <Tooltip tip="262,144 tokens">256K</Tooltip> | <Tooltip tip="262,144 tokens">256K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> <Tooltip tip="Video"><Icon icon="video" size={16} /><span className="sr-only">Video</span></Tooltip> | No |
+| <Tooltip tip="Kimi K2.7 Code HighSpeed">`kimi-k2.7-code-highspeed`</Tooltip> | <Tooltip tip="262,144 tokens">256K</Tooltip> | <Tooltip tip="262,144 tokens">256K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> <Tooltip tip="Video"><Icon icon="video" size={16} /><span className="sr-only">Video</span></Tooltip> | No |
+| <Tooltip tip="Kimi K2.6">`kimi-k2.6`</Tooltip> | <Tooltip tip="262,144 tokens">256K</Tooltip> | <Tooltip tip="262,144 tokens">256K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> <Tooltip tip="Video"><Icon icon="video" size={16} /><span className="sr-only">Video</span></Tooltip> | No |
 
 ---
 
@@ -237,27 +285,130 @@ longer lists these models, and its deprecation notice says both were shut down o
 |-------|-------|
 | **Provider ID** | `z-ai` |
 | **Base URL** | `https://api.z.ai/api/paas/v4` |
-| **Website** | [z.ai](https://z.ai/model-api) |
-| **Provider key required** | Yes |
+| **Website** | [z.ai/model-api](https://z.ai/model-api) |
+| **API surfaces** | Chat Completions |
+| **Provider key required** | No |
 
 #### Z.ai models
 
-| Model ID | Display Name | Context Window | Output Tokens | Modalities |
-|----------|--------------|----------------|---------------|------------|
-| `glm-5.2` | GLM-5.2 | 1,000,000 | 131,072 | text |
-| `glm-5.1` | GLM-5.1 | 200,000 | 131,072 | text |
-| `glm-5-turbo` | GLM-5-Turbo | 200,000 | 131,072 | text |
-| `glm-5` | GLM-5 | 200,000 | 131,072 | text |
-| `glm-4.7-flash` | GLM-4.7-Flash | 200,000 | 131,072 | text |
-| `glm-4.7-flashx` | GLM-4.7-FlashX | 200,000 | 131,072 | text |
-| `glm-4.7` | GLM-4.7 | 200,000 | 131,072 | text |
-| `glm-4.6` | GLM-4.6 | 200,000 | 131,072 | text |
-| `glm-4.5-flash` | GLM-4.5-Flash | 128,000 | 98,304 | text |
-| `glm-4.5-airx` | GLM-4.5-AirX | 128,000 | 98,304 | text |
-| `glm-4.5-air` | GLM-4.5-Air | 128,000 | 98,304 | text |
-| `glm-4.5-x` | GLM-4.5-X | 128,000 | 98,304 | text |
-| `glm-4.5` | GLM-4.5 | 128,000 | 98,304 | text |
-| `glm-4-32b-0414-128k` | GLM-4-32B-0414-128K | 128,000 | 16,000 | text |
+| Model ID | Context | Max Output | Modalities | <Tooltip tip="Needs your own provider key">Needs BYOK?</Tooltip> |
+|-------|---------|------------|------------|--------------------|
+| <Tooltip tip="GLM-5.3-Flash">`glm-5.3-flash`</Tooltip> | <Tooltip tip="1,000,000 tokens">1M</Tooltip> | <Tooltip tip="131,072 tokens">128K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> <Tooltip tip="Video"><Icon icon="video" size={16} /><span className="sr-only">Video</span></Tooltip> <Tooltip tip="File"><Icon icon="file" size={16} /><span className="sr-only">File</span></Tooltip> | No |
+| <Tooltip tip="GLM-5.3">`glm-5.3`</Tooltip> | <Tooltip tip="1,000,000 tokens">1M</Tooltip> | <Tooltip tip="131,072 tokens">128K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> | No |
+| <Tooltip tip="GLM-5.2">`glm-5.2`</Tooltip> | <Tooltip tip="1,000,000 tokens">1M</Tooltip> | <Tooltip tip="131,072 tokens">128K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> | No |
+| <Tooltip tip="GLM-5.1">`glm-5.1`</Tooltip> | <Tooltip tip="200,000 tokens">200K</Tooltip> | <Tooltip tip="131,072 tokens">128K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> | No |
+| <Tooltip tip="GLM-5-Turbo">`glm-5-turbo`</Tooltip> | <Tooltip tip="200,000 tokens">200K</Tooltip> | <Tooltip tip="131,072 tokens">128K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> | No |
+| <Tooltip tip="GLM-5">`glm-5`</Tooltip> | <Tooltip tip="200,000 tokens">200K</Tooltip> | <Tooltip tip="131,072 tokens">128K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> | No |
+| <Tooltip tip="GLM-4.7-Flash">`glm-4.7-flash`</Tooltip> | <Tooltip tip="200,000 tokens">200K</Tooltip> | <Tooltip tip="131,072 tokens">128K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> | No |
+| <Tooltip tip="GLM-4.7-FlashX">`glm-4.7-flashx`</Tooltip> | <Tooltip tip="200,000 tokens">200K</Tooltip> | <Tooltip tip="131,072 tokens">128K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> | No |
+| <Tooltip tip="GLM-4.7">`glm-4.7`</Tooltip> | <Tooltip tip="200,000 tokens">200K</Tooltip> | <Tooltip tip="131,072 tokens">128K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> | No |
+| <Tooltip tip="GLM-4.6">`glm-4.6`</Tooltip> | <Tooltip tip="200,000 tokens">200K</Tooltip> | <Tooltip tip="131,072 tokens">128K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> | No |
+| <Tooltip tip="GLM-4.5">`glm-4.5`</Tooltip> | <Tooltip tip="128,000 tokens">128K</Tooltip> | <Tooltip tip="98,304 tokens">96K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> | No |
+| <Tooltip tip="GLM-4.5-Air">`glm-4.5-air`</Tooltip> | <Tooltip tip="128,000 tokens">128K</Tooltip> | <Tooltip tip="98,304 tokens">96K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> | No |
+| <Tooltip tip="GLM-4.5-AirX">`glm-4.5-airx`</Tooltip> | <Tooltip tip="128,000 tokens">128K</Tooltip> | <Tooltip tip="98,304 tokens">96K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> | No |
+| <Tooltip tip="GLM-4.5-Flash">`glm-4.5-flash`</Tooltip> | <Tooltip tip="128,000 tokens">128K</Tooltip> | <Tooltip tip="98,304 tokens">96K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> | No |
+| <Tooltip tip="GLM-4.5-X">`glm-4.5-x`</Tooltip> | <Tooltip tip="128,000 tokens">128K</Tooltip> | <Tooltip tip="98,304 tokens">96K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> | No |
+| <Tooltip tip="GLM-4-32B-0414-128K">`glm-4-32b-0414-128k`</Tooltip> | <Tooltip tip="128,000 tokens">128K</Tooltip> | <Tooltip tip="16,000 tokens">16K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> | No |
+| <Tooltip tip="GLM-5.3-FlashX">`glm-5.3-flashx`</Tooltip> | <Tooltip tip="1,000,000 tokens">1M</Tooltip> | <Tooltip tip="131,072 tokens">128K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> <Tooltip tip="Video"><Icon icon="video" size={16} /><span className="sr-only">Video</span></Tooltip> <Tooltip tip="File"><Icon icon="file" size={16} /><span className="sr-only">File</span></Tooltip> | No |
+
+---
+
+### QwenCloud
+
+| Field | Value |
+|-------|-------|
+| **Provider ID** | `qwencloud` |
+| **Base URL** | `https://dashscope-intl.aliyuncs.com/compatible-mode/v1` |
+| **Website** | [qwencloud.com](https://qwencloud.com/) |
+| **API surfaces** | Chat Completions, Messages, Responses |
+| **Provider key required** | No |
+
+#### QwenCloud models
+
+| Model ID | Context | Max Output | Modalities | <Tooltip tip="Needs your own provider key">Needs BYOK?</Tooltip> |
+|-------|---------|------------|------------|--------------------|
+| <Tooltip tip="DeepSeek V4.1 Flash">`deepseek/deepseek-flash`</Tooltip> | <Tooltip tip="1,000,000 tokens">1M</Tooltip> | <Tooltip tip="384,000 tokens">384K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> | No |
+| <Tooltip tip="DeepSeek V4.1 Flash">`deepseek/deepseek-v4.1-flash`</Tooltip> | <Tooltip tip="1,000,000 tokens">1M</Tooltip> | <Tooltip tip="384,000 tokens">384K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> | No |
+| <Tooltip tip="Qwen3.8-Max">`qwen/qwen3.8-max`</Tooltip> | <Tooltip tip="1,048,576 tokens">1M</Tooltip> | <Tooltip tip="131,072 tokens">128K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> <Tooltip tip="Video"><Icon icon="video" size={16} /><span className="sr-only">Video</span></Tooltip> | No |
+| <Tooltip tip="Qwen3.8-Flash">`qwen/qwen3.8-flash`</Tooltip> | <Tooltip tip="1,048,576 tokens">1M</Tooltip> | <Tooltip tip="131,072 tokens">128K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> <Tooltip tip="Video"><Icon icon="video" size={16} /><span className="sr-only">Video</span></Tooltip> | No |
+| <Tooltip tip="GLM-5.3">`z-ai/glm-5.3`</Tooltip> | <Tooltip tip="1,000,000 tokens">1M</Tooltip> | <Tooltip tip="131,072 tokens">128K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> | No |
+| <Tooltip tip="Qwen3.8-Open-Source">`qwen/qwen3.8-2.4t-a95b`</Tooltip> | <Tooltip tip="1,048,576 tokens">1M</Tooltip> | <Tooltip tip="131,072 tokens">128K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> | No |
+| <Tooltip tip="Qwen3.7-Flash">`qwen/qwen3.7-flash`</Tooltip> | <Tooltip tip="1,048,576 tokens">1M</Tooltip> | <Tooltip tip="131,072 tokens">128K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> <Tooltip tip="Video"><Icon icon="video" size={16} /><span className="sr-only">Video</span></Tooltip> | No |
+| <Tooltip tip="Kimi K3">`moonshotai/kimi-k3`</Tooltip> | <Tooltip tip="1,048,576 tokens">1M</Tooltip> | <Tooltip tip="1,048,576 tokens">1M</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> <Tooltip tip="Video"><Icon icon="video" size={16} /><span className="sr-only">Video</span></Tooltip> | No |
+| <Tooltip tip="GLM-5.2">`z-ai/glm-5.2`</Tooltip> | <Tooltip tip="1,000,000 tokens">1M</Tooltip> | <Tooltip tip="131,072 tokens">128K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> | No |
+| <Tooltip tip="GLM-5.2-Fast-Preview">`z-ai/glm-5.2-fast-preview`</Tooltip> | <Tooltip tip="1,000,000 tokens">1M</Tooltip> | <Tooltip tip="131,072 tokens">128K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> | No |
+| <Tooltip tip="Qwen3.7-Plus">`qwen/qwen3.7-plus`</Tooltip> | <Tooltip tip="1,048,576 tokens">1M</Tooltip> | <Tooltip tip="131,072 tokens">128K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> <Tooltip tip="Video"><Icon icon="video" size={16} /><span className="sr-only">Video</span></Tooltip> | No |
+| <Tooltip tip="Qwen3.7-Max">`qwen/qwen3.7-max`</Tooltip> | <Tooltip tip="1,048,576 tokens">1M</Tooltip> | <Tooltip tip="131,072 tokens">128K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> | No |
+| <Tooltip tip="DeepSeek V4 Pro">`deepseek/deepseek-v4-pro`</Tooltip> | <Tooltip tip="1,000,000 tokens">1M</Tooltip> | <Tooltip tip="384,000 tokens">384K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> | No |
+| <Tooltip tip="Qwen3.6-Plus">`qwen/qwen3.6-plus`</Tooltip> | <Tooltip tip="1,048,576 tokens">1M</Tooltip> | <Tooltip tip="65,536 tokens">64K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> <Tooltip tip="Video"><Icon icon="video" size={16} /><span className="sr-only">Video</span></Tooltip> | No |
+| <Tooltip tip="Qwen3.5-Flash">`qwen/qwen3.5-flash`</Tooltip> | <Tooltip tip="1,048,576 tokens">1M</Tooltip> | <Tooltip tip="65,536 tokens">64K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> <Tooltip tip="Video"><Icon icon="video" size={16} /><span className="sr-only">Video</span></Tooltip> | No |
+
+---
+
+### MiniMax
+
+| Field | Value |
+|-------|-------|
+| **Provider ID** | `minimax` |
+| **Base URL** | `https://api.minimax.io/v1` |
+| **Website** | [minimax.io](https://www.minimax.io) |
+| **API surfaces** | Chat Completions, Responses, Messages |
+| **Provider key required** | No |
+
+#### MiniMax models
+
+| Model ID | Context | Max Output | Modalities | <Tooltip tip="Needs your own provider key">Needs BYOK?</Tooltip> |
+|-------|---------|------------|------------|--------------------|
+| <Tooltip tip="MiniMax M3">`minimax-m3`</Tooltip> | <Tooltip tip="1,000,000 tokens">1M</Tooltip> | <Tooltip tip="524,288 tokens">512K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> <Tooltip tip="Video"><Icon icon="video" size={16} /><span className="sr-only">Video</span></Tooltip> | No |
+| <Tooltip tip="MiniMax M2.7">`minimax-m2.7`</Tooltip> | <Tooltip tip="204,800 tokens">200K</Tooltip> | <Tooltip tip="204,800 tokens">200K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> | No |
+| <Tooltip tip="MiniMax M2.7 HighSpeed">`minimax-m2.7-highspeed`</Tooltip> | <Tooltip tip="204,800 tokens">200K</Tooltip> | <Tooltip tip="204,800 tokens">200K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> | No |
+| <Tooltip tip="MiniMax M2.5">`minimax-m2.5`</Tooltip> | <Tooltip tip="204,800 tokens">200K</Tooltip> | <Tooltip tip="204,800 tokens">200K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> | No |
+| <Tooltip tip="MiniMax M2.5 HighSpeed">`minimax-m2.5-highspeed`</Tooltip> | <Tooltip tip="204,800 tokens">200K</Tooltip> | <Tooltip tip="204,800 tokens">200K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> | No |
+| <Tooltip tip="MiniMax M2.1">`minimax-m2.1`</Tooltip> | <Tooltip tip="204,800 tokens">200K</Tooltip> | <Tooltip tip="204,800 tokens">200K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> | No |
+| <Tooltip tip="MiniMax M2.1 HighSpeed">`minimax-m2.1-highspeed`</Tooltip> | <Tooltip tip="204,800 tokens">200K</Tooltip> | <Tooltip tip="204,800 tokens">200K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> | No |
+| <Tooltip tip="MiniMax M2">`minimax-m2`</Tooltip> | <Tooltip tip="204,800 tokens">200K</Tooltip> | <Tooltip tip="204,800 tokens">200K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> | No |
+
+---
+
+### Tencent TokenHub
+
+| Field | Value |
+|-------|-------|
+| **Provider ID** | `tokenhub` |
+| **Base URL** | `https://tokenhub-intl.tencentcloudmaas.com/v1` |
+| **Website** | [tencentcloud.com/document/product/1300](https://www.tencentcloud.com/document/product/1300) |
+| **API surfaces** | Chat Completions, Responses, Messages |
+| **Provider key required** | No |
+
+#### Tencent TokenHub models
+
+| Model ID | Context | Max Output | Modalities | <Tooltip tip="Needs your own provider key">Needs BYOK?</Tooltip> |
+|-------|---------|------------|------------|--------------------|
+| <Tooltip tip="MiMo-V2.6-Flash">`xiaomi/mimo-v2.6-flash`</Tooltip> | <Tooltip tip="1,000,000 tokens">1M</Tooltip> | <Tooltip tip="65,536 tokens">64K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> | No |
+| <Tooltip tip="MiMo-V2.6-Pro">`xiaomi/mimo-v2.6-pro`</Tooltip> | <Tooltip tip="1,000,000 tokens">1M</Tooltip> | <Tooltip tip="131,072 tokens">128K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> | No |
+| <Tooltip tip="Step 5 Preview">`stepfun/step-5-preview`</Tooltip> | <Tooltip tip="1,000,000 tokens">1M</Tooltip> | <Tooltip tip="64,000 tokens">64K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> | No |
+| <Tooltip tip="Kimi K2.8 Preview">`moonshotai/kimi-k2.8-preview`</Tooltip> | <Tooltip tip="1,048,576 tokens">1M</Tooltip> |—| <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> <Tooltip tip="Video"><Icon icon="video" size={16} /><span className="sr-only">Video</span></Tooltip> | No |
+| <Tooltip tip="DeepSeek V4.1 Flash">`deepseek/deepseek-flash`</Tooltip> | <Tooltip tip="1,000,000 tokens">1M</Tooltip> | <Tooltip tip="384,000 tokens">384K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> | No |
+| <Tooltip tip="Hy4 preview">`tencent/hy4-preview`</Tooltip> | <Tooltip tip="1,000,000 tokens">1M</Tooltip> | <Tooltip tip="64,000 tokens">64K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> | No |
+| <Tooltip tip="GLM-5.3-Flash">`z-ai/glm-5.3-flash`</Tooltip> | <Tooltip tip="1,000,000 tokens">1M</Tooltip> | <Tooltip tip="131,072 tokens">128K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> <Tooltip tip="Video"><Icon icon="video" size={16} /><span className="sr-only">Video</span></Tooltip> <Tooltip tip="File"><Icon icon="file" size={16} /><span className="sr-only">File</span></Tooltip> | No |
+| <Tooltip tip="GLM-5.3">`z-ai/glm-5.3`</Tooltip> | <Tooltip tip="1,000,000 tokens">1M</Tooltip> | <Tooltip tip="131,072 tokens">128K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> | No |
+| <Tooltip tip="DeepSeek V4 Flash 0731">`deepseek/deepseek-v4-flash-0731`</Tooltip> | <Tooltip tip="1,000,000 tokens">1M</Tooltip> | <Tooltip tip="384,000 tokens">384K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> | No |
+| <Tooltip tip="DeepSeek V4 Flash 202605">`deepseek/deepseek-v4-flash-202605`</Tooltip> | <Tooltip tip="1,000,000 tokens">1M</Tooltip> | <Tooltip tip="384,000 tokens">384K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> | No |
+| <Tooltip tip="Kimi K3">`moonshotai/kimi-k3`</Tooltip> | <Tooltip tip="1,048,576 tokens">1M</Tooltip> | <Tooltip tip="1,048,576 tokens">1M</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> <Tooltip tip="Video"><Icon icon="video" size={16} /><span className="sr-only">Video</span></Tooltip> | No |
+| <Tooltip tip="Hy3">`tencent/hy3`</Tooltip> | <Tooltip tip="256,000 tokens">256K</Tooltip> | <Tooltip tip="128,000 tokens">128K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> | No |
+| <Tooltip tip="GLM-5.2">`z-ai/glm-5.2`</Tooltip> | <Tooltip tip="1,000,000 tokens">1M</Tooltip> | <Tooltip tip="131,072 tokens">128K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> | No |
+| <Tooltip tip="Kimi K2.7 Code">`moonshotai/kimi-k2.7-code`</Tooltip> | <Tooltip tip="262,144 tokens">256K</Tooltip> | <Tooltip tip="262,144 tokens">256K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> <Tooltip tip="Video"><Icon icon="video" size={16} /><span className="sr-only">Video</span></Tooltip> | No |
+| <Tooltip tip="Kimi K2.7 Code HighSpeed">`moonshotai/kimi-k2.7-code-highspeed`</Tooltip> | <Tooltip tip="262,144 tokens">256K</Tooltip> | <Tooltip tip="262,144 tokens">256K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> <Tooltip tip="Video"><Icon icon="video" size={16} /><span className="sr-only">Video</span></Tooltip> | No |
+| <Tooltip tip="Hy-MT2-Lite">`tencent/hy-mt2-lite`</Tooltip> | <Tooltip tip="8,192 tokens">8K</Tooltip> | <Tooltip tip="4,096 tokens">4K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> | No |
+| <Tooltip tip="Hy-MT2-Plus">`tencent/hy-mt2-plus`</Tooltip> | <Tooltip tip="8,192 tokens">8K</Tooltip> | <Tooltip tip="4,096 tokens">4K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> | No |
+| <Tooltip tip="MiniMax M3">`minimax/minimax-m3`</Tooltip> | <Tooltip tip="1,000,000 tokens">1M</Tooltip> | <Tooltip tip="524,288 tokens">512K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> <Tooltip tip="Video"><Icon icon="video" size={16} /><span className="sr-only">Video</span></Tooltip> | No |
+| <Tooltip tip="Hy-MT2-Pro">`tencent/hy-mt2-pro`</Tooltip> | <Tooltip tip="8,192 tokens">8K</Tooltip> | <Tooltip tip="4,096 tokens">4K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> | No |
+| <Tooltip tip="MiMo-V2.5-Pro">`xiaomi/mimo-v2.5-pro`</Tooltip> | <Tooltip tip="1,000,000 tokens">1M</Tooltip> | <Tooltip tip="131,072 tokens">128K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> | No |
+| <Tooltip tip="DeepSeek V4 Flash">`deepseek/deepseek-v4-flash`</Tooltip> | <Tooltip tip="1,000,000 tokens">1M</Tooltip> | <Tooltip tip="384,000 tokens">384K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> | No |
+| <Tooltip tip="DeepSeek V4 Pro">`deepseek/deepseek-v4-pro`</Tooltip> | <Tooltip tip="1,000,000 tokens">1M</Tooltip> | <Tooltip tip="384,000 tokens">384K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> | No |
+| <Tooltip tip="Kimi K2.6">`moonshotai/kimi-k2.6`</Tooltip> | <Tooltip tip="262,144 tokens">256K</Tooltip> | <Tooltip tip="262,144 tokens">256K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> <Tooltip tip="Video"><Icon icon="video" size={16} /><span className="sr-only">Video</span></Tooltip> | No |
+| <Tooltip tip="MiniMax M2.7">`minimax/minimax-m2.7`</Tooltip> | <Tooltip tip="204,800 tokens">200K</Tooltip> | <Tooltip tip="204,800 tokens">200K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> | No |
+| <Tooltip tip="GLM-5.3-FlashX">`z-ai/glm-5.3-flashx`</Tooltip> | <Tooltip tip="1,000,000 tokens">1M</Tooltip> | <Tooltip tip="131,072 tokens">128K</Tooltip> | <Tooltip tip="Text"><Icon icon="align-left" size={16} /><span className="sr-only">Text</span></Tooltip> <Tooltip tip="Image"><Icon icon="image" size={16} /><span className="sr-only">Image</span></Tooltip> <Tooltip tip="Video"><Icon icon="video" size={16} /><span className="sr-only">Video</span></Tooltip> <Tooltip tip="File"><Icon icon="file" size={16} /><span className="sr-only">File</span></Tooltip> | No |
 
 ---
 
@@ -266,13 +417,16 @@ longer lists these models, and its deprecation notice says both were shut down o
 | Field | Value |
 |-------|-------|
 | **Provider ID** | `openrouter` |
-| **Base URL** | `https://openrouter.ai/api/v1/` |
+| **Base URL** | `https://openrouter.ai/api/v1` |
 | **Website** | [openrouter.ai](https://openrouter.ai/) |
+| **API surfaces** | Responses, Chat Completions, Messages |
 | **Provider key required** | Yes |
 
 [How to use OpenRouter →](/ai-gateway/providers/openrouter)
 
 OpenRouter is a unified API that provides access to multiple AI models from various providers through a single endpoint.
+
+The catalog lists no models for OpenRouter. Send any model ID the provider serves with the `openrouter:` prefix, and the gateway passes it through.
 
 ---
 
@@ -281,13 +435,16 @@ OpenRouter is a unified API that provides access to multiple AI models from vari
 | Field | Value |
 |-------|-------|
 | **Provider ID** | `hyperbolic` |
-| **Base URL** | `https://api.hyperbolic.xyz/v1/` |
-| **Website** | [hyperbolic.xyz](https://hyperbolic.xyz/) |
+| **Base URL** | `https://api.hyperbolic.xyz/v1` |
+| **Website** | [hyperbolic.ai](https://www.hyperbolic.ai/) |
+| **API surfaces** | Chat Completions |
 | **Provider key required** | Yes |
 
 [How to use Hyperbolic →](/ai-gateway/providers/hyperbolic)
 
 Hyperbolic provides high-performance inference for open-source models.
+
+The catalog lists no models for Hyperbolic. Send any model ID the provider serves with the `hyperbolic:` prefix, and the gateway passes it through.
 
 ---
 
@@ -296,12 +453,16 @@ Hyperbolic provides high-performance inference for open-source models.
 | Field | Value |
 |-------|-------|
 | **Provider ID** | `inceptionlabs` |
+| **Base URL** | `https://api.inceptionlabs.ai/v1` |
 | **Website** | [inceptionlabs.ai](https://www.inceptionlabs.ai/) |
+| **API surfaces** | Chat Completions |
 | **Provider key required** | Yes |
 
 [How to use InceptionLabs →](/ai-gateway/providers/inceptionlabs)
 
 InceptionLabs develops diffusion-based language models for fast, efficient text generation.
+
+The catalog lists no models for InceptionLabs. Send any model ID the provider serves with the `inceptionlabs:` prefix, and the gateway passes it through.
 
 ---
 
@@ -309,22 +470,24 @@ InceptionLabs develops diffusion-based language models for fast, efficient text 
 
 | Field | Value |
 |-------|-------|
-| **Provider ID** | `inference-net` |
-| **Base URL** | `https://api.inference.net/v1/` |
+| **Provider ID** | `inference.net` |
+| **Base URL** | `https://api.inference.net/v1` |
 | **Website** | [inference.net](https://inference.net/) |
+| **API surfaces** | Chat Completions |
 | **Provider key required** | Yes |
 
 [How to use Inference.net →](/ai-gateway/providers/inference-net)
 
 Inference.net provides a distributed inference network for running AI models at scale.
 
----
+The catalog lists no models for Inference.net. Send any model ID the provider serves with the `inference.net:` prefix, and the gateway passes it through.
 
+---
 ## Using models from the catalog
 
 ### Simple model reference
 
-Reference models directly by their ID:
+Reference models directly by their ID. A bare ID such as `gpt-4o` resolves to every provider that serves the model. The full catalog ID, such as `openai/gpt-4o`, works too:
 
 ```json
 {
@@ -352,4 +515,4 @@ See [Custom providers](/ai-gateway/concepts/custom-providers) to add one.
 
 ## Catalog updates
 
-The model catalog is updated periodically to include new models and providers. For immediate access to models not yet in the catalog, add them explicitly to your provider configuration.
+The model catalog is updated periodically to include new models and providers. To use a model that isn't in the catalog yet, send it with its provider prefix, such as `groq:new-model-id`. The gateway passes it through to that provider. Uncataloged models need your own provider key, because ngrok can't price them, so you can't pay for them with credits.

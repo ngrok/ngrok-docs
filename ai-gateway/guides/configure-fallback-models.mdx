@@ -20,7 +20,7 @@ Set the primary model with `model`. Set fallback models with `models`.
 }
 ```
 
-The gateway tries `gpt-4o` first. If that request fails, it tries each entry in `models` in order until one succeeds.
+The gateway tries `gpt-4o` first. If that request fails with a rate limit, an auth error, a server error, or a timeout, it tries each entry in `models` in order until one succeeds. Other 4xx errors, such as an invalid request, return right away. See [what triggers failover](/ai-gateway/guides/error-handling).
 
 ## Choose the provider for each fallback
 
@@ -70,7 +70,7 @@ Use the [model catalog](/ai-gateway/reference/model-catalog) to compare built-in
 
 Fallback models must be allowed by the [access key configuration](/ai-gateway/guides/access-key-configurations) assigned to the access key.
 
-If a fallback model isn't allowed, the gateway rejects that model before routing the request upstream.
+If a fallback model isn't allowed, the gateway drops it from the candidate list and names it in the `Ngrok-AIG-Rejected-Models` response header. The request still runs with the remaining candidates. It fails only when no allowed candidate remains.
 
 ## Next steps
 
