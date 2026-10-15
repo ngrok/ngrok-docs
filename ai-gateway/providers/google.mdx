@@ -1,82 +1,68 @@
 ---
 title: Google
-description: Use Google Gemini models through the ngrok AI Gateway's OpenAI-compatible API.
+description: Use Google Gemini Chat Completions, GenerateContent, and Interactions through the ngrok AI Gateway.
 ---
 
 [Google AI Studio](https://aistudio.google.com) provides Gemini models.
-The gateway reaches them two ways:
+The gateway supports three APIs:
 
-- OpenAI-compatible Chat Completions: send requests to `/v1/chat/completions` with an OpenAI client and change only the model name.
-- Native Gemini: send requests to `/v1beta/models/{model}:generateContent` or `:streamGenerateContent` with a Gemini client.
+- OpenAI-compatible Chat Completions: if your OpenAI client already uses the gateway URL and your ngrok access key, change only the model name and send requests to `/v1/chat/completions`.
+- Native Gemini GenerateContent: send requests to `/v1beta/models/{model}:generateContent` or `:streamGenerateContent` with a Gemini client.
+- Native Gemini Interactions: send stateless create requests to `/v1beta/interactions`, with a JSON response or a stream of server-sent events (SSE).
 
-The OpenAI Responses API (`/v1/responses`) does not reach Google models.
+The OpenAI Responses API (`/v1/responses`) doesn't reach Google models.
 
 <Note>
-Google is a **built-in provider** with ngrok.ai inference available, so a provider key is optional. Add your own Google key to bill usage to your Google account instead of your ngrok credits.
+Google is a **built-in provider** with ngrok.ai inference available, so a provider key is optional.
+Add your own Google key to bill usage to your Google account instead of your ngrok credits.
 </Note>
 
 ## Setup
 
 <Steps>
-  <Step title="Create an access key">
-    Follow the [quickstart](/ai-gateway/quickstart) to create an access key in [app.ngrok.ai](https://app.ngrok.ai).
+  <Step title="Create an access key and add credits">
+    Follow the [quickstart](/ai-gateway/quickstart) to create an access key and purchase [credits](/ai-gateway/concepts/credits) in [app.ngrok.ai](https://app.ngrok.ai).
   </Step>
 
   <Step title="Store your Google API key (optional)">
-    Skip this step to use ngrok.ai inference. To bring your own key, generate one at [aistudio.google.com](https://aistudio.google.com), then [add a provider key](/ai-gateway/guides/attaching-provider-keys#add-a-provider-key).
+    Skip this step to use ngrok.ai inference.
+    To bring your own key, generate one at [aistudio.google.com](https://aistudio.google.com), then [add a provider key](/ai-gateway/guides/attaching-provider-keys#add-a-provider-key).
   </Step>
 
   <Step title="Create a configuration">
     [Create an access key configuration](/ai-gateway/guides/access-key-configurations#create-a-configuration) with a `google` routing rule and allow Google in the access scope.
+    To use your own Google key, set the routing rule to **Bring your own API key** and select your stored Google key.
   </Step>
 
   <Step title="Assign and send requests">
-    Assign the configuration to your access key and send requests with your access key:
-
-    ```python
-    from openai import OpenAI
-
-    client = OpenAI(
-        base_url="https://gateway.ngrok.ai/v1",
-        api_key="ng-xxxxx-g1-xxxxx",
-    )
-
-    response = client.chat.completions.create(
-        model="gemini-3.6-flash",
-        messages=[{"role": "user", "content": "Hello!"}]
-    )
-    ```
+    Assign the configuration to your access key.
+    Follow the [Google Gen AI SDK guide](/ai-gateway/sdks/google) to install the SDK and send requests.
   </Step>
 </Steps>
 
-## Native Gemini API
+## Native Gemini credentials
 
-Point a Gemini client at `https://gateway.ngrok.ai` and send your access key.
-The gateway accepts it as `Authorization: Bearer` or as `X-Goog-Api-Key`, the header Google's own SDKs set.
+See [SDK authentication](/ai-gateway/sdks/google#authentication) for access key headers and credential precedence.
 
-```bash
-curl "https://gateway.ngrok.ai/v1beta/models/gemini-3.6-flash:generateContent" \
-  -H "X-Goog-Api-Key: ng-xxxxx-g1-xxxxx" \
-  -H "Content-Type: application/json" \
-  -d '{"contents":[{"parts":[{"text":"Hello"}]}]}'
-```
+<a id="native-gemini-api" />
+<a id="native-gemini-generatecontent" />
 
-Request and response bodies are forwarded byte-for-byte, so payloads match Google's own API exactly.
-Nothing is added to, removed from, or reordered inside a body.
+## Generate content requests
 
-The headers are ngrok's, though.
-Alongside `Content-Type`, responses on this surface carry `Ngrok-AIG-Request-Id`, `Ngrok-AIG-Attempts`, and `Ngrok-AIG-Model`.
-See [Response headers](/ai-gateway/how-it-works#response-headers).
+See [GenerateContent requests](/ai-gateway/sdks/google#generate-content-requests) for native endpoints and cURL examples, or [SDK streaming](/ai-gateway/sdks/google#streaming) for Python and TypeScript examples.
+
+<a id="native-gemini-interactions" />
+
+## Interactions requests
+
+See [SDK Interactions](/ai-gateway/sdks/google#interactions) for examples and gateway restrictions, or [Interactions requests](/ai-gateway/sdks/google#interactions-requests) for the REST endpoint.
 
 ## Available models
 
 See the [model catalog](/ai-gateway/reference/model-catalog#google).
 
-<Warning>
-`gemini-2.5-pro`, `gemini-2.5-flash`, and `gemini-2.5-flash-lite` need a Google project created before mid-2026. Newer projects get a 404 stating the model is no longer available to new users, and the ngrok-managed Google project postdates that cutoff. Reach these models with your own key on an older project, or use a Gemini 3 model instead.
-</Warning>
-
 ## Next steps
 
-- [Provider Keys](/ai-gateway/guides/attaching-provider-keys)
-- [Access Key Configurations](/ai-gateway/guides/access-key-configurations)
+- [Google Gen AI SDK](/ai-gateway/sdks/google)
+- [Provider keys](/ai-gateway/guides/attaching-provider-keys)
+- [Access key configurations](/ai-gateway/guides/access-key-configurations)
