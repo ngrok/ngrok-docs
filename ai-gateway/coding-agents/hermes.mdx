@@ -1,0 +1,79 @@
+---
+title: Hermes
+sidebarTitle: Hermes
+description: Install the ngrok AI Gateway plugin for Hermes Agent to use your gateway's models as a Hermes model provider with one access key.
+---
+
+[Hermes Agent](https://hermes-agent.nousresearch.com) is Nous Research's open-source AI agent for the terminal.
+The [ngrok AI Gateway plugin](https://github.com/ngrok/hermes-ngrok) adds the gateway as a Hermes model provider, so Hermes can use every model your access key reaches.
+
+## What you'll need
+
+- [Hermes Agent](https://hermes-agent.nousresearch.com) 0.21.6 or later installed.
+- An [access key](/ai-gateway/concepts/access-keys) from [app.ngrok.ai](https://app.ngrok.ai/keys).
+
+## Install the plugin
+
+Install the plugin with the Hermes CLI:
+
+```bash
+hermes plugins install ngrok-ai-gateway
+```
+
+Enter your access key when prompted.
+Hermes saves it as `NGROK_AI_GATEWAY_KEY`.
+
+Plugins are installed per Hermes profile, so install it again in any other profile that needs it.
+
+## Choose a model
+
+Run `hermes model` and select **ngrok AI Gateway**, or pass `--provider ngrok` when you start Hermes.
+
+The model list comes from your gateway, so it shows the models your access key is allowed to call, by full catalog ID such as `openai/gpt-5.5`.
+Model IDs follow the gateway's [model naming](/ai-gateway/concepts/models): a model ID such as `gpt-5.5`, or `provider:model` to pin a provider, such as `openai:gpt-5.5`.
+
+## Test the connection
+
+Send a single prompt from the command line:
+
+```bash
+hermes chat --provider ngrok --model gpt-5.5 -q "Explain what a hash map is in two sentences."
+```
+
+Confirm the request in AI Gateway [observability](/ai-gateway/observability) in [app.ngrok.ai](https://app.ngrok.ai).
+
+## Use a cheaper model for background tasks
+
+Background tasks like context compression and title generation use your main model.
+To send them to a cheaper model through the gateway, set the provider and model for each task in `~/.hermes/config.yaml`:
+
+```yaml
+auxiliary:
+  compression:
+    provider: ngrok
+    model: gpt-5.4-mini
+  title_generation:
+    provider: ngrok
+    model: gpt-5.4-mini
+```
+
+## Use a different gateway endpoint
+
+The plugin sends requests to `https://gateway.ngrok.ai/v1`.
+To use a different gateway endpoint, set `NGROK_AI_GATEWAY_BASE_URL`:
+
+```bash
+export NGROK_AI_GATEWAY_BASE_URL="https://gateway.example.com/v1"
+```
+
+## What the plugin sends
+
+The plugin sends chat and model list requests to the gateway endpoint with your access key.
+Each request carries a `User-Agent: hermes-agent/<version> (ngrok-plugin)` header.
+The plugin makes no other network requests, doesn't read files, and doesn't run background processes.
+
+## Next steps
+
+- [Restrict providers and models](/ai-gateway/guides/restrict-providers-and-models): Scope what an access key can call
+- [Configure fallback models](/ai-gateway/guides/configure-fallback-models): Try another model when the first one fails
+- [Observability](/ai-gateway/observability): See which model served each request

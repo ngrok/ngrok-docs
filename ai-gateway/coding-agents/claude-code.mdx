@@ -78,12 +78,17 @@ export ANTHROPIC_DEFAULT_SONNET_MODEL="claude-sonnet-5-5"
 export ANTHROPIC_DEFAULT_HAIKU_MODEL="claude-haiku-5-5"
 ```
 
-Use plain Anthropic model IDs rather than `provider:model` names.
-Claude Code reads the model ID to look up details like the context window, so a name it doesn't recognize can leave it assuming the wrong limits.
-Use the catalog's model IDs, too, rather than dated snapshot IDs like `claude-haiku-4-5-20251001`, which the gateway doesn't match.
+Use the catalog's model IDs rather than dated snapshot IDs like `claude-haiku-4-5-20251001`, which the gateway doesn't match.
 
-The gateway doesn't serve a model list, so leave Claude Code's gateway model discovery (`CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY`) off and pick models with the aliases or variables above.
-It doesn't serve Anthropic's token counting endpoint either, so `/context` shows estimated token counts.
+To add the gateway's Claude models to the `/model` picker, turn on Claude Code's gateway model discovery:
+
+```bash
+export CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY=1
+```
+
+At startup, Claude Code reads the gateway's model list, which only includes models your access key is allowed to call, and adds the Claude models in it, such as `anthropic/claude-sonnet-5-5`.
+
+The gateway doesn't serve Anthropic's token counting endpoint, so `/context` shows estimated token counts.
 
 <Note>
 Claude Code only works with Claude models through the gateway.
@@ -109,7 +114,7 @@ See Claude Code's guide to [connecting to an LLM gateway](https://code.claude.co
 | Claude Code asks you to log in | Set the variables in your shell or in `~/.claude/settings.json`, not in a project settings file, which Claude Code reads only after its first-run setup |
 | `/status` doesn't show the gateway URL | Start `claude` from the shell where you exported the variables, or move them to `~/.claude/settings.json` |
 | A request fails with a model error | Check that the model ID matches the [model catalog](/ai-gateway/reference/model-catalog) exactly, without a date suffix, and that your [access key configuration](/ai-gateway/guides/access-key-configurations) allows it |
-| Long responses stop partway through | Remove a custom `totalTimeout` from [account settings](/ai-gateway/guides/account-settings#streaming-responses), which otherwise caps the whole stream |
+| Long responses stop partway through | Set `totalTimeout` to `15m` in [account settings](/ai-gateway/guides/account-settings#streaming-responses). A saved total timeout caps the whole stream, and saving any account setting stores the `2m` default |
 
 For gateway-side errors, see [Debug failed requests](/ai-gateway/guides/debugging).
 

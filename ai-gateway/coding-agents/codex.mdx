@@ -27,7 +27,7 @@ codex debug models > ~/.codex/ngrok-models.json
 ```
 
 Codex looks up each model's context window, reasoning levels, and tools in a catalog.
-It can't fetch that catalog from a custom provider, so without the file it warns that model metadata isn't found and falls back to generic defaults.
+The gateway's model list doesn't include those details, so without the file Codex warns that model metadata isn't found and falls back to generic defaults.
 Run the command again after you update Codex to pick up new models.
 
 Add the gateway as a provider in `~/.codex/config.toml`:
@@ -115,7 +115,7 @@ Codex loads `config.toml` first, then layers the profile on top, so sessions wit
 | `Reconnecting...` messages, then `401 Unauthorized` | Check that `NGROK_AI_GATEWAY_KEY` is exported in the shell that starts Codex, and that it holds a current access key |
 | Requests still go to OpenAI | Move `model_provider` and `[model_providers.ngrok]` to `~/.codex/config.toml` or a profile, since a project config can't set them |
 | `Model metadata for <model> not found` at startup | Save the model catalog and set `model_catalog_json`, then use a plain model ID that's in it |
-| Long responses stop partway through | Remove a custom `totalTimeout` from [account settings](/ai-gateway/guides/account-settings#streaming-responses), which otherwise caps the whole stream |
+| Long responses stop partway through | Set `totalTimeout` to `15m` in [account settings](/ai-gateway/guides/account-settings#streaming-responses). A saved total timeout caps the whole stream, and saving any account setting stores the `2m` default |
 
 For gateway-side errors, see [Debug failed requests](/ai-gateway/guides/debugging).
 
