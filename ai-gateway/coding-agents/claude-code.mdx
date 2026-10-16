@@ -1,0 +1,120 @@
+---
+title: Claude Code
+sidebarTitle: Claude Code
+description: Route Claude Code through the ngrok AI Gateway with two environment variables to track usage, fail over, and bill to one access key.
+---
+
+[Claude Code](https://code.claude.com/docs) is Anthropic's agentic coding tool for the terminal, IDEs, and desktop.
+It speaks the Anthropic Messages API, so pointing its base URL at the AI Gateway sends every model request through ngrok.ai, where it shows up in [observability](/ai-gateway/observability) and follows your [access key configuration](/ai-gateway/guides/access-key-configurations).
+
+## What you'll need
+
+- [Claude Code](https://code.claude.com/docs/en/setup) installed.
+- An [access key](/ai-gateway/concepts/access-keys) from [app.ngrok.ai](https://app.ngrok.ai).
+
+## Point Claude Code at the gateway
+
+Set two environment variables in your shell:
+
+```bash
+export ANTHROPIC_BASE_URL="https://gateway.ngrok.ai"
+export ANTHROPIC_AUTH_TOKEN="ng-xxxxx-g1-xxxxx"
+```
+
+- `ANTHROPIC_BASE_URL` is the gateway URL without `/v1`, since Claude Code appends `/v1/messages` itself
+- `ANTHROPIC_AUTH_TOKEN` is your access key, which Claude Code sends as an `Authorization: Bearer` header
+
+`ANTHROPIC_AUTH_TOKEN` takes precedence over a saved claude.ai login, so Claude Code uses your access key as soon as you start it.
+If `ANTHROPIC_API_KEY` is also set in your environment, unset it to avoid an auth conflict warning.
+
+To keep the configuration across terminals and for background agents, move the same values into the `env` block of `~/.claude/settings.json`:
+
+```json
+{
+  "env": {
+    "ANTHROPIC_BASE_URL": "https://gateway.ngrok.ai",
+    "ANTHROPIC_AUTH_TOKEN": "ng-xxxxx-g1-xxxxx"
+  }
+}
+```
+
+<Warning>
+Don't put your access key in a project's `.claude/settings.json`.
+That file is committed and shared with everyone who clones the repository.
+</Warning>
+
+## Test the connection
+
+Before you start Claude Code, send a short request straight to the gateway from the same shell:
+
+```bash
+curl https://gateway.ngrok.ai/v1/messages \
+  -H "Authorization: Bearer $ANTHROPIC_AUTH_TOKEN" \
+  -H "anthropic-version: 2023-06-01" \
+  -H "content-type: application/json" \
+  -d '{"model": "claude-sonnet-5-5", "max_tokens": 16, "messages": [{"role": "user", "content": "Say hello."}]}'
+```
+
+A JSON response that starts with `{"id":"msg_` means the URL and access key work.
+A `401` means the gateway rejected the access key.
+
+Then start `claude`, run `/status`, and check two lines:
+
+- `Anthropic base URL` shows `https://gateway.ngrok.ai`
+- `Auth token` names `ANTHROPIC_AUTH_TOKEN`
+
+Send any prompt, then confirm the request in AI Gateway [observability](/ai-gateway/observability) in [app.ngrok.ai](https://app.ngrok.ai).
+
+## Choose a model
+
+Claude Code's built-in model aliases, such as `opus`, `sonnet`, and `haiku`, resolve to Anthropic model IDs like `claude-sonnet-5-5`.
+The gateway finds those IDs in the [model catalog](/ai-gateway/reference/model-catalog), so `/model` and `--model` work without extra setup.
+
+To pin the model behind each alias, set these variables alongside the base URL:
+
+```bash
+export ANTHROPIC_DEFAULT_OPUS_MODEL="claude-opus-5-5"
+export ANTHROPIC_DEFAULT_SONNET_MODEL="claude-sonnet-5-5"
+export ANTHROPIC_DEFAULT_HAIKU_MODEL="claude-haiku-5-5"
+```
+
+Use plain Anthropic model IDs rather than `provider:model` names.
+Claude Code reads the model ID to look up details like the context window, so a name it doesn't recognize can leave it assuming the wrong limits.
+Use the catalog's model IDs, too, rather than dated snapshot IDs like `claude-haiku-4-5-20251001`, which the gateway doesn't match.
+
+The gateway doesn't serve a model list, so leave Claude Code's gateway model discovery (`CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY`) off and pick models with the aliases or variables above.
+It doesn't serve Anthropic's token counting endpoint either, so `/context` shows estimated token counts.
+
+<Note>
+Claude Code only works with Claude models through the gateway.
+`/v1/messages` only reaches providers that support the Anthropic Messages API, and Anthropic doesn't support routing Claude Code to other models.
+</Note>
+
+## Use other Claude Code surfaces
+
+The CLI reads the shell variables and `~/.claude/settings.json`.
+Other surfaces need the same two values in a different place:
+
+- VS Code extension: set them in `claudeCode.environmentVariables` in your VS Code user settings
+- Claude Agent SDK: pass them in the SDK's `env` option, which sets the environment of the Claude Code process it spawns
+- Claude desktop app: turn on Developer Mode, then enter the gateway details under **Developer** > **Configure Third-Party Inference**
+
+See Claude Code's guide to [connecting to an LLM gateway](https://code.claude.com/docs/en/llm-gateway-connect#configure-each-surface) for each surface.
+
+## Troubleshoot Claude Code
+
+| Symptom | Fix |
+|---------|-----|
+| `401` errors | Check that `ANTHROPIC_AUTH_TOKEN` holds a current access key from [app.ngrok.ai](https://app.ngrok.ai/keys) |
+| Claude Code asks you to log in | Set the variables in your shell or in `~/.claude/settings.json`, not in a project settings file, which Claude Code reads only after its first-run setup |
+| `/status` doesn't show the gateway URL | Start `claude` from the shell where you exported the variables, or move them to `~/.claude/settings.json` |
+| A request fails with a model error | Check that the model ID matches the [model catalog](/ai-gateway/reference/model-catalog) exactly, without a date suffix, and that your [access key configuration](/ai-gateway/guides/access-key-configurations) allows it |
+| Long responses stop partway through | Remove a custom `totalTimeout` from [account settings](/ai-gateway/guides/account-settings#streaming-responses), which otherwise caps the whole stream |
+
+For gateway-side errors, see [Debug failed requests](/ai-gateway/guides/debugging).
+
+## Next steps
+
+- [Restrict providers and models](/ai-gateway/guides/restrict-providers-and-models): Scope what an access key can call
+- [Configure fallback models](/ai-gateway/guides/configure-fallback-models): Try another model when the first one fails
+- [Observability](/ai-gateway/observability): See which model served each request
