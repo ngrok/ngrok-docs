@@ -1,5 +1,5 @@
 ---
-title: Secure your endpoints with Frontegg SSO (SAML)
+title: Secure Your Endpoints with Frontegg SSO (SAML)
 sidebarTitle: Frontegg (SAML)
 description: Secure access to your ngrok endpoints with Frontegg single sign-on (SSO) using SAML.
 ---
@@ -8,11 +8,11 @@ import Disclaimer from "/snippets/integrations/_endpoint-sso-disclaimer.mdx";
 
 <Disclaimer />
 
-This guide walks you through configuring Frontegg as the primary Identity Provider for ngrok endpoints using single sign-on (SSO).
+This guide walks you through configuring Frontegg as the primary Identity Provider (IdP) for ngrok endpoints using single sign-on (SSO).
 By integrating Frontegg SSO with ngrok, you can:
 
 - Restrict access to ngrok endpoints only to users authenticated via Frontegg
-- Use Frontegg security policies and MFA authenticators
+- Use Frontegg security policies and multi-factor authentication (MFA) authenticators
 - Use Frontegg's Dashboard to facilitate access to ngrok apps
 
 ## What you'll need
@@ -24,14 +24,17 @@ By integrating Frontegg SSO with ngrok, you can:
 
 Configure Frontegg as a SAML identity provider by following Frontegg's guide, [Frontegg as IDP via SAML](https://developers.frontegg.com/ciam/guides/management/frontegg-idp/via-saml).
 
-ngrok generates the SP Entity ID and ACS URL from your endpoint URL, which you do not have yet, so enter temporary values (such as `https://temporary`) for the entity ID and ACS URL for now. You replace them with the ngrok-generated values in step 3.
+ngrok generates the service provider (SP) Entity ID and Assertion Consumer Service (ACS) URL from your endpoint URL, which you don't have yet, so enter temporary values (such as `https://temporary`) for the entity ID and ACS URL for now.
+You replace them with the ngrok-generated values in step 3.
 
-Download the IdP metadata XML that Frontegg returns. You use it in the next step.
+Download the IdP metadata XML that Frontegg returns.
+You use it in the next step.
 
 ## 2. Configure ngrok
 
 <Warning>
-The SAML Traffic Policy action is currently in [developer preview](/gateway/traffic-policy/actions/saml/). [Request access](https://dashboard.ngrok.com/early-access) to configure SAML via Traffic Policy.
+The SAML Traffic Policy action is currently in [developer preview](/gateway/traffic-policy/actions/saml/).
+[Request access](https://dashboard.ngrok.com/early-access) to configure SAML via Traffic Policy.
 </Warning>
 
 Once you have developer preview access, create a `policy.yaml` file with the following content, replacing `YOUR_IDP_METADATA_XML` with the IdP metadata XML from Frontegg:
@@ -44,7 +47,8 @@ on_http_request:
           idp_metadata: 'YOUR_IDP_METADATA_XML'
 ```
 
-The SAML action generates your ngrok SP Entity ID and ACS URL based on your endpoint URL. Refer to the [SAML action documentation](/gateway/traffic-policy/actions/saml/) for how to retrieve these values to complete your Frontegg configuration.
+The SAML action generates your ngrok SP Entity ID and ACS URL based on your endpoint URL.
+Refer to the [SAML action documentation](/gateway/traffic-policy/actions/saml/) for how to retrieve these values to complete your Frontegg configuration.
 
 Launch an endpoint with this policy:
 
@@ -52,16 +56,18 @@ Launch an endpoint with this policy:
 ngrok http 3000 --traffic-policy-file policy.yaml --url YOUR_DOMAIN
 ```
 
-Copy the URL next to **Forwarding**. You use this URL to test the integration.
+Copy the URL next to **Forwarding**.
+You use this URL to test the integration.
 
 ## 3. Update the Frontegg SAML configuration
 
 Back in Frontegg, update the SAML configuration you created in step 1, replacing the temporary values with the ngrok values you retrieved from the [SAML action documentation](/gateway/traffic-policy/actions/saml/):
 
-- Set the entity ID to your ngrok **SP Entity ID**.
-- Set the ACS URL to your ngrok **ACS URL**.
+- Set the **Entity ID** to your ngrok **SP Entity ID**.
+- Set the **ACS URL** to your ngrok **ACS URL**.
 
-If your Frontegg environment uses hosted login, also add your ngrok forwarding URL (for example, `https://123456789.ngrok.app/`) as an allowed login URL. Refer to the same Frontegg guide for where to configure this.
+If your Frontegg environment uses hosted login, also add your ngrok forwarding URL (for example, `https://123456789.ngrok.app/`) as an allowed login URL.
+Refer to the same Frontegg guide for where to configure this.
 
 ## 4. Start an endpoint
 
@@ -75,16 +81,17 @@ Run the following command, replacing `3000` with your local web app port and `YO
 ngrok http 3000 --traffic-policy-file policy.yaml --url YOUR_DOMAIN
 ```
 
-Copy the URL next to **Forwarding**. You use this URL to test the Frontegg authentication.
+Copy the URL next to **Forwarding**.
+You use this URL to test the Frontegg authentication.
 
-## Grant access to Frontegg users
+## 5. Grant access to Frontegg users
 
 Frontegg controls who can sign in through the accounts and users you manage in the Frontegg Portal Backoffice.
 Create an account and add the users who need access to ngrok, then confirm those users are assigned to your environment.
 
-## Test the integration
+## 6. Test the integration
 
 - In your browser, launch an incognito window.
 - Access your ngrok endpoint (for example, `https://frontegg-sso-test.ngrok.app` or using the copied endpoint URL).
-- You should be prompted to log in with your Frontegg credentials.
-- After logging in, you should be able to see your web app.
+- When prompted, log in with your Frontegg credentials.
+- After you log in, you see your web app.

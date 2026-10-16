@@ -8,7 +8,7 @@ import Disclaimer from "/snippets/integrations/_endpoint-sso-disclaimer.mdx";
 
 <Disclaimer />
 
-This guide walks you through configuring Azure AD B2C as an Identity Provider for your ngrok endpoints using single sign-on (SSO).
+This guide walks you through configuring Azure AD B2C as an Identity Provider (IdP) for your ngrok endpoints using single sign-on (SSO).
 By integrating Azure AD B2C with ngrok, you can:
 
 - Restrict access to ngrok endpoints to only users who authenticated via Azure AD B2C
@@ -23,10 +23,12 @@ By integrating Azure AD B2C with ngrok, you can:
 ## 1. Configure ngrok
 
 <Warning>
-The SAML Traffic Policy action is currently in [developer preview](/gateway/traffic-policy/actions/saml/). [Request access](https://dashboard.ngrok.com/early-access) to configure SAML via Traffic Policy.
+The SAML Traffic Policy action is currently in [developer preview](/gateway/traffic-policy/actions/saml/).
+[Request access](https://dashboard.ngrok.com/early-access) to configure SAML via Traffic Policy.
 </Warning>
 
-Once you have developer preview access, create a `policy.yaml` file with the following content. Leave `YOUR_IDP_METADATA_XML` as a placeholder for now; you replace it with the metadata XML from Azure AD B2C in a later step.
+Once you have developer preview access, create a `policy.yaml` file with the following content.
+Leave `YOUR_IDP_METADATA_XML` as a placeholder for now; you replace it with the metadata XML from Azure AD B2C in a later step.
 
 ```yaml
 on_http_request:
@@ -36,7 +38,8 @@ on_http_request:
           idp_metadata: 'YOUR_IDP_METADATA_XML'
 ```
 
-The SAML action generates your ngrok SP Entity ID and ACS URL based on your endpoint URL. Refer to the [SAML action documentation](/gateway/traffic-policy/actions/saml/) for how to retrieve these values, which you enter into Azure AD B2C in the next step.
+The SAML action generates your ngrok service provider (SP) Entity ID and Assertion Consumer Service (ACS) URL based on your endpoint URL.
+Refer to the [SAML action documentation](/gateway/traffic-policy/actions/saml/) for how to retrieve these values, which you enter into Azure AD B2C in the next step.
 
 Launch an endpoint with this policy:
 
@@ -44,11 +47,12 @@ Launch an endpoint with this policy:
 ngrok http 3000 --traffic-policy-file policy.yaml --url YOUR_DOMAIN
 ```
 
-Copy the URL next to **Forwarding**. You use this URL to test the integration.
+Copy the URL next to **Forwarding**.
+You use this URL to test the integration.
 
 ## 2. Create a SAML application in Azure AD B2C
 
-Azure AD B2C does not support SAML applications through user flows, so you configure it as a SAML identity provider with custom policies.
+Azure AD B2C doesn't support SAML applications through user flows, so you configure it as a SAML identity provider with custom policies.
 Follow Microsoft's guide, [Configure Azure AD B2C as a SAML IdP to your applications](https://learn.microsoft.com/en-us/azure/active-directory-b2c/saml-service-provider), to set up the custom policies, register your SAML application, and expose the Azure AD B2C SAML metadata endpoint.
 
 When you register the application, use the following mapping to enter the ngrok values you retrieved in the previous step:
@@ -61,7 +65,8 @@ When you register the application, use the following mapping to enter the ngrok 
 
 ## 3. Update the ngrok configuration with the IdP metadata
 
-- Retrieve the IdP metadata XML from the Azure AD B2C SAML metadata endpoint. The URL follows this format: `https://<tenant-name>.b2clogin.com/<tenant-name>.onmicrosoft.com/<policy-name>/Samlp/metadata`.
+- Retrieve the IdP metadata XML from the Azure AD B2C SAML metadata endpoint.
+  The URL follows this format: `https://<tenant-name>.b2clogin.com/<tenant-name>.onmicrosoft.com/<policy-name>/Samlp/metadata`.
 - Update the `idp_metadata` value in your `policy.yaml` with the metadata XML, replacing the placeholder value you set earlier.
 - Restart the endpoint so it picks up the updated policy.
 
@@ -75,5 +80,5 @@ Run: `ngrok http 3000 --traffic-policy-file policy.yaml --url YOUR_DOMAIN`
 
 - Access your ngrok endpoint via your forwarding URL.
 - In your browser, launch an incognito window.
-- You should be prompted to log in or sign up.
-- After logging in, you should be able to see the application.
+- When prompted, log in or sign up.
+- After you log in, you see the application.

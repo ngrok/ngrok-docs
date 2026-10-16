@@ -8,11 +8,11 @@ import Disclaimer from "/snippets/integrations/_endpoint-sso-disclaimer.mdx";
 
 <Disclaimer />
 
-This guide walks you through configuring JumpCloud as the primary Identity Provider for ngrok endpoints using single sign-on (SSO).
+This guide walks you through configuring JumpCloud as the primary Identity Provider (IdP) for ngrok endpoints using single sign-on (SSO).
 By integrating JumpCloud SSO with ngrok, you can:
 
 - Restrict access to ngrok endpoints only to users authenticated via JumpCloud
-- Use JumpCloud security policies and MFA authenticators
+- Use JumpCloud security policies and multi-factor authentication (MFA) authenticators
 - Use JumpCloud's Dashboard to facilitate access to ngrok apps
 
 ## What you'll need
@@ -25,14 +25,17 @@ By integrating JumpCloud SSO with ngrok, you can:
 Create a custom SAML application and export its IdP metadata by following JumpCloud's guide, [SSO using Custom SAML Application Connectors](https://jumpcloud.com/support/sso-using-custom-saml-application-connectors).
 Name the application `ngrok saml`.
 
-ngrok generates the SP Entity ID and ACS URL from your endpoint URL, which you do not have yet, so enter temporary values (such as `https://temporary`) for the **SP Entity ID** and **ACS URL** for now. You replace them with the ngrok-generated values in step 3.
+ngrok generates the service provider (SP) Entity ID and Assertion Consumer Service (ACS) URL from your endpoint URL, which you don't have yet, so enter temporary values (such as `https://temporary`) for the **SP Entity ID** and **ACS URL** for now.
+You replace them with the ngrok-generated values in step 3.
 
-Export the metadata XML from JumpCloud. You use it in the next step.
+Export the metadata XML from JumpCloud.
+You use it in the next step.
 
 ## 2. Configure ngrok
 
 <Warning>
-The SAML Traffic Policy action is currently in [developer preview](/gateway/traffic-policy/actions/saml/). [Request access](https://dashboard.ngrok.com/early-access) to configure SAML via Traffic Policy.
+The SAML Traffic Policy action is currently in [developer preview](/gateway/traffic-policy/actions/saml/).
+[Request access](https://dashboard.ngrok.com/early-access) to configure SAML via Traffic Policy.
 </Warning>
 
 Once you have developer preview access, create a `policy.yaml` file with the following content, replacing `YOUR_IDP_METADATA_XML` with the IdP metadata XML from JumpCloud:
@@ -45,7 +48,8 @@ on_http_request:
           idp_metadata: 'YOUR_IDP_METADATA_XML'
 ```
 
-The SAML action generates your ngrok SP Entity ID and ACS URL based on your endpoint URL. Refer to the [SAML action documentation](/gateway/traffic-policy/actions/saml/) for how to retrieve your SP metadata XML, which you upload to JumpCloud in the next step.
+The SAML action generates your ngrok SP Entity ID and ACS URL based on your endpoint URL.
+Refer to the [SAML action documentation](/gateway/traffic-policy/actions/saml/) for how to retrieve your SP metadata XML, which you upload to JumpCloud in the next step.
 
 ## 3. Link JumpCloud with ngrok
 
@@ -65,18 +69,19 @@ Run the following command, replacing `3000` with your local web app port and `YO
 ngrok http 3000 --traffic-policy-file policy.yaml --url YOUR_DOMAIN
 ```
 
-Copy the URL next to **Forwarding**. You use this URL to test the JumpCloud authentication.
+Copy the URL next to **Forwarding**.
+You use this URL to test the JumpCloud authentication.
 
-## Grant access to JumpCloud users
+## 5. Grant access to JumpCloud users
 
 JumpCloud restricts access to SSO apps through user group assignments.
 By default, apps created in JumpCloud have no group assignments, so nobody can use JumpCloud SSO to access ngrok until you assign a group to the app.
 Open your ngrok custom SAML app, assign the group whose members need access under the **User Groups** tab, and save.
 Add JumpCloud users to that group whenever they need access to the ngrok app.
 
-## Test the integration
+## 6. Test the integration
 
 - In your browser, launch an incognito window.
 - Access your ngrok endpoint (for example, `https://jumpcloud-sso-test.ngrok.app` or using the copied endpoint URL).
-- You should be prompted to log in with your JumpCloud credentials.
-- After logging in, you should be able to see your web app.
+- When prompted, log in with your JumpCloud credentials.
+- After you log in, you see your web app.
