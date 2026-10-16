@@ -1,22 +1,27 @@
 ---
 title: "CGNAT: Expose Local Services Without Port Forwarding"
 sidebarTitle: CGNAT
-description: Behind CGNAT on Starlink, T-Mobile Home Internet, or another 5G/LTE network? Port forwarding won't work. Use ngrok to reach local apps, SSH, and servers without router access.
+description: Behind CGNAT on Starlink or T-Mobile Home Internet? Use ngrok to reach local apps, SSH, and servers without port forwarding or router access.
 ---
 
-If you're behind **CGNAT (carrier-grade NAT)**, port forwarding on your router won't work. Your ISP shares one public IP address across many customers, so inbound connections never reach your router.
+If you're behind carrier-grade NAT (CGNAT), port forwarding on your router doesn't work.
+Your internet service provider (ISP) shares one public IP address across many customers, so inbound connections never reach your router.
 
-ngrok works around this without any router or network changes. The ngrok agent makes an **outbound** connection to ngrok's cloud, and traffic to your public URL flows back through that connection.
+ngrok works around this without any router or network changes.
+The ngrok agent makes an outbound connection to ngrok's cloud, and traffic to your public URL flows back through that connection.
 
 ## What is CGNAT?
 
-Carrier-grade NAT (CGNAT, also called CGN or large-scale NAT) is a technique ISPs use to stretch their limited supply of IPv4 addresses. Your home has a public IP address only in name: your router gets a private address from the ISP, and the ISP translates traffic for many customers through a shared public IP.
+CGNAT (also called CGN or large-scale NAT) is a technique ISPs use to stretch their limited supply of IPv4 addresses.
+Your router doesn't get its own public IP address.
+Instead, it gets a private address from your ISP, and the ISP translates traffic for many customers through a shared public IP.
 
-This works fine for outbound traffic like browsing and streaming. It breaks anything that needs **inbound** connections, such as:
+This works fine for outbound traffic like browsing and streaming.
+It breaks anything that needs inbound connections, such as:
 
 - Hosting a website, API, or app from home
 - SSH or remote desktop into a home machine
-- Self-hosted services like Home Assistant, Plex, or a NAS
+- Self-hosted services like Home Assistant, Plex, or a network-attached storage (NAS) device
 - Game servers
 - Receiving webhooks on a local machine
 
@@ -24,16 +29,19 @@ CGNAT is common on satellite, fixed-wireless, and mobile networks, including Sta
 
 ## How to tell if you're behind CGNAT
 
-1. Find your router's **WAN** (internet-facing) IP address in its admin page.
-2. Compare it to your public IP address, as reported by any "what is my IP" website.
+1. Find your router's WAN (internet-facing) IP address in its admin page.
+2. Compare it to your public IP address, which any IP lookup website shows you.
 
-If the two addresses **differ**, you are behind some form of NAT upstream of your router. It is almost certainly CGNAT if your router's WAN IP is in the `100.64.0.0` to `100.127.255.255` range, which is the shared address space reserved for CGNAT (RFC 6598).
+If the two addresses differ, something upstream of your router is doing NAT.
+It's almost certainly CGNAT if your router's WAN IP is in the `100.64.0.0` to `100.127.255.255` range, which RFC 6598 reserves as shared address space for CGNAT.
 
 ## Why port forwarding doesn't work behind CGNAT
 
-Port forwarding tells *your* router to send inbound traffic on a port to a device on your network. Behind CGNAT, inbound traffic first hits your ISP's NAT, which has no idea which customer it belongs to, so it's dropped before it ever reaches your router. You can't configure your ISP's NAT, so no router setting can fix it.
+Port forwarding tells your router to send inbound traffic on a port to a device on your network.
+Behind CGNAT, inbound traffic first hits your ISP's NAT, which doesn't know which customer it belongs to, so it drops the traffic before it ever reaches your router.
+You can't configure your ISP's NAT, so no router setting can fix it.
 
-The usual workarounds are paying your ISP for a public or static IP (when they offer one), running and maintaining your own VPS relay, or using a tunnel that connects outbound, which is how ngrok works.
+The usual workarounds are paying your ISP for a public or static IP (when they offer one), running your own virtual private server (VPS) as a relay, or using a tunnel that connects outbound, which is how ngrok works.
 
 ## Expose a local service through CGNAT with ngrok
 
@@ -50,7 +58,7 @@ The usual workarounds are paying your ISP for a public or static IP (when they o
 ngrok config add-authtoken TOKEN
 ```
 
-### 2. Expose a web app or API (HTTP)
+### 2. Expose a web app or API over HTTP
 
 For anything that speaks HTTP, such as a web app, API, Home Assistant, or a dev server, start an HTTP endpoint pointed at its local port:
 
@@ -58,54 +66,64 @@ For anything that speaks HTTP, such as a web app, API, Home Assistant, or a dev 
 ngrok http 8080
 ```
 
-ngrok prints a public HTTPS URL that forwards to `localhost:8080`. No changes are needed for your network or router. On the free plan, your account's [dev domain](/pricing-limits/free-plan-limits) stays the same across restarts, so the URL doesn't change.
+ngrok prints a public HTTPS URL that forwards to `localhost:8080`.
+You don't need to change your network or router.
+On the free plan, your account's [dev domain](/pricing-limits/free-plan-limits) stays the same across restarts, so the URL doesn't change.
 
 ### 3. Expose SSH, RDP, or other TCP services
 
-For non-HTTP services such as SSH, remote desktop, databases, or game servers, use a TCP endpoint:
+For non-HTTP services such as SSH, remote desktop (RDP), databases, or game servers, use a TCP endpoint:
 
 ```bash
 ngrok tcp 22
 ```
 
-ngrok prints an address like `tcp://1.tcp.ngrok.io:12345`. Connect to it the same way you'd connect to the service directly, for example:
+ngrok prints an address like `tcp://1.tcp.ngrok.io:12345`.
+Connect to it the same way you'd connect to the service directly, for example:
 
 ```bash
 ssh -p 12345 user@1.tcp.ngrok.io
 ```
 
 <Note>
-TCP endpoints are only available on a free plan after [adding a valid payment method](https://dashboard.ngrok.com/settings#id-verification) to your account.
+On the free plan, you can use TCP endpoints only after you [add a valid payment method](https://dashboard.ngrok.com/settings#id-verification) to your account.
 </Note>
 
-### 4. Restrict who can reach it (recommended)
+### 4. Restrict who can reach it
 
-A public URL is reachable by anyone who has it. Before exposing anything sensitive, add authentication or an IP allowlist with a [Traffic Policy](/gateway/traffic-policy/), so your service isn't open to the whole internet.
+Anyone with your public URL can reach it.
+Before you expose anything sensitive, add authentication or an IP allowlist with a [Traffic Policy](/gateway/traffic-policy/), so your service isn't open to the whole internet.
 
 ## Frequently asked questions
 
 ### Does ngrok work behind CGNAT?
 
-Yes. The ngrok agent only makes outbound connections, which CGNAT allows, so it works without a public IP, port forwarding, or router access.
+Yes.
+The ngrok agent only makes outbound connections, which CGNAT allows, so it works without a public IP, port forwarding, or router access.
 
 ### Does ngrok work on Starlink?
 
-Yes. Starlink residential plans use CGNAT, which blocks port forwarding. ngrok's outbound connection works on Starlink without any configuration.
+Yes.
+Starlink residential plans use CGNAT, which blocks port forwarding.
+ngrok's outbound connection works on Starlink without any configuration.
 
 ### Can I port forward without router access?
 
-Not with traditional port forwarding, which requires configuring the router. ngrok gives you the same result, a public address that reaches a local port, without touching the router.
+Not with traditional port forwarding, which requires you to configure the router.
+ngrok gives you the same result, a public address that reaches a local port, without touching the router.
 
 ### Do I need a static or public IP address?
 
-No. ngrok gives your service a public URL or TCP address, so your own IP address doesn't matter and can change.
+No.
+ngrok gives your service a public URL or TCP address, so your own IP address doesn't matter and can change.
 
 ### Can I use this for OpenVPN?
 
-Yes. See [Using ngrok with OpenVPN](/using-ngrok-with/openvpn) for tunneling an OpenVPN server through CGNAT.
+Yes.
+See [Using ngrok with OpenVPN](/using-ngrok-with/openvpn) to tunnel an OpenVPN server through CGNAT.
 
 ## Learn more
 
-- [Share localhost](/share-localhost/overview): put any local app on a public URL.
-- [Using ngrok with OpenVPN](/using-ngrok-with/openvpn): run an OpenVPN server from behind CGNAT.
+- [Share localhost](/share-localhost/overview): Put any local app on a public URL.
+- [Using ngrok with OpenVPN](/using-ngrok-with/openvpn): Run an OpenVPN server from behind CGNAT.
 - Don Simpson's [blog post on working around CGNAT with ngrok](https://www.donaldsimpson.co.uk/2017/01/30/using-ngrok-to-work-around-carrier-grade-nat-cgnat/).
