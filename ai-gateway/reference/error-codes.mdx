@@ -124,7 +124,7 @@ Unsupported API surface "`PATH`".
 - The request path is not one the gateway serves
 
 **Solutions**
-- Post to `/v1/chat/completions`, `/v1/responses`, `/v1/messages`, the native Gemini path `/v1beta/models/{model}:generateContent`, or `/v1beta/interactions`
+- Post to `/v1/chat/completions`, `/v1/responses`, `/v1/messages`, `/v1/decisions`, `/v1/systemone`, `/v1/files`, the native Gemini path `/v1beta/models/{model}:generateContent`, or `/v1beta/interactions`
 - The gateway does not serve `/v1/embeddings`, `/v1/completions`, or image and audio endpoints
 - Point your SDK's base URL at `https://gateway.ngrok.ai/v1` rather than a full endpoint path
 
@@ -495,11 +495,12 @@ No backend available: `REASON`
 502 Bad Gateway
 
 **Causes**
-- No candidate remained that the gateway could dispatch to
+- None of the models in the request could be used, for example because the access key can't reach them
+- With `ngrok/auto`, none of the models the key can reach are available for automatic selection. See [Automatic model selection](/ai-gateway/guides/automatic-model-selection)
 
 **Solutions**
 - Confirm the configuration's routing rules cover the provider you requested
-- See [Handle gateway errors](/ai-gateway/guides/error-handling) for how candidates are exhausted
+- See [Handle gateway errors](/ai-gateway/guides/error-handling) for the order the gateway tries models in
 
 ---
 
@@ -558,7 +559,7 @@ Request body is too long. Max 32 MiB.
 - The request body is larger than 32 MiB
 
 **Solutions**
-- Send large inputs, such as documents and images, through the provider's files API instead of inline
+- Upload large documents and images with the [Files API](/ai-gateway/guides/files) instead of sending them inline
 - Reduce the conversation history or embedded content
 
 ---
@@ -610,7 +611,7 @@ Each has a page under [ngrok error codes](/errors):
 | `ERR_NGROK_27222` | Upstream provider returned an unexpected status |
 | `ERR_NGROK_27234` | Upstream returned a non-streaming response to a streaming request |
 | `ERR_NGROK_27235` | Upstream provider failed to respond, for example a dropped connection |
-| `ERR_NGROK_27241` to `ERR_NGROK_27248` | Files API errors |
+| `ERR_NGROK_27241` to `ERR_NGROK_27248` | Files API errors. See [Upload and use files](/ai-gateway/guides/files#errors) |
 
 ## SDK error handling
 
