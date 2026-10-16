@@ -1,0 +1,126 @@
+---
+title: Codex
+sidebarTitle: Codex
+description: Add the ngrok AI Gateway as a custom model provider in the OpenAI Codex CLI to track usage and route requests with one access key.
+---
+
+[Codex](https://github.com/openai/codex) is OpenAI's coding agent for the terminal.
+It reaches the AI Gateway as a custom model provider over the OpenAI Responses API, so its requests show up in [observability](/ai-gateway/observability) and follow your [access key configuration](/ai-gateway/guides/access-key-configurations).
+
+## What you'll need
+
+- The [Codex CLI](https://github.com/openai/codex#quickstart) installed.
+- An [access key](/ai-gateway/concepts/access-keys) from [app.ngrok.ai](https://app.ngrok.ai).
+
+## Add the gateway as a model provider
+
+Export your access key in your shell profile, such as `~/.zshrc` or `~/.bashrc`, so Codex can read it:
+
+```bash
+export NGROK_AI_GATEWAY_KEY="ng-xxxxx-g1-xxxxx"
+```
+
+Save Codex's built-in model catalog to a file:
+
+```bash
+codex debug models > ~/.codex/ngrok-models.json
+```
+
+Codex looks up each model's context window, reasoning levels, and tools in a catalog.
+The gateway's model list doesn't include those details, so without the file Codex warns that model metadata isn't found and falls back to generic defaults.
+Run the command again after you update Codex to pick up new models.
+
+Add the gateway as a provider in `~/.codex/config.toml`:
+
+```toml
+model = "gpt-5.5"
+model_provider = "ngrok"
+model_catalog_json = "~/.codex/ngrok-models.json"
+
+[model_providers.ngrok]
+name = "ngrok AI Gateway"
+base_url = "https://gateway.ngrok.ai/v1"
+env_key = "NGROK_AI_GATEWAY_KEY"
+wire_api = "responses"
+```
+
+This configuration:
+
+- Defines a provider named `ngrok` that points at the gateway
+- Reads your access key from `NGROK_AI_GATEWAY_KEY` and sends it as an `Authorization: Bearer` header
+- Uses the Responses API, the only wire protocol current Codex versions support
+- Makes `ngrok` the default provider, with `gpt-5.5` as the default model
+- Loads model details from the catalog you saved
+
+Keep the provider in your user-level `~/.codex/config.toml`.
+Codex ignores `model_provider` and `model_providers` in a project's `.codex/config.toml`.
+The provider ID can't be `openai`, `ollama`, or `lmstudio`, which Codex reserves for its built-in providers.
+
+## Test the connection
+
+Send a single prompt from the command line:
+
+```bash
+codex exec "Explain what a hash map is in two sentences."
+```
+
+The header Codex prints before the response should list `provider: ngrok` and your model.
+Confirm the request in AI Gateway [observability](/ai-gateway/observability) in [app.ngrok.ai](https://app.ngrok.ai).
+
+## Choose a model
+
+Pass `--model` (or `-m`) to start a session on a different model:
+
+```bash
+codex --model gpt-5.4
+```
+
+Pick a model that's in both your saved catalog and the [ngrok.ai model catalog](/ai-gateway/reference/model-catalog), and use its plain ID.
+A `provider:model` name such as `openai:gpt-5.5` reaches the gateway, but Codex doesn't find it in the catalog and falls back to generic defaults.
+
+<Note>
+`/v1/responses` only reaches providers that support the Responses API.
+Check the [model catalog](/ai-gateway/reference/model-catalog) before you point Codex at a non-OpenAI model.
+</Note>
+
+## Keep OpenAI as your default
+
+To keep Codex on your OpenAI login by default and use the gateway only when you ask for it, put the gateway settings in a profile instead of `config.toml`.
+Create `~/.codex/ngrok.config.toml`:
+
+```toml
+model_provider = "ngrok"
+model = "gpt-5.5"
+model_catalog_json = "~/.codex/ngrok-models.json"
+
+[model_providers.ngrok]
+name = "ngrok AI Gateway"
+base_url = "https://gateway.ngrok.ai/v1"
+env_key = "NGROK_AI_GATEWAY_KEY"
+wire_api = "responses"
+```
+
+Start a gateway session with the profile:
+
+```bash
+codex --profile ngrok
+```
+
+Codex loads `config.toml` first, then layers the profile on top, so sessions without `--profile ngrok` stay on OpenAI.
+
+## Troubleshooting
+
+| Symptom | Fix |
+|---------|-----|
+| `Reconnecting...` messages, then `401 Unauthorized` | Check that `NGROK_AI_GATEWAY_KEY` is exported in the shell that starts Codex, and that it holds a current access key |
+| Requests still go to OpenAI | Move `model_provider` and `[model_providers.ngrok]` to `~/.codex/config.toml` or a profile, since a project config can't set them |
+| `Model metadata for <model> not found` at startup | Save the model catalog and set `model_catalog_json`, then use a plain model ID that's in it |
+| Long responses stop partway through | Set `totalTimeout` to `15m` in [account settings](/ai-gateway/guides/account-settings#streaming-responses). A saved total timeout caps the whole stream, and saving any account setting stores the `2m` default |
+
+For gateway-side errors, see [Debug failed requests](/ai-gateway/guides/debugging).
+
+## Next steps
+
+- [Restrict providers and models](/ai-gateway/guides/restrict-providers-and-models): Scope what an access key can call
+- [Configure fallback models](/ai-gateway/guides/configure-fallback-models): Try another model when the first one fails
+- [Observability](/ai-gateway/observability): See which model served each request
