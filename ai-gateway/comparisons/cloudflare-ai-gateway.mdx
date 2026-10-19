@@ -1,0 +1,225 @@
+---
+title: "Cloudflare AI Gateway Alternative: How ngrok AI Gateway Compares"
+sidebarTitle: Cloudflare AI Gateway
+description: "A fact-checked comparison of Cloudflare AI Gateway and ngrok AI Gateway as of October 2026: routing, failover, private models, access control, caching, guardrails, observability, and pricing."
+---
+
+_Last verified against both products' documentation on October 19, 2026._
+
+If you're looking for an alternative to Cloudflare AI Gateway, ngrok AI Gateway is a hosted LLM gateway that gives you one OpenAI- and Anthropic-compatible endpoint for many model providers, plus your own self-hosted models.
+The two products overlap on the basics, but they make different bets.
+
+**The short answer:**
+
+- **Choose ngrok AI Gateway** if you want automatic failover without building routes, per-key control over which providers and models each app can call, a path to models running on your laptop or private network without opening them to the internet, and a flat per-token fee that doesn't grow with model price.
+- **Choose Cloudflare AI Gateway** if you need caching, guardrails, DLP, and spend limits enforced at the gateway. It's also the better fit for routing you can change without touching client code, for log export to OpenTelemetry, and for non-chat modalities like speech, image, video, and realtime WebSockets.
+
+The rest of this page explains each difference and links to the primary documentation behind it.
+
+## What each product is
+
+**Cloudflare AI Gateway** is a proxy that runs on Cloudflare's network between your application and AI providers.
+You create named gateways in your Cloudflare account, send requests through them, and get analytics, logging, caching, rate limiting, retries, and fallbacks ([Cloudflare docs](https://developers.cloudflare.com/ai-gateway/)).
+Since August 2026, Cloudflare treats AI Gateway and Workers AI as one "AI control plane", so the same API and billing cover Cloudflare-hosted models and third-party providers ([Cloudflare blog](https://blog.cloudflare.com/workers-ai-gateway-unification/)).
+
+**ngrok AI Gateway** (ngrok.ai) is a hosted gateway at `gateway.ngrok.ai`, managed at `app.ngrok.ai`.
+You send requests with an ngrok access key, and the gateway resolves the model, picks credentials, forwards the request, and fails over to another key or model when a provider errors ([ngrok docs](/ai-gateway/how-it-works)).
+There's one gateway per account, and you shape its behavior per access key rather than per gateway.
+
+Both products speak the OpenAI Chat Completions, OpenAI Responses, and Anthropic Messages formats, so switching between them, or away from either, is mostly a base URL and key change.
+
+## At a glance
+
+| | Cloudflare AI Gateway | ngrok AI Gateway |
+|---|---|---|
+| **Unit of configuration** | Named gateways in a Cloudflare account | One gateway; behavior set per access key |
+| **APIs** | Chat Completions, Responses, Messages, `/ai/run` for all modalities, provider-native passthrough for 24 providers, WebSockets | Chat Completions, Responses, Messages, Gemini `generateContent`, Files, Models |
+| **Failover** | Retries up to 5 attempts; cross-model fallback through Dynamic Routing | Automatic across your keys, resellers of the same model, and fallback models, up to 10 attempts |
+| **Where routing lives** | On the gateway (Dynamic Routing flows, versioned) | In each request (`models` array) or `ngrok/auto` |
+| **Private and local models** | Custom providers require a public HTTPS `base_url` | ngrok internal endpoints reach models that aren't on the public internet |
+| **Per-app access control** | API tokens are account-scoped across all gateways | Each access key gets its own provider and model allowlist |
+| **Caching** | Exact-match response caching | Not available |
+| **Guardrails and DLP** | Llama Guard guardrails and DLP that can flag or block requests | Not available |
+| **Rate and spend limits** | Per-gateway rate limits and dollar spend limits | Account-wide token caps per request |
+| **Request bodies stored by default** | Yes, logs include prompts and responses unless turned off | No, body capture is opt-in |
+| **Exports** | Logpush, OpenTelemetry, GraphQL | Usage API with a per-attempt failover trace |
+| **Gateway fee** | Free; 5% fee when buying managed credits | $0.05 per million tokens on every successful request |
+
+## Failover and routing
+
+This is the biggest difference in day-to-day use.
+
+**ngrok AI Gateway fails over by default.**
+When a provider returns a 401, 403, 429, 5xx, or 408, or the connection fails, the gateway tries the next option without any setup on your side ([ngrok docs](/ai-gateway/guides/error-handling)):
+
+- An auth error moves to your next provider key, then to an ngrok-managed key, then to the next model.
+- A rate limit moves to a different quota pool, then to an ngrok-managed key, then to the next model.
+- A server error or timeout moves straight to the next model.
+
+A bare model ID like `gpt-4o` also expands to every provider in the catalog that serves that model, with the model author's own provider tried first ([ngrok docs](/ai-gateway/guides/model-selection-strategies)).
+To add fallback models, list them in the request:
+
+```json
+{
+  "model": "gpt-4o",
+  "models": ["gpt-4o-mini", "anthropic:claude-sonnet-4-6"],
+  "messages": [{ "role": "user", "content": "Hello" }]
+}
+```
+
+Every response carries an `Ngrok-AIG-Model` header naming the model that actually answered, and the Usage API returns the full attempt chain with a `retryAction` reason for each step, so you can see exactly why a request failed over ([ngrok docs](/ai-gateway/guides/why-a-request-failed-over)).
+
+**Cloudflare AI Gateway puts routing on the gateway.**
+Gateway-level retries go up to 5 attempts with constant, linear, or exponential backoff ([Cloudflare docs](https://developers.cloudflare.com/ai-gateway/configuration/request-handling/)).
+For fallback to a different model, Cloudflare's current mechanism is Dynamic Routing: a versioned flow of conditional, percentage-split, rate-limit, budget-limit, and model nodes, where each model node can have a fallback ([Cloudflare docs](https://developers.cloudflare.com/ai-gateway/features/dynamic-routing/)).
+You can change a route or roll it back without changing client code, and you can A/B test models across up to five branches.
+Dynamic routes accept the OpenAI Chat Completions shape only.
+
+The trade-off: ngrok gives you resilient defaults with nothing to configure, but fallbacks live in each request.
+ngrok's own FAQ answers "Can I set fallbacks on the gateway instead of in each request?" with "Not yet" ([ngrok docs](/ai-gateway/faq)).
+Cloudflare gives you central, versioned routing control, but you build the flow yourself.
+
+Both products offer automatic model selection.
+Cloudflare's `cloudflare/auto` (public beta since September 30, 2026) picks from a Cloudflare-managed pool and pins one model per conversation turn to keep prompt caching working ([Cloudflare docs](https://developers.cloudflare.com/ai-gateway/features/auto-router/)).
+ngrok's `ngrok/auto` classifies the prompt, picks within a price band, tries your own custom-provider models first, and sets the reasoning effort ([ngrok docs](/ai-gateway/guides/automatic-model-selection)).
+
+## Private and self-hosted models
+
+**ngrok AI Gateway can reach a model that isn't on the public internet.**
+Expose the model server with an ngrok internal endpoint, then register that URL as a custom provider ([ngrok docs](/ai-gateway/guides/use-a-model-you-run-yourself)):
+
+```bash
+ngrok http 11434 --url https://my-ollama.internal
+```
+
+Internal endpoints are private to your ngrok account and not reachable from the public internet.
+Your app calls `gateway.ngrok.ai` as usual with a model like `my-ollama:llama3.2`, and you can fall back from the private model to a hosted one in the same request.
+ngrok has guides for Ollama, vLLM, LM Studio, and Azure OpenAI.
+Internal endpoints require ngrok's Pay-as-you-go plan ([ngrok docs](/gateway/endpoints/internal-endpoints)).
+
+**Cloudflare AI Gateway custom providers need a public HTTPS URL.**
+Cloudflare's docs say the custom provider `base_url` must start with `https://` and that HTTP isn't supported ([Cloudflare docs](https://developers.cloudflare.com/ai-gateway/configuration/custom-providers/)).
+The AI Gateway docs don't describe a way to reach a model on a private network.
+
+## Access control and keys
+
+**ngrok AI Gateway scopes control to each access key.**
+You can give each app, environment, team, or customer its own access key, and attach a configuration that sets which providers and models that key may call, and which credentials pay for them ([ngrok docs](/ai-gateway/guides/access-key-configurations)).
+A routing rule can try your own provider keys in order and then fall back to ngrok-managed credits when your keys hit auth errors or rate limits.
+If a request asks for a model the key isn't allowed to use, the gateway skips it and names it in the `Ngrok-AIG-Rejected-Models` header.
+
+**Cloudflare AI Gateway scopes by gateway, identity, or metadata.**
+Cloudflare API tokens with AI Gateway permissions apply to every gateway in the account and can't be restricted to one gateway; Cloudflare recommends separate accounts or Worker bindings for isolation ([Cloudflare docs](https://developers.cloudflare.com/ai-gateway/configuration/authentication/)).
+In exchange, Cloudflare goes further on identity: with Cloudflare Access on a custom domain, each request carries the user's SSO identity, which you can use for per-user spend limits, log filtering, and anomaly detection in User Insights ([Cloudflare docs](https://developers.cloudflare.com/ai-gateway/configuration/cloudflare-access/)).
+ngrok's docs describe no per-user identity on gateway traffic.
+
+For your own provider keys, Cloudflare stores them in Secrets Store and lets you keep several per provider under named aliases, selected with a `cf-aig-byok-alias` header ([Cloudflare docs](https://developers.cloudflare.com/ai-gateway/configuration/bring-your-own-keys/)).
+ngrok stores provider keys account-wide, lets you rotate them in place, and fails over across them in the order you list.
+
+## Caching, guardrails, and limits
+
+Cloudflare AI Gateway has several gateway-side controls that ngrok AI Gateway doesn't offer today:
+
+- **Caching:** exact-match caching of text and image responses, with a TTL from 60 seconds to one month and custom cache keys ([Cloudflare docs](https://developers.cloudflare.com/ai-gateway/features/caching/)). ngrok: "Response caching isn't currently available" ([ngrok docs](/ai-gateway/faq)).
+- **Guardrails:** Llama Guard classifies prompts and responses across hazard categories plus prompt injection, and you can flag or block each category ([Cloudflare docs](https://developers.cloudflare.com/ai-gateway/features/guardrails/usage-considerations/)). Guardrails add latency and buffer streamed responses on some endpoints.
+- **DLP:** scans prompts and responses with the same detection profiles as Cloudflare One ([Cloudflare docs](https://developers.cloudflare.com/ai-gateway/features/dlp/)). ngrok: automatic redaction "isn't available on ngrok.ai just yet".
+- **Rate limits and spend limits:** per-gateway request limits, and dollar budgets by provider, model, or metadata ([Cloudflare docs](https://developers.cloudflare.com/ai-gateway/features/spend-limits/)). ngrok offers account-wide input and output token caps per request and an optional spending cap on credit auto top-up.
+
+If gateway-enforced safety and budget controls are a hard requirement, Cloudflare AI Gateway is the better fit today.
+
+## Observability and data handling
+
+**Cloudflare AI Gateway exports more.**
+It offers dashboard analytics, a GraphQL API, custom metadata on requests, custom costs, encrypted Logpush, and OpenTelemetry spans with `gen_ai` attributes ([Cloudflare docs](https://developers.cloudflare.com/ai-gateway/observability/otel-integration/)).
+
+**ngrok AI Gateway explains failover better and stores less by default.**
+Every response includes `Ngrok-AIG-Request-Id`, `Ngrok-AIG-Attempts`, `Ngrok-AIG-Model`, `Ngrok-AIG-Rejected-Models`, and `Ngrok-AIG-Removed-Params` headers, and the Usage API returns per-attempt cost and the reason for each failover step ([ngrok docs](/ai-gateway/observability)).
+ngrok doesn't store request or response bodies unless you turn on request capture, which keeps them for 30 days; usage metadata is kept for 90 days.
+Cloudflare logs prompts and responses by default; you can turn that off per gateway or per request ([Cloudflare docs](https://developers.cloudflare.com/ai-gateway/observability/logging/)).
+
+Log storage also differs on cost.
+Cloudflare accounts that create their first gateway on or after September 24, 2026 store logs in Workers Logs, which moves to Cloudflare Observability pricing on December 1, 2026 ([Cloudflare docs](https://developers.cloudflare.com/ai-gateway/reference/pricing/)).
+ngrok has no separate log storage meter.
+
+## Pricing
+
+**Cloudflare AI Gateway's core features are free.**
+If you buy Cloudflare's prepaid Unified Billing credits to pay for models, there's a 5% fee on the purchase and no markup on inference ([Cloudflare docs](https://developers.cloudflare.com/ai-gateway/reference/pricing/)).
+Guardrails bill as Workers AI usage, and Logpush and log storage bill separately.
+
+**ngrok AI Gateway charges a flat processing fee.**
+Every successful request costs $0.05 per million tokens (input plus output), whether you pay with ngrok credits, your own provider keys, or a self-hosted model ([ngrok docs](/ai-gateway/concepts/credits)).
+With credits, you also pay the model's cost.
+Requests that fail before reaching a provider aren't billed.
+
+What that means in practice:
+
+- **With your own provider keys,** Cloudflare AI Gateway costs less, because it charges no per-token gateway fee.
+- **With managed credits,** the fees break even at a blended model price of $1 per million tokens, because 5% of $1 is $0.05. Above that, which includes most frontier models, ngrok's flat fee is the smaller share. Below it, Cloudflare's 5% is cheaper.
+
+## Coding agents
+
+Both gateways document setup for coding agents, so you can route Claude Code, Codex, Cursor, and others through one key with usage tracking.
+
+- **Cloudflare** has guides for Claude Code, Claude Desktop, Cursor, Gemini CLI, GitHub Copilot CLI, OpenAI Codex, OpenCode, Pi, VS Code, and Xcode ([Cloudflare docs](https://developers.cloudflare.com/ai-gateway/integrations/coding-agents/)).
+- **ngrok** has guides for Claude Code, Codex, Cursor, Hermes, OpenCode, Pi, Zed, and other agents ([ngrok docs](/ai-gateway/agents)). Claude Code needs two environment variables, `ANTHROPIC_BASE_URL=https://gateway.ngrok.ai` and `ANTHROPIC_AUTH_TOKEN`, and you can give each agent or teammate its own access key with its own model allowlist.
+
+## Switch from Cloudflare AI Gateway to ngrok AI Gateway
+
+If you use the OpenAI SDK, change the base URL and key:
+
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://gateway.ngrok.ai/v1",
+    api_key="ng-xxxxx",  # your ngrok AI Gateway access key
+)
+
+response = client.chat.completions.create(
+    model="gpt-4o",
+    extra_body={"models": ["anthropic:claude-sonnet-4-6"]},  # optional fallbacks
+    messages=[{"role": "user", "content": "Hello"}],
+)
+```
+
+For the Anthropic SDK, use `https://gateway.ngrok.ai` as the base URL.
+Then replace any Cloudflare-specific pieces: `cf-aig-*` headers, `dynamic/<route>` model names, and `cloudflare/auto` map to the `models` array, `provider:model` names, and `ngrok/auto`.
+See the [ngrok AI Gateway quickstart](/ai-gateway/quickstart).
+
+## Frequently asked questions
+
+### Is ngrok AI Gateway a good alternative to Cloudflare AI Gateway?
+
+Yes, if your priorities are automatic failover, per-key access control, or reaching private and local models.
+ngrok AI Gateway fails over across keys, providers, and models by default, scopes each access key to specific providers and models, and reaches models on private networks through ngrok internal endpoints.
+It isn't a full replacement if you depend on Cloudflare's caching, guardrails, DLP, spend limits, Logpush, or OpenTelemetry export, which ngrok AI Gateway doesn't offer as of October 2026.
+
+### Does ngrok AI Gateway support caching like Cloudflare AI Gateway?
+
+No.
+As of October 2026, ngrok AI Gateway has no response caching.
+Cloudflare AI Gateway offers exact-match caching with configurable TTLs.
+
+### Can ngrok AI Gateway use Ollama or other local models?
+
+Yes.
+Expose the model server with an ngrok internal endpoint, such as `ngrok http 11434 --url https://my-ollama.internal`, and add it as a custom provider.
+Cloudflare AI Gateway's custom providers require a public HTTPS URL.
+
+### Which is cheaper, Cloudflare AI Gateway or ngrok AI Gateway?
+
+It depends on how you pay for models.
+With your own provider keys, Cloudflare AI Gateway charges no gateway fee and ngrok AI Gateway charges $0.05 per million tokens.
+With managed credits, Cloudflare charges 5% of what you buy and ngrok charges $0.05 per million tokens, so ngrok is cheaper for models that cost more than $1 per million tokens.
+
+### Do I need a Cloudflare account or the ngrok agent?
+
+Cloudflare AI Gateway requires a Cloudflare account, and some features depend on other Cloudflare products, such as Secrets Store for stored keys, Workers AI for guardrails, and Cloudflare One for DLP profiles.
+ngrok AI Gateway requires an ngrok account and credits; you need the ngrok agent only to connect a private or local model.
+
+### Does ngrok AI Gateway work with the OpenAI and Anthropic SDKs?
+
+Yes.
+Set the base URL to `https://gateway.ngrok.ai/v1` for OpenAI SDKs or `https://gateway.ngrok.ai` for Anthropic SDKs, and use your ngrok access key.
+ngrok also documents the Google Gen AI SDK, Vercel AI SDK, TanStack AI, and LangChain.
