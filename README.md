@@ -44,7 +44,8 @@ This project uses [Vale](https://vale.sh/) for documentation linting and style c
 Vale reads MDX through `scripts/vale/mdx2vast`, which also lints text inside components such as `<Note>` and `<Tabs>`.
 To run `vale` directly, put that directory first on your `PATH`: `PATH="$PWD/scripts/vale:$PATH" vale <file>`.
 
-Vale checks your docs contributions for style issues (based on the rules the docs team has defined) and provides suggestions for improvements. To ensure your PRs get merged quickly and efficiently, be sure to address any Vale warnings before submitting.
+Vale checks your docs contributions for style issues based on the rules the docs team has defined.
+Every rule is an error, and CI fails any PR in which a changed file has a Vale finding, so fix every finding before you open your PR.
 
 ## Style guide
 
