@@ -26,6 +26,7 @@ jobs:
     permissions:
       contents: read
       pull-requests: read
+      id-token: write
 
     steps:
       # Pushing with the app token, rather than GITHUB_TOKEN, lets the bot's commit
@@ -78,7 +79,10 @@ jobs:
         if: steps.changed-files.outputs.has_files == 'true'
         uses: anthropics/claude-code-action@cab360f6565aa35a51d6ce9e43f1f4287c0a32ea # v1.0.241
         with:
-          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          anthropic_federation_rule_id: ${{ vars.ANTHROPIC_WIF_RULE_ID }}
+          anthropic_organization_id: ${{ vars.ANTHROPIC_ORG_ID }}
+          anthropic_service_account_id: ${{ vars.ANTHROPIC_WIF_SA_ID }}
+          anthropic_workspace_id: ${{ vars.ANTHROPIC_WIF_WORKSPACE_ID }}
           github_token: ${{ steps.generate-token.outputs.token }}
           # Read and Edit only: no shell, so Claude can't commit, push, or touch
           # anything beyond the files it edits.
