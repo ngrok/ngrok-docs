@@ -105,8 +105,6 @@ function toValeAST(doc) {
 
 const file = process.argv[2];
 const doc = file ? fs.readFileSync(file, "utf8") : fs.readFileSync(0, "utf8");
-if (doc.trim() === "") {
-  console.error("No input provided.");
-  process.exit(1);
-}
-console.log(toValeAST(doc));
+// Upstream exits with an error on an empty document, which stops Vale. Some
+// snippets are empty on purpose, so treat them as having nothing to lint.
+console.log(doc.trim() === "" ? "" : toValeAST(doc));

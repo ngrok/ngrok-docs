@@ -39,7 +39,7 @@ Search does not work in local builds of the docs site. You'll have to test searc
 
 This project uses [Vale](https://vale.sh/) for documentation linting and style checking. Vale helps maintain consistent writing style and catches common writing issues.
 
-`pnpm run vale` runs Vale linting on all documentation files (excluding snippets and errors directories).
+`pnpm run vale` runs Vale linting on all documentation files (excluding generated files and the errors directory).
 
 Vale reads MDX through `scripts/vale/mdx2vast`, which also lints text inside components such as `<Note>` and `<Tabs>`.
 To run `vale` directly, put that directory first on your `PATH`: `PATH="$PWD/scripts/vale:$PATH" vale <file>`.
