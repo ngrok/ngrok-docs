@@ -15,6 +15,18 @@ and share them with you directly. You must contact with your vendor to request
 changes to that configuration, including those based on the content of this
 document.
 
+### What should I confirm before installing ngrok?
+
+Agree on the scope of access with your vendor before you install the agent. Ask them to document:
+
+- Which services and ports they need to reach, and what their application does with them.
+- Who owns the ngrok account, the agent configuration, and the credentials, and who can change them.
+- Which authentication and network restrictions limit connections to the approved users and services.
+- Which traffic and configuration records you can review, and where they live.
+- How you revoke access, who acts, and how you confirm that access has stopped.
+
+The [security section](#how-to-ensure-ngrok-does-not-pose-a-security-risk-to-your-infrastructure) covers the controls your vendor can apply, how to [review activity](#how-can-i-review-the-vendors-activity), and how to [revoke access](#how-can-i-revoke-my-vendors-access).
+
 ### What is ngrok?
 
 ngrok's Gateway is an all-in-one reverse proxy, API gateway, Kubernetes ingress, firewall, and global load balancer to deliver apps and APIs.
@@ -133,7 +145,7 @@ Your vendor can implement multiple security practices, including:
   authentication on your endpoints.
 
 The configuration and operation of these security practices will be handled by
-your vendor.
+your vendor. Before you go to production, ask your vendor to show you one request that succeeds with valid credentials and one that fails without them.
 
 ### How does ngrok's traffic encryption work? 
 
@@ -152,9 +164,9 @@ Contact your vendor if you're unsure how TLS termination is managed in your site
 
 ### Can ngrok see the traffic it forwards? 
 
-No—if your vendor configures ngrok to terminate TLS at the agent or your upstream service.
+No, when your vendor terminates TLS at the agent or at your upstream service (models 2 and 3 above). ngrok's network forwards encrypted bytes it can't read.
 
-In all encryption models, the ngrok agent cannot see the traffic it forwards on to your upstream service.
+Yes, when TLS terminates at ngrok's network (model 1, the default for HTTPS endpoints). Ask your vendor which model they use.
 
 If your vendor requests HTTP tunnels for your site-to-site connectivity use case
 and also uses the [Traffic
@@ -202,6 +214,23 @@ Work with your vendor to design an architecture that [prevents unauthorized
 use](#how-can-i-prevent-ngrok-from-being-used-for-any-purpose-other-than-in-site-to-site-connectivity-with-my-vendor?)
 and uses the appropriate [encryption model](#ngrok-traffic-encryption) between
 your services.
+
+### How can I review the vendor's activity?
+
+Your vendor can export ngrok's [traffic events and audit events](/obs/events/) to a log destination you both agree on. Ask for access to those exports, or for a process to request them, before you need them. A traffic event records the request, not what your application did with it, so keep your own application logs for that evidence.
+
+### How can I revoke my vendor's access?
+
+Your vendor owns the ngrok account, but you control the host the agent runs on. To cut off access:
+
+1. Stop the agent and prevent it from restarting. For an agent installed as a [service](/gateway/agent/service/), run `ngrok service stop` and then `ngrok service uninstall`. For a container or Kubernetes deployment, stop the workload through whatever manages it.
+2. Block outbound connections from that host to the agent's Connect URL. That's `connect.ngrok-agent.com:443` by default, or the [custom Connect URL](#how-to-prevent-ngrok-from-being-used-for-any-purpose-other-than-in-site-to-site-connectivity-with-your-vendor) your vendor set up.
+3. Ask your vendor to revoke the agent's authtoken and stop its sessions from their ngrok account.
+4. Confirm that no new agent session appears and that the service stays stopped after a reboot.
+
+Check for redundant agents before you call this done. A vendor deployment can include more than one agent, or several container replicas, and each one holds its own connection.
+
+Agree on this procedure with your vendor before installation, including who acts if your vendor is unavailable.
 
 ### How does ngrok mitigate abuse of its platform?
 
