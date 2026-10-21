@@ -83,7 +83,7 @@ from langchain_openai import ChatOpenAI
 llm = ChatOpenAI(
     base_url="https://gateway.ngrok.ai/v1",
     api_key="ng-xxxxx-g1-xxxxx",  # Your access key
-    model="anthropic:claude-3-5-sonnet-latest"  # Use Anthropic through gateway
+    model="anthropic:claude-sonnet-4-6"  # Use Anthropic through gateway
 )
 
 response = llm.invoke("Hello!")
@@ -119,27 +119,11 @@ response = chain.invoke({
 print(response.content)
 ```
 
-## Embeddings
-
-Generate embeddings through the gateway:
-
-```python highlight={4}
-from langchain_openai import OpenAIEmbeddings
-
-embeddings = OpenAIEmbeddings(
-    base_url="https://gateway.ngrok.ai/v1",
-    api_key="ng-xxxxx-g1-xxxxx",  # Your access key
-    model="text-embedding-3-small"
-)
-
-vector = embeddings.embed_query("Hello world")
-```
-
 ## RAG applications
 
-Build RAG applications with automatic failover:
+Build RAG applications with automatic failover. The AI Gateway doesn't serve embeddings, so create embeddings with your provider directly:
 
-```python highlight={5,11}
+```python highlight={5}
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain_core.prompts import ChatPromptTemplate
@@ -150,10 +134,8 @@ llm = ChatOpenAI(
     model="gpt-4o"
 )
 
-embeddings = OpenAIEmbeddings(
-    base_url="https://gateway.ngrok.ai/v1",
-    api_key="ng-xxxxx-g1-xxxxx"  # Your access key
-)
+# Embeddings go to OpenAI directly, not through the gateway
+embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
 
 # Create vector store
 texts = ["Document 1 content", "Document 2 content"]

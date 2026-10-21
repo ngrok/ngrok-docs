@@ -1,0 +1,211 @@
+---
+title: Upload and use files
+sidebarTitle: Files
+description: Upload files to OpenAI or Anthropic through ngrok.ai and reference them in requests.
+---
+
+Use the Files API when you want to upload a document or image once and reference it by ID in later requests, instead of sending the bytes inline every time.
+
+The AI Gateway serves the OpenAI and Anthropic Files APIs at `https://gateway.ngrok.ai/v1/files`.
+The request and response shapes match the provider's own API, so the OpenAI and Anthropic SDKs work with one extra header.
+
+## Endpoints
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `POST` | `/v1/files` | Upload a file. The body is `multipart/form-data`. |
+| `GET` | `/v1/files` | List files. |
+| `GET` | `/v1/files/{file_id}` | Get a file's metadata. |
+| `GET` | `/v1/files/{file_id}/content` | Download a file's contents. |
+| `DELETE` | `/v1/files/{file_id}` | Delete a file. |
+
+## Name the provider
+
+A file request has no model, so the gateway can't work out the provider on its own.
+Every Files API request must send the `Ngrok-AIG-Provider` header:
+
+| Provider | Header value |
+|----------|--------------|
+| OpenAI | `Ngrok-AIG-Provider: openai` |
+| Anthropic | `Ngrok-AIG-Provider: anthropic` |
+
+The gateway removes this header before it calls the provider.
+Other providers, including Google, aren't supported.
+
+The access key's [configuration](/ai-gateway/guides/access-key-configurations) must allow the provider.
+
+## Upload and use a file
+
+Upload the file, then reference its ID in a request to a model from the same provider.
+A file ID only means something to the provider that stored it.
+
+<CodeGroup>
+```python OpenAI Python highlight={11}
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://gateway.ngrok.ai/v1",
+    api_key="ng-xxxxx-g1-xxxxx",  # Your access key
+)
+
+uploaded = client.files.create(
+    file=open("report.pdf", "rb"),
+    purpose="user_data",
+    extra_headers={"Ngrok-AIG-Provider": "openai"},
+)
+
+response = client.responses.create(
+    model="openai:gpt-5.4",
+    input=[
+        {
+            "role": "user",
+            "content": [
+                {"type": "input_file", "file_id": uploaded.id},
+                {"type": "input_text", "text": "Summarize this report in three bullets."},
+            ],
+        }
+    ],
+)
+
+print(response.output_text)
+```
+
+```typescript OpenAI TypeScript highlight={10}
+import fs from "node:fs";
+import OpenAI from "openai";
+
+const client = new OpenAI({
+  baseURL: "https://gateway.ngrok.ai/v1",
+  apiKey: "ng-xxxxx-g1-xxxxx", // Your access key
+});
+
+const uploaded = await client.files.create(
+  { file: fs.createReadStream("report.pdf"), purpose: "user_data" },
+  { headers: { "Ngrok-AIG-Provider": "openai" } },
+);
+
+const response = await client.responses.create({
+  model: "openai:gpt-5.4",
+  input: [
+    {
+      role: "user",
+      content: [
+        { type: "input_file", file_id: uploaded.id },
+        { type: "input_text", text: "Summarize this report in three bullets." },
+      ],
+    },
+  ],
+});
+
+console.log(response.output_text);
+```
+
+```python Anthropic Python highlight={10}
+import anthropic
+
+client = anthropic.Anthropic(
+    base_url="https://gateway.ngrok.ai",
+    api_key="ng-xxxxx-g1-xxxxx",  # Your access key
+)
+
+uploaded = client.beta.files.upload(
+    file=("report.pdf", open("report.pdf", "rb"), "application/pdf"),
+    extra_headers={"Ngrok-AIG-Provider": "anthropic"},
+)
+
+message = client.beta.messages.create(
+    model="anthropic:claude-sonnet-4-6",
+    max_tokens=1024,
+    betas=["files-api-2025-04-14"],
+    messages=[
+        {
+            "role": "user",
+            "content": [
+                {"type": "document", "source": {"type": "file", "file_id": uploaded.id}},
+                {"type": "text", "text": "Summarize this report in three bullets."},
+            ],
+        }
+    ],
+)
+
+print(message.content[0].text)
+```
+
+```bash curl
+curl https://gateway.ngrok.ai/v1/files \
+  -H "Authorization: Bearer ng-xxxxx-g1-xxxxx" \
+  -H "Ngrok-AIG-Provider: openai" \
+  -F purpose="user_data" \
+  -F file="@report.pdf"
+```
+</CodeGroup>
+
+The Anthropic SDK takes the base URL without `/v1`.
+The gateway adds the `files-api-2025-04-14` beta flag to Anthropic file requests for you, and keeps any other beta flags you send.
+
+Pass `Ngrok-AIG-Provider` on each file call rather than as a client default header, since inference requests don't need it.
+
+Files work in these request types:
+
+| Endpoint | Where the file ID goes |
+|----------|------------------------|
+| Chat Completions (`/v1/chat/completions`) | A `file` content part: `{"type": "file", "file": {"file_id": "..."}}` |
+| Responses (`/v1/responses`) | An `input_file` content part, or a code interpreter tool's `container.file_ids` |
+| Messages (`/v1/messages`) | A `document` or `image` block with `"source": {"type": "file", "file_id": "..."}` |
+
+## Paying with credits or your own key
+
+The gateway picks credentials for a file request the same way it does for a model request to that provider: from the [routing rule](/ai-gateway/guides/access-key-configurations) in the access key's configuration.
+If the access key has no configuration, or the configuration has no rule for that provider, the gateway uses your stored [provider key](/ai-gateway/guides/attaching-provider-keys) when you have one, and [credits](/ai-gateway/guides/pay-with-credits) otherwise.
+
+Each request uses one credential and doesn't switch partway. A file stored with your own key lives in your provider account, and a file uploaded with credits lives with ngrok.ai, so they're never mixed.
+
+Upload files and send the requests that use them with the same access key, so both go through the same credentials.
+To be sure, add a routing rule for the provider to the access key's configuration.
+
+### With your own provider key
+
+Requests go straight through to your provider account:
+
+- Listing returns every file in your provider account, including files you uploaded outside the gateway.
+- You can reference any file your provider account holds.
+- Expiry, retention, and storage limits are the provider's own.
+
+### When you pay with credits
+
+ngrok.ai stores the file under an ngrok.ai account at the provider and keeps track of which files belong to your account:
+
+- **Expiry**: Files expire 72 hours after upload. On OpenAI, any `expires_after` you send is replaced with that 72-hour expiry.
+- **Storage limit**: Your account can hold up to 5 GB of files per provider. Delete files you no longer need to free up room. Expired files stop counting once they're removed, shortly after they expire.
+- **Listing**: Listing only returns files your account uploaded with credits. Pages hold at most 100 files. Follow the cursor in the response (`after` for OpenAI, `after_id` for Anthropic) to read the rest. OpenAI's `order=asc` and Anthropic's `before_id` aren't supported.
+- **Using files**: A request can only reference files your account uploaded with credits. If a request references any other file ID, the gateway won't use credits for that model. It uses your own provider key for that provider if one is routed, and otherwise returns [`ERR_NGROK_27240`](/ai-gateway/reference/error-codes#err_ngrok_27240).
+
+## Limits
+
+- **File size**: An upload can be at most 512 MiB, whichever credentials it uses.
+- **Timeout**: A transfer must finish within your account's total timeout, 120 seconds by default. Raise it in [Account Settings](/ai-gateway/guides/account-settings) for large files on slow connections.
+- **Credits**: Uploads, listings, metadata, and downloads need a positive [credit](/ai-gateway/concepts/credits) balance, but they don't spend credits. Deletes work at a zero balance, so you can always free storage.
+
+## Errors
+
+File errors use the provider's error format, so your SDK raises its usual exception. A request that doesn't name a provider gets the OpenAI format.
+
+| Code | Status | What happened |
+|------|--------|---------------|
+| `ERR_NGROK_27240` | 404 | A model request referenced files your account didn't upload with credits. |
+| `ERR_NGROK_27241` | 400 | The request is missing the `Ngrok-AIG-Provider` header. |
+| `ERR_NGROK_27242` | 400 | The provider in `Ngrok-AIG-Provider` doesn't support the Files API. |
+| `ERR_NGROK_27243` | 400 | The list `limit` isn't a whole number from 1 to 100. |
+| `ERR_NGROK_27244` | 404 | Your account has no file with that ID for that provider. |
+| `ERR_NGROK_27245` | 400 | A list parameter isn't supported when you pay with credits, such as OpenAI's `order=asc` or Anthropic's `before_id`. |
+| `ERR_NGROK_27246` | 413 | The upload would put your account over its storage limit for that provider. |
+| `ERR_NGROK_27247` | 400 | The upload isn't a `multipart/form-data` request. |
+| `ERR_NGROK_27248` | 413 | The upload is larger than 512 MiB. |
+
+See [Error codes](/ai-gateway/reference/error-codes) for every gateway error.
+
+## Next steps
+
+- [Pay with credits](/ai-gateway/guides/pay-with-credits): Call providers without your own provider keys
+- [Bring your own provider key](/ai-gateway/guides/attaching-provider-keys): Use files stored in your provider account
+- [Access key configurations](/ai-gateway/guides/access-key-configurations): Control which credentials a request uses

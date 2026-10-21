@@ -1,0 +1,77 @@
+---
+title: OpenCode
+sidebarTitle: OpenCode
+description: Connect OpenCode to the ngrok AI Gateway to reach any model in the catalog, or a model you run yourself, with one access key.
+---
+
+[OpenCode](https://opencode.ai) is an open-source terminal coding agent.
+It reaches the AI Gateway as a custom OpenAI-compatible provider, so one access key covers every model you add to its config.
+
+## What you'll need
+
+- [OpenCode](https://opencode.ai/docs/#install) installed.
+- An [access key](/ai-gateway/concepts/access-keys) from [app.ngrok.ai](https://app.ngrok.ai).
+
+## Add the gateway as a provider
+
+Export your access key so OpenCode can read it:
+
+```bash
+export NGROK_AI_GATEWAY_KEY="ng-xxxxx-g1-xxxxx"
+```
+
+Add the gateway as a provider in `~/.config/opencode/opencode.json`, or in an `opencode.json` beside your project:
+
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "ngrok": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "ngrok AI Gateway",
+      "options": {
+        "baseURL": "https://gateway.ngrok.ai/v1",
+        "apiKey": "{env:NGROK_AI_GATEWAY_KEY}"
+      },
+      "models": {
+        "gpt-5.5": {
+          "name": "GPT-5.5 (via ngrok)",
+          "limit": { "context": 1050000, "output": 128000 }
+        },
+        "claude-sonnet-5-5": {
+          "name": "Claude Sonnet 5.5 (via ngrok)",
+          "limit": { "context": 1000000, "output": 128000 }
+        }
+      }
+    }
+  }
+}
+```
+
+Each key in `models` is the model name OpenCode sends to the gateway.
+Use any model ID from the [model catalog](/ai-gateway/reference/model-catalog), or `provider:model` to pin a provider.
+The `limit` values are optional, but they let OpenCode track how much context is left.
+
+## Test the connection
+
+Start OpenCode, run `/models`, and pick one of the models under **ngrok AI Gateway**.
+Or send a single prompt from the command line:
+
+```bash
+opencode run -m "ngrok/gpt-5.5" "Explain what a hash map is in two sentences."
+```
+
+The `-m` value is your provider ID, a slash, then the model key from `opencode.json`.
+
+Confirm the request in AI Gateway [observability](/ai-gateway/observability) in [app.ngrok.ai](https://app.ngrok.ai).
+
+## Use a model you run yourself
+
+To reach a model on your own machine, register it as a [custom provider](/ai-gateway/concepts/custom-providers), then add its `provider:model` name to `models`, such as `ollama:llama3.2`.
+See [Use a model you run yourself](/ai-gateway/guides/use-a-model-you-run-yourself) for the full setup.
+
+## Next steps
+
+- [Restrict providers and models](/ai-gateway/guides/restrict-providers-and-models): Scope what an access key can call
+- [Configure fallback models](/ai-gateway/guides/configure-fallback-models): Try another model when the first one fails
+- [Observability](/ai-gateway/observability): See which model served each request

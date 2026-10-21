@@ -20,7 +20,7 @@ Monitor AI Gateway usage from [app.ngrok.ai](https://app.ngrok.ai) and the AI Ga
 
 ## Identify a request
 
-Every gateway response carries `Ngrok-AIG-Request-Id`, plus `Ngrok-AIG-Attempts` and `Ngrok-AIG-Model` describing how the request was served.
+Every gateway response carries `Ngrok-AIG-Request-Id`, plus headers such as `Ngrok-AIG-Attempts`, `Ngrok-AIG-Model`, `Ngrok-AIG-Rejected-Models`, and `Ngrok-AIG-Removed-Params` that describe how the request was served.
 Record the request ID in your application logs so you can tie a client-side failure to gateway usage data later.
 See [Response headers](/ai-gateway/how-it-works#response-headers).
 
@@ -29,9 +29,11 @@ See [Response headers](/ai-gateway/how-it-works#response-headers).
 Query usage with the AI Gateway API:
 
 ```bash
-curl https://api.ngrok.ai/usage/overview \
+curl "https://api.ngrok.ai/usage/overview?startTime=2026-10-01T00:00:00Z&groupBy=accessKey" \
   -H "Authorization: Bearer $AI_GATEWAY_API_KEY"
 ```
+
+The overview returns daily cost, request, and error series for the window. `startTime` is required. Group by `provider` (the default) or `accessKey`.
 
 [List individual usage events](/ai-gateway/api-reference/usage/list) to see one record per upstream attempt.
 Each event reports the provider, model, status code, token counts, and a per-attempt cost breakdown.
@@ -45,11 +47,12 @@ When a provider reports no usage of its own, `usageEstimated` is `true` and the 
 Read `inputTokensEstimate` and `outputTokensEstimate` on those attempts instead.
 </Note>
 
-View usage summaries in [app.ngrok.ai](https://app.ngrok.ai) when available.
+## Look up one request
 
-## Roadmap
+To see every attempt the gateway made for one request, pass its `Ngrok-AIG-Request-Id` to [`GET /usage/requests/{requestId}`](/ai-gateway/api-reference/usage/request-attempts). See [Why a request failed over](/ai-gateway/guides/why-a-request-failed-over).
 
-- Token usage visualization in app.ngrok.ai
-- Cost analytics per access key
+## Logs in app.ngrok.ai
+
+The [Logs](https://app.ngrok.ai/usage) page in app.ngrok.ai lists recent requests. Open a request to see its attempts. If you turn on [request capture](/ai-gateway/guides/account-settings#request-capture), the request detail also shows the captured headers and bodies.
 
 **Have feedback?** Email [niji@ngrok.ai](mailto:niji@ngrok.ai) with observability requests.

@@ -1,0 +1,77 @@
+---
+title: Typesafe AI
+description: Use Typesafe AI System One models through the ngrok AI Gateway.
+---
+
+[Typesafe AI](https://typesafe.ai) serves System One models.
+Instead of a chat conversation, a System One request sends a `state` and a set of typed `questions`. The response returns a typed answer for each question, with a calibrated probability.
+
+Typesafe AI only supports System One requests at `https://gateway.ngrok.ai/v1/systemone`. Chat Completions, Responses, and Messages requests don't reach Typesafe AI models.
+
+<Note>
+Typesafe AI is a **built-in provider** you can pay for with credits, so a provider key is optional.
+Add your own Typesafe AI key to bill usage to your Typesafe AI account instead of your ngrok.ai credits.
+</Note>
+
+## Setup
+
+<Steps>
+  <Step title="Create an access key and add credits">
+    Follow the [quickstart](/ai-gateway/quickstart) to create an access key and purchase [credits](/ai-gateway/concepts/credits) in [app.ngrok.ai](https://app.ngrok.ai).
+  </Step>
+
+  <Step title="Store your Typesafe AI API key (optional)">
+    Skip this step to pay with credits.
+    To bring your own key, create an API key in your [Typesafe AI](https://typesafe.ai) account. Then [add a provider key](/ai-gateway/guides/attaching-provider-keys#add-a-provider-key) and [create an access key configuration](/ai-gateway/guides/access-key-configurations#create-a-configuration) with a `typesafeai` routing rule that uses it.
+  </Step>
+
+  <Step title="Send requests">
+    Send a `POST` request to `/v1/systemone` with your access key:
+
+    ```bash
+    curl https://gateway.ngrok.ai/v1/systemone \
+      -H "Content-Type: application/json" \
+      -H "Authorization: Bearer ng-xxxxx-g1-xxxxx" \
+      -d '{
+        "model": "jev-latest",
+        "state": "Customer: My order arrived broken and I want a refund today.",
+        "questions": {
+          "urgency": {
+            "type": "score",
+            "instructions": "How urgent is this message?",
+            "criteria": [
+              "Not urgent: no action needed.",
+              "Somewhat urgent: handle within a few days.",
+              "Urgent: handle today."
+            ]
+          }
+        }
+      }'
+    ```
+  </Step>
+</Steps>
+
+## Request format
+
+A System One request body has three fields:
+
+| Field | Description |
+|-------|-------------|
+| `model` | The model ID, such as `jev-latest`. |
+| `state` | The text the model evaluates. |
+| `questions` | An object that maps each question ID to a typed question. It must contain at least one question. |
+
+The gateway removes any other top-level field before it forwards the request.
+System One doesn't stream, so a request with `"stream": true` returns an error.
+
+See the [Typesafe AI API reference](https://docs.typesafe.ai) for question types and the response format.
+
+## Available models
+
+See the [model catalog](/ai-gateway/reference/model-catalog#typesafe-ai). `jev-latest` points at the current Jev build, and `jev-preview` points at the next one.
+
+## Next steps
+
+- [Typed-question APIs](/ai-gateway/guides/decisions-and-system-one): How System One requests work
+- [Provider keys](/ai-gateway/guides/attaching-provider-keys)
+- [Access key configurations](/ai-gateway/guides/access-key-configurations)

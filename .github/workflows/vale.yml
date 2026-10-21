@@ -32,8 +32,10 @@ jobs:
           corepack install
           pnpm install
 
+      # scripts/vale holds an mdx2vast wrapper that lints text inside MDX
+      # components, so it has to come before the upstream CLI in node_modules.
       - name: Setup PATH for mdx2vast
-        run: echo "PATH=${{ github.workspace }}/node_modules/.bin:$PATH" >> $GITHUB_ENV
+        run: echo "PATH=${{ github.workspace }}/scripts/vale:${{ github.workspace }}/node_modules/.bin:$PATH" >> $GITHUB_ENV
 
       - name: Get changed files
         id: changed-files
@@ -50,11 +52,13 @@ jobs:
             --jq '.[] | select(.status != "removed") | .filename' \
             > pr_files.txt
 
-          # Keep markdown only, excluding specific directories and files.
-          # The agent CLI pages are generated from the ngrok monorepo, so Vale has
-          # nothing actionable to say about their prose.
+          # Keep markdown only, excluding generated files: Vale findings there have
+          # to be fixed at the source. The agent CLI pages and the errors, obs, and
+          # API example snippets come from the ngrok monorepo; the operator changelog
+          # and Helm values come from the auto-gen workflows in this repo.
           grep -E '\.(mdx|md)$' pr_files.txt \
-            | grep -v '^snippets/' \
+            | grep -vE '^snippets/(api|errors|obs)/' \
+            | grep -vE '^snippets/k8s/_(changelog|helm-config)\.mdx$' \
             | grep -v '^errors/' \
             | grep -v '^\.skills/' \
             | grep -vE '^(gateway/)?agent/cli(-api)?\.mdx$' \
@@ -97,5 +101,41 @@ jobs:
           # on Files changed; the rest land in the check run summary.
           filter_mode: nofilter
           fail_on_error: false
+          version: 3.12.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # The step above only annotates, and can't fail the job (see its comment).
+      # This one is the gate: any Vale finding, at any level, in a file the PR
+      # changes fails the check. Each file runs on its own with a timeout, since
+      # one Vale process over hundreds of MDX files can stall.
+      - name: Fail on Vale findings
+        if: steps.changed-files.outputs.has_files == 'true'
+        env:
+          VALE_VERSION: 3.12.0
+          VALE_SHA256: 3f4ea05cd1f2291b660ecf11a77cbb6b544b0f3b780604ad183f63285611321b
+        run: |
+          curl -sSfL -o "$RUNNER_TEMP/vale.tar.gz" \
+            "https://github.com/vale-cli/vale/releases/download/v${VALE_VERSION}/vale_${VALE_VERSION}_Linux_64-bit.tar.gz"
+          echo "${VALE_SHA256}  $RUNNER_TEMP/vale.tar.gz" | sha256sum -c -
+          tar -xzf "$RUNNER_TEMP/vale.tar.gz" -C "$RUNNER_TEMP" vale
+
+          failed=0
+          while IFS= read -r file; do
+            if ! out=$(timeout 120 "$RUNNER_TEMP/vale" --no-exit --minAlertLevel=suggestion --output=line "$file" 2>&1); then
+              echo "::error file=$file::Vale could not lint this file"
+              echo "$out"
+              failed=1
+              continue
+            fi
+            if [ -n "$out" ]; then
+              # path:line:col:rule:message -> a GitHub error annotation
+              echo "$out" | sed -E 's/^([^:]+):([0-9]+):([0-9]+):([^:]+):(.*)$/::error file=\1,line=\2,col=\3,title=\4::\5/'
+              failed=1
+            fi
+          done < changed_files.txt
+
+          if [ "$failed" -ne 0 ]; then
+            echo "::error::Vale flagged the files above. Fix every finding before merging; run 'pnpm run vale' to check locally."
+            exit 1
+          fi
