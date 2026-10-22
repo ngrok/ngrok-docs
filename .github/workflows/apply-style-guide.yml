@@ -86,7 +86,7 @@ jobs:
           github_token: ${{ steps.generate-token.outputs.token }}
           # Read and Edit only: no shell, so Claude can't commit, push, or touch
           # anything beyond the files it edits.
-          claude_args: --allowedTools Read,Edit,Glob,Grep --max-turns 100
+          claude_args: --allowedTools Read,Edit,Glob,Grep --max-turns 300
           prompt: |
             You are editing the prose of an ngrok documentation pull request so it follows the repo's style guide.
 
@@ -102,7 +102,8 @@ jobs:
             - Put each sentence on its own line, as the style guide requires.
 
       - name: Commit and push changes
-        if: steps.changed-files.outputs.has_files == 'true'
+        # Runs even if the Claude step failed (e.g. hit the turn cap), so finished edits aren't lost.
+        if: ${{ !cancelled() && steps.changed-files.outputs.has_files == 'true' }}
         env:
           HEAD_REF: ${{ github.head_ref }}
         run: |
