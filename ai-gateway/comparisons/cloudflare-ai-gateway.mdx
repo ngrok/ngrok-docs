@@ -11,8 +11,10 @@ The biggest difference between the two is what happens when your model runs on y
 
 **The short answer:**
 
-- **Choose ngrok AI Gateway** if you run local or self-hosted LLMs, such as Ollama, vLLM, or LM Studio, and want them behind the same endpoint, keys, and failover as OpenAI and Anthropic. It's also a fit if you want automatic failover without building routes, per-key control over which providers and models each app can call, and a flat per-token fee that doesn't grow with model price.
-- **Choose Cloudflare AI Gateway** if you need caching, guardrails, DLP, and spend limits enforced at the gateway. It's also the better fit for routing you can change without touching client code, for log export to OpenTelemetry, and for non-chat modalities like speech, image, video, and realtime WebSockets.
+- **Choose ngrok AI Gateway** if you run local or self-hosted LLMs, such as Ollama, vLLM, or LM Studio, and want them behind the same endpoint, keys, and failover as OpenAI and Anthropic.
+  It's also a fit if you want automatic failover without building routes, per-key control over which providers and models each app can call, and a flat per-token fee that doesn't grow with model price.
+- **Choose Cloudflare AI Gateway** if you need caching, guardrails, DLP, and spend limits enforced at the gateway.
+  It's also the better fit for routing you can change without touching client code, for log export to OpenTelemetry, and for non-chat modalities like speech, image, video, and realtime WebSockets.
 
 The rest of this page explains each difference and links to the primary documentation behind it.
 
@@ -126,7 +128,8 @@ A self-hosted model gets the same gateway features as a hosted provider:
 
 - **Several machines as one pool.** Register each server as its own custom provider, such as `ollama-gpu-1` and `ollama-gpu-2`, and list them in `models` to fail over between them ([ngrok docs](/ai-gateway/custom-providers/ollama)).
 - **Per-key access.** An access key configuration decides which keys can call your local provider, so a teammate's key can reach the office GPU while a production key can't ([ngrok docs](/ai-gateway/guides/access-key-configurations)).
-- **Local models in coding agents.** ngrok's guides for Cursor, OpenCode, Pi, and Zed show how to add a self-hosted model like `ollama:llama3.2` next to hosted ones ([ngrok docs](/ai-gateway/agents)). Cursor's tool calls can fail against a self-hosted model even when plain chat works ([ngrok docs](/ai-gateway/agents/cursor)).
+- **Local models in coding agents.** ngrok's guides for Cursor, OpenCode, Pi, and Zed show how to add a self-hosted model like `ollama:llama3.2` next to hosted ones ([ngrok docs](/ai-gateway/agents)).
+  Cursor's tool calls can fail against a self-hosted model even when plain chat works ([ngrok docs](/ai-gateway/agents/cursor)).
 - **Automatic model selection.** `ngrok/auto` tries models from custom providers you've added a provider key for before it moves to hosted models ([ngrok docs](/ai-gateway/guides/automatic-model-selection)).
 
 ### What to know before you rely on it
@@ -193,10 +196,14 @@ ngrok stores provider keys account-wide, lets you rotate them in place, and fail
 
 Cloudflare AI Gateway has several gateway-side controls that ngrok AI Gateway doesn't offer today:
 
-- **Caching:** exact-match caching of text and image responses, with a TTL from 60 seconds to one month and custom cache keys ([Cloudflare docs](https://developers.cloudflare.com/ai-gateway/features/caching/)). ngrok: "Response caching isn't currently available" ([ngrok docs](/ai-gateway/faq)).
-- **Guardrails:** Llama Guard classifies prompts and responses across hazard categories plus prompt injection, and you can flag or block each category ([Cloudflare docs](https://developers.cloudflare.com/ai-gateway/features/guardrails/usage-considerations/)). Guardrails add latency and buffer streamed responses on some endpoints.
-- **DLP:** scans prompts and responses with the same detection profiles as Cloudflare One ([Cloudflare docs](https://developers.cloudflare.com/ai-gateway/features/dlp/)). ngrok: automatic redaction "isn't available on ngrok.ai just yet".
-- **Rate limits and spend limits:** per-gateway request limits, and dollar budgets by provider, model, or metadata ([Cloudflare docs](https://developers.cloudflare.com/ai-gateway/features/spend-limits/)). ngrok offers account-wide input and output token caps per request and an optional spending cap on credit auto top-up.
+- **Caching:** exact-match caching of text and image responses, with a TTL from 60 seconds to one month and custom cache keys ([Cloudflare docs](https://developers.cloudflare.com/ai-gateway/features/caching/)).
+  ngrok: "Response caching isn't currently available" ([ngrok docs](/ai-gateway/faq)).
+- **Guardrails:** Llama Guard classifies prompts and responses across hazard categories plus prompt injection, and you can flag or block each category ([Cloudflare docs](https://developers.cloudflare.com/ai-gateway/features/guardrails/usage-considerations/)).
+  Guardrails add latency and buffer streamed responses on some endpoints.
+- **DLP:** scans prompts and responses with the same detection profiles as Cloudflare One ([Cloudflare docs](https://developers.cloudflare.com/ai-gateway/features/dlp/)).
+  ngrok: automatic redaction "isn't available on ngrok.ai just yet".
+- **Rate limits and spend limits:** per-gateway request limits, and dollar budgets by provider, model, or metadata ([Cloudflare docs](https://developers.cloudflare.com/ai-gateway/features/spend-limits/)).
+  ngrok offers account-wide input and output token caps per request and an optional spending cap on credit auto top-up.
 
 If gateway-enforced safety and budget controls are a hard requirement, Cloudflare AI Gateway is the better fit today.
 
@@ -223,12 +230,14 @@ Guardrails bill as Workers AI usage, and Logpush and log storage bill separately
 **ngrok AI Gateway charges a flat processing fee.**
 Every successful request costs $0.05 per million tokens (input plus output), whether you pay with ngrok credits, your own provider keys, or a self-hosted model ([ngrok docs](/ai-gateway/concepts/credits)).
 With credits, you also pay the model's cost.
-Requests that fail before reaching a provider aren't billed.
+ngrok doesn't bill requests that fail before reaching a provider.
 
 What that means in practice:
 
 - **With your own provider keys,** Cloudflare AI Gateway costs less, because it charges no per-token gateway fee.
-- **With managed credits,** the fees break even at a blended model price of $1 per million tokens, because 5% of $1 is $0.05. Above that, which includes most frontier models, ngrok's flat fee is the smaller share. Below it, Cloudflare's 5% is cheaper.
+- **With managed credits,** the fees break even at a blended model price of $1 per million tokens, because 5% of $1 is $0.05.
+  Above that, which includes most frontier models, ngrok's flat fee is the smaller share.
+  Below it, Cloudflare's 5% is cheaper.
 - **With a self-hosted model,** ngrok charges only the processing fee, and inference costs you nothing beyond your own hardware.
 
 ## Coding agents
@@ -236,7 +245,8 @@ What that means in practice:
 Both gateways document setup for coding agents, so you can route Claude Code, Codex, Cursor, and others through one key with usage tracking.
 
 - **Cloudflare** has guides for Claude Code, Claude Desktop, Cursor, Gemini CLI, GitHub Copilot CLI, OpenAI Codex, OpenCode, Pi, VS Code, and Xcode ([Cloudflare docs](https://developers.cloudflare.com/ai-gateway/integrations/coding-agents/)).
-- **ngrok** has guides for Claude Code, Codex, Cursor, Hermes, OpenCode, Pi, Zed, and other agents ([ngrok docs](/ai-gateway/agents)). The Cursor, OpenCode, Pi, and Zed guides show how to use a model on your own machine alongside hosted ones, and you can give each agent or teammate its own access key with its own model allowlist.
+- **ngrok** has guides for Claude Code, Codex, Cursor, Hermes, OpenCode, Pi, Zed, and other agents ([ngrok docs](/ai-gateway/agents)).
+  The Cursor, OpenCode, Pi, and Zed guides show how to use a model on your own machine alongside hosted ones, and you can give each agent or teammate its own access key with its own model allowlist.
 
 ## Switch from Cloudflare AI Gateway to ngrok AI Gateway
 
