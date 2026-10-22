@@ -1,0 +1,118 @@
+name: Apply Style Guide
+
+permissions: {}
+
+on:
+  pull_request:
+    # Runs once a PR is ready for review: when a draft is marked ready, or when a
+    # PR is opened (or reopened) as ready. Draft PRs are skipped by the job's `if`.
+    # `synchronize` is deliberately absent so the bot's own commit doesn't retrigger it.
+    types: [opened, reopened, ready_for_review]
+
+concurrency:
+  group: apply-style-guide-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  apply-style-guide:
+    name: Apply style guide
+    # Fork PRs get no secrets and can't be pushed to, and bot PRs are generated content.
+    if: >-
+      !github.event.pull_request.draft &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.user.type != 'Bot'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      pull-requests: read
+      id-token: write
+
+    steps:
+      # Pushing with the app token, rather than GITHUB_TOKEN, lets the bot's commit
+      # trigger the PR's other checks.
+      - name: Generate bot token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v2
+        id: generate-token
+        with:
+          app-id: ${{ secrets.NGROK_DOCS_BOT_APP_ID }}
+          private-key: ${{ secrets.NGROK_DOCS_BOT_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+
+      - name: Checkout PR branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          token: ${{ steps.generate-token.outputs.token }}
+          ref: ${{ github.head_ref }}
+
+      - name: Get changed files
+        id: changed-files
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api --paginate \
+            "repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files" \
+            --jq '.[] | select(.status != "removed") | .filename' \
+            > "$RUNNER_TEMP/pr_files.txt"
+
+          # Same exclusions as the Vale workflow: generated pages, snippets, and the
+          # style guide itself.
+          grep -E '\.(mdx|md)$' "$RUNNER_TEMP/pr_files.txt" \
+            | grep -v '^snippets/' \
+            | grep -v '^errors/' \
+            | grep -v '^\.skills/' \
+            | grep -v '^\.github/' \
+            | grep -vE '^(gateway/)?agent/cli(-api)?\.mdx$' \
+            | grep -v '^style-guide.mdx$' \
+            > "$RUNNER_TEMP/changed_files.txt" || true
+
+          if [ -s "$RUNNER_TEMP/changed_files.txt" ]; then
+            # Claude can only read inside the workspace, so stage the list there.
+            # It's never committed: the commit step adds only the listed files.
+            cp "$RUNNER_TEMP/changed_files.txt" .style-guide-files.txt
+            echo "has_files=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_files=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Apply style guide with Claude
+        if: steps.changed-files.outputs.has_files == 'true'
+        uses: anthropics/claude-code-action@cab360f6565aa35a51d6ce9e43f1f4287c0a32ea # v1.0.241
+        with:
+          anthropic_federation_rule_id: ${{ vars.ANTHROPIC_WIF_RULE_ID }}
+          anthropic_organization_id: ${{ vars.ANTHROPIC_ORG_ID }}
+          anthropic_service_account_id: ${{ vars.ANTHROPIC_WIF_SA_ID }}
+          anthropic_workspace_id: ${{ vars.ANTHROPIC_WIF_WORKSPACE_ID }}
+          github_token: ${{ steps.generate-token.outputs.token }}
+          # Read and Edit only: no shell, so Claude can't commit, push, or touch
+          # anything beyond the files it edits.
+          claude_args: --allowedTools Read,Edit,Glob,Grep --max-turns 300
+          prompt: |
+            You are editing the prose of an ngrok documentation pull request so it follows the repo's style guide.
+
+            1. Read `style-guide.mdx` in full. It is the source of truth.
+            2. Read `.style-guide-files.txt`. It lists the files this PR changed, one per line.
+            3. Edit each listed file so its prose follows the style guide.
+
+            Rules:
+            - Edit only the files listed in `.style-guide-files.txt`. Never edit `style-guide.mdx` or `.style-guide-files.txt`.
+            - Change prose only. Leave code blocks, inline code, frontmatter keys, import statements, JSX component names and props, URLs, and link targets as they are.
+            - Keep the technical meaning exactly the same. If a fix would change what the docs say, skip it.
+            - Make the smallest edit that fixes each issue. Don't rewrite text that already follows the guide.
+            - Put each sentence on its own line, as the style guide requires.
+
+      - name: Commit and push changes
+        # Runs even if the Claude step failed (e.g. hit the turn cap), so finished edits aren't lost.
+        if: ${{ !cancelled() && steps.changed-files.outputs.has_files == 'true' }}
+        env:
+          HEAD_REF: ${{ github.head_ref }}
+        run: |
+          git config user.name "ngrok-docs-bot[bot]"
+          git config user.email "ngrok-docs-bot[bot]@users.noreply.github.com"
+          git add --pathspec-from-file=.style-guide-files.txt
+          if git diff --staged --quiet; then
+            echo "No style changes to commit."
+          else
+            git commit -m "Apply style guide"
+            git push origin "HEAD:$HEAD_REF"
+          fi
