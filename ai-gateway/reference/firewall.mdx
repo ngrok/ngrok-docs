@@ -9,8 +9,9 @@ To set up a policy, see [Guard agent tool calls with Firewall](/ai-gateway/guide
 
 ## Policy fields
 
-You manage the policies you save in [app.ngrok.ai](https://app.ngrok.ai) under **Firewall**.
+You manage saved policies in [app.ngrok.ai](https://app.ngrok.ai) under **Firewall**, or with the [Firewall Policies API](/ai-gateway/api-reference/firewall-policies/create).
 Each field shows its dashboard label first, then its name in the [`plugins` field](#the-plugins-field).
+The API uses the same names, except that it spells `on_error` as `onError` and puts every rule in one `rules` list, where each rule sets its `tier` to `hardDeny`, `softDeny`, or `allow`.
 
 | Field | Values and limits |
 |-------|-------------------|
@@ -114,6 +115,7 @@ When a response rule blocks a tool call, the gateway removes the call and adds t
 <ngrok_firewall_blocked tool="bash" rule="[Force push]">Tool call "bash" was blocked by ngrok.ai Firewall and was not executed. Do not retry it with the same arguments.</ngrok_firewall_blocked>
 ```
 
+`rule` names only rules from enforced policies.
 When Firewall couldn't check the call and **On error** is **Block**, `rule` is empty and the text says the call couldn't be evaluated.
 
 If no tool calls remain, the response ends as if the model had finished:
@@ -164,7 +166,7 @@ Tool call checks report one entry per tool call ID:
 | `type` (per rule or call) | `evaluated`, or `unavailable` when the check couldn't run. `unavailable` entries carry a `reason`. |
 | `outcome` (request rules) | `matched` or `not_matched`. |
 | `outcome` (tool calls) | `flagged` or `not_flagged`. |
-| `explanation` | The names of the rules that matched, each in brackets. |
+| `explanation` | The names of the rules that matched, each in brackets, including rules from Dry run policies. |
 
 A response with no tool calls carries no `dangerous_tool_use` entry.
 

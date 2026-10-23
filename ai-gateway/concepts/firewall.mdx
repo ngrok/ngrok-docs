@@ -110,8 +110,8 @@ If Firewall can't read the tool calls in a response at all, and the policy uses 
 
 | Scope | Applies to | Where you set it |
 |-------|------------|------------------|
-| **All access keys** | Every key in your account, including keys you create later. This policy is your **baseline**. | The policy's **Apply to** setting. |
-| **Access key configurations** | Only keys that use a configuration that picks the policy. | The policy's **Apply to** setting, or the **Firewall** section of an [access key configuration](/ai-gateway/guides/access-key-configurations). |
+| **All access keys** | Every key in your account, including keys you create later. This policy is your **baseline**. | The policy's **Apply to** setting, or `firewallPolicyId` in the [gateway configuration API](/ai-gateway/api-reference/gateway-config/update). |
+| **Access key configurations** | Only keys that use a configuration that picks the policy. | The policy's **Apply to** setting, the **Firewall** section of an [access key configuration](/ai-gateway/guides/access-key-configurations), or `firewallPolicyId` in the [configurations API](/ai-gateway/api-reference/access-key-configurations/update). |
 | **One request** | A single request. | The [`plugins` field](/ai-gateway/reference/firewall#the-plugins-field) of the request body. |
 
 An account has at most one baseline, and a configuration picks at most one policy.
@@ -121,14 +121,8 @@ An account has at most one baseline, and a configuration picks at most one polic
 A request can be checked by up to three policies: the baseline, the policy of its key's configuration, and a policy in the request.
 Firewall runs every rule from all of them, so a policy can add checks but never remove one:
 
+- Each policy keeps its own **Mode** and **On error** setting. A Dry run policy only reports, even when your baseline enforces, so you can try a new policy on keys that already have one.
 - An allow rule only overrides soft block rules in its own policy. A request can't allow what your baseline blocks.
-- The strictest mode wins, and for now it applies to every rule. If any of the policies uses Enforce, all of their rules block, including rules from a policy in Dry run.
-- The strictest error setting wins. If any of the policies uses Block, a check that fails blocks.
-
-<Warning>
-For now, a Dry run policy that applies next to an enforced one blocks too.
-To try a policy in Dry run, test it with keys that no enforced policy applies to.
-</Warning>
 
 When you make a policy your baseline, configurations that picked the same policy stop picking it, so its rules don't run twice.
 
@@ -145,7 +139,7 @@ See [What a blocked caller gets](/ai-gateway/reference/firewall#what-a-blocked-c
 
 ## Things to know
 
-- **Other endpoints**: if a policy that applies to a key uses Enforce, the gateway rejects that key's requests to endpoints Firewall can't check, such as embeddings, with [`ERR_NGROK_27228`](/ai-gateway/reference/error-codes#err_ngrok_27228). In Dry run, those requests go through with the header `Ngrok-AIG-Firewall: unscreened; reason=unsupported_endpoint`.
+- **Other endpoints**: if a policy that applies to a key uses Enforce, the gateway rejects that key's requests to endpoints Firewall can't check, such as the Responses API, with [`ERR_NGROK_27228`](/ai-gateway/reference/error-codes#err_ngrok_27228). In Dry run, those requests go through with the header `Ngrok-AIG-Firewall: unscreened; reason=unsupported_endpoint`.
 - **Latency**: tool names and regex rules add almost no latency. Each decision rule calls the decision model, which can add up to 1.5 seconds before the check counts as failed.
 - **Streaming**: in Enforce mode, the gateway holds each streamed tool call until its checks finish, so your agent never receives a call that wasn't checked. The rest of the stream keeps flowing.
 - **Usage logs**: for now, Firewall results don't appear in [usage logs](/ai-gateway/observability). Read the response headers and `safeguard_results` to see what Firewall did.

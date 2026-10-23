@@ -151,7 +151,7 @@ Open the configuration, go to its **Firewall** section, and select the policy un
 <Note>
 Policies combine.
 A key whose configuration picks a policy is also checked by your baseline.
-For now, if either policy is in Enforce, both policies' rules block.
+Each policy keeps its own mode, so a Dry run policy only reports, even next to an enforced baseline.
 See [How policies combine](/ai-gateway/concepts/firewall#how-policies-combine).
 </Note>
 
@@ -166,9 +166,60 @@ When a rule flags calls it shouldn't, raise its confidence, narrow its pattern, 
 When the results look right, open the policy, select **Enforce** under **Mode**, and click **Save changes**.
 
 <Warning>
-Once a key has an enforced policy, the gateway rejects that key's requests to endpoints Firewall can't check, such as embeddings.
+Once a key has an enforced policy, the gateway rejects that key's requests to endpoints Firewall can't check, such as the Responses API.
 Use a separate key for those requests.
 </Warning>
+
+## Use the API instead
+
+You can do every step in this guide with the [AI Gateway API](/ai-gateway/api-reference/overview).
+Authorize each request with your [AI Gateway API key](/ai-gateway/concepts/access-keys#credentials-overview).
+
+Create a policy with the [Firewall Policies API](/ai-gateway/api-reference/firewall-policies/create).
+The API uses the same fields as the dashboard, and each rule sets its own `tier`:
+
+```bash
+curl -X POST https://api.ngrok.ai/firewall-policies \
+  -H "Authorization: Bearer $AI_GATEWAY_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Coding agent guard",
+    "mode": "audit",
+    "onError": "block",
+    "rules": [
+      {
+        "id": "force-push",
+        "name": "Force push",
+        "tier": "hardDeny",
+        "kind": "regex",
+        "pattern": "git push .*(--force|-f)\\b"
+      }
+    ]
+  }'
+```
+
+Attach the policy to an access key configuration:
+
+```bash
+curl -X PATCH https://api.ngrok.ai/access-key-configurations/aigac_xxxxx \
+  -H "Authorization: Bearer $AI_GATEWAY_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{ "firewallPolicyId": "aigfp_xxxxx" }'
+```
+
+Send `"firewallPolicyId": null` to detach it.
+
+Or make it your baseline with the [gateway configuration API](/ai-gateway/api-reference/gateway-config/update).
+Send `expectedFirewallPolicyId` with the baseline you read, or `null` if you expect none, so the update fails with a `409` instead of replacing a baseline someone else just set:
+
+```bash
+curl -X PATCH https://api.ngrok.ai/gateway-config \
+  -H "Authorization: Bearer $AI_GATEWAY_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{ "firewallPolicyId": "aigfp_xxxxx", "expectedFirewallPolicyId": null }'
+```
+
+To enforce the policy, [update it](/ai-gateway/api-reference/firewall-policies/update) with `"mode": "enforce"`.
 
 ## Next steps
 

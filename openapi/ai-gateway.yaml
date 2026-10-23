@@ -17,6 +17,8 @@ tags:
     description: Manage per-account AI Gateway configuration (timeouts, token caps, metadata).
   - name: AI Gateway API Keys
     description: Manage customer-facing AI Gateway API Keys.
+  - name: AI Gateway Firewall Policies
+    description: Manage Firewall policies, the rules that screen the requests and tool calls an access key's traffic carries.
   - name: AI Gateway Credits
     description: Purchase AI Gateway credits, via Stripe Checkout or a charge of the saved card, and read purchase/transaction history.
   - name: AI Gateway Providers
@@ -382,6 +384,129 @@ paths:
       responses:
         '204':
           description: The AI Gateway API key was deleted.
+        default:
+          $ref: '#/components/responses/Error'
+  /firewall-policies:
+    get:
+      tags:
+        - AI Gateway Firewall Policies
+      summary: List AI Gateway Firewall policies
+      description: List all Firewall policies owned by the authenticated account.
+      operationId: ListAIGatewayFirewallPolicies
+      parameters:
+        - $ref: '#/components/parameters/BeforeID'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: A page of Firewall policies.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIGatewayFirewallPolicyList'
+        default:
+          $ref: '#/components/responses/Error'
+    head:
+      tags:
+        - AI Gateway Firewall Policies
+      summary: Check AI Gateway Firewall policies collection availability
+      description: HEAD variant of list AI Gateway Firewall policies.
+      operationId: HeadAIGatewayFirewallPolicies
+      parameters:
+        - $ref: '#/components/parameters/BeforeID'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: The Firewall policies collection is available.
+        default:
+          $ref: '#/components/responses/Error'
+    post:
+      tags:
+        - AI Gateway Firewall Policies
+      summary: Create an AI Gateway Firewall policy
+      description: |
+        Create a named set of tool-call screening rules. Attach it to an access
+        key configuration to enforce it on every request the configuration's
+        access keys make.
+      operationId: CreateAIGatewayFirewallPolicy
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AIGatewayFirewallPolicyCreate'
+      responses:
+        '201':
+          description: The created Firewall policy.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIGatewayFirewallPolicy'
+        default:
+          $ref: '#/components/responses/Error'
+  /firewall-policies/{id}:
+    parameters:
+      - $ref: '#/components/parameters/AIGatewayFirewallPolicyID'
+    get:
+      tags:
+        - AI Gateway Firewall Policies
+      summary: Get an AI Gateway Firewall policy
+      description: Get a single Firewall policy by ID.
+      operationId: GetAIGatewayFirewallPolicy
+      responses:
+        '200':
+          description: The Firewall policy.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIGatewayFirewallPolicy'
+        default:
+          $ref: '#/components/responses/Error'
+    head:
+      tags:
+        - AI Gateway Firewall Policies
+      summary: Check AI Gateway Firewall policy availability
+      description: HEAD variant of get AI Gateway Firewall policy.
+      operationId: HeadAIGatewayFirewallPolicy
+      responses:
+        '200':
+          description: The Firewall policy exists.
+        default:
+          $ref: '#/components/responses/Error'
+    patch:
+      tags:
+        - AI Gateway Firewall Policies
+      summary: Update an AI Gateway Firewall policy
+      description: |
+        Apply a partial update to a Firewall policy. Omit a field to leave it
+        unchanged. A non-null `rules` replaces every rule, and each
+        configuration that enforces the policy picks up the change.
+      operationId: UpdateAIGatewayFirewallPolicy
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AIGatewayFirewallPolicyUpdate'
+      responses:
+        '200':
+          description: The updated Firewall policy.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIGatewayFirewallPolicy'
+        default:
+          $ref: '#/components/responses/Error'
+    delete:
+      tags:
+        - AI Gateway Firewall Policies
+      summary: Delete an AI Gateway Firewall policy
+      description: |
+        Delete a Firewall policy by ID. Fails while an access key configuration
+        still enforces the policy.
+      operationId: DeleteAIGatewayFirewallPolicy
+      responses:
+        '204':
+          description: The Firewall policy was deleted.
         default:
           $ref: '#/components/responses/Error'
   /provider-keys:
@@ -1052,6 +1177,13 @@ components:
       description: Unique identifier for an AI Gateway API key.
       schema:
         type: string
+    AIGatewayFirewallPolicyID:
+      name: id
+      in: path
+      required: true
+      description: Unique identifier for an AI Gateway Firewall policy.
+      schema:
+        type: string
     AIGatewayProviderAPIKeyID:
       name: id
       in: path
@@ -1257,6 +1389,9 @@ components:
           $ref: '#/components/schemas/AccessScope'
         router:
           $ref: '#/components/schemas/Router'
+        firewallPolicyId:
+          type: string
+          description: ID of the Firewall policy the configuration enforces. Absent when it enforces none.
     AIGatewayAccessKeyConfigurationList:
       type: object
       additionalProperties: false
@@ -1376,6 +1511,9 @@ components:
           $ref: '#/components/schemas/AccessScope'
         router:
           $ref: '#/components/schemas/RouterWrite'
+        firewallPolicyId:
+          type: string
+          description: ID of a Firewall policy to enforce on every request the configuration's access keys make. Omit to enforce none.
     AIGatewayAccessKeyConfigurationUpdate:
       type: object
       additionalProperties: false
@@ -1403,6 +1541,18 @@ components:
           nullable: true
           allOf:
             - $ref: '#/components/schemas/RouterWrite'
+        firewallPolicyId:
+          type: string
+          nullable: true
+          description: |
+            ID of a Firewall policy. PATCH: omit to keep the current policy, send
+            `null` to stop enforcing a policy, or send an ID to enforce that
+            policy.
+          x-go-type: gatewayconfig.NullableString
+          x-go-type-import:
+            name: gatewayconfig
+            path: go.ngrok.com/svc/ai-gateway-control/gatewayconfig
+          x-go-type-skip-optional-pointer: true
     AIGatewayAccessKey:
       type: object
       additionalProperties: false
@@ -1645,6 +1795,293 @@ components:
           nullable: true
           maxLength: 4096
           description: Arbitrary user-defined metadata for this API key.
+    AIGatewayFirewallRule:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - tier
+      properties:
+        id:
+          type: string
+          maxLength: 64
+          description: Rule ID. Lowercase letters, digits, `-`, and `_`. Unique across the policy's rules.
+        name:
+          type: string
+          maxLength: 120
+          description: Name shown as `[name]` when the rule matches. Defaults to the ID.
+        tier:
+          type: string
+          enum:
+            - hardDeny
+            - softDeny
+            - allow
+          x-enum-varnames:
+            - RuleTierHardDeny
+            - RuleTierSoftDeny
+            - RuleTierAllow
+          description: '`hardDeny` always blocks a match. `softDeny` blocks a match unless an `allow` rule of the same policy matches the same request or tool call. `allow` never blocks.'
+        kind:
+          type: string
+          enum:
+            - regex
+            - decision
+            - tool
+          x-enum-varnames:
+            - RuleKindRegex
+            - RuleKindDecision
+            - RuleKindTool
+          description: '`regex` matches `pattern`, with no model call. `decision` has the decision model score `instructions`. `tool` matches the names in `tools`, with no model call. Defaults to `decision`.'
+        pattern:
+          type: string
+          maxLength: 1000
+          description: RE2 pattern a `regex` rule matches. For a tool call, it matches the call's name and arguments.
+        instructions:
+          type: string
+          maxLength: 8000
+          description: What a `decision` rule matches, in plain language. Required for a `decision` rule.
+        tools:
+          type: array
+          maxItems: 64
+          description: |
+            Tool names a `tool` rule matches, whole. `*` matches any run of characters, so `mcp__github__*` matches every tool of one MCP server. A `tool` rule reads `tool_calls`, the name of each call the model returns, or `tool_definitions`, the tools a request offers. Required for a `tool` rule.
+          items:
+            type: string
+            maxLength: 128
+        threshold:
+          type: number
+          format: double
+          minimum: 0
+          maximum: 1
+          description: Match probability at which a `decision` rule fires. Defaults to 0.6 for a deny rule and 0.7 for an allow rule.
+        targets:
+          type: array
+          description: |
+            What the rule reads, which also sets when it runs. `messages`, `tool_results`, and `tool_definitions` run before the request reaches the model. `tool_calls` runs on each tool call the model returns, and cannot be combined with the others. Defaults to `tool_calls`.
+          items:
+            type: string
+            enum:
+              - messages
+              - tool_results
+              - tool_definitions
+              - tool_calls
+            x-enum-varnames:
+              - RuleTargetMessages
+              - RuleTargetToolResults
+              - RuleTargetToolDefinitions
+              - RuleTargetToolCalls
+    AIGatewayFirewallPolicy:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - uri
+        - name
+        - createdAt
+        - updatedAt
+        - createdBy
+        - lastUpdatedBy
+        - accessKeyConfigurationCount
+        - appliesToAllKeys
+        - mode
+        - onError
+        - environment
+        - rules
+      properties:
+        id:
+          type: string
+          description: Unique identifier for this policy.
+        uri:
+          type: string
+          description: URI of this AI Gateway Firewall policy API resource.
+        name:
+          type: string
+          description: User-defined label for this policy.
+        description:
+          type: string
+          description: Human-readable description.
+        metadata:
+          type: string
+          description: Arbitrary user-defined metadata.
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp when the policy was created.
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp when the policy was last updated.
+        createdBy:
+          $ref: '#/components/schemas/Ref'
+        lastUpdatedBy:
+          $ref: '#/components/schemas/Ref'
+        accessKeyConfigurationCount:
+          type: integer
+          format: int32
+          description: Number of access key configurations that enforce this policy. 0 when unused.
+        appliesToAllKeys:
+          type: boolean
+          description: True when the policy is the account's baseline, set as `firewallPolicyId` on the gateway config. It applies to every key, under each configuration's own policy.
+        mode:
+          type: string
+          enum:
+            - enforce
+            - audit
+          description: |
+            `enforce` blocks a tool call or request the policy's rules flag. `audit` lets it through and reports
+            the verdict. The mode applies to this policy's rules only: an `audit` policy only reports, even when
+            the account's all-keys policy or a request enforces. Defaults to `enforce`.
+        onError:
+          type: string
+          enum:
+            - block
+            - log
+          description: What a tool call or request the decision model could not judge does. Defaults to `block`.
+        environment:
+          type: array
+          maxItems: 32
+          description: Facts about the caller's setup that inform the decision model. They are not rules.
+          items:
+            type: string
+            maxLength: 1000
+        rules:
+          type: array
+          maxItems: 48
+          description: |
+            Every rule of the policy, of every tier, before and after the model. A policy holds up to 48.
+            A key enforces its account's all-keys policy and its configuration's policy together, so it
+            can enforce up to 96, and a request can add up to 48 of its own.
+          items:
+            $ref: '#/components/schemas/AIGatewayFirewallRule'
+    AIGatewayFirewallPolicyList:
+      type: object
+      additionalProperties: false
+      required:
+        - aiGatewayFirewallPolicies
+        - uri
+      properties:
+        aiGatewayFirewallPolicies:
+          type: array
+          description: The Firewall policies for this account.
+          items:
+            $ref: '#/components/schemas/AIGatewayFirewallPolicy'
+        uri:
+          type: string
+          description: URI of this list resource.
+        nextPageUri:
+          type: string
+          nullable: true
+          description: URI of the next page of results, or null if there is no next page.
+    AIGatewayFirewallPolicyCreate:
+      type: object
+      additionalProperties: false
+      description: A policy needs at least one rule.
+      required:
+        - name
+        - rules
+      properties:
+        name:
+          type: string
+          maxLength: 255
+          description: User-defined label for this policy.
+        description:
+          type: string
+          maxLength: 255
+          description: Human-readable description.
+        metadata:
+          type: string
+          maxLength: 4096
+          description: Arbitrary user-defined metadata.
+        mode:
+          type: string
+          enum:
+            - enforce
+            - audit
+          description: |
+            `enforce` blocks a tool call or request the policy's rules flag. `audit` lets it through and reports
+            the verdict. The mode applies to this policy's rules only: an `audit` policy only reports, even when
+            the account's all-keys policy or a request enforces. Defaults to `enforce`.
+        onError:
+          type: string
+          enum:
+            - block
+            - log
+          description: What a tool call or request the decision model could not judge does. Defaults to `block`.
+        environment:
+          type: array
+          maxItems: 32
+          description: Facts about the caller's setup that inform the decision model. They are not rules.
+          items:
+            type: string
+            maxLength: 1000
+        rules:
+          type: array
+          minItems: 1
+          maxItems: 48
+          description: |
+            Every rule of the policy, of every tier, before and after the model. A policy holds up to 48.
+            A key enforces its account's all-keys policy and its configuration's policy together, so it
+            can enforce up to 96, and a request can add up to 48 of its own.
+          items:
+            $ref: '#/components/schemas/AIGatewayFirewallRule'
+    AIGatewayFirewallPolicyUpdate:
+      type: object
+      additionalProperties: false
+      description: |
+        A partial update. Omit a field, or send null, to leave it unchanged.
+        `rules` replaces the whole list.
+      properties:
+        name:
+          type: string
+          nullable: true
+          maxLength: 255
+          description: User-defined label for this policy.
+        description:
+          type: string
+          nullable: true
+          maxLength: 255
+          description: Human-readable description.
+        metadata:
+          type: string
+          nullable: true
+          maxLength: 4096
+          description: Arbitrary user-defined metadata.
+        mode:
+          type: string
+          nullable: true
+          enum:
+            - enforce
+            - audit
+          description: |
+            `enforce` blocks a tool call or request the policy's rules flag. `audit` lets it through and reports
+            the verdict. The mode applies to this policy's rules only: an `audit` policy only reports, even when
+            the account's all-keys policy or a request enforces. Defaults to `enforce`.
+        onError:
+          type: string
+          nullable: true
+          enum:
+            - block
+            - log
+          description: What a tool call or request the decision model could not judge does. Defaults to `block`.
+        environment:
+          type: array
+          nullable: true
+          maxItems: 32
+          description: Facts about the caller's setup that inform the decision model. They are not rules.
+          items:
+            type: string
+            maxLength: 1000
+        rules:
+          type: array
+          nullable: true
+          minItems: 1
+          maxItems: 48
+          description: |
+            Every rule of the policy, of every tier, before and after the model. A policy holds up to 48.
+            A key enforces its account's all-keys policy and its configuration's policy together, so it
+            can enforce up to 96, and a request can add up to 48 of its own.
+          items:
+            $ref: '#/components/schemas/AIGatewayFirewallRule'
     AIGatewayProviderAPIKeyDetail:
       type: object
       additionalProperties: false
@@ -2661,6 +3098,18 @@ components:
             name: gatewayconfig
             path: go.ngrok.com/svc/ai-gateway-control/gatewayconfig
           x-go-type-skip-optional-pointer: true
+        firewallPolicyId:
+          type: string
+          nullable: true
+          description: |
+            The account's baseline Firewall policy. It applies to every key,
+            under each access key configuration's own policy. `null` when the
+            account has none.
+          x-go-type: gatewayconfig.NullableString
+          x-go-type-import:
+            name: gatewayconfig
+            path: go.ngrok.com/svc/ai-gateway-control/gatewayconfig
+          x-go-type-skip-optional-pointer: true
     AIGatewayConfigUpdate:
       type: object
       additionalProperties: false
@@ -2711,6 +3160,32 @@ components:
             Arbitrary user-defined metadata for the AI Gateway configuration.
             PATCH: omit to preserve, send `null` to clear, or send a string
             to set it. GET returns `null` when no value is stored.
+          x-go-type: gatewayconfig.NullableString
+          x-go-type-import:
+            name: gatewayconfig
+            path: go.ngrok.com/svc/ai-gateway-control/gatewayconfig
+          x-go-type-skip-optional-pointer: true
+        firewallPolicyId:
+          type: string
+          nullable: true
+          description: |
+            The account's baseline Firewall policy, which applies to every key
+            under each access key configuration's own policy. PATCH: omit to
+            preserve, send `null` to clear, or send a policy ID to set it. The
+            policy must belong to the account.
+          x-go-type: gatewayconfig.NullableString
+          x-go-type-import:
+            name: gatewayconfig
+            path: go.ngrok.com/svc/ai-gateway-control/gatewayconfig
+          x-go-type-skip-optional-pointer: true
+        expectedFirewallPolicyId:
+          type: string
+          nullable: true
+          description: |
+            The baseline policy the caller expects the account to have now. When
+            sent, the update applies only if the account's baseline still equals
+            it, and a 409 says it changed. Send `null` to expect no baseline.
+            Omit to update without the check.
           x-go-type: gatewayconfig.NullableString
           x-go-type-import:
             name: gatewayconfig
