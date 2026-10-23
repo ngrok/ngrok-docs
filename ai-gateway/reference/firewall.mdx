@@ -1,0 +1,201 @@
+---
+title: Firewall Reference
+sidebarTitle: Firewall
+description: Firewall policy fields and limits, the plugins request field, response headers, safeguard_results, and the errors Firewall returns.
+---
+
+This page lists the exact formats and limits for [Firewall](/ai-gateway/concepts/firewall).
+To set up a policy, see [Guard agent tool calls with Firewall](/ai-gateway/guides/firewall-policies).
+
+## Policy fields
+
+You manage saved policies in [app.ngrok.ai](https://app.ngrok.ai) under **Firewall**, or with the [Firewall Policies API](/ai-gateway/api-reference/firewall-policies/create).
+Each field shows its dashboard label first, then its name in the [`plugins` field](#the-plugins-field).
+The API uses the same names, except that it spells `on_error` as `onError` and puts every rule in one `rules` list, where each rule sets its `tier` to `hardDeny`, `softDeny`, or `allow`.
+
+| Field | Values and limits |
+|-------|-------------------|
+| **Name** | Required. Up to 255 characters. Saved policies only. |
+| **Description** | Up to 255 characters. Saved policies only. |
+| **Mode**<br />`mode` | **Enforce** (`enforce`) or **Dry run** (`audit`). Default `enforce`. |
+| **On error**<br />`on_error` | **Block** (`block`) or **Continue** (`log`). Default `block`. |
+| **Environment details**<br />`environment` | Up to 32 facts of up to 1,000 characters each. |
+| **Request rules** and **Response rules**<br />`hard_deny`, `soft_deny`, `allow` | 1 to 48 [rules](#rule-fields) per policy. In `plugins`, each tier is its own list. |
+
+## Rule fields
+
+| Field | Values and limits |
+|-------|-------------------|
+| `id` | Required. 1 to 64 lowercase letters, digits, `_`, and `-`, unique in the policy. The dashboard sets it from the rule name. |
+| **Rule name**<br />`name` | Up to 120 characters. Defaults to the ID. |
+| **Tier** | **Hard block**, **Soft block**, or **Allow**. In `plugins`, the list the rule is in sets its tier. |
+| **Type**<br />`kind` | **Regex** (`regex`), **Decision** (`decision`), or **Tool names** (`tool`). Default `decision`. |
+| **Pattern**<br />`pattern` | An [RE2](https://github.com/google/re2/wiki/Syntax) regex of up to 1,000 characters. Required for regex rules. |
+| **Match**<br />`instructions` | What a decision rule catches, in plain language, up to 8,000 characters. Required for decision rules. |
+| **Min. confidence %**<br />`threshold` | Decision rules only. A number from `0` to `1`, which the dashboard shows as a percentage. Default `0.6` for block rules and `0.7` for allow rules. |
+| **Tool names**<br />`tools` | 1 to 64 tool names of up to 128 characters, with no spaces. `*` is a wildcard. Required for tool names rules. |
+| **Reads**<br />`targets` | `messages`, `tool_results`, `tool_definitions`, or `tool_calls`. Default `tool_calls`, which can't be combined with the others. Tool names rules read `tool_calls` or `tool_definitions`. |
+
+Each rule type takes only its own match field.
+For example, a regex rule with `instructions` is rejected.
+
+### Matching details
+
+- **Tool names** match the whole name and are case-sensitive.
+`*` matches any characters, so `mcp__github__*` matches `mcp__github__create_issue`.
+- **Regex** patterns are case-sensitive unless they start with `(?i)`.
+Against a tool call, the pattern matches the tool name, a space, and the raw JSON arguments.
+Block rules also match the arguments with JSON escapes decoded.
+- **Regex** rules on request parts match all the text of each part, across every message, joined with newlines.
+- **Decision** rules on request parts read the system and developer messages plus the newest input: the latest user message and any tool results it carries.
+They read up to about 41 KB of text.
+When the text is longer, the `Ngrok-AIG-Firewall-Request` header reports a [partial read](#response-headers).
+
+## The `plugins` field
+
+Add a `plugins` array to a `/v1/chat/completions` or `/v1/messages` request body to check that request with extra rules.
+The gateway removes the field before it sends the request to the provider.
+
+```json
+{
+  "plugins": [{
+    "id": "firewall",
+    "mode": "enforce",
+    "on_error": "block",
+    "classifier_context": {
+      "v": 1,
+      "auto_mode": {
+        "environment": ["Trusted repo: github.com/acme/app"],
+        "hard_deny": [
+          { "id": "force-push", "name": "Force push", "kind": "regex", "pattern": "git push .*--force" }
+        ],
+        "soft_deny": [
+          { "id": "destructive", "name": "Destructive command", "instructions": "Deletes files or data, and the user didn't ask for it." }
+        ],
+        "allow": [
+          { "id": "build-cleanup", "name": "Build cleanup", "kind": "regex", "pattern": "rm -rf \\./build/" }
+        ]
+      }
+    }
+  }]
+}
+```
+
+| Field | Description |
+|-------|-------------|
+| `id` | Always `firewall`. |
+| `mode` | `enforce` or `audit` (Dry run). |
+| `on_error` | `block` or `log` (Continue). |
+| `classifier_context.v` | Always `1`. |
+| `classifier_context.auto_mode` | `environment`, `hard_deny`, `soft_deny`, and `allow`, as in [Policy fields](#policy-fields). Leave out a list you don't need. |
+
+The rules in `plugins` run on top of the saved policies that apply to the key, as described in [How policies combine](/ai-gateway/concepts/firewall#how-policies-combine).
+A request can add up to 48 rules, and a rule can't reuse the ID of a rule in a saved policy.
+
+The policy editor in the dashboard shows a ready-to-copy `plugins` field for the policy you're editing, under **Try it in one request**.
+
+## What a blocked caller gets
+
+A block returns HTTP `200`, so agents keep running and the model can react.
+In Dry run, nothing is blocked, but the same results appear in the header and `safeguard_results`.
+
+### Blocked request
+
+When a request rule blocks a request, the gateway doesn't send it to the model.
+The response holds one assistant message with this text, in the response format of the endpoint you called:
+
+```xml
+<ngrok_firewall_blocked_request rule="[Force push]">This request was blocked by ngrok.ai Firewall before it reached the model.</ngrok_firewall_blocked_request>
+```
+
+`rule` lists the names of the rules that blocked the request.
+Each name is in brackets, with a space between names.
+When Firewall couldn't check the request and **On error** is **Block**, `rule` is empty and the text says the request couldn't be checked.
+
+### Blocked tool call
+
+When a response rule blocks a tool call, the gateway removes the call and adds this text to the assistant message:
+
+```xml
+<ngrok_firewall_blocked tool="bash" rule="[Force push]">Tool call "bash" was blocked by ngrok.ai Firewall and was not executed. Do not retry it with the same arguments.</ngrok_firewall_blocked>
+```
+
+`rule` names only rules from enforced policies.
+When Firewall couldn't check the call and **On error** is **Block**, `rule` is empty and the text says the call couldn't be evaluated.
+
+If no tool calls remain, the response ends as if the model had finished:
+
+- Chat Completions: `finish_reason` changes to `stop`.
+- Messages: `stop_reason` changes from `tool_use` to `end_turn`.
+
+### `safeguard_results`
+
+Responses carry a top-level `safeguard_results` array when Firewall checked something.
+In a streamed response, it's in the final chunk for Chat Completions and in the `message_delta` event for Messages.
+
+Request rules report one entry per rule:
+
+```json
+{
+  "type": "request_rule",
+  "status": {
+    "type": "available",
+    "rules": {
+      "prompt-injection": {
+        "type": "evaluated",
+        "outcome": "matched",
+        "explanation": "[Prompt injection]",
+        "targets": ["tool_results"]
+      }
+    }
+  }
+}
+```
+
+Tool call checks report one entry per tool call ID:
+
+```json
+{
+  "type": "dangerous_tool_use",
+  "status": {
+    "type": "available",
+    "tool_uses": {
+      "call_abc123": { "type": "evaluated", "outcome": "flagged", "explanation": "[Force push]" }
+    }
+  }
+}
+```
+
+| Field | Values |
+|-------|--------|
+| `type` (per rule or call) | `evaluated`, or `unavailable` when the check couldn't run. `unavailable` entries carry a `reason`. |
+| `outcome` (request rules) | `matched` or `not_matched`. |
+| `outcome` (tool calls) | `flagged` or `not_flagged`. |
+| `explanation` | The names of the rules that matched, each in brackets, including rules from Dry run policies. |
+
+A response with no tool calls carries no `dangerous_tool_use` entry.
+
+### Response headers
+
+| Header | Values | When present |
+|--------|--------|--------------|
+| `Ngrok-AIG-Firewall-Request` | `not_flagged`, `flagged; rules=<ids>`, or `unavailable`. Adds `; partial=<id>:<checked>/<total>` when a decision rule read only part of a long text. | Whenever request rules run, in both modes. |
+| `Ngrok-AIG-Firewall` | `unscreened; reason=unsupported_endpoint` or `unscreened; reason=unreadable_response` | When Firewall let a request or response through without checking it. |
+
+The header lists rule IDs, while the blocked message and `safeguard_results` show rule names.
+The dashboard sets each ID from the rule's name when you create the rule.
+
+Tool call results have no header, because the gateway may already be streaming the response.
+Read `safeguard_results` for them.
+
+## Errors
+
+| Situation | Status | Error |
+|-----------|--------|-------|
+| The `plugins` field is malformed or a rule is invalid | 400 | [`ERR_NGROK_27228`](/ai-gateway/reference/error-codes#err_ngrok_27228). The message names the field, such as `plugins: plugins[0] is not an object`. |
+| A request with `plugins` goes to an endpoint Firewall doesn't check | 400 | `ERR_NGROK_27228`: `Firewall is not available on this endpoint.` |
+| An enforced policy applies to the key and the request goes to an endpoint Firewall doesn't check | 400 | `ERR_NGROK_27228`: `this access key enforces a Firewall policy` |
+| Firewall can't read the tool calls in a response at all, with **Enforce** and **On error** set to **Block** | 500 | Internal Server Error with `ERR_NGROK_27209`. In a stream that has started, the gateway sends this as an error event and ends the stream. |
+
+A single check that can't run, such as a decision model timeout, doesn't return an error.
+With **Block** set, it blocks the request or tool call with the `200` responses described in [What a blocked caller gets](#what-a-blocked-caller-gets).

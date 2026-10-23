@@ -53,15 +53,18 @@ Every response from `gateway.ngrok.ai` carries ngrok's own headers describing ho
 | `Ngrok-AIG-Model` | The upstream model that produced the response. | Success only. |
 | `Ngrok-AIG-Rejected-Models` | Comma-separated models from your request that never ran, for example because the access scope blocks them or no credentials are available. Lists at most 4 models. | Once the gateway tries a provider, when at least one requested model was dropped. |
 | `Ngrok-AIG-Removed-Params` | Comma-separated request fields the gateway didn't send to the provider that served the response, because that provider or model doesn't support them. | Success only, when the gateway removed at least one field. |
+| `Ngrok-AIG-Firewall-Request` | The result of [Firewall](/ai-gateway/concepts/firewall) request rules, such as `flagged; rules=force-push`. | When a Firewall policy with request rules checks the request. |
+| `Ngrok-AIG-Firewall` | `unscreened` and a reason, when Firewall let traffic through without checking it. | When a Firewall policy applies but couldn't check the request or response. |
 
-All five are exposed through CORS, so browser clients can read them.
+All of these are exposed through CORS, so browser clients can read them.
+See the [Firewall reference](/ai-gateway/reference/firewall#response-headers) for every Firewall header value.
 
 These are ngrok's headers rather than the provider's, so a managed-key caller and a [Bring Your Own Keys](/ai-gateway/concepts/bring-your-own-keys) caller see the same values.
 Provider rate-limit headers behave differently: the gateway forwards those only when the attempt used your own provider key.
 
 ### The model header is authoritative
 
-The gateway passes the response body through byte-for-byte.
+The gateway passes the response body through byte-for-byte, unless a [Firewall](/ai-gateway/concepts/firewall) policy blocks a tool call or adds `safeguard_results`.
 The `model` or `modelVersion` field inside the body is the provider's own word and is never rewritten to name the model that served the response.
 On a multi-model failover the body can therefore name a different model than the header.
 Read `Ngrok-AIG-Model` when you need to know what answered.
