@@ -7,10 +7,8 @@ noSidebar: true
 No, ngrok isn't a virus.
 ngrok is developer tooling that connects applications and services across networks, and ngrok, Inc. signs every release.
 
-Some antivirus products flag ngrok as malware or a potentially unwanted application (PUA) anyway.
-Attackers sometimes use tunneling tools, including ngrok, for phishing or for back doors into private networks, and antivirus vendors see ngrok in that context.
-ngrok monitors for that abuse, bans the accounts involved, and works with antivirus vendors to correct the classification.
-To report abuse, email [abuse@ngrok.com](mailto:abuse@ngrok.com) or use the [abuse reporting page](https://ngrok.com/abuse).
+Some antivirus products flag ngrok as malware or a potentially unwanted application (PUA) anyway, because they group it with other tunneling tools.
+If your copy has a valid ngrok signature, the flag is a false positive, and ngrok works with antivirus vendors to correct it.
 
 ## Choose your next step
 
@@ -29,6 +27,8 @@ First, confirm where the file came from:
 
 - Official binaries come from the [ngrok download page](https://ngrok.com/download) and are hosted at `bin.equinox.io`.
   ngrok owns Equinox, and no other software ships through it.
+- ngrok also publishes the agent through Homebrew (`brew install ngrok`), its apt repository at `ngrok-agent.s3.amazonaws.com`, and the [Microsoft Store](ms-windows-store://pdp/?ProductId=9mvs1j51gmk6).
+  The [download page](https://ngrok.com/download) has install steps for each channel.
 - The current ngrok agent isn't open source.
   Anything that claims to be ngrok source code, or tells you to build ngrok from source, is likely malicious.
   The [original v1 project](https://github.com/inconshreveable/ngrok) is still on GitHub, but it's unmaintained and unrelated to the current agent.
@@ -90,11 +90,15 @@ Find out with three checks:
    On Windows, open **Task Manager**, find `ngrok.exe`, and open its file location.
    On macOS or Linux, run `ps -ax -o pid=,user=,command= | grep '[n]grok'`.
    Note the account it runs as and its arguments.
+   Attackers sometimes rename the binary, so also look for processes with ngrok-style arguments such as `http`, `tcp`, or `--authtoken`, and check the file path your antivirus reported.
 2. Find the configuration.
    Run `ngrok config check` to print the config file path for the current user.
    A service can run as a different user with a different file, so check the [service definition](/gateway/agent/service/) too.
    The config file and the arguments show which local services the agent exposes.
+   The authtoken in the config file or the arguments identifies the ngrok account the agent connects to.
 3. Ask the owner.
    Take the process owner, the file path, and the exposed services to your IT team or to the vendor who deployed it.
 
-If nobody can account for it, stop the service, keep the file and its config for your security team, and [report the endpoint URL to ngrok](https://ngrok.com/abuse).
+If nobody can account for it, stop the service, keep the file and its config for your security team, and [report it to ngrok](https://ngrok.com/abuse) with the endpoint URL and the authtoken, so ngrok can find the account.
+You can also email [abuse@ngrok.com](mailto:abuse@ngrok.com).
+ngrok investigates every report and bans accounts that abuse the network.
