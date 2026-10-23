@@ -4,7 +4,7 @@ sidebarTitle: Firewall
 description: Check what your agents send to a model and block risky tool calls before your agent runs them, with rules you attach to access keys.
 ---
 
-Firewall checks agent traffic that passes through the AI Gateway.
+Firewall is a firewall for agent traffic: it checks the requests and tool calls that pass through the AI Gateway.
 It reads what an agent sends to the model, and each tool call the model sends back, before your agent can run it.
 When a check matches a rule, the gateway blocks the request or holds back the tool call, and tells the agent why.
 
@@ -50,10 +50,13 @@ Each rule has a type, which says how it matches, and a tier, which says what hap
 |------|----------------|------------|
 | **Tool names** | Matches tool names exactly, with `*` as a wildcard. For example, `mcp__github__*` matches every tool from a GitHub MCP server. | No |
 | **Regex** | Matches an [RE2](https://github.com/google/re2/wiki/Syntax) pattern against the text. For a tool call, the text is the tool name, a space, and the arguments. | No |
-| **Decision** | A classifier model judges the text against a rule you write in plain language, such as "Deletes files outside the project directory." The rule matches when the classifier's confidence reaches the rule's threshold. | Yes |
+| **Decision** | A decision model judges the text against a rule you write in plain language, such as "Deletes files outside the project directory." The rule matches when the model's confidence reaches the rule's threshold. | Yes |
 
 Tool names and regex rules are fast and predictable.
 Use a decision rule when the risk depends on intent or context that a pattern can't capture.
+
+Decision rules use [Jev](/ai-gateway/providers/typesafeai), a decision model.
+Jev is a separate model that ngrok calls to judge the rule, not the model your request asks for.
 
 ### What a rule reads
 
@@ -67,8 +70,7 @@ Use a decision rule when the risk depends on intent or context that a pattern ca
 A rule reads either request parts or tool calls, not both.
 Tool names rules read tool definitions or tool calls.
 
-Decision rules on request parts read the system and developer messages and every turn after the most recent assistant turn.
-That's the newest input, such as the latest user message and the tool results it carries.
+Decision rules on request parts read the system and developer messages plus the newest input: the latest user message and any tool results it carries.
 Regex rules on request parts read the whole conversation.
 
 ### Tiers
@@ -80,7 +82,7 @@ Regex rules on request parts read the whole conversation.
 | **Allow** | Never blocks. It lets through something a soft block rule in the same policy would block. |
 
 Use soft block and allow together for exceptions.
-For example, soft block `git push` and allow pushes to your own fork.
+For example, a soft block regex rule that matches `git push` and an allow regex rule that matches `git push origin feature/` block every push except pushes to feature branches.
 
 ## Mode and errors
 
@@ -89,11 +91,13 @@ A policy's **mode** decides whether matches block anything:
 - **Enforce** blocks requests and tool calls that match a blocking rule.
 - **Dry run** checks everything and reports what matched, but lets it all through. Use it to test a policy on real traffic before you enforce it.
 
-A check can fail to run, for example when a decision rule's classifier times out.
+A check can fail to run, for example when the decision model times out.
 **On error** decides what happens then:
 
 - **Block** treats what it couldn't check as blocked. This only applies in Enforce mode.
 - **Continue** lets it through and reports that it wasn't checked.
+
+If Firewall can't read the tool calls in a response at all, and the policy uses Enforce and Block, the request fails with a `500` error instead.
 
 ## Where a policy applies
 
@@ -135,7 +139,7 @@ See [What a blocked caller gets](/ai-gateway/reference/firewall#what-a-blocked-c
 ## Things to know
 
 - **Other endpoints**: if a policy that applies to a key uses Enforce, the gateway rejects that key's requests to endpoints Firewall can't check, such as embeddings, with [`ERR_NGROK_27228`](/ai-gateway/reference/error-codes#err_ngrok_27228). In Dry run, those requests go through with the header `Ngrok-AIG-Firewall: unscreened; reason=unsupported_endpoint`.
-- **Latency**: tool names and regex rules add almost no latency. Each decision rule calls a classifier, which can add up to 1.5 seconds before the check counts as failed.
+- **Latency**: tool names and regex rules add almost no latency. Each decision rule calls the decision model, which can add up to 1.5 seconds before the check counts as failed.
 - **Streaming**: in Enforce mode, the gateway holds each streamed tool call until its checks finish, so your agent never receives a call that wasn't checked. The rest of the stream keeps flowing.
 - **Usage logs**: for now, Firewall results don't appear in [usage logs](/ai-gateway/observability). Read the response headers and `safeguard_results` to see what Firewall did.
 
