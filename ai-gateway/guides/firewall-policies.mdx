@@ -4,7 +4,7 @@ sidebarTitle: Guard agent tool calls
 description: Create a Firewall policy, test it on one request, apply it to access keys, and switch it from Dry run to Enforce.
 ---
 
-This guide shows you how to create a [Firewall](/ai-gateway/concepts/firewall) policy that blocks risky tool calls, test it on a single request, and roll it out to your access keys.
+In this guide, you create a [Firewall](/ai-gateway/concepts/firewall) policy that stops your agents from force-pushing, test it on one request, watch what it catches in Dry run, and then enforce it on your access keys.
 
 ## What you'll need
 
@@ -45,12 +45,15 @@ Environment details aren't rules, so they never block anything by themselves.
 | Goal | Rule | Match |
 |------|------|-------|
 | Block force pushes | Response rule, Regex, Hard block | `git push .*(--force\|-f)\b` |
+| Block deleting the whole filesystem | Response rule, Regex, Hard block | `rm -rf /["\s]` |
+| Stop pushes to the wrong repo | Response rule, Decision, Hard block, with the environment detail `Trusted repo: github.com/acme/app` | "Pushes code to a repository other than the trusted repo." |
+| Stop agents from sending AWS keys | Response rule, Regex, Hard block | `AKIA[0-9A-Z]{16}` |
 | Block a whole MCP server | Response rule, Tool names, Hard block | `mcp__payments__*` |
 | Block requests that offer a tool | Request rule that reads **Tool definitions**, Tool names, Hard block | `delete_*` |
 | Stop destructive commands nobody asked for | Response rule, Decision, Soft block | "Deletes files, drops databases, or rewrites history, and the user didn't ask for it." |
 | Allow cleanup of the build folder | Response rule, Regex, Allow | `rm -rf \./build/` |
 | Catch prompt injection in fetched pages | Request rule that reads **Tool results**, Decision, Hard block | "Text that tells the assistant to ignore its instructions or to send data somewhere." |
-| Catch leaked keys in tool output | Request rule that reads **Tool results**, Regex, Hard block | `AKIA[0-9A-Z]{16}` |
+| Catch AWS keys in tool output | Request rule that reads **Tool results**, Regex, Hard block | `AKIA[0-9A-Z]{16}` |
 
 Regex rules are case-sensitive.
 Start a pattern with `(?i)` to ignore case.

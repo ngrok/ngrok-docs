@@ -4,12 +4,16 @@ sidebarTitle: Firewall
 description: Check what your agents send to a model and block risky tool calls before your agent runs them, with rules you attach to access keys.
 ---
 
-Firewall is a firewall for agent traffic: it checks the requests and tool calls that pass through the AI Gateway.
-It reads what an agent sends to the model, and each tool call the model sends back, before your agent can run it.
-When a check matches a rule, the gateway blocks the request or holds back the tool call, and tells the agent why.
+Agents run tools with real access to your machines, repos, and secrets, and one bad tool call can do lasting damage.
+An agent can delete an operating system by accident with a single shell command, push to a public repo whose name is close to your private one, or send your company's secrets and API keys somewhere they don't belong.
+
+Firewall stops those calls in the AI Gateway, before your agent runs them:
+
+- **No code changes**: you attach a policy to [access keys](/ai-gateway/concepts/access-keys), so every agent that uses those keys gets the same checks.
+- **Blocked before it runs**: Firewall checks each tool call the model returns before your agent receives it, even in a streamed response.
+- **Agents recover**: a block returns a normal response that tells the model what was blocked and why, so the agent can change course instead of failing.
 
 You describe what to check in a **Firewall policy**: a named set of rules, a mode, and what to do when a check can't run.
-You attach a policy to [access keys](/ai-gateway/concepts/access-keys), so every agent that uses those keys gets the same checks with no code changes.
 
 To set one up, see [Guard agent tool calls with Firewall](/ai-gateway/guides/firewall-policies).
 
@@ -39,6 +43,9 @@ Each rule runs at one of two points:
 - **Response rules** run on each tool call the model returns. A blocked tool call is removed from the response, so your agent never receives it and can't run it.
 
 Firewall checks [OpenAI Chat Completions](/ai-gateway/sdks/openai) (`/v1/chat/completions`) and [Anthropic Messages](/ai-gateway/sdks/anthropic) (`/v1/messages`) requests, both streamed and not streamed.
+That covers agents that call those endpoints through the gateway, such as [Claude Code](/ai-gateway/agents/claude-code).
+Agents that use the Responses API, such as [Codex](/ai-gateway/agents/codex), aren't checked.
+If an enforced policy applies to their access key, the gateway rejects their requests, so give them a separate key.
 
 ## Rules
 
