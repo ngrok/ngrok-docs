@@ -103,6 +103,11 @@ description: Learn how to get started with ngrok and create your first tunnel.
 
 **Bold = UI text**: First-person pronouns inside bold (e.g. **My Local Webhook**, **My Account**) are treated as UI labels. Vale ignores them via `IgnoredScopes = strong`. Do not edit these—they are correct as-is.
 
+**Search queries**: First person is allowed where it mirrors what readers type into a search engine. Do not rewrite these:
+
+- Headings, such as FAQ questions (`### Can I use ngrok on Starlink?`). The rule uses `scope: ~heading`, so Vale skips headings.
+- Search queries quoted in body text (`a "what is my IP" website`). Vale skips first-person pronouns inside double quotes.
+
 ### Time Format (AM/PM)
 
 **Warning**: Incorrect AM/PM format.
