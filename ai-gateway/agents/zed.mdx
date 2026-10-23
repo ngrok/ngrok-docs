@@ -1,0 +1,71 @@
+---
+title: Zed
+sidebarTitle: Zed
+description: Connect the Zed editor's agent panel to the ngrok AI Gateway as an OpenAI-compatible provider to use catalog or self-hosted models.
+---
+
+[Zed](https://zed.dev) is a code editor with a built-in agent panel.
+It reaches the AI Gateway as an OpenAI-compatible LLM provider, so the agent panel can use any model you list in your settings.
+
+## What you'll need
+
+- [Zed](https://zed.dev/download) installed.
+- An [access key](/ai-gateway/concepts/access-keys) from [app.ngrok.ai](https://app.ngrok.ai).
+
+## Add the gateway as a provider
+
+Add the provider to your Zed `settings.json`:
+
+```json
+{
+  "language_models": {
+    "openai_compatible": {
+      "ngrok": {
+        "api_url": "https://gateway.ngrok.ai/v1",
+        "available_models": [
+          {
+            "name": "gpt-5.5",
+            "display_name": "GPT-5.5 (via ngrok)",
+            "max_tokens": 1050000
+          },
+          {
+            "name": "claude-sonnet-5-5",
+            "display_name": "Claude Sonnet 5.5 (via ngrok)",
+            "max_tokens": 1000000
+          }
+        ]
+      }
+    }
+  }
+}
+```
+
+For each model:
+
+- `name` is the model name Zed sends to the gateway: a model ID from the [model catalog](/ai-gateway/reference/model-catalog), or `provider:model` to pin a provider
+- `max_tokens` is the model's context window
+- `capabilities` is optional; set `"images": true` inside it for models that accept images
+
+Next, add your access key through the Zed UI.
+Open the command palette, run **agent: open settings**, select **LLM Providers**, then **Configure**, find **ngrok** in the provider list, paste your access key, and press **Enter**.
+
+## Test the connection
+
+Create a new agent thread, pick one of your models from the selector at the bottom of the agent panel's message editor, and send a prompt:
+
+<Prompt description="Explain what a hash map is in two sentences." actions={["copy"]}>
+  Explain what a hash map is in two sentences.
+</Prompt>
+
+Confirm the request in AI Gateway [observability](/ai-gateway/observability) in [app.ngrok.ai](https://app.ngrok.ai).
+
+## Use a model you run yourself
+
+To reach a model on your own machine, register it as a [custom provider](/ai-gateway/concepts/custom-providers), then add its `provider:model` name to `available_models`, such as `ollama:llama3.2`.
+See [Use a model you run yourself](/ai-gateway/guides/use-a-model-you-run-yourself) for the full setup.
+
+## Next steps
+
+- [Restrict providers and models](/ai-gateway/guides/restrict-providers-and-models): Scope what an access key can call
+- [Configure fallback models](/ai-gateway/guides/configure-fallback-models): Try another model when the first one fails
+- [Observability](/ai-gateway/observability): See which model served each request

@@ -1,0 +1,64 @@
+name: Label PRs
+
+permissions: {}
+
+on:
+  # pull_request_target so fork PRs can be labeled too. Neither step checks out
+  # or runs PR code; the labeler config is read from the base branch.
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+    inputs:
+      pr-numbers:
+        description: "PR numbers to label, separated by spaces (for backfills)"
+        required: true
+
+jobs:
+  label-pr:
+    permissions:
+      contents: read
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      # The labeler wants one PR number per line; the dispatch form is one line.
+      - name: Split PR numbers onto lines
+        id: prs
+        env:
+          PR_NUMBERS: ${{ inputs.pr-numbers }}
+        run: |
+          {
+            echo "list<<EOF"
+            printf '%s\n' $PR_NUMBERS
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Apply path and branch labels
+        uses: actions/labeler@bf12e9b00b37c5c0ca2b87b79b2daf7891dbda13 # v7.0.0
+        with:
+          pr-number: ${{ steps.prs.outputs.list }}
+
+      - name: Label PRs that add new pages
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        env:
+          PR_NUMBERS: ${{ inputs.pr-numbers }}
+        with:
+          script: |
+            const numbers = context.payload.pull_request
+              ? [context.payload.pull_request.number]
+              : process.env.PR_NUMBERS.split(/\s+/).filter(Boolean).map(Number);
+            for (const pull_number of numbers) {
+              const files = await github.paginate(github.rest.pulls.listFiles, {
+                ...context.repo,
+                pull_number,
+              });
+              const addsPage = files.some(
+                (f) => f.status === "added" && f.filename.endsWith(".mdx") && !f.filename.startsWith("snippets/"),
+              );
+              if (addsPage) {
+                await github.rest.issues.addLabels({
+                  ...context.repo,
+                  issue_number: pull_number,
+                  labels: ["kind/net-new"],
+                });
+              }
+            }

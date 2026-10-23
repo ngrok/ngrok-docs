@@ -1,0 +1,60 @@
+---
+title: Other agents
+sidebarTitle: Other agents
+description: Connect any coding agent that accepts a custom OpenAI or Anthropic base URL to the ngrok AI Gateway with three values.
+---
+
+Coding agents that let you replace their built-in provider with a custom endpoint can usually reach the AI Gateway, even without a dedicated guide.
+
+<Info>
+Want instructions for a specific coding agent?
+Log in to [app.ngrok.ai](https://app.ngrok.ai), click **Give feedback**, and let the team know which one.
+</Info>
+
+## What you'll need
+
+- A coding agent that accepts a custom base URL and API key.
+- An [access key](/ai-gateway/concepts/access-keys) from [app.ngrok.ai](https://app.ngrok.ai).
+
+## Connect your agent
+
+Every agent needs the same three values:
+
+| Value | What to enter |
+|-------|---------------|
+| Base URL | `https://gateway.ngrok.ai/v1` for OpenAI-format agents, `https://gateway.ngrok.ai` for Anthropic-format agents |
+| API key | Your [access key](https://app.ngrok.ai/keys), such as `ng-xxxxx-g1-xxxxx` |
+| Model | A model ID from the [model catalog](/ai-gateway/reference/model-catalog), or `provider:model` to pin a provider |
+
+Anthropic-format agents append `/v1/messages` to the base URL themselves, so leave `/v1` off for those.
+
+Agents that fill their model picker from `GET /v1/models` see the models your access key is allowed to call, listed by full catalog ID such as `openai/gpt-5.5`.
+Those IDs work as the model value, too.
+
+## Pick an API format
+
+The gateway serves these endpoints, so an agent can use whichever format it speaks:
+
+| Endpoint | Format |
+|----------|--------|
+| `/v1/chat/completions` | OpenAI Chat Completions |
+| `/v1/responses` | OpenAI Responses |
+| `/v1/messages` | Anthropic Messages |
+
+<Note>
+`/v1/messages` only reaches providers that support the Anthropic Messages surface.
+For a model you run yourself with Ollama, LM Studio, or vLLM, point the agent at `/v1/chat/completions` or `/v1/responses`.
+</Note>
+
+Access keys work in both the `Authorization: Bearer` and `x-api-key` headers, so you don't need to match the header your agent sends.
+
+## Test the connection
+
+Send a prompt from the agent, then confirm the request in AI Gateway [observability](/ai-gateway/observability) in [app.ngrok.ai](https://app.ngrok.ai).
+If the agent reports an error, check [Debugging](/ai-gateway/guides/debugging) and the [error codes reference](/ai-gateway/reference/error-codes).
+
+## Next steps
+
+- [Use with other SDKs](/ai-gateway/sdks/other): Raw HTTP examples for each API format
+- [Use a model you run yourself](/ai-gateway/guides/use-a-model-you-run-yourself): Reach a model on your own machine, such as Ollama or vLLM
+- [Restrict providers and models](/ai-gateway/guides/restrict-providers-and-models): Scope what an access key can call

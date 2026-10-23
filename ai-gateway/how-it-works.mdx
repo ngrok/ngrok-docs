@@ -25,8 +25,8 @@ sequenceDiagram
 1. **Your app sends a request** with your [access key](/ai-gateway/concepts/access-keys) to `https://gateway.ngrok.ai`
 2. **The gateway validates the key** and loads its [access key configuration](/ai-gateway/guides/access-key-configurations)
 3. **The gateway resolves the model** from your request body
-4. **Upstream credentials are selected** from the configuration's routing rules—ngrok.ai inference or your stored [provider keys](/ai-gateway/guides/attaching-provider-keys)
-5. **Unsupported parameters are stripped** for the chosen model before forwarding
+4. **Provider credentials are selected** from the configuration's routing rules: a key ngrok.ai supplies when you pay with credits, or your stored [provider keys](/ai-gateway/guides/attaching-provider-keys)
+5. **Unsupported parameters are stripped** for the chosen model before forwarding, and listed in the `Ngrok-AIG-Removed-Params` [response header](#response-headers)
 6. **The request is forwarded** to the upstream provider
 7. **On failure, the gateway retries** with the next provider key or model candidate
 8. **The response is returned** to your app and usage is recorded
@@ -46,10 +46,12 @@ Every response from `gateway.ngrok.ai` carries ngrok's own headers describing ho
 | Header | Value | When present |
 |--------|-------|--------------|
 | `Ngrok-AIG-Request-Id` | The request's ID. Use it to look the request up afterwards. | Every response, including rejections and errors. |
-| `Ngrok-AIG-Attempts` | How many upstream attempts the gateway made. | Once the attempt loop runs, on both success and failure. Absent when the request failed before any attempt, such as a malformed body or an unknown model. |
+| `Ngrok-AIG-Attempts` | How many upstream attempts the gateway made. | Once the gateway tries a provider, on both success and failure. Absent when the request failed before any attempt, such as a malformed body or an unknown model. |
 | `Ngrok-AIG-Model` | The upstream model that produced the response. | Success only. |
+| `Ngrok-AIG-Rejected-Models` | Comma-separated models from your request that never ran, for example because the access scope blocks them or no credentials are available. Lists at most 4 models. | Once the gateway tries a provider, when at least one requested model was dropped. |
+| `Ngrok-AIG-Removed-Params` | Comma-separated request fields the gateway didn't send to the provider that served the response, because that provider or model doesn't support them. | Success only, when the gateway removed at least one field. |
 
-All three are exposed through CORS, so browser clients can read them.
+All five are exposed through CORS, so browser clients can read them.
 
 These are ngrok's headers rather than the provider's, so a managed-key caller and a [Bring Your Own Keys](/ai-gateway/concepts/bring-your-own-keys) caller see the same values.
 Provider rate-limit headers behave differently: the gateway forwards those only when the attempt used your own provider key.
@@ -77,10 +79,11 @@ The gateway determines which model and provider to use from your request.
 
 | Model in request | What happens |
 |------------------|--------------|
-| `gpt-4o` | Catalog lookup → OpenAI |
+| `gpt-4o` | Catalog lookup → OpenAI first, then other providers that serve the same model |
 | `openai:gpt-4o` | Explicit OpenAI routing |
 | `your-provider:your-model` | A [model you run yourself](/ai-gateway/guides/use-a-model-you-run-yourself) |
 | `models` array | Fail over through listed models in order |
+| `ngrok/auto` | ngrok.ai picks a model for each request. See [Automatic model selection](/ai-gateway/guides/automatic-model-selection) |
 
 To choose model IDs and provider-qualified model names, see [Choose a model](/ai-gateway/guides/model-selection-strategies).
 
@@ -89,9 +92,11 @@ To choose model IDs and provider-qualified model names, see [Choose a model](/ai
 Configurations define:
 
 - **Access scope**: allowed providers and models
-- **Routing rules**: ngrok.ai inference vs provider keys per provider
+- **Routing rules**: pay with credits or use your own provider keys, per provider
 
-An access key without a configuration uses allow-all scope. Built-in OpenAI and Anthropic default to ngrok.ai inference when you have [credits](/ai-gateway/concepts/credits).
+When a configuration has no routing rule for a provider, requests to that provider are paid with credits only. Stored provider keys are not used without a rule.
+
+An access key without a configuration uses allow-all scope. Built-in models you can [pay for with credits](/ai-gateway/reference/model-catalog#billing-and-provider-credentials) use an ngrok.ai key by default when you have [credits](/ai-gateway/concepts/credits).
 
 ## Failover
 
@@ -100,14 +105,21 @@ The gateway retries automatically when upstream requests fail.
 ### What triggers failover?
 
 - Rate limits (HTTP 429)
-- Auth errors from exhausted or invalid provider keys
-- Timeouts and server errors (HTTP 5xx)
+- Auth errors (HTTP 401 or 403) because the provider rejected the key
+- Timeouts, server errors (HTTP 5xx), and connection failures
+
+Other 4xx errors return to your client right away, because another model would fail the same way.
 
 ### Failover order
 
-1. Next provider key in the routing rule (ordered list)
-2. Next step in the routing rule (if configured)
-3. Next model in the request's `models` array
+What the gateway tries next depends on the error:
+
+- **Auth error or rate limit**: the next provider key in the routing rule step. When no keys are left and the rule has an `ngrok` step after the **Bring your own API key** step, the gateway falls back to paying with credits.
+- **Timeout, server error, or connection failure**: the gateway skips the remaining keys for that provider and moves to the next model.
+
+The next model comes from your request's `models` array, or from another provider that serves the same model. See [Handle gateway errors](/ai-gateway/guides/error-handling) for the full order.
+
+A routing rule uses the first step that has usable credentials. The gateway doesn't try later steps, except an `ngrok` step after a **Bring your own API key** step.
 
 To attach several provider keys and control the order they're tried, see [Multi-key failover](/ai-gateway/guides/key-selection-failover).
 
@@ -121,6 +133,10 @@ Configure account-level limits in [Account Settings](/ai-gateway/guides/account-
 | Total timeout | 120s | Max time including all failover attempts |
 | Max input tokens | none | Reject requests exceeding estimated input tokens |
 | Max output tokens | none | Cap completion length |
+
+Streaming responses get more time after the first byte: up to 15 minutes with the default total timeout, as long as the provider keeps sending data at least every 30 seconds. See [Streaming responses](/ai-gateway/guides/account-settings#streaming-responses).
+
+Request bodies are limited to 32 MiB.
 
 ## Next steps
 

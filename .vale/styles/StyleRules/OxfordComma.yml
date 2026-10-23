@@ -1,7 +1,23 @@
 extends: existence
-message: "Use the Oxford comma in '%s'."
+message: "Use the Oxford comma before '%s'."
 link: 'https://developers.google.com/style/commas'
 scope: sentence
 level: error
+# A one-comma list ("A, B and C") looks like any comma followed by a pair ("the
+# browser, but you can use CURL or Postman"), so this rule leans on cues:
+#
+# - It matches only the final "and"/"or". The list sits in the lookbehind because
+#   Vale drops any match that contains a Vocab term.
+# - Items after the first comma are at most three words and don't start with a
+#   connector, pronoun, -ing verb, or "<verb>ed by" (", including OpenAI and",
+#   ", adding failover and", ", managed by security or"). Company and name
+#   suffixes (", Inc." or ", Jr.") are part of the name, not list items.
+# - The first item can't end an introductory phrase that opens the sentence or
+#   clause ("For these reasons, TCP and TLS") or a "for example" aside.
+# - A sentence that already has ", and" or ", or" is skipped, since its real list
+#   has its serial comma and any other "and" joins a pair.
+#
+# Coordinate adjectives ("a signed, fully functional JWT and examples") still
+# match, and need rewording.
 tokens:
-  - '(?:[^,]+,){1,}\s\w+\s(?:and|or)'
+  - '(?<!, (?:and|or)\b[^.;:]*)(?<=\b[\w./-]+(?: [\w./-]+){0,4}(?<!(?:^|[;:(] )(?i:For|In|If|When|Whenever|While|Since|Because|After|Before|Once|Unless|Although|Though|As|By|With|Without|To|From|On|At|During|Like|Unlike|Otherwise|However|Instead|Also|Then|Finally|First|Second|Third|Next|Now|Here|Today|Currently|Additionally|Alternatively|Optionally|Similarly|Typically|Usually|Generally|Often|Ideally|Even|Note|Meanwhile|Afterward|Afterwards|Later|Thus|Therefore|That said)\b[^,;:]*)(?<!\b(?:example|instance|e\.g\.|i\.e\.|that is)), (?:(?!(?i:and|or|but|nor|so|yet|which|who|whose|that|where|when|while|whether|if|unless|because|since|although|though|as|including|such|like|plus|not|either|neither|both|then|than|even|especially|for|from|to|in|on|at|by|with|without|via|into|after|before|during|per|instead|also|just|only|rather|you|we|it|they|this|these|those|there)\b|(?:Inc|Ltd|LLC|LLP|Corp|Co|GmbH|PLC|AG|Jr|Sr)\b|[A-Za-z]+ing\b|[A-Za-z]+ed by\b)[\w./-]+(?: [\w./-]+){0,2}, )*(?!(?i:and|or|but|nor|so|yet|which|who|whose|that|where|when|while|whether|if|unless|because|since|although|though|as|including|such|like|plus|not|either|neither|both|then|than|even|especially|for|from|to|in|on|at|by|with|without|via|into|after|before|during|per|instead|also|just|only|rather|you|we|it|they|this|these|those|there)\b|(?:Inc|Ltd|LLC|LLP|Corp|Co|GmbH|PLC|AG|Jr|Sr)\b|[A-Za-z]+ing\b|[A-Za-z]+ed by\b)[\w./-]+(?: [\w./-]+){0,2} )(?:and|or)(?= [\w./-])(?![^.;:]*, (?:and|or)\b)'

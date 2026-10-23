@@ -43,7 +43,7 @@ See [SDK Integration](/ai-gateway/sdks) for examples.
 
 Not always.
 
-For certain providers, like OpenAI and Anthropic, you can skip adding your own provider key and use ngrok.ai inference on your credits instead.
+For many providers, including OpenAI, Anthropic, Google, and DeepSeek, you can skip adding your own provider key and pay with credits instead.
 
 For other built-in providers, or if you want usage billed to your own provider account, you can add a provider key.
 
@@ -126,7 +126,7 @@ To control what each key can call, assign different [access key configurations](
 
 It depends on the provider and how you want billing to work.
 
-For supported OpenAI and Anthropic models, you can use ngrok.ai credits without adding your own provider key.
+For models you can [pay for with credits](/ai-gateway/reference/model-catalog#billing-and-provider-credentials), you don't need to add your own provider key. That includes models from OpenAI, Anthropic, Google, DeepSeek, xAI, Moonshot AI, Z.ai, and others.
 
 For other built-in providers, or if you want upstream usage billed to your own provider account, add a [provider key](/ai-gateway/guides/attaching-provider-keys).
 
@@ -134,7 +134,7 @@ For other built-in providers, or if you want upstream usage billed to your own p
 
 Yes. Every built-in provider accepts your own provider key, including OpenAI and Anthropic.
 
-ngrok-managed keys, where you pay with ngrok.ai credits instead of a provider account, are available for supported OpenAI and Anthropic models. All other providers need your own key.
+ngrok-managed keys, where you pay with ngrok.ai credits instead of a provider account, are available for supported models from OpenAI, Anthropic, Google, DeepSeek, xAI, Moonshot AI, Z.ai, and others. The [model catalog](/ai-gateway/reference/model-catalog#billing-and-provider-credentials) shows which providers need your own key.
 
 Add provider keys on the [Providers page](https://app.ngrok.ai/providers) in app.ngrok.ai or with the [Provider Keys API](/ai-gateway/api-reference/provider-keys/create). See [Bring your own provider key](/ai-gateway/guides/attaching-provider-keys).
 
@@ -148,7 +148,7 @@ Provider keys are stored in app.ngrok.ai and used server-side when ngrok.ai call
 
 No. ngrok.ai does not give you provider API keys to copy or use outside the gateway.
 
-For supported OpenAI and Anthropic models, ngrok.ai can supply upstream credentials when you use credits. For other providers, or when you want to use your own provider account, add your own provider key.
+For models you can pay for with credits, ngrok.ai supplies the provider credentials. For other providers, or when you want to use your own provider account, add your own provider key.
 
 ### How do I rotate keys?
 
@@ -172,7 +172,7 @@ See the [AI Gateway API reference](/ai-gateway/api-reference/overview).
 
 Credits always pay the AI Gateway processing fee.
 
-For supported OpenAI and Anthropic requests that use ngrok.ai inference, credits also pay the upstream model cost. If you bring your own provider key, the provider bills you for model usage and credits only pay the gateway processing fee.
+When you pay with credits, credits also pay the provider's model cost. If you bring your own provider key, the provider bills you for model usage and credits only pay the gateway processing fee.
 
 ### How much is the processing fee?
 
@@ -184,13 +184,19 @@ Yes. Credits expire 365 days after purchase.
 
 ### What happens when credits run out?
 
-The gateway rejects new requests until you purchase more credits from the [Credits page](https://app.ngrok.ai/credits).
+The gateway rejects new requests with HTTP 402 and `ERR_NGROK_27206` until you purchase more credits from the [Billing page](https://app.ngrok.ai/billing). That's true even if you use your own provider keys, since every request pays a small processing fee from your credits.
+
+To avoid this, turn on [automatic top-up](/ai-gateway/concepts/credits#automatic-top-up) so your balance refills before it runs out.
 
 ### What's the minimum credit purchase?
 
 The minimum credit purchase is `$5.00`.
 
-You can purchase credits from the [Credits page](https://app.ngrok.ai/credits).
+You can purchase credits from the [Billing page](https://app.ngrok.ai/billing). Your balance can't go above `$500.00`.
+
+### Can credits top up automatically?
+
+Yes. Turn on automatic top-up on the [Billing page](https://app.ngrok.ai/billing). When your balance falls to an amount you choose, ngrok.ai charges your saved card and tops it back up. You can also set a maximum to spend each billing period. See [Automatic top-up](/ai-gateway/concepts/credits#automatic-top-up).
 
 ### Are AI Gateway credits the same as ngrok platform billing?
 
@@ -220,7 +226,7 @@ See the [Model Catalog](/ai-gateway/reference/model-catalog) for the full list.
 
 ### Which providers can I call without adding a provider key?
 
-You can see which providers require a provider key in the Model Catalog by checking the “needs provider keys” column.
+You can see which providers require a provider key in the Model Catalog by checking the **needs provider keys** column.
 
 Other built-in providers require you to add your own provider key before sending traffic.
 
@@ -252,7 +258,7 @@ See [Choose a model](/ai-gateway/guides/model-selection-strategies).
 
 Built-in providers and models are listed in the [Model Catalog](/ai-gateway/reference/model-catalog).
 
-The catalog includes provider IDs, model IDs, aliases, context windows, output token limits, modalities, and provider key requirements.
+The catalog includes provider IDs, model IDs, context windows, output token limits, modalities, and provider key requirements.
 
 Custom providers declare their own models when you create them.
 
@@ -381,9 +387,9 @@ The gateway only fails over between keys that are available to the request. See 
 
 ### Does ngrok.ai store request and response bodies?
 
-The gateway processes request and response bodies in memory by default and doesn't store them unless you configure body capture.
+The gateway processes request and response bodies in memory by default and doesn't store them unless you turn on request capture.
 
-You can configure the gateway to capture request and response bodies. Captured bodies are kept for 30 days and then deleted.
+To turn on capture, open **Settings > Data Retention** in app.ngrok.ai and enable **Request Capture**. Capture stores the request and response headers and bodies for your request and for each attempt the gateway sends to a provider, including streamed responses. Captures are kept for 30 days and then deleted. See [Request capture](/ai-gateway/guides/account-settings#request-capture).
 
 The gateway always records request metadata for usage events and debugging, such as token counts, latencies, status codes, providers, and models.
 
@@ -393,12 +399,12 @@ See [Observability](/ai-gateway/observability) for more details.
 
 | Data | Retention |
 | - | - |
-| Captured request and response bodies (only if you turn capture on) | 30 days |
+| Captured request and response headers and bodies (only if you turn capture on) | 30 days |
 | Usage events (request metadata: tokens, latency, status, provider, model, cost) | 90 days |
 
 ### Can I see individual request and response bodies?
 
-Yes, if you've configured the gateway to capture them. Captured bodies are available for 30 days.
+Yes, if you've turned on request capture. Captures are available for 30 days on the [Logs](https://app.ngrok.ai/usage) page.
 
 Without capture, usage records include only metadata such as token counts and latency, not full request or response bodies.
 
@@ -412,7 +418,7 @@ The AI Gateway doesn't store request and response bodies unless you turn on capt
 
 ### How do I redact PII automatically?
 
-Automatic request and response redaction isn’t available on ngrok.ai just yet.
+Automatic redaction of request and response bodies isn’t available on ngrok.ai just yet. Captures do redact credential headers, such as `Authorization`, `x-api-key`, and cookies.
 
 Until then, redact any sensitive data in your application before sending it to the gateway.
 
@@ -511,7 +517,7 @@ Check that:
 4. The provider account has enough balance or quota.
 5. The access key configuration routes requests through that provider key.
 
-If usage is not appearing in your provider account, the request may be using ngrok.ai inference instead of your provider key.
+If usage is not appearing in your provider account, the request may be paid with credits instead of using your provider key.
 
 ### Why is failover not working?
 

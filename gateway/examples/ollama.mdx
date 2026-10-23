@@ -1,86 +1,56 @@
 ---
-title: Expose and Secure Your Self-Hosted Ollama API
+title: "Ollama Remote Access: Expose and Secure Your Ollama API"
 sidebarTitle: Expose Ollama API
-description: Use ngrok to create a public endpoint for your local LLM, enabling remote access and integration, while also adding authentication and access control.
+description: Reach your self-hosted Ollama models from anywhere. Give your local LLM a stable public HTTPS URL with ngrok and lock it down with a bearer token.
 ---
 
-import ReserveDomain from "/snippets/gateway/_reserve-domain.mdx";
-import CloudEndpoint from "/snippets/gateway/_cloud-endpoint.mdx";
-import TryOut from "/snippets/gateway/_try-out.mdx";
+Ollama runs large language models (LLMs) on your own machine and serves them on `localhost:11434`.
+That address only works on that machine.
+Apps in the cloud, a laptop on another network, and tools like [Cursor](/gateway/examples/cursor-local-llm) can't reach it.
 
+This guide shows you how to give Ollama a stable public HTTPS URL with ngrok and require a token, so only you and the apps you choose can call your models.
+It works on every ngrok plan, including free.
 
+<Warning>
+Ollama has no built-in authentication.
+Don't put it online without the token rule in step 2.
+</Warning>
 
-Ollama is a locally deployed AI model runner, designed to allow users to download and execute large language models (LLMs) locally on your machine.
-By combining Ollama with ngrok, you can give your local LLM an endpoint on the internet, enabling remote access and integration with other applications.
+## What you'll need
 
-But putting your entire Ollama API on the public internet might expose your LLM to abuse—instead, you can use Traffic Policy to add a layer of authentication to restrict access to only yourself or trusted colleagues.
+- [Ollama](https://ollama.com/download) installed, with at least one model pulled, such as `ollama pull llama3.2`
+- The [ngrok agent](https://download.ngrok.com) installed
+- An [ngrok account](https://dashboard.ngrok.com/signup) and your [authtoken](https://dashboard.ngrok.com/get-started/your-authtoken)
 
-## 1. Reserve a domain
+## 1. Check that Ollama responds
 
-<ReserveDomain domain="https://your-ollama-llm.ngrok.app" />
+Make sure Ollama is running and answers on its default port:
 
-## 2. Create a Traffic Policy file
+```bash
+curl http://localhost:11434/v1/models
+```
 
-On the system where Ollama runs, create a file named `ollama.yaml` and paste in the following policy:
+You should see a JSON list of the models you've pulled.
+
+## 2. Create a Traffic Policy that requires a token
+
+Generate a long random token:
+
+```bash
+openssl rand -hex 32
+```
+
+On the machine where Ollama runs, save this as `ollama.yaml`, replacing `YOUR_TOKEN` with the value you generated:
 
 ```yaml
 on_http_request:
-  - actions:
-      - type: add-headers
+  - expressions:
+      - "!hasReqHeader('Authorization') || getReqHeader('Authorization')[0] != 'Bearer YOUR_TOKEN'"
+    actions:
+      - type: deny
         config:
-          headers:
-            host: localhost
-```
-
-**What's happening here?** This policy rewrites the `Host` header of every HTTP request to `localhost` so that Ollama accepts the requests.
-
-## 3. Start your Ollama endpoint
-
-On the same system where Ollama runs, start the agent on port `11434`, which is the default for Ollama, and reference the `ollama.yaml` file you just created.
-Be sure to also change `$NGROK_URL` to the domain you reserved earlier.
-
-```bash
-ngrok http 11434 --url https://$NGROK_URL.ngrok.app --traffic-policy-file ollama.yaml
-```
-
-## 4. Try out your Ollama endpoint
-
-You can use `curl` in your terminal to send a prompt to your LLM through your `$NGROK_DOMAIN`, replacing `$MODEL` with the [Ollama model](https://ollama.com/library) you pulled.
-
-```bash
-curl https://$NGROK_DOMAIN/v1/chat/completions \
-  -H "Content-Type: application/json" \
-  -d '{
-        "model": "$MODEL",
-        "messages": [
-          {
-            "role": "system",
-            "content": "You are a helpful assistant."
-          },
-          {
-            "role": "user",
-            "content": "Hello!"
-          }
-        ]
-      }'
-```
-
-## Optional: Protect your Ollama instance with basic auth
-
-You may not want everyone to be able to access your LLM. ngrok can quickly add authentication to your LLM without any changes to your Ollama configuration.
-
-Edit your `ollama.yaml` file and add in the policy below.
-
-```yaml
-on_http_request:
+          status_code: 401
   - actions:
-      - type: basic-auth
-        config:
-          realm: sample-realm
-          credentials:
-            - user:password1
-            - admin:pasword2
-          enforce: true
       - type: add-headers
         config:
           headers:
@@ -88,43 +58,111 @@ on_http_request:
 ```
 
 **What's happening here?**
-This policy first checks whether the incoming HTTP request contains the appropriate `Authorization: Basic` header and a [base64-encoded](https://en.wikipedia.org/wiki/Base64) version of one of the `username:password` pairs you specified in `ollama.yaml`.
-Only requests with valid Basic Auth are passed through to your ngrok agent and forwarded to your Ollama API.
+The first rule rejects any request that doesn't carry `Authorization: Bearer YOUR_TOKEN`.
+ngrok enforces it in its cloud, so rejected requests never reach your machine.
+The second rule rewrites the `Host` header to `localhost`, because Ollama rejects requests addressed to other hostnames.
 
-Restart your ngrok agent to apply the new policy.
+A bearer token is what OpenAI-compatible clients send in their **API key** field, so the same token works in `curl`, the OpenAI SDKs, Cursor, and Open WebUI.
+
+## 3. Put Ollama online
 
 ```bash
-ngrok http 11434 --url https://$NGROK_URL.ngrok.app --traffic-policy-file ollama.yaml
+ngrok config add-authtoken <YOUR_AUTHTOKEN>
+ngrok http 11434 --traffic-policy-file ollama.yaml
 ```
 
-You can test your policy by sending the same LLM prompt to Ollama's API with the `Authorization: Basic` header, once again replacing `$NGROK_DOMAIN` and `$MODEL`.
+ngrok prints your public URL, such as `https://your-assigned-name.ngrok-free.dev`.
+This is your account's [dev domain](/pricing-limits/free-plan-limits/).
+It stays the same every time you restart `ngrok http`, so you configure each client once.
+
+## 4. Try it out
+
+From any machine, send a prompt to your model, replacing `YOUR_TOKEN` and the model name with your own:
 
 ```bash
-curl https://$NGROK_DOMAIN/v1/chat/completions \
+curl https://your-assigned-name.ngrok-free.dev/v1/chat/completions \
+  -H "Authorization: Bearer YOUR_TOKEN" \
   -H "Content-Type: application/json" \
-  -H 'Authorization: Basic dXNlcjpwYXNzd29yZDE=' \
   -d '{
-        "model": "$MODEL",
-        "messages": [
-          {
-            "role": "system",
-            "content": "You are a helpful assistant."
-          },
-          {
-            "role": "user",
-            "content": "Hello!"
-          }
-        ]
+        "model": "llama3.2",
+        "messages": [{"role": "user", "content": "Hello!"}]
       }'
 ```
 
-If you send the same request _without_ the Authorization header, you should receive a `401 Unauthorized` response.
+Send the same request without the `Authorization` header and you get `401 Unauthorized`.
 
-Your personal LLM is now locked down to only accept authenticated users.
+Open `http://localhost:4040` on the Ollama machine to watch each request and response in the ngrok inspector.
 
-## What's next?
+## 5. Connect your apps
 
-- Read more about [Traffic Policy](/traffic-policy), [core concepts](/gateway/traffic-policy/how-it-works), and [actions](/gateway/traffic-policy/actions) you might want to implement next, like [IP restrictions](/gateway/traffic-policy/actions/restrict-ips) instead of Basic Auth.
-- Explore other ways to [block unwanted requests](/gateway/traffic-policy/examples/block-unwanted-requests/) from Tor users, search or AI bots, and more to protect your self-hosted LLM.
-- View your Ollama traffic in [Traffic Inspector](https://dashboard.ngrok.com/traffic-inspector).
+Any app that speaks the OpenAI API can use your Ollama models.
+Set its base URL to your ngrok URL plus `/v1`, and its API key to your token.
 
+<Tabs>
+  <Tab title="OpenAI SDK (Python)">
+    ```python
+    from openai import OpenAI
+
+    client = OpenAI(
+        base_url="https://your-assigned-name.ngrok-free.dev/v1",
+        api_key="YOUR_TOKEN",
+    )
+
+    response = client.chat.completions.create(
+        model="llama3.2",
+        messages=[{"role": "user", "content": "Hello!"}],
+    )
+    print(response.choices[0].message.content)
+    ```
+  </Tab>
+  <Tab title="Cursor">
+    Cursor calls models from its own servers, so it needs a public URL.
+    Follow [Use a local LLM in Cursor](/gateway/examples/cursor-local-llm).
+  </Tab>
+  <Tab title="Open WebUI">
+    In **Admin Settings** > **Connections**, add an OpenAI API connection with your ngrok URL plus `/v1` and your token as the API key.
+  </Tab>
+</Tabs>
+
+## Use a custom domain
+
+On a paid plan, you can use your own domain, such as `llm.example.com`, instead of your dev domain.
+[Reserve the domain](https://dashboard.ngrok.com/domains), then pass it with `--url`:
+
+```bash
+ngrok http 11434 --url https://llm.example.com --traffic-policy-file ollama.yaml
+```
+
+## Frequently asked questions
+
+<AccordionGroup>
+  <Accordion title="How do I access Ollama remotely?">
+    Run `ngrok http 11434` with a Traffic Policy that requires a token, then call your ngrok URL from anywhere with `Authorization: Bearer YOUR_TOKEN`.
+    Ollama keeps listening on `localhost`, so nothing on your machine is exposed beyond what ngrok lets through.
+  </Accordion>
+  <Accordion title="Why not set OLLAMA_HOST=0.0.0.0?">
+    That makes Ollama listen on your local network, not the internet.
+    It also has no authentication or HTTPS, so anyone on the same network can use your models.
+    ngrok gives you a public HTTPS URL and enforces the token before traffic reaches your machine.
+  </Accordion>
+  <Accordion title="Does the URL change when I restart?">
+    No.
+    Every ngrok account, including free, gets a dev domain that `ngrok http` reuses on every run.
+  </Accordion>
+  <Accordion title="Why do I get a 403 from Ollama?">
+    Ollama rejects requests whose `Host` header isn't `localhost`.
+    Keep the `add-headers` rule in your policy, or start ngrok with `--host-header=localhost:11434` instead.
+  </Accordion>
+  <Accordion title="Does this work with LM Studio or vLLM?">
+    Yes.
+    Point `ngrok http` at their port instead, such as `1234` for LM Studio or `8000` for vLLM, and keep the token rule.
+    To route across several model servers with failover, use the [AI Gateway](/ai-gateway/custom-providers/ollama).
+  </Accordion>
+</AccordionGroup>
+
+## What's next
+
+- [Use your Ollama models in Cursor](/gateway/examples/cursor-local-llm).
+- [Expose a local MCP server](/gateway/api-gateway/mcp-gateway) so AI apps can call your tools.
+- Replace the token with [IP restrictions](/gateway/traffic-policy/actions/restrict-ips) or [OAuth](/gateway/traffic-policy/actions/oauth), or [block unwanted requests](/gateway/traffic-policy/examples/block-unwanted-requests/) from bots.
+- Route between Ollama and hosted providers with the [AI Gateway](/ai-gateway/custom-providers/ollama).

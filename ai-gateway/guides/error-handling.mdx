@@ -11,7 +11,7 @@ This page explains which failures it retries, in what order, and what bounds the
 
 The gateway moves to another candidate on these failures:
 
-- Authentication failures: HTTP 401 or 403 from the provider, which usually means the credential is invalid or exhausted.
+- Authentication failures: HTTP 401 or 403 because the provider rejected the key. A 401 or 403 for any other reason stops the request.
 - Rate limits: HTTP 429.
 - Server errors: HTTP 500 and above.
 - Request timeouts: HTTP 408, or the attempt exceeding your per-request timeout.
@@ -42,9 +42,10 @@ Model candidates come from the `model` field first, then the `models` array in o
 
 The gateway never retries the same model and key combination, except in the one case below.
 
+A bare model ID, such as `gpt-4o`, also expands to every provider that serves that model. The model author's own provider goes first, then resellers such as OpenRouter. A `provider:model` ID, such as `openai:gpt-4o`, reaches only that provider.
+
 <Note>
-Cross-provider failover needs candidates from more than one provider.
-List them in the `models` array, or set them up as [fallback models](/ai-gateway/guides/configure-fallback-models).
+To fail over to a different model, list it in the `models` array, or set it up as a [fallback model](/ai-gateway/guides/configure-fallback-models).
 </Note>
 
 ### Retrying the same provider
@@ -63,6 +64,8 @@ Two timeouts and an attempt cap bound every request:
 | Total timeout | 120s | The whole request, including every attempt and any `Retry-After` wait |
 | Attempt cap | 10 | Upstream attempts per client request. Not configurable |
 
+Streams work differently after the first byte. See [Streaming responses](/ai-gateway/guides/account-settings#streaming-responses).
+
 Set the timeouts for your account in [Account Settings](/ai-gateway/guides/account-settings), or through the [Configuration API](/ai-gateway/api-reference/gateway-config/get).
 When the total timeout is reached, failover stops even if candidates remain, and the gateway returns `ERR_NGROK_3810`.
 
@@ -75,7 +78,7 @@ These return immediately, and the response carries no `Ngrok-AIG-Attempts` heade
 - The model is unknown, or the model address is malformed.
 - The requested provider or model is blocked by the access key configuration's access scope.
 - No provider key is available for the requested provider.
-- The account has no credits and the request needs an ngrok-managed key.
+- The account has no credits. This happens even if you use your own provider keys.
 
 None of these are billed.
 The gateway bills an attempt only once its response reaches your client, so a request that never reached a provider costs nothing.
