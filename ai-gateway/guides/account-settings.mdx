@@ -13,17 +13,21 @@ Account-wide gateway settings apply to every request through `https://gateway.ng
 | `perRequestTimeout` | `15m` | Max time for a single upstream attempt |
 | `totalTimeout` | `30m` | Max time for a request including all failover attempts |
 
-If a single attempt exceeds `perRequestTimeout`, the gateway moves on to the next fallback. If total time exceeds `totalTimeout`, the gateway returns an error. `perRequestTimeout` must be less than or equal to `totalTimeout`.
+If a single attempt exceeds `perRequestTimeout`, the gateway moves on to the next fallback.
+If total time exceeds `totalTimeout`, the gateway returns an error.
+`perRequestTimeout` must be less than or equal to `totalTimeout`.
 
 ### Streaming responses
 
 Streams use the per-request timeout differently, so a long completion isn't cut off:
 
-- The per-request timeout applies only until the provider sends the first byte. After that, the stream fails if the provider sends nothing for 30 seconds.
+- The per-request timeout applies only until the provider sends the first byte.
+  After that, the stream fails if the provider sends nothing for 30 seconds.
 - The total timeout applies to the whole stream, including the time after the first byte.
 
 <Warning>
-A streaming response stops when `totalTimeout` expires. If you lower it, make sure it still covers your longest streaming responses.
+A streaming response stops when `totalTimeout` expires.
+If you lower it, make sure it still covers your longest streaming responses.
 </Warning>
 
 ## Token limits
@@ -33,15 +37,23 @@ A streaming response stops when `totalTimeout` expires. If you lower it, make su
 | `maxInputTokens` | none | Reject requests above estimated input tokens |
 | `maxOutputTokens` | none | Cap completion length |
 
-Leave token limits unset for no cap. Set them to block oversized requests before they reach a provider. Limits must be greater than zero.
+Leave token limits unset for no cap.
+Set them to block oversized requests before they reach a provider.
+Limits must be greater than zero.
 
-`maxOutputTokens` also applies when your request doesn't set an output limit: the gateway adds one. When your request asks for more, the gateway lowers it to your limit, and to the model's own maximum.
+`maxOutputTokens` also applies when your request doesn't set an output limit: the gateway adds one.
+When your request asks for more, the gateway lowers it to your limit, and to the model's own maximum.
 
 ## Request capture
 
-Request capture stores the request and response headers and bodies, including prompts and completions, for your request and each attempt the gateway sends to a provider. You can inspect them on the [Logs](https://app.ngrok.ai/usage) page. Capture is off by default.
+Request capture stores the request and response headers and bodies, including prompts and completions, for your request and each attempt the gateway sends to a provider.
+You can inspect them on the [Logs](https://app.ngrok.ai/usage) page.
+Capture is off by default.
 
-To turn it on, open **Settings > Data Retention** in app.ngrok.ai and set **Request Capture** to enabled. Captures are kept for 30 days. Credential headers such as `Authorization` and `x-api-key` are redacted. Bodies are stored as sent.
+To turn it on, open **Settings > Data Retention** in app.ngrok.ai and set **Request Capture** to enabled.
+Captures are kept for 30 days.
+Credential headers such as `Authorization` and `x-api-key` are redacted.
+Bodies are stored as sent.
 
 ## Via dashboard
 
@@ -49,7 +61,8 @@ To turn it on, open **Settings > Data Retention** in app.ngrok.ai and set **Requ
 2. On **General**, edit **Total timeout**, **Per-request timeout**, and optional token limits
 3. Save
 
-**General** also shows the gateway URL (`https://gateway.ngrok.ai`). The other Settings pages are **Data Retention** for [request capture](#request-capture), **Admin API Keys** for [AI Gateway API keys](/ai-gateway/concepts/access-keys#credentials-overview), and **Account**, which links to [dashboard.ngrok.com](https://dashboard.ngrok.com) for your account details and team members.
+**General** also shows the gateway URL (`https://gateway.ngrok.ai`).
+The other Settings pages are **Data Retention** for [request capture](#request-capture), **Admin API Keys** for [AI Gateway API keys](/ai-gateway/concepts/access-keys#credentials-overview), and **Account**, which links to [dashboard.ngrok.com](https://dashboard.ngrok.com) for your account details and team members.
 
 ## Via the AI Gateway API
 
