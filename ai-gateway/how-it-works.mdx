@@ -31,13 +31,16 @@ sequenceDiagram
 7. **On failure, the gateway retries** with the next provider key or model candidate
 8. **The response is returned** to your app and usage is recorded
 
-Manage keys, configurations, providers, and credits at [app.ngrok.ai](https://app.ngrok.ai). Your apps send traffic to `gateway.ngrok.ai`.
+Manage keys, configurations, providers, and credits at [app.ngrok.ai](https://app.ngrok.ai).
+Your apps send traffic to `gateway.ngrok.ai`.
 
 ## Authentication
 
-Every request must include a valid **access key**. Send it as `Authorization: Bearer ng-xxxxx-g1-xxxxx` (OpenAI-compatible APIs) or `x-api-key` (Anthropic native API).
+Every request must include a valid **access key**.
+Send it as `Authorization: Bearer ng-xxxxx-g1-xxxxx` (OpenAI-compatible APIs) or `x-api-key` (Anthropic native API).
 
-Provider keys stay in [app.ngrok.ai](https://app.ngrok.ai). The AI Gateway injects those from your configuration after validating the access key.
+Provider keys stay in [app.ngrok.ai](https://app.ngrok.ai).
+The AI Gateway injects those from your configuration after validating the access key.
 
 ## Response headers
 
@@ -66,11 +69,11 @@ Read `Ngrok-AIG-Model` when you need to know what answered.
 ### Streamed responses
 
 On a streamed response the headers commit with the first flushed byte.
-The attempt count is final at that point, because the gateway cannot retry once bytes have reached your client.
+The attempt count is final at that point, because the gateway can't retry once bytes have reached your client.
 
-### Trace IDs are not a substitute
+### Trace IDs aren't a substitute
 
-`Ngrok-Trace-Id` is emitted only when the trace is sampled, it is not exposed through CORS, and it identifies the whole client request rather than a single attempt.
+`Ngrok-Trace-Id` is emitted only when the trace is sampled, it isn't exposed through CORS, and it identifies the whole client request rather than a single attempt.
 Use `Ngrok-AIG-Request-Id` to identify a request.
 
 ## Model selection
@@ -94,9 +97,11 @@ Configurations define:
 - **Access scope**: allowed providers and models
 - **Routing rules**: pay with credits or use your own provider keys, per provider
 
-When a configuration has no routing rule for a provider, requests to that provider are paid with credits only. Stored provider keys are not used without a rule.
+When a configuration has no routing rule for a provider, requests to that provider are paid with credits only.
+Stored provider keys aren't used without a rule.
 
-An access key without a configuration uses allow-all scope. Built-in models you can [pay for with credits](/ai-gateway/reference/model-catalog#billing-and-provider-credentials) use an ngrok.ai key by default when you have [credits](/ai-gateway/concepts/credits).
+An access key without a configuration uses allow-all scope.
+Built-in models you can [pay for with credits](/ai-gateway/reference/model-catalog#billing-and-provider-credentials) use an ngrok.ai key by default when you have [credits](/ai-gateway/concepts/credits).
 
 ## Failover
 
@@ -114,12 +119,15 @@ Other 4xx errors return to your client right away, because another model would f
 
 What the gateway tries next depends on the error:
 
-- **Auth error or rate limit**: the next provider key in the routing rule step. When no keys are left and the rule has an `ngrok` step after the **Bring your own API key** step, the gateway falls back to paying with credits.
+- **Auth error or rate limit**: the next provider key in the routing rule step.
+  When no keys are left and the rule has an `ngrok` step after the **Bring your own API key** step, the gateway falls back to paying with credits.
 - **Timeout, server error, or connection failure**: the gateway skips the remaining keys for that provider and moves to the next model.
 
-The next model comes from your request's `models` array, or from another provider that serves the same model. See [Handle gateway errors](/ai-gateway/guides/error-handling) for the full order.
+The next model comes from your request's `models` array, or from another provider that serves the same model.
+See [Handle gateway errors](/ai-gateway/guides/error-handling) for the full order.
 
-A routing rule uses the first step that has usable credentials. The gateway doesn't try later steps, except an `ngrok` step after a **Bring your own API key** step.
+A routing rule uses the first step that has usable credentials.
+The gateway doesn't try later steps, except an `ngrok` step after a **Bring your own API key** step.
 
 To attach several provider keys and control the order they're tried, see [Multi-key failover](/ai-gateway/guides/key-selection-failover).
 
@@ -129,12 +137,14 @@ Configure account-level limits in [Account Settings](/ai-gateway/guides/account-
 
 | Setting | Default | Description |
 |---------|---------|-------------|
-| Per-request timeout | 60s | Max time for a single upstream attempt |
-| Total timeout | 120s | Max time including all failover attempts |
+| Per-request timeout | 15m | Max time for a single upstream attempt |
+| Total timeout | 30m | Max time including all failover attempts |
 | Max input tokens | none | Reject requests exceeding estimated input tokens |
 | Max output tokens | none | Cap completion length |
 
-Streaming responses get more time after the first byte: up to 15 minutes with the default total timeout, as long as the provider keeps sending data at least every 30 seconds. See [Streaming responses](/ai-gateway/guides/account-settings#streaming-responses).
+For streaming responses, the per-request timeout applies only until the first byte.
+After that, the stream runs until the total timeout, as long as the provider keeps sending data at least every 30 seconds.
+See [Streaming responses](/ai-gateway/guides/account-settings#streaming-responses).
 
 Request bodies are limited to 32 MiB.
 

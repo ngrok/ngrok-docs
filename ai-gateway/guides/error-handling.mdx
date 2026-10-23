@@ -11,14 +11,15 @@ This page explains which failures it retries, in what order, and what bounds the
 
 The gateway moves to another candidate on these failures:
 
-- Authentication failures: HTTP 401 or 403 because the provider rejected the key. A 401 or 403 for any other reason stops the request.
+- Authentication failures: HTTP 401 or 403 because the provider rejected the key.
+  A 401 or 403 for any other reason stops the request.
 - Rate limits: HTTP 429.
 - Server errors: HTTP 500 and above.
 - Request timeouts: HTTP 408, or the attempt exceeding your per-request timeout.
 - Network failures: connection errors, DNS failures, and TLS errors.
 
 Any other 4xx response stops the request immediately.
-A malformed request or an unsupported parameter is not going to succeed on a different provider, so the gateway returns the error rather than spending your quota on it.
+A malformed request or an unsupported parameter isn't going to succeed on a different provider, so the gateway returns the error rather than spending your quota on it.
 
 ## Failover order
 
@@ -42,7 +43,9 @@ Model candidates come from the `model` field first, then the `models` array in o
 
 The gateway never retries the same model and key combination, except in the one case below.
 
-A bare model ID, such as `gpt-4o`, also expands to every provider that serves that model. The model author's own provider goes first, then resellers such as OpenRouter. A `provider:model` ID, such as `openai:gpt-4o`, reaches only that provider.
+A bare model ID, such as `gpt-4o`, also expands to every provider that serves that model.
+The model author's own provider goes first, then resellers such as OpenRouter.
+A `provider:model` ID, such as `openai:gpt-4o`, reaches only that provider.
 
 <Note>
 To fail over to a different model, list it in the `models` array, or set it up as a [fallback model](/ai-gateway/guides/configure-fallback-models).
@@ -60,11 +63,12 @@ Two timeouts and an attempt cap bound every request:
 
 | Bound | Default | What it limits |
 |-------|---------|----------------|
-| Per-request timeout | 60s | A single upstream attempt |
-| Total timeout | 120s | The whole request, including every attempt and any `Retry-After` wait |
-| Attempt cap | 10 | Upstream attempts per client request. Not configurable |
+| Per-request timeout | 15m | A single upstream attempt |
+| Total timeout | 30m | The whole request, including every attempt and any `Retry-After` wait |
+| Attempt cap | 10 | Upstream attempts per client request. Not configurable. |
 
-Streams work differently after the first byte. See [Streaming responses](/ai-gateway/guides/account-settings#streaming-responses).
+Streams work differently after the first byte.
+See [Streaming responses](/ai-gateway/guides/account-settings#streaming-responses).
 
 Set the timeouts for your account in [Account Settings](/ai-gateway/guides/account-settings), or through the [Configuration API](/ai-gateway/api-reference/gateway-config/get).
 When the total timeout is reached, failover stops even if candidates remain, and the gateway returns `ERR_NGROK_3810`.
@@ -74,11 +78,12 @@ When the total timeout is reached, failover stops even if candidates remain, and
 Some requests fail before the gateway makes any upstream attempt.
 These return immediately, and the response carries no `Ngrok-AIG-Attempts` header:
 
-- The request body could not be parsed.
+- The request body couldn't be parsed.
 - The model is unknown, or the model address is malformed.
 - The requested provider or model is blocked by the access key configuration's access scope.
 - No provider key is available for the requested provider.
-- The account has no credits. This happens even if you use your own provider keys.
+- The account has no credits.
+  This happens even if you use your own provider keys.
 
 None of these are billed.
 The gateway bills an attempt only once its response reaches your client, so a request that never reached a provider costs nothing.
@@ -88,10 +93,13 @@ See [Error Codes](/ai-gateway/reference/error-codes) for the code each of these 
 
 ## Best practices
 
-1. **Attach several provider keys** per provider so an exhausted credential fails over instead of failing the request. See [Multi-key failover](/ai-gateway/guides/key-selection-failover).
+1. **Attach several provider keys** per provider so an exhausted credential fails over instead of failing the request.
+   See [Multi-key failover](/ai-gateway/guides/key-selection-failover).
 2. **List candidates from more than one provider** so a provider-wide outage has somewhere to go.
-3. **Set timeouts to match your latency budget.** A total timeout that is too tight cuts failover short; one that is too loose makes a slow failure look like a hang.
-4. **Record `Ngrok-AIG-Request-Id` from every response** so you can look a failure up afterwards. See [Debug failed requests](/ai-gateway/guides/debugging).
+3. **Set timeouts to match your latency budget.**
+   A total timeout that is too tight cuts failover short; one that is too loose makes a slow failure look like a hang.
+4. **Record `Ngrok-AIG-Request-Id` from every response** so you can look a failure up afterwards.
+   See [Debug failed requests](/ai-gateway/guides/debugging).
 
 ## Next steps
 
