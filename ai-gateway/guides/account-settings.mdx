@@ -10,21 +10,20 @@ Account-wide gateway settings apply to every request through `https://gateway.ng
 
 | Setting | Default | Description |
 |---------|---------|-------------|
-| `perRequestTimeout` | `60s` | Max time for a single upstream attempt |
-| `totalTimeout` | `120s` | Max time for a request including all failover attempts |
+| `perRequestTimeout` | `15m` | Max time for a single upstream attempt |
+| `totalTimeout` | `30m` | Max time for a request including all failover attempts |
 
 If a single attempt exceeds `perRequestTimeout`, the gateway moves on to the next fallback. If total time exceeds `totalTimeout`, the gateway returns an error. `perRequestTimeout` must be less than or equal to `totalTimeout`.
 
 ### Streaming responses
 
-Streams use the timeouts differently, so a long completion isn't cut off:
+Streams use the per-request timeout differently, so a long completion isn't cut off:
 
 - The per-request timeout applies only until the provider sends the first byte. After that, the stream fails if the provider sends nothing for 30 seconds.
-- The default total timeout applies only until the first byte. After that, the stream can run for up to 15 minutes.
-- A `totalTimeout` you set yourself applies to the whole stream, including the time after the first byte.
+- The total timeout applies to the whole stream, including the time after the first byte.
 
 <Warning>
-If you set `totalTimeout`, long streaming responses stop when it expires. Leave it unset to keep the 15-minute limit for streams.
+A streaming response stops when `totalTimeout` expires. If you lower it, make sure it still covers your longest streaming responses.
 </Warning>
 
 ## Token limits

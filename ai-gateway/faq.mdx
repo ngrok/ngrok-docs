@@ -304,6 +304,55 @@ Check that:
 
 See [Use a model you run yourself](/ai-gateway/guides/use-a-model-you-run-yourself).
 
+## Limits
+
+### How big can a request be?
+
+Inference requests, such as chat completions, messages, and embeddings, can be up to 32 MiB on every API format.
+
+File uploads through the [Files API](/ai-gateway/guides/files) can be up to 512 MiB. Uploads that use ngrok-managed keys also count against your account's file storage limit.
+
+### What happens if my request is too big?
+
+The gateway rejects it with HTTP 413 and [`ERR_NGROK_AI_GATEWAY_REQUEST_BODY_TOO_LONG`](/ai-gateway/reference/error-codes#err_ngrok_ai_gateway_request_body_too_long). The JSON error body uses the format of the API you called, so your SDK's normal error handling picks it up. An OpenAI-compatible request gets:
+
+```json
+{
+  "error": {
+    "message": "[ERR_NGROK_AI_GATEWAY_REQUEST_BODY_TOO_LONG] Request body is too long. Max 32 MiB.",
+    "type": "invalid_request_error",
+    "code": "request_body_too_long"
+  }
+}
+```
+
+To send large documents or images to OpenAI or Anthropic models, upload them once with the [Files API](/ai-gateway/guides/files) and reference them by ID instead of inlining them in every request.
+
+### Can I cap token usage?
+
+Yes. Set these in [Account Settings](/ai-gateway/guides/account-settings#token-limits):
+
+* `maxInputTokens` rejects a request before it reaches a provider when its estimated input tokens exceed the limit.
+* `maxOutputTokens` caps how long a completion can be.
+
+Both are unset by default, which means no cap. Limits must be greater than zero.
+
+### Does the gateway rate limit my keys or account?
+
+The AI Gateway doesn't set a fixed per-key or per-account limit on request rate or concurrent requests. Usage is subject to fair use, and ngrok may limit traffic that affects the gateway's availability for other customers.
+
+Providers still enforce their own rate limits. When a provider returns HTTP 429, the gateway tries another quota pool for the same credential, then an ngrok-managed key if one is available, then the next model. See [Handle gateway errors](/ai-gateway/guides/error-handling).
+
+### What does a 429 from the gateway mean?
+
+The gateway ran out of candidates to try, and the last provider it tried returned a rate limit. Retry with exponential backoff.
+
+To make this less likely, [attach more than one provider key](/ai-gateway/guides/key-selection-failover) or [configure fallback models](/ai-gateway/guides/configure-fallback-models).
+
+### Will I see my provider's rate-limit headers?
+
+Yes, when the request uses your own provider key and the provider sends them. The gateway forwards headers such as OpenAI's `x-ratelimit-remaining-tokens`, so you can throttle on your side. Requests that use ngrok-managed keys don't include them.
+
 ## Failover and timeouts
 
 ### How does failover work?
@@ -359,13 +408,16 @@ Each provider and model must be allowed by the access key configuration.
 
 ### How long does the gateway try before giving up?
 
-By default, each upstream attempt can take up to 60 seconds, and the whole request, including every failover attempt, up to 120 seconds. The gateway makes at most 10 upstream attempts per request.
+By default, each upstream attempt can take up to 15 minutes, and the whole request, including every failover attempt, up to 30 minutes. The gateway makes at most 10 upstream attempts per request.
 
 | Bound | Default | Configurable |
 | - | - | - |
-| Per-request timeout (one upstream attempt) | 60s | Yes |
-| Total timeout (all attempts) | 120s | Yes |
+| Per-request timeout (one upstream attempt) | 15m | Yes |
+| Total timeout (all attempts) | 30m | Yes |
+| Stream idle timeout (gap between streamed events) | 30s | No |
 | Upstream attempts per request | 10 | No |
+
+Streaming and non-streaming requests use the same defaults. For a stream, the per-request timeout applies only until the provider sends the first byte. After that, the stream fails if the provider sends nothing for 30 seconds. See [Streaming responses](/ai-gateway/guides/account-settings#streaming-responses).
 
 Change the timeouts in [Account Settings](/ai-gateway/guides/account-settings) or with the [gateway configuration API](/ai-gateway/api-reference/gateway-config/update). You can also set account-wide input and output token limits there.
 
@@ -542,6 +594,8 @@ Every fallback provider and model must be allowed by the access key configuratio
 The total request time may be hitting the timeout set in [Account Settings](/ai-gateway/guides/account-settings).
 
 Try increasing the total timeout, checking upstream provider latency, or reducing the number of fallback candidates.
+
+A streaming response also fails if the provider sends nothing for 30 seconds. This limit isn't configurable.
 
 ### Why was my request rejected before reaching a provider?
 
