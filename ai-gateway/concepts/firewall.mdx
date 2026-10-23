@@ -39,8 +39,11 @@ sequenceDiagram
 
 Each rule runs at one of two points:
 
-- **Request rules** run before the gateway sends the request to the model. They read the conversation, the results of tools the agent ran, and the tools the agent offers the model. A blocked request never reaches the model.
-- **Response rules** run on each tool call the model returns. A blocked tool call is removed from the response, so your agent never receives it and can't run it.
+- **Request rules** run before the gateway sends the request to the model.
+They read the conversation, the results of tools the agent ran, and the tools the agent offers the model.
+A blocked request never reaches the model.
+- **Response rules** run on each tool call the model returns.
+A blocked tool call is removed from the response, so your agent never receives it and can't run it.
 
 Firewall checks [OpenAI Chat Completions](/ai-gateway/sdks/openai) (`/v1/chat/completions`) and [Anthropic Messages](/ai-gateway/sdks/anthropic) (`/v1/messages`) requests, both streamed and not streamed.
 That covers agents that call those endpoints through the gateway, such as [Claude Code](/ai-gateway/agents/claude-code).
@@ -96,7 +99,8 @@ For example, a soft block regex rule that matches `git push` and an allow regex 
 A policy's **mode** decides whether matches block anything:
 
 - **Enforce** blocks requests and tool calls that match a blocking rule.
-- **Dry run** checks everything and reports what matched, but lets it all through. Use it to test a policy on real traffic before you enforce it.
+- **Dry run** checks everything and reports what matched, but lets it all through.
+Use it to test a policy on real traffic before you enforce it.
 
 A check can fail to run, for example when the decision model times out.
 **On error** decides what happens then:
@@ -121,8 +125,10 @@ An account has at most one baseline, and a configuration picks at most one polic
 A request can be checked by up to three policies: the baseline, the policy of its key's configuration, and a policy in the request.
 Firewall runs every rule from all of them, so a policy can add checks but never remove one:
 
-- Each policy keeps its own **Mode** and **On error** setting. A Dry run policy only reports, even when your baseline enforces, so you can try a new policy on keys that already have one.
-- An allow rule only overrides soft block rules in its own policy. A request can't allow what your baseline blocks.
+- Each policy keeps its own **Mode** and **On error** setting.
+A Dry run policy only reports, even when your baseline enforces, so you can try a new policy on keys that already have one.
+- An allow rule only overrides soft block rules in its own policy.
+A request can't allow what your baseline blocks.
 
 When you make a policy your baseline, configurations that picked the same policy stop picking it, so its rules don't run twice.
 
@@ -139,10 +145,14 @@ See [What a blocked caller gets](/ai-gateway/reference/firewall#what-a-blocked-c
 
 ## Things to know
 
-- **Other endpoints**: if a policy that applies to a key uses Enforce, the gateway rejects that key's requests to endpoints Firewall can't check, such as the Responses API, with [`ERR_NGROK_27228`](/ai-gateway/reference/error-codes#err_ngrok_27228). In Dry run, those requests go through with the header `Ngrok-AIG-Firewall: unscreened; reason=unsupported_endpoint`.
-- **Latency**: tool names and regex rules add almost no latency. Each decision rule calls the decision model, which can add up to 1.5 seconds before the check counts as failed.
-- **Streaming**: in Enforce mode, the gateway holds each streamed tool call until its checks finish, so your agent never receives a call that wasn't checked. The rest of the stream keeps flowing.
-- **Usage logs**: for now, Firewall results don't appear in [usage logs](/ai-gateway/observability). Read the response headers and `safeguard_results` to see what Firewall did.
+- **Other endpoints**: if a policy that applies to a key uses Enforce, the gateway rejects that key's requests to endpoints Firewall can't check, such as the Responses API, with [`ERR_NGROK_27228`](/ai-gateway/reference/error-codes#err_ngrok_27228).
+In Dry run, those requests go through with the header `Ngrok-AIG-Firewall: unscreened; reason=unsupported_endpoint`.
+- **Latency**: tool names and regex rules add almost no latency.
+Each decision rule calls the decision model, which can add up to 1.5 seconds before the check counts as failed.
+- **Streaming**: in Enforce mode, the gateway holds each streamed tool call until its checks finish, so your agent never receives a call that wasn't checked.
+The rest of the stream keeps flowing.
+- **Usage logs**: for now, Firewall results don't appear in [usage logs](/ai-gateway/observability).
+Read the response headers and `safeguard_results` to see what Firewall did.
 
 ## Next steps
 
