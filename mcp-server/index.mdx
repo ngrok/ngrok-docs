@@ -1,16 +1,11 @@
 ---
 title: ngrok MCP server
 sidebarTitle: MCP server
-description: Connect Claude Code, Codex, Cursor, and other AI agents to the ngrok MCP server to ask questions about your endpoints, traffic, and account.
+description: Connect Claude Code, Codex, Cursor, and other AI agents to the ngrok MCP server to inspect and manage your endpoints, traffic, and account.
 ---
 
-{/* TODO(DOC-659): Before publishing, confirm with eng:
-    - Cursor, Gemini CLI, Amp, Cline, and VS Code setup (only Claude Code and Codex are verified end to end).
-    - That Codex and Amp sign in correctly without a --scopes flag.
-    - That PAT bearer auth works while OAuth discovery is on, and that customers can create PATs (the dashboard UI is behind AllowAccessTokensManagement). */}
-
 The ngrok MCP server lets your AI agent read and manage your ngrok account.
-Connect a client such as Claude Code, Codex, or Cursor, then ask about your endpoints, traffic, Traffic Policy, usage, and team in plain language.
+Connect a client such as Claude Code, Codex, or Cursor, then ask about your endpoints, traffic, usage, and team, or ask it to make changes, in plain language.
 
 The server URL is:
 
@@ -23,8 +18,9 @@ The `/mcp` path is part of the OAuth resource, so the bare origin `https://mcp.n
 
 <Warning>
 Access isn't read-only.
-Some tools create and change resources, such as IP policy rules and reserved TCP addresses.
+Your agent can create, change, and delete resources in your account, such as Cloud Endpoints, domains, IP policies, and secrets.
 The agent acts as you, with your role's permissions, so check what it's about to do before you approve a tool call.
+See [Make changes safely](#make-changes-safely).
 </Warning>
 
 ## Quickstart
@@ -165,7 +161,9 @@ If your client can't sign in with OAuth, use a personal access token (PAT) inste
 <Steps>
 	<Step title="Create a personal access token">
 		In the dashboard, go to [Access Tokens](https://dashboard.ngrok.com/access-tokens/new) and create a token.
-		Choose the scopes for the tools you want your agent to use, and set an expiration.
+		Choose the scopes for what you want your agent to do, and set an expiration.
+		Read scopes, such as `endpoints:read`, let the agent look things up.
+		Write scopes, such as `endpoints:write` and `ip-policies:write`, let it make changes.
 		Copy the token right away.
 		It starts with `ngrok_pat_` and the dashboard shows it only once.
 	</Step>
@@ -201,13 +199,21 @@ After you sign in, confirm that your client sees the ngrok tools:
 Then ask "Which ngrok account am I signed in to?"
 The agent replies with your user, account, role, and plan.
 
-The tools cover these areas:
+Your agent can look up:
 
 - Endpoints, agents, and Traffic Inspector traffic.
-- Traffic Policy writing and validation.
 - Gateway resources, such as domains, TCP addresses, IP policies, certificates, vaults, and event destinations.
 - Your account, team, credentials, usage, and limits.
 - The ngrok documentation.
+
+Your agent can change:
+
+- Cloud Endpoints, including their URL, bindings, pooling, and Traffic Policy.
+- Reserved domains and TCP addresses.
+- IP policies and their allow and deny rules.
+- Vaults and secrets.
+- Credentials: it can revoke authtokens, API keys, and SSH keys.
+- Traffic Policy: it can write a policy and validate it before applying it.
 
 ## What you can ask
 
@@ -233,10 +239,25 @@ Your agent picks the tools, so the exact steps can differ.
 		The agent looks up that request and reads the `ERR_NGROK` code in the docs.
 		You get what failed, where it failed (ngrok, your agent, or your upstream), and how to fix it.
 	</Accordion>
-	<Accordion title="Write a Traffic Policy that rate limits /api to 100 requests per minute per IP">
+	<Accordion title="Rate limit /api on my Cloud Endpoint to 100 requests per minute per IP">
 		The agent reads the [`rate-limit`](/gateway/traffic-policy/actions/rate-limit) action docs, writes the policy, and validates it.
 		If validation fails, it fixes the errors and validates again.
-		You get a policy that passes validation, ready to attach to your endpoint.
+		Then it asks to update your Cloud Endpoint's Traffic Policy.
+	</Accordion>
+	<Accordion title="Set up api.example.com as a Cloud Endpoint that forwards to my internal service">
+		The agent reserves the domain and replies with the CNAME record to add at your DNS provider.
+		Then it creates a Cloud Endpoint for `https://api.example.com` with a Traffic Policy that forwards to your [internal endpoint](/gateway/endpoints/internal-endpoints).
+		The endpoint serves traffic once your DNS record and certificate are ready.
+	</Accordion>
+	<Accordion title="Store my Stripe webhook secret in a vault and verify webhooks with it">
+		The agent creates a vault, or uses one you name, and adds the secret to it.
+		Then it updates your endpoint's Traffic Policy to verify webhooks with [`secrets.get()`](/gateway/traffic-policy/secrets).
+		Tools never return secret values, so the agent can confirm the secret exists but can't read it back.
+	</Accordion>
+	<Accordion title="Release the TCP addresses that no endpoint uses">
+		The agent compares your reserved TCP addresses with your endpoints and lists the ones that are unused.
+		After you confirm the list, it releases each one.
+		A released address might not be available again, so the agent asks before it deletes anything.
 	</Accordion>
 	<Accordion title="Am I being rate limited? Why are my requests failing?">
 		The agent checks which limits are blocking your account right now.
@@ -255,9 +276,10 @@ Your agent picks the tools, so the exact steps can differ.
 		The agent checks the domain's certificate status.
 		If provisioning failed, you get the DNS record to fix.
 	</Accordion>
-	<Accordion title="Who on my team has API keys, and which ones are still active?">
+	<Accordion title="Who on my team has API keys? Revoke the ones that belong to people who left">
 		The agent joins your team with your API keys.
 		You get each key's owner, description, and status.
+		For keys whose owner is no longer on the team, it asks to revoke each one.
 		Tools never return the key, token, or secret values themselves.
 	</Accordion>
 </AccordionGroup>
@@ -266,6 +288,15 @@ Your agent picks the tools, so the exact steps can differ.
 Traffic questions use [Traffic Inspector](/obs/traffic-inspection) data, so the window your agent can see depends on your plan's retention.
 Request headers and bodies are available only when full capture is turned on.
 </Note>
+
+## Make changes safely
+
+The MCP server marks each tool as read-only or as one that makes changes, and marks deletes as destructive.
+Most clients use these markers to ask you before the agent runs a tool that changes your account.
+Keep those prompts on, and read what the agent is about to do before you approve it.
+
+To keep an agent read-only, connect with a personal access token that has only read scopes.
+See [Clients without OAuth](#clients-without-oauth).
 
 ## Troubleshooting
 
