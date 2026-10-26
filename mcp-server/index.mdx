@@ -23,8 +23,8 @@ The `/mcp` path is part of the OAuth resource, so the bare origin `https://mcp.n
 
 <Warning>
 Access isn't read-only.
-Your agent can create, change, and delete resources in your account, such as Cloud Endpoints, domains, IP policies, and secrets.
-The agent acts as you, with your role's permissions, so check what it's about to do before you approve a tool call.
+Your AI agent can create, change, and delete resources in your account, such as Cloud Endpoints, domains, IP policies, and secrets.
+The AI agent acts as you, with your role's permissions, so check what it's about to do before you approve a tool call.
 See [Make changes safely](#make-changes-safely).
 </Warning>
 
@@ -32,7 +32,7 @@ See [Make changes safely](#make-changes-safely).
 
 Most clients sign in with OAuth.
 You add the server, then sign in to ngrok in your browser and approve the consent screen.
-You never paste a token into your agent.
+You never paste a token into your AI agent.
 
 <Tabs>
 	<Tab title="Claude Code">
@@ -162,8 +162,8 @@ If your client can't sign in with OAuth, use a personal access token (PAT) inste
 <Steps>
 	<Step title="Create a personal access token">
 		In the dashboard, go to [Access Tokens](https://dashboard.ngrok.com/access-tokens/new) and create a token.
-		Choose the scopes for what you want your agent to do, and set an expiration.
-		Read scopes, such as `endpoints:read`, let the agent look things up.
+		Choose the scopes for what you want your AI agent to do, and set an expiration.
+		Read scopes, such as `endpoints:read`, let the AI agent look things up.
 		Write scopes, such as `endpoints:write` and `ip-policies:write`, let it make changes.
 		Copy the token right away.
 		It starts with `ngrok_pat_` and the dashboard shows it only once.
@@ -187,7 +187,7 @@ If your client can't sign in with OAuth, use a personal access token (PAT) inste
 </Steps>
 
 API keys and authtokens don't work with the MCP server.
-Store the PAT the way you store other secrets, such as in an environment variable, and don't paste it into a chat with your agent.
+Store the PAT the way you store other secrets, such as in an environment variable, and don't paste it into a chat with your AI agent.
 
 ## Check that it works
 
@@ -195,19 +195,19 @@ After you sign in, confirm that your client sees the ngrok tools:
 
 - Claude Code: run `/mcp` and select `ngrok`.
 - Codex: run `codex mcp list`.
-- Any client: ask your agent "What ngrok tools do you have?"
+- Any client: ask your AI agent "What ngrok tools do you have?"
 
 Then ask "Which ngrok account am I signed in to?"
-The agent replies with your user, account, role, and plan.
+The AI agent replies with your user, account, role, and plan.
 
-Your agent can look up:
+Your AI agent can look up:
 
-- Endpoints, agents, and Traffic Inspector traffic.
+- Endpoints, ngrok agents, and Traffic Inspector traffic.
 - Gateway resources, such as domains, TCP addresses, IP policies, certificates, vaults, and event destinations.
 - Your account, team, credentials, usage, and limits.
 - The ngrok documentation.
 
-Your agent can change:
+Your AI agent can change:
 
 - Cloud Endpoints, including their URL, bindings, pooling, and Traffic Policy.
 - Reserved domains and TCP addresses.
@@ -219,66 +219,66 @@ Your agent can change:
 ## What you can ask
 
 These examples show what a conversation with the ngrok MCP server looks like.
-Your agent picks the tools, so the exact steps can differ.
+Your AI agent picks the tools, so the exact steps can differ.
 
 <AccordionGroup>
 	<Accordion title="Show me the 500s on my endpoints by hour for the last day">
-		The agent queries Traffic Inspector for status 500 over the last 24 hours, counted per hour in your time zone.
+		The AI agent queries Traffic Inspector for status 500 over the last 24 hours, counted per hour in your time zone.
 		You get an hourly breakdown, plus the paths and client IPs behind the spikes.
 		Follow up with "Show me one of those requests" to see its headers, timing, and error detail.
 	</Accordion>
 	<Accordion title="Who's hammering /login, and from where?">
-		The agent groups requests to `/login` by client IP, then by country.
+		The AI agent groups requests to `/login` by client IP, then by country.
 		You get the top sources with request counts and the countries they come from.
 	</Accordion>
 	<Accordion title="Block the top IP hitting /login">
-		The agent finds the source, checks which IP policy your endpoint's [`restrict-ips`](/gateway/traffic-policy/actions/restrict-ips) action uses, and asks to add a deny rule to it.
+		The AI agent finds the source, checks which IP policy your endpoint's [`restrict-ips`](/gateway/traffic-policy/actions/restrict-ips) action uses, and asks to add a deny rule to it.
 		This call changes your account, so your client asks you to approve it first.
-		If no `restrict-ips` action names the policy yet, the agent tells you that the rule doesn't block anything until one does.
+		If no `restrict-ips` action names the policy yet, the AI agent tells you that the rule doesn't block anything until one does.
 	</Accordion>
 	<Accordion title="I got an ngrok error page with request ID 0a1b2c3d…. What happened?">
-		The agent looks up that request and reads the `ERR_NGROK` code in the docs.
-		You get what failed, where it failed (ngrok, your agent, or your upstream), and how to fix it.
+		The AI agent looks up that request and reads the `ERR_NGROK` code in the docs.
+		You get what failed, where it failed (ngrok, your ngrok agent, or your upstream), and how to fix it.
 	</Accordion>
 	<Accordion title="Rate limit /api on my Cloud Endpoint to 100 requests per minute per IP">
-		The agent reads the [`rate-limit`](/gateway/traffic-policy/actions/rate-limit) action docs, writes the policy, and validates it.
+		The AI agent reads the [`rate-limit`](/gateway/traffic-policy/actions/rate-limit) action docs, writes the policy, and validates it.
 		If validation fails, it fixes the errors and validates again.
 		Then it asks to update your Cloud Endpoint's Traffic Policy.
 	</Accordion>
 	<Accordion title="Set up api.example.com as a Cloud Endpoint that forwards to my internal service">
-		The agent reserves the domain and replies with the CNAME record to add at your DNS provider.
+		The AI agent reserves the domain and replies with the CNAME record to add at your DNS provider.
 		Then it creates a Cloud Endpoint for `https://api.example.com` with a Traffic Policy that forwards to your [internal endpoint](/gateway/endpoints/internal-endpoints).
 		The endpoint serves traffic once your DNS record and certificate are ready.
 	</Accordion>
 	<Accordion title="Store my Stripe webhook secret in a vault and verify webhooks with it">
-		The agent creates a vault, or uses one you name, and adds the secret to it.
+		The AI agent creates a vault, or uses one you name, and adds the secret to it.
 		Then it updates your endpoint's Traffic Policy to verify webhooks with [`secrets.get()`](/gateway/traffic-policy/secrets).
-		Tools never return secret values, so the agent can confirm the secret exists but can't read it back.
+		Tools never return secret values, so the AI agent can confirm the secret exists but can't read it back.
 	</Accordion>
 	<Accordion title="Release the TCP addresses that no endpoint uses">
-		The agent compares your reserved TCP addresses with your endpoints and lists the ones that are unused.
+		The AI agent compares your reserved TCP addresses with your endpoints and lists the ones that are unused.
 		After you confirm the list, it releases each one.
-		A released address might not be available again, so the agent asks before it deletes anything.
+		A released address might not be available again, so the AI agent asks before it deletes anything.
 	</Accordion>
 	<Accordion title="Am I being rate limited? Why are my requests failing?">
-		The agent checks which limits are blocking your account right now.
+		The AI agent checks which limits are blocking your account right now.
 		You get each limit's current value and cap, when the block lifts, and the exact error your callers saw.
 	</Accordion>
 	<Accordion title="Which endpoints used the most data this month?">
-		The agent reads your account's usage beside what your plan includes, then ranks your endpoints by data transfer out.
+		The AI agent reads your account's usage beside what your plan includes, then ranks your endpoints by data transfer out.
 		You get the top endpoints with their requests, connections, and data transfer.
 	</Accordion>
-	<Accordion title="Which of my agents are out of date, and which endpoints are online?">
-		The agent lists connected agents with their versions and any deprecation deadlines, and the endpoints they serve.
-		You get the agents that need an upgrade and by when.
-		An Agent Endpoint that's missing from the list means its agent isn't connected.
+	<Accordion title="Which of my ngrok agents are out of date, and which endpoints are online?">
+		The AI agent lists connected ngrok agents with their versions and any deprecation deadlines, and the endpoints they serve.
+		You get the ngrok agents that need an upgrade and by when.
+		An Agent Endpoint that's missing from the list means its ngrok agent isn't connected.
 	</Accordion>
 	<Accordion title="Why does my custom domain show TLS errors?">
-		The agent checks the domain's certificate status.
+		The AI agent checks the domain's certificate status.
 		If provisioning failed, you get the DNS record to fix.
 	</Accordion>
 	<Accordion title="Who on my team has API keys? Revoke the ones that belong to people who left">
-		The agent joins your team with your API keys.
+		The AI agent joins your team with your API keys.
 		You get each key's owner, description, and status.
 		For keys whose owner is no longer on the team, it asks to revoke each one.
 		Tools never return the key, token, or secret values themselves.
@@ -286,17 +286,17 @@ Your agent picks the tools, so the exact steps can differ.
 </AccordionGroup>
 
 <Note>
-Traffic questions use [Traffic Inspector](/obs/traffic-inspection) data, so the window your agent can see depends on your plan's retention.
+Traffic questions use [Traffic Inspector](/obs/traffic-inspection) data, so the window your AI agent can see depends on your plan's retention.
 Request headers and bodies are available only when full capture is turned on.
 </Note>
 
 ## Make changes safely
 
 The MCP server marks each tool as read-only or as one that makes changes, and marks deletes as destructive.
-Most clients use these markers to ask you before the agent runs a tool that changes your account.
-Keep those prompts on, and read what the agent is about to do before you approve it.
+Most clients use these markers to ask you before the AI agent runs a tool that changes your account.
+Keep those prompts on, and read what the AI agent is about to do before you approve it.
 
-To keep an agent read-only, connect with a personal access token that has only read scopes.
+To keep an AI agent read-only, connect with a personal access token that has only read scopes.
 See [Clients without OAuth](#clients-without-oauth).
 
 ## Troubleshooting
@@ -311,7 +311,7 @@ See [Clients without OAuth](#clients-without-oauth).
 ## Related resources
 
 - [Traffic Inspector](/obs/traffic-inspection): The traffic data behind most questions.
-- [Traffic Policy](/gateway/traffic-policy): The rules your agent can write and validate.
+- [Traffic Policy](/gateway/traffic-policy): The rules your AI agent can write and validate.
 - [IP policies](/gateway/traffic-policy/concepts/ip-policies): How deny and allow rules apply to endpoints.
-- [Role-based access control](/iam/rbac): What your role allows the agent to do.
+- [Role-based access control](/iam/rbac): What your role allows the AI agent to do.
 - [Use ngrok as an MCP gateway](/gateway/api-gateway/mcp-gateway): Put your own MCP server online with ngrok.
