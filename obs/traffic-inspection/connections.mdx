@@ -1,0 +1,162 @@
+---
+title: Traffic Inspector Connections
+sidebarTitle: Connections
+description: View every TCP, TLS, HTTP, and HTTPS connection to your ngrok endpoints in Traffic Inspector, including TLS handshake details, bytes transferred, and ngrok errors.
+---
+
+The **Connections** tab in [Traffic Inspector](/obs/traffic-inspection) lists every connection to your endpoints, for every endpoint type: TCP, TLS, HTTP, and HTTPS.
+Each row shows who connected, which endpoint they reached, how long the connection stayed open, how many bytes moved in each direction, and whether it closed cleanly or failed.
+
+Use it if you run TCP or TLS endpoints, such as databases, SSH, game servers, or raw TLS services.
+It also helps with HTTP and HTTPS endpoints when a problem happens below the request level, such as a TLS handshake that fails before the client sends a request.
+
+ngrok doesn't read the bytes on a TCP or TLS endpoint, so these connections record metadata only, with no request or response bodies.
+[Full capture mode](/obs/traffic-inspection#full-capture-mode) and [replay](/obs/traffic-inspection#replay) apply only to HTTP requests.
+
+{/* SCREENSHOT: The Connections tab in Traffic Inspector with several rows of mixed protocols, one of them failed. Orients readers to where the tab is and what a row looks like. */}
+
+## View your first connection
+
+1. Start a TCP endpoint, for example by forwarding SSH:
+
+   ```bash
+   ngrok tcp 22
+   ```
+
+1. Connect to the endpoint using the host and port from the agent output, then disconnect:
+
+   ```bash
+   ssh user@<host> -p <port>
+   ```
+
+1. Open [Traffic Inspector → Connections](https://dashboard.ngrok.com/traffic-inspector/connections) in the dashboard.
+   You can also open the endpoint in the dashboard and select **Inspect Traffic**.
+
+1. Select the row for your connection to open its detail sheet.
+
+A connection appears in the list only after it closes.
+
+{/* TODO(CDATA-1587): The ticket lists "live mode" as shipping. Confirm what live mode shows, given that rows appear only after a connection closes, and document it here. */}
+
+## Connection fields
+
+### Connections list
+
+| Column      | Description                                                    |
+| ----------- | -------------------------------------------------------------- |
+| Closed      | When the connection closed.                                    |
+| Client IP   | The IP address of the client that opened the connection.      |
+| Protocol    | `tcp`, `tls`, `http`, or `https`.                              |
+| Bytes In    | Bytes received from the client.                                |
+| Bytes Out   | Bytes sent to the client.                                      |
+| ngrok Error | The [ngrok error code](/errors/reference), if the connection failed. |
+| Duration    | How long the connection stayed open.                           |
+| Endpoint    | The endpoint the client connected to.                          |
+
+{/* TODO(CDATA-1587): Confirm Bytes In and Bytes Out direction (client to ngrok vs. ngrok to client). */}
+
+### Detail sheet
+
+Select a connection to open its detail sheet.
+The sheet has a share link, and you can step to the previous or next connection without closing it.
+
+#### Overview tab
+
+The Overview tab summarizes the connection.
+For a failed connection, **Failure Type** shows the category of failure, such as a TLS error, and **ngrok Error** shows the error code.
+
+{/* TODO(CDATA-1587): Get the full list of Overview tab fields and turn this into a table. */}
+
+#### TLS tab
+
+| Section            | Fields                                      |
+| ------------------ | ------------------------------------------- |
+| Handshake          | Version, Cipher Suite, JA4 Fingerprint      |
+| Server Certificate | Certificate ID, Common Name, Serial Number  |
+| Client Certificate | Common Name, Serial Number                  |
+
+The Client Certificate section appears only when the endpoint uses mutual TLS.
+
+What the TLS tab shows depends on whether ngrok terminated TLS:
+
+- If ngrok doesn't terminate TLS, the tab shows only the JA4 fingerprint.
+  Add the [`terminate-tls`](/gateway/traffic-policy/actions/terminate-tls) action to see the version, cipher suite, and certificates.
+- If the handshake failed, the tab says so and has no version, cipher suite, or certificate to show.
+
+{/* SCREENSHOT: The TLS tab for a successful mutual TLS connection, showing the Handshake, Server Certificate, and Client Certificate sections. Helps readers match the table above to the UI. */}
+
+#### IP Intelligence tab
+
+The IP Intelligence tab shows the same client IP data that HTTP requests show.
+
+## Connections and requests
+
+Every HTTP or HTTPS request travels over a connection.
+With HTTP keep-alive or HTTP/2, one connection can carry many requests.
+
+- From a request, the **Connection** tab in the request detail shows the connection the request used and links to it.
+- From an HTTP or HTTPS connection, you can open the list of requests that used it.
+- TCP and TLS connections have no requests.
+
+{/* SCREENSHOT: A request's Connection tab with the link to its connection. Shows readers where the cross-link lives, which is easy to miss. */}
+
+## Filter connections
+
+The filter box takes `key:value` terms.
+To match any of several values, separate them with commas.
+
+| Key          | Example                     | Matches                         |
+| ------------ | --------------------------- | ------------------------------- |
+| `host`       | `host:db`                   | Text in the endpoint host.      |
+| `exact-host` | `exact-host:1.tcp.ngrok.io` | The whole endpoint host.        |
+| `port`       | `port:20123`                | The endpoint port.              |
+| `ip`         | `ip:203.0.113.7`            | The client IP.                  |
+| `proto`      | `proto:tcp,tls`             | `tcp`, `tls`, `http`, or `https`. |
+| `outcome`    | `outcome:failed`            | `closed` or `failed`.           |
+| `error`      | `error:3002`                | An ngrok error code.            |
+| `duration`   | `duration:30s`              | Connections open longer than this. |
+
+{/* TODO(CDATA-1587): Confirm error:3002 is a realistic example code, and whether multiple terms are ANDed. */}
+
+## Troubleshooting
+
+### A client can't complete a TLS handshake
+
+1. Filter for `proto:tls outcome:failed`.
+1. Open a connection.
+   On the Overview tab, **Failure Type** is a TLS error and **ngrok Error** gives the code.
+1. On the TLS tab, use the JA4 fingerprint and client IP to identify the client.
+1. Compare them with connections from clients that succeed.
+   Differences usually point to an outdated TLS stack, or a client that doesn't send a certificate when the endpoint requires mutual TLS.
+
+### A database client keeps getting dropped
+
+1. Filter for `exact-host:<your-tcp-host> port:<port>`.
+1. Look at **Duration**, **Bytes In**, and **Bytes Out**.
+   Many short connections with 0 bytes and an ngrok error usually mean a Traffic Policy rule rejected them, for example the [`restrict-ips`](/gateway/traffic-policy/actions/restrict-ips) action in the `on_tcp_connect` phase.
+1. Open one of the connections.
+   The error banner shows that `restrict-ips` blocked it.
+
+{/* TODO(CDATA-1587): Confirm the error code a restrict-ips rejection shows on a TCP connection, and link it. */}
+
+## Limits and availability
+
+- **Plans:** Every plan includes the Connections tab.
+- **Retention:** Connections follow your plan's [Traffic Inspector retention](/obs/traffic-inspection#ngrok-traffic-inspector) window, the same as HTTP requests.
+  Free accounts keep 24 hours and Hobbyist and Pay-as-you-go accounts keep 72 hours.
+  Pay-as-you-go accounts can [purchase an add-on](https://ngrok.com/pricing) for up to 90 days.
+  After that, opening a connection returns [`ERR_NGROK_TRAFFIC_INSPECT_CONNECTION_NOT_FOUND`](/errors/err_ngrok_traffic_inspect_connection_not_found).
+- **Open connections:** A connection appears only after it closes.
+  A long-lived connection, such as an SSH session or a database connection pool, doesn't appear while it's still open.
+- **Payloads:** TCP and TLS connections record metadata only.
+- **Permissions:** Anyone who can view requests in Traffic Inspector can view connections.
+
+{/* TODO(CDATA-1587): Confirm retention for Enterprise plans and whether the 90-day add-on is limited to Pay-as-you-go. Confirm there's no API or log export for connections. */}
+
+## Related resources
+
+- [Traffic Inspector](/obs/traffic-inspection)
+- [Connections in the dashboard](https://dashboard.ngrok.com/traffic-inspector/connections)
+- [`terminate-tls` action](/gateway/traffic-policy/actions/terminate-tls)
+- [TCP endpoints](/gateway/endpoints/tcp)
+- [ngrok error reference](/errors/reference)
