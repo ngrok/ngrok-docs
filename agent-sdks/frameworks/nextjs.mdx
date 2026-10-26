@@ -1,0 +1,145 @@
+---
+title: Next.js Library
+sidebarTitle: Next.js
+description: Run next dev with a public ngrok URL using the @ngrok/nextjs command, and configure the endpoint with a Traffic Policy or a reserved domain.
+---
+
+[`@ngrok/nextjs`](https://www.npmjs.com/package/@ngrok/nextjs) is a command that starts `next dev` and opens an ngrok endpoint to it as one process:
+
+```bash
+npx @ngrok/nextjs dev
+```
+
+Stopping the command with `Ctrl+C` tears down both the endpoint and `next dev`, including the worker processes `next dev` starts.
+The command is built on the [JavaScript SDK](/getting-started/javascript), so there's no separate ngrok binary to install.
+
+<Info>
+`@ngrok/nextjs` is published on npm at version 0.1.0 and maintained in the [ngrok-samples/ngrok-nextjs](https://github.com/ngrok-samples/ngrok-nextjs) repository.
+</Info>
+
+## What you'll need
+
+- An [ngrok account](https://dashboard.ngrok.com/signup).
+- Your [ngrok auth token](https://dashboard.ngrok.com/get-started/your-authtoken).
+- Node.js 18 or later.
+- A Next.js project.
+
+## 1. Set your auth token
+
+Add your auth token to `.env.local` in your Next.js project root:
+
+```txt title=".env.local"
+NGROK_AUTHTOKEN=your_actual_auth_token_here
+```
+
+The command reads `.env.local` itself, so you don't need to export the variable in your shell.
+An `NGROK_AUTHTOKEN` already set in your shell takes precedence over the file.
+
+## 2. Run your app
+
+```bash
+npx @ngrok/nextjs dev
+```
+
+The command starts `next dev` on port `3000`, opens an endpoint to it, and prints the public URL.
+To run on a different port, set `PORT`:
+
+```bash
+PORT=4000 npx @ngrok/nextjs dev
+```
+
+## 3. Test your endpoint
+
+Open the printed URL in your browser.
+You see your Next.js app, served through ngrok.
+
+The command also:
+
+- Writes the public URL into `.env.local` as `NEXTAUTH_URL` and `NEXT_PUBLIC_APP_URL`, so auth libraries and client code pick it up automatically.
+Other lines in the file are left as they are.
+- Prints a QR code so you can open the URL on your phone.
+Set `NGROK_QR=false` to turn it off.
+- Prints a reminder, the first time you run it in a project, to register the URL with your OAuth and webhook providers.
+
+## Configuration
+
+Create `ngrok.config.ts` (or `.js` or `.mjs`) in your project root to configure the endpoint:
+
+```ts title="ngrok.config.ts"
+export default {
+  url: "https://your-reserved-domain.ngrok.app",
+  trafficPolicy: `
+on_http_request:
+  - actions:
+      - type: basic-auth
+        config:
+          credentials:
+            - "user:password123"
+`,
+};
+```
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `url` | `string` | The public URL for the endpoint, including the scheme. Omit it to use your account's [dev domain](/gateway/domains/#dev-domains). An `http://` or `https://` URL creates an HTTP endpoint, `tls://` creates a [TLS endpoint](/gateway/endpoints/tls), and `tcp://host:port` creates a [TCP endpoint](/gateway/endpoints/tcp). |
+| `pooling` | `boolean` | Opts in to [endpoint pooling](/gateway/endpoints/endpoint-pooling) so more than one endpoint can share a URL. |
+| `trafficPolicy` | `string` | A raw [Traffic Policy](/gateway/traffic-policy/) document (YAML or JSON) that the command passes through to ngrok unchanged. Use it for [authentication](/gateway/traffic-policy/actions/basic-auth), [IP restrictions](/gateway/traffic-policy/actions/restrict-ips), [webhook verification](/gateway/traffic-policy/actions/verify-webhook), and any other action. |
+| `binding` | `"public"`, `"internal"`, or `"kubernetes"` | The endpoint's [binding](/gateway/endpoints/bindings). |
+| `env.url` | `string[]` | The variables in `.env.local` that receive the public URL. Defaults to `["NEXTAUTH_URL", "NEXT_PUBLIC_APP_URL"]`. |
+| `endpoints` | `EndpointConfig[]` | Opens more than one endpoint. See [Multiple endpoints](#multiple-endpoints). When present, the root-level fields are ignored. |
+
+### Use your own domain
+
+Set `url` to a [domain you've reserved](/gateway/domains/) on your account.
+There are three places to set it, checked in this order:
+
+1. The `NGROK_DOMAIN` environment variable, in your shell or in `.env.local`.
+A bare domain gets `https://` added for you.
+2. `ngrok.config.local.ts`, a personal config file with the same shape as `ngrok.config.ts`.
+Add it to `.gitignore`.
+3. `ngrok.config.ts`, the config file you commit and share with your team.
+
+Keep a personal reserved domain out of the committed file when more than one person shares the ngrok account.
+Two people running the command against the same URL at the same time collide, and ngrok rejects the second with [`ERR_NGROK_334`](/errors/err_ngrok_334).
+
+```bash
+NGROK_DOMAIN=myapp.ngrok.app npx @ngrok/nextjs dev
+```
+
+### Multiple endpoints
+
+To front more than one local service from a single command, such as the Next.js app plus a co-located API server, list them under `endpoints`:
+
+```ts title="ngrok.config.ts"
+export default {
+  endpoints: [
+    { upstream: 3000, url: "https://app.mycompany.ngrok.app", env: { url: ["NEXT_PUBLIC_APP_URL"] } },
+    { upstream: 4000, url: "https://api.mycompany.ngrok.app" },
+  ],
+};
+```
+
+Each entry takes the same fields as the root-level config plus `upstream`: a port number, which forwards to `http://localhost:<port>`, or any address string the JavaScript SDK accepts, such as `https://localhost:8443`.
+Entries under `endpoints` don't write to `.env.local` unless you give them an `env.url`.
+
+Every endpoint needs its own `url`, or `pooling: true` on each endpoint that shares one.
+If two endpoints would share a URL without pooling, including two endpoints that both omit `url` and land on your dev domain, the command exits with an error before opening a session.
+Without that check, ngrok lets the most recently opened listener win and the other goes unreachable with no error.
+
+## Limits and availability
+
+- The command only parses `ngrok.config.ts` and `ngrok.config.local.ts`.
+It doesn't read the [agent config file](/gateway/agent/config/).
+- `NGROK_DOMAIN` only applies to the endpoint that `next dev` runs on.
+Set `url` on each entry in `endpoints` directly.
+- An `internal` binding requires a URL that ends in `.internal`.
+ngrok rejects any other URL with [`ERR_NGROK_9029`](/errors/err_ngrok_9029).
+- Endpoint counts and domains follow your plan's limits.
+See [free plan limits](/pricing-limits/free-plan-limits).
+
+## What's next?
+
+- Browse [Traffic Policy examples](/gateway/traffic-policy/examples/add-authentication/) to add authentication, restrict access by IP, or rewrite URLs.
+- Read the [JavaScript SDK quickstart](/getting-started/javascript) to see what the command does under the hood.
+- See the [other framework libraries](/agent-sdks/frameworks/) for Gin, FastAPI, and Axum.
+- Report issues or read the source in the [ngrok-samples/ngrok-nextjs](https://github.com/ngrok-samples/ngrok-nextjs) repository.
