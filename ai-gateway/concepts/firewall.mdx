@@ -45,7 +45,7 @@ A blocked request never reaches the model.
 - **Response rules** run on each tool call the model returns.
 A blocked tool call is removed from the response, so your agent never receives it and can't run it.
 
-Firewall checks [OpenAI Chat Completions](/ai-gateway/sdks/openai) (`/v1/chat/completions`), [OpenAI Responses](/ai-gateway/sdks/openai#supported-endpoints) (`/v1/responses`), and [Anthropic Messages](/ai-gateway/sdks/anthropic) (`/v1/messages`) requests, both streamed and not streamed.
+Firewall checks [OpenAI Chat Completions](/ai-gateway/sdks/openai) (`/v1/chat/completions`), [OpenAI Responses](/ai-gateway/sdks/openai#supported-endpoints) (`/v1/responses`), [Anthropic Messages](/ai-gateway/sdks/anthropic) (`/v1/messages`), and [Gemini generate content](/ai-gateway/sdks/google#generate-content-requests) (`generateContent` and `streamGenerateContent`) requests, both streamed and not streamed.
 That covers agents that call those endpoints through the gateway, such as [Claude Code](/ai-gateway/agents/claude-code) and [Codex](/ai-gateway/agents/codex).
 For other endpoints, see [Things to know](#things-to-know).
 
@@ -144,17 +144,20 @@ See [What a blocked caller gets](/ai-gateway/reference/firewall#what-a-blocked-c
 
 ## Things to know
 
-- **Other endpoints**: Firewall can't check requests to other endpoints, such as the [native Gemini API](/ai-gateway/sdks/google).
+- **Other endpoints**: Firewall can't check requests to other endpoints, such as the [Gemini Interactions API](/ai-gateway/sdks/google#supported-endpoints).
 **On error** decides what happens to them.
 If a policy that applies to the key uses Enforce and Block, the gateway rejects them with [`ERR_NGROK_27228`](/ai-gateway/reference/error-codes#err_ngrok_27228).
 Otherwise, they go through unchecked with the header `Ngrok-AIG-Firewall: unscreened; reason=unsupported_endpoint`.
 - **Legacy functions**: Firewall checks tool calls, not the function calls a model returns for the legacy Chat Completions `functions` field.
 When a policy has response rules, **On error** decides those requests the same way, and the header reason is `legacy_functions`.
 Send `tools` instead of `functions`.
+- **Streamed Gemini function call arguments**: with `streamFunctionCallArguments`, Gemini sends each function call in fragments, which Firewall doesn't join.
+When a policy has response rules, **On error** decides those requests the same way, and the header reason is `stream_function_call_arguments`.
+When they go through, request rules still run, but tool calls aren't checked.
 - **OpenAI-defined tools**: in a Responses request, Firewall can't read the arguments of tools that OpenAI defines and your app runs, such as local shell, computer use, and `apply_patch`.
 Tool names rules still match these calls by name, such as `local_shell` or `apply_patch`.
 For other rules, **On error** decides.
-Hosted tools, such as web search, run at OpenAI before the response returns, so Firewall doesn't check them.
+- **Provider-run tools**: tools that the provider runs before the response returns, such as OpenAI and Anthropic web search or Gemini code execution, never reach your agent, so Firewall doesn't check them.
 - **`previous_response_id`**: when Firewall blocks a tool call in a Responses request, OpenAI still keeps the original call.
 If your next request uses `previous_response_id`, OpenAI expects a tool output for a call your app never received.
 Send the conversation in `input` instead.

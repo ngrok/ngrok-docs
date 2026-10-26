@@ -49,13 +49,16 @@ Block rules also match the arguments with JSON escapes decoded.
 - **Regex** rules on request parts match all the text of each part, across every message, joined with newlines.
 - In a Responses request, `instructions` and `prompt.variables` count as messages, call items as assistant turns, and `*_call_output` items as tool results.
 Tool definitions include tools that a tool search or an MCP tool list added to the conversation.
+- In a Gemini request, `systemInstruction` and the `contents` parts count as messages, `functionResponse` parts as tool results, and `functionDeclarations` as tool definitions.
+Images, audio, and video have no text to read.
+Firewall can't read a PDF or other file part, so **On error** decides for rules that read the part.
 - **Decision** rules on request parts read the system and developer messages plus the newest input: the latest user message and any tool results it carries.
 They read up to about 41 KB of text.
 When the text is longer, the `Ngrok-AIG-Firewall-Request` header reports a [partial read](#response-headers).
 
 ## The `plugins` field
 
-Add a `plugins` array to a `/v1/chat/completions`, `/v1/responses`, or `/v1/messages` request body to check that request with extra rules.
+Add a `plugins` array to a `/v1/chat/completions`, `/v1/responses`, `/v1/messages`, or Gemini `generateContent` request body to check that request with extra rules.
 The gateway removes the field before it sends the request to the provider.
 
 ```json
@@ -117,7 +120,8 @@ When Firewall couldn't check the request and **On error** is **Block**, `rule` i
 ### Blocked tool call
 
 When a response rule blocks a tool call, the gateway removes the call and adds this text to the assistant message.
-In a Responses request, an assistant `message` item with this text takes the call's place in `output`:
+In a Responses request, an assistant `message` item with this text takes the call's place in `output`.
+In a Gemini request, a text part with this text takes the call's place and keeps the call's `thoughtSignature`:
 
 ```xml
 <ngrok_firewall_blocked tool="bash" rule="[Force push]">Tool call "bash" was blocked by ngrok.ai Firewall and was not executed. Do not retry it with the same arguments.</ngrok_firewall_blocked>
@@ -134,7 +138,7 @@ If no tool calls remain, the response ends as if the model had finished:
 ### `safeguard_results`
 
 Responses carry a top-level `safeguard_results` array when Firewall checked something.
-In a streamed response, it's in the final chunk for Chat Completions, in the `message_delta` event for Messages, and in the `response` object of the final event, such as `response.completed`, for Responses.
+In a streamed response, it's in the final chunk for Chat Completions, in the `message_delta` event for Messages, in the `response` object of the final event, such as `response.completed`, for Responses, and in the chunk with a `finishReason` for Gemini.
 
 Request rules report one entry per rule:
 
@@ -176,6 +180,9 @@ Tool call checks report one entry per tool call ID:
 | `outcome` (tool calls) | `flagged` or `not_flagged`. |
 | `explanation` | The names of the rules that matched, each in brackets, including rules from Dry run policies. |
 
+A Gemini function call often has no ID.
+Its entry then uses the call's position in the response, such as `candidates[0].parts[1]`.
+
 A response with no tool calls carries no `dangerous_tool_use` entry.
 
 ### Response headers
@@ -183,7 +190,7 @@ A response with no tool calls carries no `dangerous_tool_use` entry.
 | Header | Values | When present |
 |--------|--------|--------------|
 | `Ngrok-AIG-Firewall-Request` | `not_flagged`, `flagged; rules=<ids>`, or `unavailable`. Adds `; partial=<id>:<checked>/<total>` when a decision rule read only part of a long text. | Whenever request rules run, in both modes. |
-| `Ngrok-AIG-Firewall` | `unscreened; reason=unsupported_endpoint`, `unscreened; reason=legacy_functions`, or `unscreened; reason=unreadable_response` | When Firewall let a request or response through without checking it. |
+| `Ngrok-AIG-Firewall` | `unscreened; reason=<reason>`, where the reason is `unsupported_endpoint`, `legacy_functions`, `stream_function_call_arguments`, or `unreadable_response` | When Firewall let a request or response through without checking it. |
 
 The header lists rule IDs, while the blocked message and `safeguard_results` show rule names.
 The dashboard sets each ID from the rule's name when you create the rule.
@@ -199,6 +206,7 @@ Read `safeguard_results` for them.
 | A request with `plugins` goes to an endpoint Firewall doesn't check | 400 | `ERR_NGROK_27228`: `Firewall is not available on this endpoint.` |
 | An enforced policy with **On error** set to **Block** applies to the key, and the request goes to an endpoint Firewall doesn't check | 400 | `ERR_NGROK_27228`: `this access key enforces a Firewall policy with on_error block, and Firewall cannot screen this endpoint` |
 | A request uses the legacy `functions` field, and an enforced response rule has **On error** set to **Block** | 400 | `ERR_NGROK_27228`: `Firewall screens tool calls, not legacy function calls. Send tools in place of functions.` |
+| A streamed Gemini request sets `streamFunctionCallArguments`, and an enforced response rule has **On error** set to **Block** | 400 | `ERR_NGROK_27228`: `Firewall screens whole function calls, not streamed function call arguments. Remove streamFunctionCallArguments.` |
 | Firewall can't read the tool calls in a response at all, with **Enforce** and **On error** set to **Block** | 500 | Internal Server Error with `ERR_NGROK_27209`. In a stream that has started, the gateway sends this as an error event and ends the stream. |
 
 A single check that can't run, such as a decision model timeout, doesn't return an error.
