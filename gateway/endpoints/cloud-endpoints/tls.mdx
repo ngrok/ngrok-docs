@@ -33,49 +33,40 @@ import CloudEndpointQS from "/snippets/gateway/shared/cloud-endpoints-qs.mdx"
 
 ## URLs
 
-URLs are validated differently depending on their
-[binding](/gateway/endpoints/bindings). Consult the
-following documentation for details on valid URLs for TLS endpoints:
+ngrok validates URLs differently depending on their [binding](/gateway/endpoints/bindings).
+Consult the following documentation for details on valid URLs for TLS endpoints:
 
 - [Public Endpoint URLs](/gateway/endpoints/public-endpoints/#https-tls)
 - [Internal Endpoint URLs](/gateway/endpoints/internal-endpoints/#urls)
 - [Kubernetes Endpoint URLs](/gateway/endpoints/kubernetes-endpoints/#urls)
 
-There is no standard scheme for TLS URLs so ngrok renders them as `tls://`.
+There is no standard scheme for TLS URLs, so ngrok renders them as `tls://`.
 
 ## Bindings
 
-TLS endpoints support `public` and `internal` bindings. `kubernetes` binding is
-not supported.
+TLS endpoints support `public` and `internal` bindings.
+They don't support the `kubernetes` binding.
 
 ## Traffic Policy
 
-Attach [Traffic Policy](/gateway/traffic-policy/) to endpoints to route, authenticate
-and transform the traffic through your TLS endpoints.
+Attach [Traffic Policy](/gateway/traffic-policy/) to endpoints to route, authenticate, and transform the traffic through your TLS endpoints.
 
 ### Authentication
 
-When you create public TLS endpoints, you often want to secure them with
-authentication. You can secure your TLS endpoints with the following [Traffic
-Policy](/gateway/traffic-policy/) actions. There is a limited set of actions available
-to authenticate TLS traffic because the TLS protocol is low-level.
+When you create public TLS endpoints, you often want to secure them with authentication.
+You can secure your TLS endpoints with the following [Traffic Policy](/gateway/traffic-policy/) actions.
+There is a limited set of actions available to authenticate TLS traffic because the TLS protocol is low-level.
 
 - [IP Restriction](/gateway/traffic-policy/actions/restrict-ips/)
 - [Mutual TLS](/gateway/traffic-policy/actions/terminate-tls/)
 
-## TLS Termination
+## TLS termination
 
-TLS Endpoints provide you with the flexibility to define where TLS termination
-occurs. You may configure your endpoint to terminate TLS at the ngrok cloud
-service or you can achieve [end-to-end
-encryption](/gateway/domains/tls-termination/#end-to-end-encryption)
-by terminating at the agent or your upstream service. When you use end-to-end
-encryption, the ngrok cloud service can not see payload that transit through
-your endpoints.
+TLS Endpoints give you the flexibility to define where TLS termination occurs.
+You can configure your endpoint to terminate TLS at the ngrok cloud service, or you can achieve [end-to-end encryption](/gateway/domains/tls-termination/#end-to-end-encryption) by terminating at the agent or your upstream service.
+When you use end-to-end encryption, the ngrok cloud service can't see payloads that transit through your endpoints.
 
-Consult the documentation on [TLS Termination
-Locations](/gateway/domains/tls-termination/#termination-location) for
-additional details.
+Consult the documentation on [TLS Termination Locations](/gateway/domains/tls-termination/#termination-location) for additional details.
 
 #### Example
 
@@ -87,7 +78,8 @@ To terminate TLS Cloud Endpoint traffic at an agent or an upstream service, you 
 			--url tls://{your-domain-here}.com \
 			--traffic-policy "$(<traffic-policy.yml)"
 		```
-2. Create a Traffic Policy file to forward traffic to the internal endpoint, adding `.internal` to your domain for the url. For example, if you're using `example.ngrok.dev`, your internal endpoint url should be `tls://example.internal`:
+2. Create a Traffic Policy file to forward traffic to the internal endpoint, adding `.internal` to your domain for the URL.
+   For example, if you're using `example.ngrok.dev`, your internal endpoint URL should be `tls://example.internal`:
     ```yaml title="traffic-policy.yml" mode=traffic-policy
     on_tcp_connect:
       - actions:
@@ -95,7 +87,7 @@ To terminate TLS Cloud Endpoint traffic at an agent or an upstream service, you 
             config:
               url: tls://{your-domain-here}.internal:{your-port-here}
     ```
-3. Create an internal endpoint using the same url that your Traffic Policy references.
+3. Create an internal endpoint using the same URL that your Traffic Policy references.
     <Tabs>
       <Tab title="At the upstream">
       ```bash
@@ -121,29 +113,23 @@ To learn more about terminating TLS at the agent, see the [Agent Endpoint TLS do
 
 ### Certificates
 
-It is very common to encounter certificate errors when working with TLS endpoints. 
-When terminating TLS at ngrok's cloud service, ngrok will automatically select, provision, and manage certs for you. 
+It's very common to encounter certificate errors when working with TLS endpoints.
+When terminating TLS at ngrok's cloud service, ngrok automatically selects, provisions, and manages certs for you.
 When performing [end-to-end encryption](/gateway/domains/tls-termination/#end-to-end-encryption) by terminating at the upstream service, you become responsible for provisioning, managing, and distributing certificates.
 
-Consult the documentation on [TLS
-Certificates](/gateway/domains/tls-certificates/) for details about
-certificate selection, provisioning and management.
+Consult the documentation on [TLS Certificates](/gateway/domains/tls-certificates/) for details about certificate selection, provisioning, and management.
 
 ## Compatible clients
 
 ### SNI
 
-TLS endpoints only work with modern TLS clients that populate the SNI
-extension. See the documentation on [TLS
-Termination](/gateway/domains/tls-termination/#sni) for additional
-details on compatible clients.
+TLS endpoints only work with modern TLS clients that populate the SNI extension.
+See the documentation on [TLS Termination](/gateway/domains/tls-termination/#sni) for additional details on compatible clients.
 
 ### STARTTLS
 
-Protocols that begin in plain text and upgrade to TLS via a mechanism like
-STARTTLS in SMTP, IMAP, etc are not supported. If you need to support
-connections which upgrade to TLS, use a [TCP
-Endpoint](/gateway/endpoints/tcp/).
+ngrok doesn't support protocols that begin in plain text and upgrade to TLS through a mechanism like STARTTLS in SMTP or IMAP.
+If you need to support connections that upgrade to TLS, use a [TCP Endpoint](/gateway/endpoints/tcp/).
 
 ## Observability
 
@@ -153,8 +139,8 @@ The [Connections tab in Traffic Inspector](/obs/traffic-inspection/connections) 
 
 ### Log exports
 
-You can export logs of traffic to TLS endpoints with [ngrok's events
-system](/obs/). The following events are published for log exporting:
+You can export logs of traffic to TLS endpoints with [ngrok's events system](/obs/).
+ngrok publishes the following events for log exporting:
 
 | Log                                                                      | When                                                         |
 | ------------------------------------------------------------------------ | ------------------------------------------------------------ |
@@ -162,8 +148,7 @@ system](/obs/). The following events are published for log exporting:
 
 ## Limits & timeouts
 
-[Contact Support](mailto:support@ngrok.com) if you need to configure limits and
-timeouts on connections to TLS endpoints.
+[Contact Support](mailto:support@ngrok.com) if you need to configure limits and timeouts on connections to TLS endpoints.
 
 ### Connections
 
@@ -180,29 +165,23 @@ timeouts on connections to TLS endpoints.
 
 ## Errors
 
-If a TLS handshake fails, an appropriate TLS abort code will be sent to the
-client.
+If a TLS handshake fails, ngrok sends an appropriate TLS abort code to the client.
 
-In all other cases, if an error is encountered while handling TLS connections
-to your endpoints (for example, no available backends or internal server error), the
-connection will be closed. The TLS protocol and its implementations are not
-sufficiently flexible enough to deliver additional rich error information when
-failures are encountered.
+In all other cases, if ngrok encounters an error while handling TLS connections to your endpoints (for example, no available backends or an internal server error), it closes the connection.
+The TLS protocol and its implementations aren't flexible enough to deliver additional rich error information when failures occur.
 
-Use the [observability](#observability) features to understand connection
-handling errors.
+Use the [observability](#observability) features to understand connection handling errors.
 
 ## API
 
-TLS Endpoints can be created programmatically. Consult the documentation on
-[Endpoint APIs](/api-reference/endpoints/list).
+You can create TLS Endpoints programmatically.
+Consult the documentation on [Endpoint APIs](/api-reference/endpoints/list).
 
 ## TLS Cloud Endpoint pricing
 
-TLS endpoints are available on Hobbyist and Pay-as-you-go plans. Consult the [pricing](/pricing-limits/#endpoint-limits) documentation for
-billing details.
+TLS endpoints are available on Hobbyist and Pay-as-you-go plans.
+Consult the [pricing](/pricing-limits/#endpoint-limits) documentation for billing details.
 
-See [Domains pricing](/gateway/domains/#pricing) for details on
-pricing for custom domains, wildcard endpoints, and more.
+See [Domains pricing](/gateway/domains/#pricing) for details on pricing for custom domains, wildcard endpoints, and more.
 
 Zero-knowledge TLS is available on the Pay-as-you-go plan.
