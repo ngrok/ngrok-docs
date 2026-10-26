@@ -1,0 +1,98 @@
+---
+title: ngrok Skills for AI Agents
+sidebarTitle: Skills
+description: Install ngrok skills so Claude Code, Cursor, Codex, and other AI agents can expose local services, secure endpoints, and receive webhooks.
+---
+
+ngrok skills teach your AI agent how to use ngrok for common tasks, such as giving a local service a public URL, adding authentication to an endpoint, or receiving webhooks.
+They follow the [Agent Skills](https://agentskills.io/) format, so they work in Claude Code, Cursor, Codex, ChatGPT, and any other AI agent that supports that format.
+
+The skills are open source under the MIT license in the [ngrok/skills](https://github.com/ngrok/skills) repository.
+
+Skills and the [ngrok MCP server](/mcp-server) do different jobs:
+
+- **Skills** teach your AI agent to run the ngrok CLI, SDKs, and configuration on your machine.
+- **The MCP server** lets your AI agent read and change your ngrok account through the ngrok API.
+
+You can use either one, or both together.
+
+## Prerequisites
+
+- An [ngrok account](https://dashboard.ngrok.com/signup).
+- The [ngrok CLI](https://ngrok.com/download) installed and authenticated with your authtoken, for most skills.
+  If ngrok isn't set up yet, the `ngrok-setup` skill walks your AI agent through it.
+
+## Install the skills
+
+<Tabs>
+	<Tab title="Claude Code">
+		Add the ngrok marketplace, then install the plugin:
+
+		```txt
+		/plugin marketplace add ngrok/skills
+		/plugin install ngrok@ngrok
+		```
+
+		The plugin also adds `/ngrok:*` slash commands, one for each skill.
+	</Tab>
+	<Tab title="Cursor">
+		Go to **Customize** > **Plugins** > **Add marketplace** > **From GitHub Repository**, and enter `ngrok/skills`.
+	</Tab>
+	<Tab title="Codex and ChatGPT">
+		Add the ngrok marketplace:
+
+		```bash
+		codex plugin marketplace add ngrok/skills
+		```
+
+		Then restart and install **ngrok** from the Plugins Directory.
+	</Tab>
+	<Tab title="Other AI agents">
+		For any AI agent that supports the Agent Skills format, run:
+
+		```bash
+		npx skills add ngrok/skills
+		```
+	</Tab>
+</Tabs>
+
+## Use the skills
+
+After you install the skills, your AI agent uses them automatically when a task matches.
+Ask in plain language, for example:
+
+```txt
+Expose my app on port 3000 to the internet
+```
+
+```txt
+Share my local server with Google OAuth so only people at @example.com can access it
+```
+
+```txt
+Receive Stripe webhooks and deliver them to a service that isn't publicly reachable
+```
+
+In Claude Code, you can also run a skill directly, for example `/ngrok:expose-localhost`.
+
+## Available skills
+
+| Skill                      | What it does                                                                                                      | Example prompt                                   |
+| -------------------------- | ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| `expose-localhost`         | Gives a local service a public URL, over HTTP or raw TCP for SSH, RDP, and databases.                            | "Expose my local server"                         |
+| `secure-endpoint`          | Adds authentication, rate limiting, IP rules, or a custom response in front of an endpoint, without code changes. | "Require Google login on my ngrok URL"           |
+| `receive-webhooks`         | Receives webhooks from Stripe, GitHub, and 70+ other providers, with signature verification.                     | "Test Stripe webhooks locally"                   |
+| `run-mcp-gateway`          | Puts an MCP server you're developing online so Claude, OpenAI, or another provider can connect to it.            | "Let Claude connect to my local MCP server"      |
+| `provision-sandbox-access` | Gives each sandbox, container, device, or tenant its own isolated endpoint, provisioned programmatically.         | "Each sandbox needs its own SSH access"          |
+| `troubleshoot-ngrok`       | Diagnoses ngrok errors.                                                                                           | "What does ERR_NGROK_3200 mean?"                 |
+| `ngrok-setup`              | Installs and authenticates ngrok on the surface the task needs: the CLI, an SDK, the API, or infrastructure as code. | "Set up ngrok"                                 |
+
+Two more skills, `ngrok-engine` and `ngrok-surfaces`, are reference material that the skills above load automatically.
+They cover endpoint types, Traffic Policy and its actions, and how to apply configuration through the CLI, SDKs, API, Terraform, and the Kubernetes Operator.
+You don't invoke them directly.
+
+## Related resources
+
+- [ngrok/skills on GitHub](https://github.com/ngrok/skills): Source for every skill.
+- [ngrok MCP server](/mcp-server): Let your AI agent read and change your ngrok account.
+- [ngrok for AI Agents](/for-agents): Give your AI agent the ngrok documentation.
