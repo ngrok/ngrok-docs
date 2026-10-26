@@ -45,10 +45,9 @@ A blocked request never reaches the model.
 - **Response rules** run on each tool call the model returns.
 A blocked tool call is removed from the response, so your agent never receives it and can't run it.
 
-Firewall checks [OpenAI Chat Completions](/ai-gateway/sdks/openai) (`/v1/chat/completions`) and [Anthropic Messages](/ai-gateway/sdks/anthropic) (`/v1/messages`) requests, both streamed and not streamed.
-That covers agents that call those endpoints through the gateway, such as [Claude Code](/ai-gateway/agents/claude-code).
-Agents that use the Responses API, such as [Codex](/ai-gateway/agents/codex), aren't checked.
-If an enforced policy applies to their access key, the gateway rejects their requests, so give them a separate key.
+Firewall checks [OpenAI Chat Completions](/ai-gateway/sdks/openai) (`/v1/chat/completions`), [OpenAI Responses](/ai-gateway/sdks/openai#supported-endpoints) (`/v1/responses`), and [Anthropic Messages](/ai-gateway/sdks/anthropic) (`/v1/messages`) requests, both streamed and not streamed.
+That covers agents that call those endpoints through the gateway, such as [Claude Code](/ai-gateway/agents/claude-code) and [Codex](/ai-gateway/agents/codex).
+For other endpoints, see [Things to know](#things-to-know).
 
 ## Rules
 
@@ -145,8 +144,20 @@ See [What a blocked caller gets](/ai-gateway/reference/firewall#what-a-blocked-c
 
 ## Things to know
 
-- **Other endpoints**: if a policy that applies to a key uses Enforce, the gateway rejects that key's requests to endpoints Firewall can't check, such as the Responses API, with [`ERR_NGROK_27228`](/ai-gateway/reference/error-codes#err_ngrok_27228).
-In Dry run, those requests go through with the header `Ngrok-AIG-Firewall: unscreened; reason=unsupported_endpoint`.
+- **Other endpoints**: Firewall can't check requests to other endpoints, such as the [native Gemini API](/ai-gateway/sdks/google).
+**On error** decides what happens to them.
+If a policy that applies to the key uses Enforce and Block, the gateway rejects them with [`ERR_NGROK_27228`](/ai-gateway/reference/error-codes#err_ngrok_27228).
+Otherwise, they go through unchecked with the header `Ngrok-AIG-Firewall: unscreened; reason=unsupported_endpoint`.
+- **Legacy functions**: Firewall checks tool calls, not the function calls a model returns for the legacy Chat Completions `functions` field.
+When a policy has response rules, **On error** decides those requests the same way, and the header reason is `legacy_functions`.
+Send `tools` instead of `functions`.
+- **OpenAI-defined tools**: in a Responses request, Firewall can't read the arguments of tools that OpenAI defines and your app runs, such as local shell, computer use, and `apply_patch`.
+Tool names rules still match these calls by name, such as `local_shell` or `apply_patch`.
+For other rules, **On error** decides.
+Hosted tools, such as web search, run at OpenAI before the response returns, so Firewall doesn't check them.
+- **`previous_response_id`**: when Firewall blocks a tool call in a Responses request, OpenAI still keeps the original call.
+If your next request uses `previous_response_id`, OpenAI expects a tool output for a call your app never received.
+Send the conversation in `input` instead.
 - **Latency**: tool names and regex rules add almost no latency.
 Each decision rule calls the decision model, which can add up to 1.5 seconds before the check counts as failed.
 - **Streaming**: in Enforce mode, the gateway holds each streamed tool call until its checks finish, so your agent never receives a call that wasn't checked.
