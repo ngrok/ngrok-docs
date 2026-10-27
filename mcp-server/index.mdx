@@ -1,0 +1,322 @@
+---
+title: ngrok MCP Server
+sidebarTitle: MCP server
+description: Connect Claude Code, Codex, Cursor, and other AI agents to the ngrok MCP server to inspect and manage your endpoints, traffic, and account.
+---
+
+The ngrok MCP server lets your AI agent read and manage your ngrok account.
+Connect a client such as Claude Code, Codex, or Cursor, then ask about your endpoints, traffic, usage, and team, or ask it to make changes, in plain language.
+
+<Note>
+The ngrok MCP server is invite-only.
+You can [request access](https://dashboard.ngrok.com/early-access#mcp-server) in the dashboard.
+</Note>
+
+<Note>
+This page covers ngrok's own MCP server.
+To put your own MCP server online with ngrok, see the guide on [using ngrok as an MCP gateway](/gateway/api-gateway/mcp-gateway).
+</Note>
+
+The server URL is:
+
+```txt
+https://mcp.ngrok.com/mcp
+```
+
+Use this exact URL.
+The `/mcp` path is part of the OAuth resource, so the bare origin `https://mcp.ngrok.com` doesn't work.
+
+<Warning>
+Access isn't read-only.
+Your AI agent can create, change, and delete resources in your account, such as Cloud Endpoints, domains, IP policies, and secrets.
+The AI agent acts as you, with your role's permissions, so check what it's about to do before you approve a tool call.
+See [Make changes safely](#make-changes-safely).
+</Warning>
+
+## Quickstart
+
+Most clients sign in with OAuth.
+You add the server, then sign in to ngrok in your browser and approve the consent screen.
+You never paste a token into your AI agent.
+
+<Tabs>
+	<Tab title="Claude Code">
+		Run:
+
+		```bash
+		claude mcp add --transport http --scope user ngrok https://mcp.ngrok.com/mcp
+		claude mcp login ngrok
+		```
+
+		Don't pass `--client-id` or `--callback-port`.
+		Claude Code finds its client through server discovery.
+	</Tab>
+	<Tab title="Codex">
+		Use Codex 0.157.0 or later.
+		Run:
+
+		```bash
+		codex mcp add ngrok --url https://mcp.ngrok.com/mcp
+		codex mcp login ngrok
+		```
+
+		If `codex mcp add` starts a sign-in, cancel it and run `codex mcp login ngrok`.
+		Don't pass `--oauth-client-id` or `--oauth-resource`.
+	</Tab>
+	<Tab title="Cursor">
+		Add this to `~/.cursor/mcp.json` (global) or `.cursor/mcp.json` (project):
+
+		```json
+		{
+		  "mcpServers": {
+		    "ngrok": {
+		      "url": "https://mcp.ngrok.com/mcp",
+		      "auth": {
+		        "CLIENT_ID": "iamcli_3KeK8d8sO4d9RArARx7RFzcTVtO"
+		      }
+		    }
+		  }
+		}
+		```
+
+		Don't set `CLIENT_SECRET`.
+		Then connect the server from Cursor's MCP settings.
+	</Tab>
+	<Tab title="Gemini CLI">
+		Add this to `~/.gemini/settings.json`:
+
+		```json
+		{
+		  "mcpServers": {
+		    "ngrok": {
+		      "httpUrl": "https://mcp.ngrok.com/mcp",
+		      "oauth": {
+		        "enabled": true,
+		        "clientId": "iamcli_3KeK8docLctYxdqmXkXUIBSFhMo"
+		      }
+		    }
+		  }
+		}
+		```
+
+		Don't set `clientSecret` or `redirectUri`.
+		Then run `/mcp auth ngrok` in Gemini CLI.
+	</Tab>
+	<Tab title="Amp">
+		Run these on the machine that runs Amp:
+
+		```bash
+		amp mcp add ngrok https://mcp.ngrok.com/mcp
+		amp mcp oauth login ngrok \
+		  --server-url https://mcp.ngrok.com/mcp \
+		  --client-id iamcli_3KeO0uXWr4mqAa5QKHWzGNdqtv0
+		```
+
+		Don't set `--client-secret`.
+		Then start Amp to finish signing in.
+	</Tab>
+	<Tab title="Cline">
+		Add this through Cline's MCP settings (`cline_mcp_settings.json`):
+
+		```json
+		{
+		  "mcpServers": {
+		    "ngrok": {
+		      "type": "streamableHttp",
+		      "url": "https://mcp.ngrok.com/mcp",
+		      "oauthClient": {
+		        "clientId": "iamcli_3KeO0voSIkw55lArUFbxy1fUnqM"
+		      }
+		    }
+		  }
+		}
+		```
+
+		Leave `clientSecret` unset.
+		Then use Cline's authorize action.
+	</Tab>
+	<Tab title="VS Code">
+		Add this to `.vscode/mcp.json` (workspace) or your user MCP configuration:
+
+		```json
+		{
+		  "servers": {
+		    "ngrok": {
+		      "type": "http",
+		      "url": "https://mcp.ngrok.com/mcp"
+		    }
+		  }
+		}
+		```
+
+		Then start the server from that file and sign in.
+	</Tab>
+</Tabs>
+
+### Other clients
+
+If your client supports OAuth client ID metadata documents, add `https://mcp.ngrok.com/mcp` as a remote HTTP server.
+Zed, Goose, and OpenCode work this way.
+
+Cloud-only clients, such as claude.ai and ChatGPT, can't connect yet.
+
+### Clients without OAuth
+
+If your client can't sign in with OAuth, use a personal access token (PAT) instead:
+
+<Steps>
+	<Step title="Create a personal access token">
+		In the dashboard, go to [Access Tokens](https://dashboard.ngrok.com/access-tokens/new) and create a token.
+		Choose the scopes for what you want your AI agent to do, and set an expiration.
+		Read scopes, such as `endpoints:read`, let the AI agent look things up.
+		Write scopes, such as `endpoints:write` and `ip-policies:write`, let it make changes.
+		Copy the token right away.
+		It starts with `ngrok_pat_` and the dashboard shows it only once.
+	</Step>
+	<Step title="Send the token as a bearer header">
+		Configure your client to send this header with every request to `https://mcp.ngrok.com/mcp`:
+
+		```txt
+		Authorization: Bearer ngrok_pat_...
+		```
+
+		For example, with Claude Code:
+
+		```bash
+		claude mcp add --transport http --scope user ngrok https://mcp.ngrok.com/mcp \
+		  --header "Authorization: Bearer $NGROK_PAT"
+		```
+
+		Most clients that take a JSON configuration accept a `headers` object next to `url`.
+	</Step>
+</Steps>
+
+API keys and authtokens don't work with the MCP server.
+Store the PAT the way you store other secrets, such as in an environment variable, and don't paste it into a chat with your AI agent.
+
+## Check that it works
+
+After you sign in, confirm that your client sees the ngrok tools:
+
+- Claude Code: run `/mcp` and select `ngrok`.
+- Codex: run `codex mcp list`.
+- Any client: ask your AI agent "What ngrok tools do you have?"
+
+Then ask "Which ngrok account am I signed in to?"
+The AI agent replies with your user, account, role, and plan.
+
+Your AI agent can look up:
+
+- Endpoints, ngrok agents, and Traffic Inspector traffic.
+- Gateway resources, such as domains, TCP addresses, IP policies, certificates, vaults, and event destinations.
+- Your account, team, credentials, usage, and limits.
+- The ngrok documentation.
+
+Your AI agent can change:
+
+- Cloud Endpoints, including their URL, bindings, pooling, and Traffic Policy.
+- Reserved domains and TCP addresses.
+- IP policies and their allow and deny rules.
+- Vaults and secrets.
+- Credentials: it can revoke authtokens, API keys, and SSH keys.
+- Traffic Policy: it can write a policy and validate it before applying it.
+
+## What you can ask
+
+These examples show what a conversation with the ngrok MCP server looks like.
+Your AI agent picks the tools, so the exact steps can differ.
+
+<AccordionGroup>
+	<Accordion title="Show me the 500s on my endpoints by hour for the last day">
+		The AI agent queries Traffic Inspector for status 500 over the last 24 hours, counted per hour in your time zone.
+		You get an hourly breakdown, plus the paths and client IPs behind the spikes.
+		Follow up with "Show me one of those requests" to see its headers, timing, and error detail.
+	</Accordion>
+	<Accordion title="Who's hammering /login, and from where?">
+		The AI agent groups requests to `/login` by client IP, then by country.
+		You get the top sources with request counts and the countries they come from.
+	</Accordion>
+	<Accordion title="Block the top IP hitting /login">
+		The AI agent finds the source, checks which IP policy your endpoint's [`restrict-ips`](/gateway/traffic-policy/actions/restrict-ips) action uses, and asks to add a deny rule to it.
+		This call changes your account, so your client asks you to approve it first.
+		If no `restrict-ips` action names the policy yet, the AI agent tells you that the rule doesn't block anything until one does.
+	</Accordion>
+	<Accordion title="I got an ngrok error page with request ID 0a1b2c3d…. What happened?">
+		The AI agent looks up that request and reads the `ERR_NGROK` code in the docs.
+		You get what failed, where it failed (ngrok, your ngrok agent, or your upstream), and how to fix it.
+	</Accordion>
+	<Accordion title="Rate limit /api on my Cloud Endpoint to 100 requests per minute per IP">
+		The AI agent reads the [`rate-limit`](/gateway/traffic-policy/actions/rate-limit) action docs, writes the policy, and validates it.
+		If validation fails, it fixes the errors and validates again.
+		Then it asks to update your Cloud Endpoint's Traffic Policy.
+	</Accordion>
+	<Accordion title="Set up api.example.com as a Cloud Endpoint that forwards to my internal service">
+		The AI agent reserves the domain and replies with the CNAME record to add at your DNS provider.
+		Then it creates a Cloud Endpoint for `https://api.example.com` with a Traffic Policy that forwards to your [internal endpoint](/gateway/endpoints/internal-endpoints).
+		The endpoint serves traffic once your DNS record and certificate are ready.
+	</Accordion>
+	<Accordion title="Store my Stripe webhook secret in a vault and verify webhooks with it">
+		The AI agent creates a vault, or uses one you name, and adds the secret to it.
+		Then it updates your endpoint's Traffic Policy to verify webhooks with [`secrets.get()`](/gateway/traffic-policy/secrets).
+		Tools never return secret values, so the AI agent can confirm the secret exists but can't read it back.
+	</Accordion>
+	<Accordion title="Release the TCP addresses that no endpoint uses">
+		The AI agent compares your reserved TCP addresses with your endpoints and lists the ones that are unused.
+		After you confirm the list, it releases each one.
+		A released address might not be available again, so the AI agent asks before it deletes anything.
+	</Accordion>
+	<Accordion title="Am I being rate limited? Why are my requests failing?">
+		The AI agent checks which limits are blocking your account right now.
+		You get each limit's current value and cap, when the block lifts, and the exact error your callers saw.
+	</Accordion>
+	<Accordion title="Which endpoints used the most data this month?">
+		The AI agent reads your account's usage beside what your plan includes, then ranks your endpoints by data transfer out.
+		You get the top endpoints with their requests, connections, and data transfer.
+	</Accordion>
+	<Accordion title="Which of my ngrok agents are out of date, and which endpoints are online?">
+		The AI agent lists connected ngrok agents with their versions and any deprecation deadlines, and the endpoints they serve.
+		You get the ngrok agents that need an upgrade and by when.
+		An Agent Endpoint that's missing from the list means its ngrok agent isn't connected.
+	</Accordion>
+	<Accordion title="Why does my custom domain show TLS errors?">
+		The AI agent checks the domain's certificate status.
+		If provisioning failed, you get the DNS record to fix.
+	</Accordion>
+	<Accordion title="Who on my team has API keys? Revoke the ones that belong to people who left">
+		The AI agent joins your team with your API keys.
+		You get each key's owner, description, and status.
+		For keys whose owner is no longer on the team, it asks to revoke each one.
+		Tools never return the key, token, or secret values themselves.
+	</Accordion>
+</AccordionGroup>
+
+<Note>
+Traffic questions use [Traffic Inspector](/obs/traffic-inspection) data, so the window your AI agent can see depends on your plan's retention.
+Request headers and bodies are available only when full capture is turned on.
+</Note>
+
+## Make changes safely
+
+The MCP server marks each tool as read-only or as one that makes changes, and marks deletes as destructive.
+Most clients use these markers to ask you before the AI agent runs a tool that changes your account.
+Keep those prompts on, and read what the AI agent is about to do before you approve it.
+
+To keep an AI agent read-only, connect with a personal access token that has only read scopes.
+See [Clients without OAuth](#clients-without-oauth).
+
+## Troubleshooting
+
+- **"Got new credentials, but ngrok rejected them":** Your account doesn't have access to the MCP server.
+  Contact [ngrok support](mailto:support@ngrok.com).
+- **Sign-in fails or the server isn't found:** Check that the URL ends in `/mcp`.
+- **Claude Code uses an old callback port:** Run `claude mcp remove ngrok --scope user`, then add the server again.
+- **A PAT is rejected:** The token is invalid, expired, or revoked.
+  Create a new one and update the `Authorization` header.
+
+## Related resources
+
+- [Traffic Inspector](/obs/traffic-inspection): The traffic data behind most questions.
+- [Traffic Policy](/gateway/traffic-policy): The rules your AI agent can write and validate.
+- [IP policies](/gateway/traffic-policy/concepts/ip-policies): How deny and allow rules apply to endpoints.
+- [Role-based access control](/iam/rbac): What your role allows the AI agent to do.
+- [Use ngrok as an MCP gateway](/gateway/api-gateway/mcp-gateway): Put your own MCP server online with ngrok.
