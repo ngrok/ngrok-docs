@@ -31,6 +31,8 @@ tags:
     description: Manage the provider keys your account stores for AI Gateway. Access key configurations reference them in routing rule steps.
   - name: AI Gateway Usage
     description: Read-only AI Gateway usage events and aggregated usage overview for the authenticated account.
+  - name: AI Gateway Virtual Models
+    description: Manage virtual models, names that stand for an ordered list of models to try in turn.
 paths:
   /access-key-configurations:
     get:
@@ -1126,6 +1128,127 @@ paths:
                 $ref: '#/components/schemas/AIGatewayRequest'
         default:
           $ref: '#/components/responses/Error'
+  /virtual-models:
+    get:
+      tags:
+        - AI Gateway Virtual Models
+      summary: List AI Gateway virtual models
+      description: List all AI Gateway virtual models owned by the authenticated account.
+      operationId: ListAIGatewayVirtualModels
+      parameters:
+        - $ref: '#/components/parameters/BeforeID'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: A page of AI Gateway virtual models.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIGatewayVirtualModelList'
+        default:
+          $ref: '#/components/responses/Error'
+    head:
+      tags:
+        - AI Gateway Virtual Models
+      summary: Check AI Gateway virtual models collection availability
+      description: HEAD variant of list AI Gateway virtual models.
+      operationId: HeadAIGatewayVirtualModels
+      parameters:
+        - $ref: '#/components/parameters/BeforeID'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: The AI Gateway virtual models collection is available.
+        default:
+          $ref: '#/components/responses/Error'
+    post:
+      tags:
+        - AI Gateway Virtual Models
+      summary: Create an AI Gateway virtual model
+      description: |
+        Create a virtual model: a name that stands for an ordered list of
+        models. A request that sends the name as `model` tries the models in
+        order until one succeeds.
+      operationId: CreateAIGatewayVirtualModel
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AIGatewayVirtualModelCreate'
+      responses:
+        '201':
+          description: The created AI Gateway virtual model.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIGatewayVirtualModel'
+        default:
+          $ref: '#/components/responses/Error'
+  /virtual-models/{id}:
+    parameters:
+      - $ref: '#/components/parameters/AIGatewayVirtualModelID'
+    get:
+      tags:
+        - AI Gateway Virtual Models
+      summary: Get an AI Gateway virtual model
+      description: Get a single AI Gateway virtual model by ID.
+      operationId: GetAIGatewayVirtualModel
+      responses:
+        '200':
+          description: The AI Gateway virtual model.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIGatewayVirtualModel'
+        default:
+          $ref: '#/components/responses/Error'
+    head:
+      tags:
+        - AI Gateway Virtual Models
+      summary: Check AI Gateway virtual model availability
+      description: HEAD variant of get AI Gateway virtual model.
+      operationId: HeadAIGatewayVirtualModel
+      responses:
+        '200':
+          description: The AI Gateway virtual model exists.
+        default:
+          $ref: '#/components/responses/Error'
+    patch:
+      tags:
+        - AI Gateway Virtual Models
+      summary: Update an AI Gateway virtual model
+      description: |
+        Apply a partial update to an AI Gateway virtual model. Omit a field to
+        leave it unchanged. A new `models` value replaces the whole list. An
+        empty `description` clears it.
+      operationId: UpdateAIGatewayVirtualModel
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AIGatewayVirtualModelUpdate'
+      responses:
+        '200':
+          description: The updated AI Gateway virtual model.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIGatewayVirtualModel'
+        default:
+          $ref: '#/components/responses/Error'
+    delete:
+      tags:
+        - AI Gateway Virtual Models
+      summary: Delete an AI Gateway virtual model
+      description: Delete an AI Gateway virtual model by ID.
+      operationId: DeleteAIGatewayVirtualModel
+      responses:
+        '204':
+          description: The AI Gateway virtual model was deleted.
+        default:
+          $ref: '#/components/responses/Error'
 components:
   securitySchemes:
     bearerAuth:
@@ -1216,6 +1339,13 @@ components:
       in: path
       required: true
       description: Unique identifier for a credit purchase attempt.
+      schema:
+        type: string
+    AIGatewayVirtualModelID:
+      name: id
+      in: path
+      required: true
+      description: Unique identifier for an AI Gateway virtual model.
       schema:
         type: string
   schemas:
@@ -3379,6 +3509,9 @@ components:
         providerKeyDisplayName:
           type: string
           description: Redacted display form of the provider key, when `keySource` is `user`. Absent otherwise.
+        virtualModel:
+          type: string
+          description: The virtual model the attempt's target came from, with its name as it was when the request ran. Absent when the client named the model directly.
     AIGatewayUsageList:
       type: object
       additionalProperties: false
@@ -3538,6 +3671,141 @@ components:
           description: Every upstream attempt, ordered by attempt number.
           items:
             $ref: '#/components/schemas/AIGatewayRequestAttempt'
+    AIGatewayVirtualModelWarning:
+      type: object
+      additionalProperties: false
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          enum:
+            - nameHidesModel
+            - targetUnresolved
+          x-enum-varnames:
+            - AIGatewayVirtualModelWarningCodeNameHidesModel
+            - AIGatewayVirtualModelWarningCodeTargetUnresolved
+          description: |
+            `nameHidesModel`: a model ID, short ID, or alias now matches the
+            name. Requests with the name still use the virtual model.
+            `targetUnresolved`: the target no longer resolves for this account.
+            Requests skip it.
+        message:
+          type: string
+          description: Human-readable description of the problem.
+        target:
+          type: string
+          description: The target that the warning is about. Set only on target warnings.
+    AIGatewayVirtualModel:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - uri
+        - name
+        - models
+        - createdAt
+        - updatedAt
+        - createdBy
+        - lastUpdatedBy
+        - warnings
+      properties:
+        id:
+          type: string
+          description: Unique identifier for this virtual model.
+        uri:
+          type: string
+          description: URI of this AI Gateway Virtual Model API resource.
+        name:
+          type: string
+          description: The value clients send as `model`.
+        models:
+          type: array
+          description: Models in failover order.
+          items:
+            type: string
+        description:
+          type: string
+          description: Human-readable description.
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp when the virtual model was created.
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp when the virtual model was last updated.
+        createdBy:
+          $ref: '#/components/schemas/Ref'
+        lastUpdatedBy:
+          $ref: '#/components/schemas/Ref'
+        warnings:
+          type: array
+          description: |
+            Problems that started after the last save, for example a target
+            that no longer resolves. Computed on each read. A warning never
+            blocks requests.
+          items:
+            $ref: '#/components/schemas/AIGatewayVirtualModelWarning'
+    AIGatewayVirtualModelList:
+      type: object
+      additionalProperties: false
+      required:
+        - aiGatewayVirtualModels
+        - uri
+      properties:
+        aiGatewayVirtualModels:
+          type: array
+          description: The AI Gateway virtual models for this account.
+          items:
+            $ref: '#/components/schemas/AIGatewayVirtualModel'
+        uri:
+          type: string
+          description: URI of this list resource.
+        nextPageUri:
+          type: string
+          nullable: true
+          description: URI of the next page of results, or null if there is no next page.
+    AIGatewayVirtualModelCreate:
+      type: object
+      additionalProperties: false
+      required:
+        - name
+        - models
+      properties:
+        name:
+          type: string
+          description: |
+            The value clients send as `model`. 1 to 64 characters: letters,
+            numbers, '.', '_', and '-'. Unique per account without regard to
+            case, and must not match a model name.
+        models:
+          type: array
+          description: |
+            1 to 10 models in failover order. Each is a model ID, a short ID
+            such as `gpt-4o`, or `provider:model` for a known provider.
+            If you use `ngrok/auto`, it can't be combined with other entries.
+          items:
+            type: string
+        description:
+          type: string
+          description: Human-readable description. At most 255 characters.
+    AIGatewayVirtualModelUpdate:
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+          description: The value clients send as `model`.
+        models:
+          type: array
+          description: Models in failover order. Replaces the whole list.
+          items:
+            type: string
+        description:
+          type: string
+          description: Human-readable description. An empty value clears it.
   responses:
     Error:
       description: API error response.
