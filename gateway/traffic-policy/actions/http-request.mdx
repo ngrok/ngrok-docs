@@ -238,7 +238,20 @@ To simulate this behavior, use [httpbin.org/get](https://httpbin.org/get), which
 ##### Start an internal Agent endpoint
 
 ```bash
-ngrok http https://httpbin.org --host-header rewrite --url https://httpbin.internal
+ngrok http https://httpbin.org \
+  --url https://httpbin.internal \
+  --traffic-policy-file httpbin-host.yml
+```
+
+Save the following as `httpbin-host.yml` so the agent rewrites the `host` header to `httpbin.org`:
+
+```yaml httpbin-host.yml
+on_http_request:
+  - actions:
+      - type: add-headers
+        config:
+          headers:
+            host: httpbin.org
 ```
 
 <CodeGroup>
@@ -295,8 +308,12 @@ To simulate this behavior, use [httpbin.org/post](https://httpbin.org/post) behi
 #### Start an Internal Agent Endpoint
 
 ```bash
-ngrok http https://httpbin.org --host-header rewrite --url https://httpbin.internal
+ngrok http https://httpbin.org \
+  --url https://httpbin.internal \
+  --traffic-policy-file httpbin-host.yml
 ```
+
+This uses the `httpbin-host.yml` Traffic Policy from [Send query parameters](#send-query-parameters).
 
 #### Example
 
@@ -351,8 +368,12 @@ To simulate this behavior, use [httpbin.org/redirect](https://httpbin.org/redire
 Run the following command to expose `https://httpbin.internal` as a simulated internal service:
 
 ```bash
-ngrok http https://httpbin.org --host-header rewrite --url https://httpbin.internal
+ngrok http https://httpbin.org \
+  --url https://httpbin.internal \
+  --traffic-policy-file httpbin-host.yml
 ```
+
+This uses the `httpbin-host.yml` Traffic Policy from [Send query parameters](#send-query-parameters).
 
 #### Example
 

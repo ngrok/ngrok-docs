@@ -109,16 +109,25 @@ See the [Terms of Service](https://ngrok.com/tos) and [Data Processing Agreement
 Yes, applications exposed via ngrok's HTTP endpoints work with CORS.
 
 Your application must serve the appropriate CORS headers, or you can use ngrok's [response headers module](/gateway/traffic-policy/actions/add-headers/) to add the appropriate CORS headers.
-Setting the correct CORS headers is non-trivial, but for very simple examples you can try:
+Setting the correct CORS headers is non-trivial, but for very simple examples you can save the following as `traffic-policy.yml`:
 
+```yaml
+on_http_response:
+  - actions:
+      - type: add-headers
+        config:
+          headers:
+            access-control-allow-origin: "*"
 ```
-ngrok http 80 --response-header-add "Access-Control-Allow-Origin: *"
+
+Then start the agent with it:
+
+```bash
+ngrok http 80 --traffic-policy-file traffic-policy.yml
 ```
 
 If you use any of ngrok's authentication modules, CORS preflight options requests are blocked by default.
 You can override this behavior using [Traffic Policy](/gateway/traffic-policy/) expressions to skip auth enforcement if the request is a CORS preflight request.
-
-Basic Auth (`--basic-auth`) doesn't yet support configuring options passthrough.
 
 ## What's the status of ngrok v1?
 
