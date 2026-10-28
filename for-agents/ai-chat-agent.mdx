@@ -1,0 +1,174 @@
+---
+title: ngrok AI Chat Agent for Slack
+sidebarTitle: AI Chat Agent (Slack)
+description: Connect your Slack workspace to ngrok and ask @ngrok about your endpoints, traffic, usage, team, limits, and apps without leaving Slack.
+---
+
+The ngrok AI Chat Agent answers questions about your ngrok account in Slack.
+Connect your workspace once, invite `@ngrok` to a channel, and ask it about your endpoints, traffic, usage, team, and limits in plain language.
+It replies in a thread, and everyone in the channel can read the answer.
+
+The AI Chat Agent uses the same tools as the [ngrok MCP server](/mcp-server), but in Slack it only reads your account.
+To make changes with an AI agent, use the MCP server.
+
+<Note>
+The AI Chat Agent is only available on the [Pay-as-you-go plan](https://ngrok.com/pricing).
+On other plans, the [AI Chat Agent](https://dashboard.ngrok.com/settings/ai-chat-agent) settings page shows a preview with an option to upgrade.
+Slack is the only supported chat platform today.
+You can request Microsoft Teams or Discord support from the [AI Chat Agent](https://dashboard.ngrok.com/settings/ai-chat-agent) page in the dashboard.
+</Note>
+
+## Connect your Slack workspace
+
+You need to be an admin of your ngrok account, and a Slack workspace admin or owner needs to approve the install in Slack.
+One ngrok account connects to one Slack workspace.
+
+<Steps>
+	<Step title="Open the AI Chat Agent settings">
+		In the dashboard, go to [Settings → AI Chat Agent](https://dashboard.ngrok.com/settings/ai-chat-agent).
+	</Step>
+	<Step title="Add ngrok to Slack">
+		Under **Slack**, select **Add to Slack**.
+		Slack opens in a new window and asks you to choose a workspace and approve the permissions ngrok requests.
+		If the window doesn't open, select **Reopen the Slack window**.
+	</Step>
+	<Step title="Confirm the connection">
+		Return to the dashboard.
+		The **Slack** section shows your workspace name with a **Connected** badge once Slack confirms the install.
+	</Step>
+</Steps>
+
+If your Slack workspace is already connected to a different ngrok account, you can connect it again from this account.
+Each account keeps its own connection, and the agent asks members of several accounts which one they mean.
+See [Workspaces with more than one ngrok account](#workspaces-with-more-than-one-ngrok-account).
+
+## Ask @ngrok a question
+
+<Steps>
+	<Step title="Invite @ngrok to a channel">
+		In Slack, run `/invite @ngrok` in any public or private channel.
+		The agent only sees messages that mention it, so it doesn't read the rest of the channel.
+	</Step>
+	<Step title="Mention @ngrok with your question">
+		For example:
+
+		```txt
+		@ngrok which of my endpoints are online right now?
+		```
+
+		The agent reacts with 👀, shows **is looking into it…** under your message, and replies in a thread.
+	</Step>
+	<Step title="Follow up in the thread">
+		Mention `@ngrok` again in the same thread to ask a follow-up.
+		The agent reads the thread for context, so "and how many of those were 500s?" works after a question about traffic.
+	</Step>
+</Steps>
+
+Each answer is based on what you're allowed to see.
+The agent matches your Slack profile email to a member of the connected ngrok account and acts with that member's [role](/iam/rbac).
+If your Slack email doesn't match a member, the agent tells you so instead of answering.
+
+### What you can ask
+
+The agent can look up:
+
+- Endpoints, connected ngrok agents, and the requests and connections in [Traffic Inspector](/obs/traffic-inspection).
+- Gateway resources, such as domains, TCP addresses, IP policies, certificates, vaults, event subscriptions, and event destinations.
+- Your account, team, credentials, usage, and limits.
+- Your apps, environments, deployments, and rollouts, if your account uses ngrok Ship.
+- The ngrok documentation.
+
+It can also write a [Traffic Policy](/gateway/traffic-policy) for you and validate it, but it can't apply it.
+Copy the policy from the thread and add it to your endpoint yourself.
+
+These examples show what a conversation looks like.
+The agent picks the tools, so the exact steps can differ.
+
+<AccordionGroup>
+	<Accordion title="@ngrok is there a pattern in the 404s hitting example.com?">
+		The agent queries Traffic Inspector for 404 responses on that host and groups them by path and client IP.
+		You get the paths that dominate, any that look like scanners or probes, and the client IPs behind them.
+	</Accordion>
+	<Accordion title="@ngrok show me the 500s on my endpoints by hour for the last day">
+		The agent counts status 500 responses per hour over the last 24 hours.
+		Follow up with "show me one of those requests" to see its headers, timing, and error detail.
+	</Accordion>
+	<Accordion title="@ngrok am I being rate limited? Why are my requests failing?">
+		The agent checks which limits are blocking your account right now.
+		You get each limit's current value and cap, when the block lifts, and the error your callers saw.
+	</Accordion>
+	<Accordion title="@ngrok I got an ngrok error page with request ID 0a1b2c3d…. What happened?">
+		The agent looks up that request and reads the `ERR_NGROK` code in the docs.
+		You get what failed, where it failed, and how to fix it.
+	</Accordion>
+	<Accordion title="@ngrok which endpoints used the most data this month?">
+		The agent reads your account's usage beside what your plan includes and ranks your endpoints by data transfer.
+	</Accordion>
+	<Accordion title="@ngrok which of my ngrok agents are out of date?">
+		The agent lists connected ngrok agents with their versions and any deprecation deadlines.
+	</Accordion>
+	<Accordion title="@ngrok write a Traffic Policy that rate limits /api to 100 requests per minute per IP">
+		The agent reads the [`rate-limit`](/gateway/traffic-policy/actions/rate-limit) action docs, writes the policy, and validates it.
+		You get a policy you can paste into your endpoint's configuration.
+	</Accordion>
+	<Accordion title="@ngrok why did the last deploy of my app fail?">
+		For accounts that use ngrok Ship, the agent finds the latest release, reads the rollout's failure reason, and links to it in the dashboard.
+	</Accordion>
+</AccordionGroup>
+
+<Note>
+Traffic questions use [Traffic Inspector](/obs/traffic-inspection) data, so the window the agent can see depends on your plan's retention.
+Request headers and bodies are available only when full capture is turned on.
+</Note>
+
+### Workspaces with more than one ngrok account
+
+When your Slack workspace is connected to several ngrok accounts that you're a member of, the agent asks which account you mean the first time you mention it.
+Name the account in your message, and the agent uses it for you from then on until you name another one.
+A thread sticks to the account its first answer used, so start a new thread to ask about a different account.
+Each answer ends with the account it came from.
+
+## How the agent uses your data
+
+- The agent reads only messages that mention `@ngrok` and the thread they're in.
+  It doesn't read other messages in the channel.
+- It acts as the ngrok member whose email matches your Slack profile, with a short-lived credential minted for that member.
+  It can't see anything your role can't see.
+- It never returns secret values, authtokens, or API keys, only their names and metadata.
+- It can't change your account.
+  Tools that create, update, or delete resources aren't available in Slack.
+
+## Disconnect Slack
+
+To stop the agent, go to [Settings → AI Chat Agent](https://dashboard.ngrok.com/settings/ai-chat-agent) and select **Disconnect**.
+`@ngrok` stops answering in that workspace.
+The Slack integration stays on the [Integrations](https://dashboard.ngrok.com/integrations) page, so you can connect again later without approving ngrok in Slack a second time.
+
+To remove ngrok from Slack entirely, a Slack admin can also remove the app from the workspace's **Manage apps** page.
+
+## Troubleshooting
+
+- **The agent doesn't respond:** Check that `@ngrok` is a member of the channel, and that you mentioned it rather than typing its name.
+  Then check [Settings → AI Chat Agent](https://dashboard.ngrok.com/settings/ai-chat-agent) for a **Needs attention** badge.
+  If Slack has rejected ngrok's access, select **Reconnect**.
+- **"Your chat email isn't an active member of the connected ngrok account":** The email on your Slack profile doesn't match any member of the ngrok account.
+  Ask an account admin to invite that email from [Team Members](https://dashboard.ngrok.com/team-members), or update your Slack profile to the email you use with ngrok.
+- **"I can't see an email on your chat profile":** Your Slack profile has no email that ngrok can read.
+  Add one, or ask your Slack admin to check the workspace's email visibility settings.
+- **"The connected ngrok account's plan doesn't include the chat agent":** The account lost access, usually after a plan change.
+  An account admin can upgrade from the [AI Chat Agent](https://dashboard.ngrok.com/settings/ai-chat-agent) page.
+- **"This thread is too long for me to follow":** The agent reads the whole thread on every mention and this one no longer fits.
+  Start a new thread.
+- **An answer ends with "(truncated)":** Slack limits how long a reply can be.
+  Ask a narrower question, or open the dashboard link in the reply for the full detail.
+- **"Only a Slack workspace admin or owner can connect ngrok to this workspace":** The person who approved the install in Slack isn't a workspace admin.
+  Ask an admin to select **Add to Slack** or **Reconnect** and approve the install.
+- **"This ngrok account is already connected to a Slack workspace":** Each ngrok account connects to one workspace.
+  Disconnect the current workspace first.
+
+## Related resources
+
+- [ngrok MCP server](/mcp-server): The same tools from your coding agent, with the ability to make changes.
+- [Traffic Inspector](/obs/traffic-inspection): The traffic data behind most questions.
+- [Role-based access control](/iam/rbac): What your role lets the agent see.
+- [Slack webhooks](/integrations/webhooks/slack-webhooks): Verify webhooks that Slack sends to your endpoints, which is a different integration.
