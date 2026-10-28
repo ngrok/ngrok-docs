@@ -2,3 +2,24 @@
 openapi: "/openapi/ai-gateway.yaml GET /v1/models"
 description: List every model available to your account, including built-in catalog models and your own user-defined provider models.
 ---
+
+## Pricing
+
+Each entry in a model's `providers` array has a `pricing` object with the rates in effect when you call the endpoint.
+
+- `currency`: Always `USD`.
+- `rates`: One object per billable item. The array is empty when ngrok.ai has no price for the model, such as a model on your own [custom provider](/ai-gateway/concepts/custom-providers).
+
+Each rate has:
+
+- `type`: What the rate prices. Token rates are `prompt`, `completion`, `input_cache_read`, `input_cache_read_explicit`, `input_cache_write`, `audio_input`, and `image_output`. A hosted-tool rate uses the tool name, such as `web_search`, `file_search`, `code_interpreter`, `image_generation`, `web_fetch`, `code_execution`, `maps`, `url_context`, `image_search`, or `x_search`.
+- `unit`: What one unit is, such as `token`, `request`, `image`, `hour`, or `gb_day`.
+- `price`: The cost in US dollars for one unit, as a decimal string. Token rates are per single token, so `"0.0000025"` is $2.50 per million tokens.
+- `conditions`: Present when the rate applies only in some cases or needs context to read. For example, `ttl` tells apart the `5m` and `1h` cache write rates, `model` names the image model an `image_generation` rate prices, and `tier` names a container size.
+
+`supports_managed_keys` is `true` when an ngrok-managed key can serve this offering. It is `false` on custom providers, and on models with no input-token price or, except embedding models, no output-token price.
+
+## Retired models
+
+This endpoint doesn't show deprecation or retirement dates yet.
+See [Replace retired models](/ai-gateway/guides/retired-model-fallback).

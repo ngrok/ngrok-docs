@@ -1,0 +1,59 @@
+---
+title: Replace Retired Models
+sidebarTitle: Replace retired models
+description: Send requests for a retired model to the replacement model the catalog names for it.
+---
+
+{/* Publish only after the public `PATCH /gateway-config` API accepts `replaceRetiredModels`. */}
+
+When a built-in model in the [model catalog](/ai-gateway/reference/model-catalog) retires, the catalog can name a newer model from the same provider as its replacement.
+With `replaceRetiredModels` on, the AI Gateway sends requests for the retired model to that replacement.
+
+## Turn it on
+
+`replaceRetiredModels` is an account-wide setting and is off by default.
+Set it with the AI Gateway API and an [AI Gateway API key](/ai-gateway/concepts/access-keys#credentials-overview).
+The dashboard doesn't show it yet.
+
+```bash
+curl -X PATCH https://api.ngrok.ai/gateway-config \
+  -H "Authorization: Bearer $AI_GATEWAY_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{ "replaceRetiredModels": true }'
+```
+
+Send `false` to turn it off.
+`GET /gateway-config` returns the current value.
+
+## How it works
+
+Suppose the catalog retires `model-a` and names `model-b`, from the same provider, as its replacement.
+With `replaceRetiredModels` on, a request for `model-a` works like this:
+
+- If you send the bare name and another provider still serves `model-a`, the gateway tries that provider first.
+  A provider-qualified name such as `openai:model-a` resolves to that one provider.
+- The gateway then tries `model-b`.
+  If `model-b` is also retired, it follows the replacement chain to the first model that isn't retired.
+  The chain stays within the provider that retired `model-a`, and stops if it loops.
+- A replacement must pass the same checks as a model you name yourself.
+  If your [access key configuration](/ai-gateway/guides/access-key-configurations) doesn't allow it, or no credentials can serve it, the gateway doesn't use it.
+- If no other provider serves `model-a` and no model on the chain is active, the gateway drops `model-a` from the request.
+  The request fails with [ERR_NGROK_AI_GATEWAY_MODEL_GONE](/ai-gateway/reference/error-codes#err_ngrok_ai_gateway_model_gone) only when no other model in the request can run.
+- [Fallback models](/ai-gateway/guides/configure-fallback-models) in `models` get the same treatment, one entry at a time.
+- The request bills at `model-b`'s price, as if you had named it.
+
+When a replacement serves the response, the `Ngrok-AIG-Replaced-Models` header names the retired model and its replacement as catalog IDs in the form `retired=replacement`, such as `acme/model-a=acme/model-b`.
+If the replacement fails and a later fallback model answers, the header is absent.
+`Ngrok-AIG-Model` names the provider's model ID that served.
+See [Response headers](/ai-gateway/how-it-works#response-headers).
+
+With `replaceRetiredModels` off, the gateway sends the request to the provider as `model-a`.
+
+Replacement applies only to built-in catalog models.
+Models on your own [custom providers](/ai-gateway/concepts/custom-providers) never retire.
+
+## Find retired models
+
+The [`/v1/models` API](/ai-gateway/api-reference/models/list) and the model catalog page don't show deprecation or retirement dates yet.
+Follow your provider's deprecation notices and the [changelog](/ai-gateway/changelog).
+The `Ngrok-AIG-Replaced-Models` header shows which requests the gateway rerouted, so you can update the model name in your code.
