@@ -3,7 +3,8 @@ title: Models
 description: Understanding model naming and request formats in the AI Gateway.
 ---
 
-Models are the AI systems that process your requests. You specify the model in each request body, and you can use an [access key configuration](/ai-gateway/guides/access-key-configurations) to restrict which models an access key may call.
+Models are the AI systems that process your requests.
+You specify the model in each request body, and you can use an [access key configuration](/ai-gateway/guides/access-key-configurations) to restrict which models an access key may call.
 
 ## Specifying models
 
@@ -16,7 +17,8 @@ Models are the AI systems that process your requests. You specify the model in e
 }
 ```
 
-The gateway looks up `gpt-4o` in the [model catalog](/ai-gateway/reference/model-catalog) and routes to OpenAI. If OpenAI fails, it can try other providers that serve the same model.
+The gateway looks up `gpt-4o` in the [model catalog](/ai-gateway/reference/model-catalog) and routes to OpenAI.
+If OpenAI fails, it can try other providers that serve the same model.
 
 The full catalog ID, `author/model` such as `openai/gpt-4o`, works the same way.
 
@@ -45,9 +47,25 @@ List fallback models with the `models` array:
 
 The gateway tries `model` first, then each entry in `models` in order, until one succeeds.
 
+## Virtual models
+
+A virtual model is a name you save in your account, such as `chat-default`, that stands for an ordered list of models.
+Send the name as `model`, and the gateway tries the models in order:
+
+```json
+{
+  "model": "chat-default",
+  "messages": [{"role": "user", "content": "Hello"}]
+}
+```
+
+Use one to change the models your apps use from the gateway, without changing their code or requests.
+It also gives failover to a client that can't send a `models` array.
+See [Virtual models](/ai-gateway/guides/virtual-models).
+
 ## Unknown models (pass-through)
 
-If a model is not in the catalog, the gateway still routes it when you include a provider prefix:
+If a model isn't in the catalog, the gateway still routes it when you include a provider prefix:
 
 ```json
 {
@@ -56,17 +74,21 @@ If a model is not in the catalog, the gateway still routes it when you include a
 }
 ```
 
-The provider returns an error if the model does not exist. Pass-through models must still be allowed by the access key's configuration.
+The provider returns an error if the model doesn't exist.
+The access key's configuration must still allow pass-through models.
 
 ## Model and provider names
 
-Model names are not case-sensitive: `gpt-4o`, `GPT-4o`, and `Gpt-4O` all resolve to the same model. Provider names are matched exactly, so use the lowercase **Provider ID** from the [model catalog](/ai-gateway/reference/model-catalog).
+Model names aren't case-sensitive: `gpt-4o`, `GPT-4o`, and `Gpt-4O` all resolve to the same model.
+The gateway matches provider names exactly, so use the lowercase **Provider ID** from the [model catalog](/ai-gateway/reference/model-catalog).
 
-Name models and providers by their primary catalog ID. The gateway does not resolve alternate names for either.
+Name models and providers by their primary catalog ID.
+The gateway doesn't resolve alternate names for either.
 
 ## Model capabilities
 
-Models differ in input/output modalities, context window, and features. See the [model catalog](/ai-gateway/reference/model-catalog) for details.
+Models differ in input/output modalities, context window, and features.
+See the [model catalog](/ai-gateway/reference/model-catalog) for details.
 
 ## Next steps
 

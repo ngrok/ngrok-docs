@@ -1,0 +1,304 @@
+---
+title: Use Virtual Models
+sidebarTitle: Virtual models
+description: Give an ordered list of models one name, so you can change the models your apps use from the gateway without changing their code.
+---
+
+A virtual model is a name you choose, such as `chat-default`, that stands for an ordered list of models.
+Your apps send that name as `model`, and you control which models it stands for from the AI Gateway.
+To move to a new model or provider, edit the list, and the next request uses it.
+You don't change, redeploy, or restart your apps.
+
+When a request sends the name, the gateway tries the models in order until one succeeds.
+This also gives failover to clients that can't send a [`models` fallback list](/ai-gateway/guides/configure-fallback-models), such as a proxy that can't rewrite request bodies, or an agent that lets you set only one model name.
+
+## What you'll need
+
+- An ngrok.ai account with an [access key](/ai-gateway/concepts/access-keys).
+- Access to the models you want to list, either with [credits](/ai-gateway/guides/pay-with-credits) or with [your own provider keys](/ai-gateway/guides/attaching-provider-keys).
+- An [AI Gateway API key](/ai-gateway/concepts/access-keys#credentials-overview), if you want to use the API instead of the dashboard.
+
+## 1. Create a virtual model
+
+### Via the dashboard
+
+1. Open [**Virtual Models**](https://app.ngrok.ai/virtual-models) in app.ngrok.ai and click **Create virtual model**.
+2. Enter a **Name**, such as `chat-default`, and an optional **Description**.
+3. Under **Models**, click **Add model** and pick the model to try first.
+   Choose **Any provider** to let any provider that serves the model handle it, or choose a provider to pin the model to that provider.
+4. Add each fallback model in the order you want the gateway to try them.
+   To change the order, open a model's menu and move it up or down.
+5. Click **Create virtual model**.
+
+### Via the AI Gateway API
+
+Send the name and the models to the [Virtual Models API](/ai-gateway/api-reference/virtual-models/create):
+
+```bash
+curl -X POST https://api.ngrok.ai/virtual-models \
+  -H "Authorization: Bearer $AI_GATEWAY_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "chat-default",
+    "models": [
+      "anthropic/claude-sonnet-4-6",
+      "openai:gpt-5.1",
+      "google/gemini-3.6-flash"
+    ],
+    "description": "Default chat model for the support app"
+  }'
+```
+
+The response is the new virtual model:
+
+```json
+{
+  "id": "aigvm_2xyzABC123",
+  "uri": "/virtual-models/aigvm_2xyzABC123",
+  "name": "chat-default",
+  "models": [
+    "anthropic/claude-sonnet-4-6",
+    "openai:gpt-5.1",
+    "google/gemini-3.6-flash"
+  ],
+  "description": "Default chat model for the support app",
+  "createdAt": "2026-10-29T17:00:00Z",
+  "updatedAt": "2026-10-29T17:00:00Z",
+  "createdBy": { "id": "aigak_2abcDEF456", "uri": "/users/aigak_2abcDEF456" },
+  "lastUpdatedBy": { "id": "aigak_2abcDEF456", "uri": "/users/aigak_2abcDEF456" },
+  "warnings": []
+}
+```
+
+## 2. Send a request with the virtual model
+
+Use the name anywhere you'd put a model.
+Nothing else in the request changes.
+
+<CodeGroup>
+```python Python highlight={9}
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://gateway.ngrok.ai/v1",
+    api_key="ng-xxxxx-g1-xxxxx",  # Your access key
+)
+
+response = client.chat.completions.create(
+    model="chat-default",
+    messages=[{"role": "user", "content": "Hello"}],
+)
+
+print(response.choices[0].message.content)
+```
+
+```bash curl
+curl -i https://gateway.ngrok.ai/v1/chat/completions \
+  -H "Authorization: Bearer ng-xxxxx-g1-xxxxx" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "chat-default",
+    "messages": [{"role": "user", "content": "Hello"}]
+  }'
+```
+</CodeGroup>
+
+The gateway tries `anthropic/claude-sonnet-4-6` first.
+If that attempt fails with a rate limit, an auth error, a server error, or a timeout, it tries `openai:gpt-5.1`, then `google/gemini-3.6-flash`.
+
+The gateway matches the name without regard to case, so `chat-default` and `Chat-Default` are the same virtual model.
+
+Virtual models work on every endpoint that takes a model name: Chat Completions, Responses, Messages, Gemini `generateContent` and Interactions, Decisions, and System One.
+On Gemini `generateContent`, put the name in the path, such as `/v1beta/models/chat-default:generateContent`.
+
+## 3. See which model answered
+
+Read the `Ngrok-AIG-Model` [response header](/ai-gateway/how-it-works#response-headers).
+It names the model that served the request, not the virtual model name:
+
+```http
+HTTP/2 200
+ngrok-aig-request-id: rq_2abcDEF456
+ngrok-aig-attempts: 2
+ngrok-aig-model: gpt-5.1
+```
+
+Here the first model failed and the second model in `chat-default` answered.
+
+To see each attempt, pass the request ID to [`GET /usage/requests/{requestId}`](/ai-gateway/api-reference/usage/request-attempts).
+Each attempt that came from a virtual model has a `virtualModel` field with its name.
+See [Why a request failed over](/ai-gateway/guides/why-a-request-failed-over).
+
+## How to write the models in a virtual model
+
+Each model in a virtual model uses the same format you'd send as `model` in a request:
+
+| Entry | What the gateway does |
+|-------|-----------------------|
+| `gpt-5.1` or `openai/gpt-5.1` | Tries the model on every provider that serves it, starting with the model author's own provider |
+| `openai:gpt-5.1` | Tries the model on the `openai` provider only |
+| `my-ollama:llama3.2` | Tries a [model you run yourself](/ai-gateway/guides/use-a-model-you-run-yourself) on your custom provider |
+| `ngrok/auto` | Lets ngrok.ai pick a model for each request. See [Automatic model selection](/ai-gateway/guides/automatic-model-selection) |
+
+A virtual model has these rules:
+
+- It has 1 to 10 models.
+  10 is the most attempts the gateway makes for one request.
+- Each model must exist for your account when you save the virtual model: a catalog model, one of your custom models, or `provider:model` for a built-in or custom provider.
+  The gateway matches provider IDs exactly, so use the lowercase **Provider ID** from the [model catalog](/ai-gateway/reference/model-catalog).
+- A model can't be in the list more than once.
+  For example, `gpt-5.1` and `openai/gpt-5.1` are the same model.
+- A model can't be another virtual model.
+- If you use `ngrok/auto`, you can't add other models to the list.
+
+The gateway doesn't check your access keys when you save a virtual model, because keys and their configurations can change later.
+It checks them on each request instead.
+See [Access keys apply to each model](#access-keys-apply-to-each-model).
+
+## Name a virtual model
+
+Names have these rules:
+
+- 1 to 64 characters.
+- Letters, numbers, `.`, `_`, and `-` only.
+  Names can't contain `/` or `:`, because the gateway reads those as part of a model ID.
+- Unique in your account, without regard to case.
+- Different from every model your account can call, such as a short model ID like `gpt-4o` or one of your custom models.
+  This keeps the name from hiding a real model.
+
+Descriptions are optional and can be up to 255 characters.
+
+Each account can have up to 20 virtual models.
+
+## Combine a virtual model with a fallback list
+
+A virtual model works with a request's `models` array.
+The gateway replaces the virtual model with its models, in place, then tries the full list in order:
+
+```json
+{
+  "model": "chat-default",
+  "models": ["deepseek:deepseek-v4-flash"],
+  "messages": [{"role": "user", "content": "Hello"}]
+}
+```
+
+The gateway tries the three models in `chat-default`, then `deepseek:deepseek-v4-flash`.
+
+A virtual model can also be an entry in `models`.
+If you list the same virtual model more than once, the gateway adds its models each time.
+The gateway still makes at most 10 attempts per request, so models past that limit don't run.
+
+### Virtual models that use ngrok/auto
+
+A virtual model whose only model is `ngrok/auto` works the same as sending `ngrok/auto` in that position.
+The [rules for combining `ngrok/auto` with fallback models](/ai-gateway/guides/automatic-model-selection#combining-with-fallback-models) still apply:
+
+- On Chat Completions, Responses, and Messages, if the request lists other models too, the gateway ignores `ngrok/auto` and uses the other models.
+- On the Gemini endpoints, the request fails with `ERR_NGROK_27228`.
+  The message names your virtual model: `Invalid request: virtual model "chat-auto" resolves to ngrok/auto, which cannot be combined with other models`.
+
+## Failover works the same way
+
+A virtual model doesn't change [what triggers failover](/ai-gateway/guides/error-handling#what-triggers-failover).
+The gateway moves to the next model after a rate limit, an auth error, a server error, a timeout, or a network failure.
+
+Any other 4xx response, such as an invalid request, stops the request right away.
+A virtual model doesn't route around a request that no model can serve.
+
+## Access keys apply to each model
+
+A virtual model never gives an access key access to a model the key can't use directly.
+The gateway checks each model in the virtual model against the key's [access key configuration](/ai-gateway/guides/access-key-configurations):
+
+- If the key can't use a model, the gateway skips it and tries the next one.
+  The `Ngrok-AIG-Rejected-Models` response header names the model it skipped, not the virtual model.
+- If the key can't use any model in the list, the request fails with the error for the first model, the same as for a `models` list.
+- Routing rules match the provider and model of each attempt, not the virtual model name.
+
+You can't add a virtual model name to an access key configuration's allowed models.
+To let a key use a virtual model, allow the models in it.
+See [Restrict providers and models](/ai-gateway/guides/restrict-providers-and-models#virtual-models).
+
+## Change a virtual model
+
+To change a virtual model, edit it on the [**Virtual Models**](https://app.ngrok.ai/virtual-models) page, or send a [`PATCH` request](/ai-gateway/api-reference/virtual-models/update):
+
+```bash
+curl -X PATCH https://api.ngrok.ai/virtual-models/aigvm_2xyzABC123 \
+  -H "Authorization: Bearer $AI_GATEWAY_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "models": ["openai:gpt-5.1", "anthropic/claude-sonnet-4-6"]
+  }'
+```
+
+A new `models` value replaces the whole list.
+Fields you leave out keep their current values.
+
+New requests use the change with no change to your clients.
+Requests that are already running finish with the old list.
+
+If you rename a virtual model, clients that send the old name get an unknown model error.
+
+## Delete a virtual model
+
+Delete a virtual model from its menu on the **Virtual Models** page, or send a [`DELETE` request](/ai-gateway/api-reference/virtual-models/delete).
+
+After you delete it, the gateway treats the name like any other model name.
+Clients that still send it get [`ERR_NGROK_27224`](/ai-gateway/reference/error-codes#err_ngrok_27224) for an unknown model.
+
+## Warnings
+
+A virtual model can stop working the way you expect when something changes after you save it.
+The **Virtual Models** page shows a warning on the virtual model, and the API returns it in the `warnings` field:
+
+| Code | What changed | What the gateway does |
+|------|--------------|-----------------------|
+| `nameHidesModel` | A model with the same name as the virtual model now exists, for example a new catalog model. | Requests for the name still use the virtual model. To call the other model, rename the virtual model or name that model by its full ID. |
+| `targetUnresolved` | A model in the list no longer exists, for example because you deleted a custom provider or the catalog removed the model. The warning's `target` names the model. | Requests skip that model, so you have one fewer fallback. Replace or remove the model. |
+
+```json
+"warnings": [
+  {
+    "code": "targetUnresolved",
+    "message": "'my-ollama:llama3.2' isn't a valid model anymore. Requests skip it.",
+    "target": "my-ollama:llama3.2"
+  }
+]
+```
+
+A warning never blocks requests.
+
+## List virtual models with /v1/models
+
+Some SDKs, agents, and chat frontends check a model name against `GET /v1/models` before they send a request.
+The gateway lists your virtual models there, after the other models, with `owned_by` set to `virtual-model`:
+
+```json
+{
+  "id": "chat-default",
+  "name": "chat-default",
+  "slug": "chat-default",
+  "object": "model",
+  "owned_by": "virtual-model",
+  "created": 1793293200,
+  "description": "Default chat model for the support app",
+  "architecture": {
+    "input_modalities": [],
+    "modality": "",
+    "output_modalities": []
+  },
+  "providers": []
+}
+```
+
+The list includes a virtual model only when the access key can use at least one of its models.
+A new or renamed virtual model can take a few seconds to show up.
+
+## Next steps
+
+- [Configure fallback models](/ai-gateway/guides/configure-fallback-models): Set the failover order in each request instead
+- [Handle gateway errors](/ai-gateway/guides/error-handling): Learn which failures the gateway retries
+- [Restrict providers and models](/ai-gateway/guides/restrict-providers-and-models): Limit what an access key can call
+- [Virtual Models API](/ai-gateway/api-reference/virtual-models/list): Manage virtual models from your code
