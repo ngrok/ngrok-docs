@@ -1,0 +1,63 @@
+name: Update homepage changelog
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: homepage-changelog-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    # Never expose the docs bot credentials to fork PRs (including Dependabot).
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+
+      - name: Test changelog generator
+        run: python3 -m unittest discover -s custom/scripts/tests -p 'test_homepage_changelog.py'
+
+      - name: Fetch latest changelog entries
+        run: python3 custom/scripts/fetch-homepage-changelog.py
+
+      - name: Check for changes
+        id: changes
+        run: |
+          if git diff --quiet -- snippets/homepage-changelog.mdx; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Generate bot token
+        if: steps.changes.outputs.changed == 'true'
+        id: bot
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v2
+        with:
+          app-id: ${{ secrets.NGROK_DOCS_BOT_APP_ID }}
+          private-key: ${{ secrets.NGROK_DOCS_BOT_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: ${{ github.event.repository.name }}
+
+      - name: Commit snippet to the existing PR
+        if: steps.changes.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ steps.bot.outputs.token }}
+          PR_BRANCH: ${{ github.event.pull_request.head.ref }}
+        run: |
+          git config user.name 'ngrok-docs-bot[bot]'
+          git config user.email 'ngrok-docs-bot[bot]@users.noreply.github.com'
+          git add -- snippets/homepage-changelog.mdx
+          git commit -m 'docs: refresh homepage changelog'
+          # A normal push rejects concurrent changes instead of overwriting them.
+          # The app token lets CI and Mintlify react to the generated commit.
+          git -c credential.helper='!gh auth git-credential' push origin "HEAD:refs/heads/$PR_BRANCH"
