@@ -7,7 +7,20 @@ To simulate this behavior, this example uses [httpbin.org/post](https://httpbin.
 #### Start an Internal Agent Endpoint
 
 ```bash
-ngrok http https://httpbin.org --host-header rewrite --url https://httpbin.internal
+ngrok http https://httpbin.org \
+  --url https://httpbin.internal \
+  --traffic-policy-file httpbin-host.yml
+```
+
+Save the following as `httpbin-host.yml` so the agent rewrites the `host` header to `httpbin.org`:
+
+```yaml httpbin-host.yml
+on_http_request:
+  - actions:
+      - type: add-headers
+        config:
+          headers:
+            host: httpbin.org
 ```
 
 #### Example
