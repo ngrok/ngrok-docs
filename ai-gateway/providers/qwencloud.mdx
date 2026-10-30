@@ -21,7 +21,8 @@ Add your own QwenCloud key to bill usage to your QwenCloud account instead of yo
 
   <Step title="Store your QwenCloud API key (optional)">
     Skip this step to pay with credits.
-    To bring your own key, create an API key in your [QwenCloud](https://qwencloud.com) account. Then [add a provider key](/ai-gateway/guides/attaching-provider-keys#add-a-provider-key) and [create an access key configuration](/ai-gateway/guides/access-key-configurations#create-a-configuration) with a `qwencloud` routing rule that uses it.
+    To bring your own key, create an API key in your [QwenCloud](https://qwencloud.com) account.
+    Then [add a provider key](/ai-gateway/guides/attaching-provider-keys#add-a-provider-key) and [create an access key configuration](/ai-gateway/guides/access-key-configurations#create-a-configuration) with a `qwencloud` routing rule that uses it.
   </Step>
 
   <Step title="Send requests">
@@ -45,9 +46,39 @@ Add your own QwenCloud key to bill usage to your QwenCloud account instead of yo
   </Step>
 </Steps>
 
+## Thinking and tool calls
+
+QwenCloud's Chat Completions API differs from OpenAI's in two ways that affect requests through the gateway:
+
+- **Thinking:** QwenCloud turns thinking on and off with its own `enable_thinking` field, and sets a token budget with `thinking_budget`.
+  The gateway forwards both.
+  It removes `reasoning_effort` and lists it in the `Ngrok-AIG-Removed-Params` [response header](/ai-gateway/how-it-works#response-headers).
+  Qwen3.8 Max thinks by default.
+  Some models, such as `z-ai/glm-5.3` and `qwen/qwen3.8-2.4t-a95b`, always think, and QwenCloud rejects requests that set `enable_thinking` to `false`.
+  The gateway also removes both fields for the Qwen3.5 Omni models, because QwenCloud refuses thinking on their audio requests.
+- **Tool choice:** QwenCloud doesn't support `tool_choice: "required"`.
+  While thinking is on, `tool_choice` accepts only `auto` or `none`, so turn thinking off to force a specific tool.
+  The gateway forwards `tool_choice` as sent, so QwenCloud returns the error.
+
+In the OpenAI Python SDK, send these fields in `extra_body`:
+
+```python
+response = client.chat.completions.create(
+    model="qwencloud:qwen/qwen3.8-max",
+    messages=[{"role": "user", "content": "Hello!"}],
+    extra_body={
+        "enable_thinking": True,
+        "thinking_budget": 4096,
+    },
+)
+```
+
+See QwenCloud's [thinking](https://docs.qwencloud.com/developer-guides/text-generation/thinking) and [function calling](https://docs.qwencloud.com/developer-guides/text-generation/function-calling) guides for details.
+
 ## Available models
 
 See the [model catalog](/ai-gateway/reference/model-catalog#qwencloud).
+The Qwen3.5 Omni models can also return audio.
 
 ## Next steps
 
