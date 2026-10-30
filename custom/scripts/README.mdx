@@ -1,10 +1,11 @@
-This directory contains scripts used to automate certain aspects of the docs site. For example, `parse-integrations` generates integrations metadata which can be used to display the integrations hub at `/integrations`.
+This directory contains scripts used to automate certain aspects of the docs site.
+For example, `parse-integrations` generates integrations metadata which can be used to display the integrations hub at `/integrations`.
 
 ## Homepage changelog
 
-`fetch-homepage-changelog.py` fetches `https://ngrok.com/changelog/rss.xml` and
-writes the three newest distinct entries to `snippets/homepage-changelog.mdx`.
-The homepage imports that snippet. The script uses only Python's standard library.
+`fetch-homepage-changelog.py` fetches `https://ngrok.com/changelog/rss.xml` and writes the three newest distinct entries to `snippets/homepage-changelog.mdx`.
+The homepage imports that snippet.
+The script uses only Python's standard library.
 
 Run locally:
 
@@ -13,23 +14,20 @@ python3 custom/scripts/fetch-homepage-changelog.py
 python3 -m unittest discover -s custom/scripts/tests -p 'test_homepage_changelog.py'
 ```
 
-The **Update homepage changelog** GitHub Action runs when a PR opens, receives a
-commit, reopens, or becomes ready for review. It updates the same PR branch only
-when the generated content changes. It uses the existing
-`NGROK_DOCS_BOT_APP_ID` and `NGROK_DOCS_BOT_PRIVATE_KEY` secrets so the bot commit
-can trigger CI and Mintlify previews. The bot's follow-up run produces no commit
-if the feed is unchanged. Fork and Dependabot PRs do not receive automatic updates.
+The **Update homepage changelog** GitHub Action runs when a PR opens, receives a commit, reopens, or becomes ready for review.
+It updates the same PR branch only when the generated content changes.
+It uses the existing `NGROK_DOCS_BOT_APP_ID` and `NGROK_DOCS_BOT_PRIVATE_KEY` secrets so the bot commit can trigger CI and Mintlify previews.
+The bot's follow-up run produces no commit if the feed is unchanged.
+Fork and Dependabot PRs don't receive automatic updates.
 
-The action checks out the event's exact head commit and uses a normal push. If
-someone updates the branch during the run, the push fails instead of overwriting
-their work; the newer PR event starts another run.
+The action checks out the event's exact head commit and uses a normal push.
+If someone updates the branch during the run, the push fails instead of overwriting their work; the newer PR event starts another run.
 
-Failed requests, malformed feeds, invalid entry URLs or dates, and feeds with
-fewer than three distinct entries fail the check and leave the previous snippet
-intact. Require the `refresh` job in branch protection if merges must wait for a
-successful refresh. Otherwise, a failed check does not itself prevent a merge.
+Failed requests, malformed feeds, invalid entry URLs or dates, and feeds with fewer than three distinct entries fail the check and leave the previous snippet intact.
+Require the `refresh` job in branch protection if merges must wait for a successful refresh.
+Otherwise, a failed check doesn't itself prevent a merge.
 
-This is a PR-time snapshot, not a Mintlify build hook. An unchanged PR does not
-refresh merely because it merges or Mintlify rebuilds it. No schedule, separate
-PR, or direct push to the deployment branch is added. The committed initial
-snapshot is replaced on the first successful fetch.
+This is a PR-time snapshot, not a Mintlify build hook.
+An unchanged PR doesn't refresh merely because it merges or Mintlify rebuilds it.
+No schedule, separate PR, or direct push to the deployment branch is added.
+The first successful fetch replaces the committed initial snapshot.
