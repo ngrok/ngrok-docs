@@ -1,0 +1,148 @@
+---
+title: Axum Library
+sidebarTitle: Axum
+description: Serve an Axum router through an ngrok endpoint with one call using the ngrok-axum Rust crate, and configure it with a Traffic Policy or a reserved domain.
+---
+
+[`ngrok-axum`](https://crates.io/crates/ngrok-axum) serves an Axum `Router` through an ngrok endpoint with one call:
+
+```rust
+ngrok_axum::serve(app, ngrok_axum::Config::default()).await?;
+```
+
+The crate is built on the [Rust SDK](/getting-started/rust).
+Axum 0.7 removed `axum::Server`, which took away the one-line way to serve an app on an ngrok listener.
+`serve` restores it: it opens the endpoint, accepts connections, and serves each one with Hyper so you don't write the connection loop yourself.
+
+<Info>
+`ngrok-axum` is published on crates.io at version 0.1.1 and maintained in the [ngrok-samples/ngrok-axum](https://github.com/ngrok-samples/ngrok-axum) repository.
+</Info>
+
+## What you'll need
+
+- An [ngrok account](https://dashboard.ngrok.com/signup).
+- Your [ngrok auth token](https://dashboard.ngrok.com/get-started/your-authtoken).
+- [Rust installed](https://www.rust-lang.org/tools/install) on your machine.
+
+## 1. Install the crate
+
+Add the crate alongside Axum 0.8 and Tokio:
+
+```toml title="Cargo.toml"
+[dependencies]
+ngrok-axum = "0.1"
+axum = "0.8"
+tokio = { version = "1", features = ["full"] }
+```
+
+## 2. Set your auth token
+
+Export your auth token as an environment variable:
+
+```bash
+export NGROK_AUTHTOKEN=your_actual_auth_token_here
+```
+
+The crate reads `NGROK_AUTHTOKEN` from the environment when it opens the session.
+
+## 3. Serve your router
+
+Replace `axum::serve` with `ngrok_axum::serve`:
+
+```rust title="src/main.rs"
+use axum::{routing::get, Router};
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    let app = Router::new().route("/", get(|| async { "Hello from Axum!" }));
+    ngrok_axum::serve(app, ngrok_axum::Config::default()).await?;
+    Ok(())
+}
+```
+
+`serve` runs until the listener closes or a connection error occurs.
+
+## 4. Test your endpoint
+
+Run your app:
+
+```bash
+cargo run
+```
+
+The crate prints `Ingress established at:` followed by the public URL.
+With `Config::default()`, that URL is your account's [dev domain](/gateway/domains/#dev-domains).
+Open it in your browser to see your Axum app.
+
+## Configuration
+
+Pass a `Config` to set the URL, add a Traffic Policy, or change the binding:
+
+```rust
+let config = ngrok_axum::Config {
+    url: Some("your-reserved-domain.ngrok.app".to_string()),
+    traffic_policy: Some(r#"
+on_http_request:
+  - actions:
+      - type: basic-auth
+        config:
+          credentials:
+            - "user:password123"
+"#.to_string()),
+    ..Default::default()
+};
+
+ngrok_axum::serve(app, config).await?;
+```
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `url` | `Option<String>` | The [reserved domain](/gateway/domains/) for the endpoint. `None` uses your account's dev domain. |
+| `pooling` | `bool` | Opts in to [endpoint pooling](/gateway/endpoints/endpoint-pooling) so more than one endpoint can share a URL. |
+| `traffic_policy` | `Option<String>` | A raw [Traffic Policy](/gateway/traffic-policy/) document (YAML or JSON) that the crate passes through to ngrok unchanged. Use it for [authentication](/gateway/traffic-policy/actions/basic-auth), [IP restrictions](/gateway/traffic-policy/actions/restrict-ips), [webhook verification](/gateway/traffic-policy/actions/verify-webhook), and any other action. |
+| `binding` | `Option<Binding>` | The endpoint's [binding](/gateway/endpoints/bindings): `Binding::Public`, `Binding::Internal`, or `Binding::Kubernetes`. |
+
+## Multiple endpoints
+
+`serve_many` opens one endpoint per `Endpoint`, each with its own `Router` and `Config`, on a single session:
+
+```rust
+use ngrok_axum::{serve_many, Config, Endpoint};
+
+serve_many(vec![
+    Endpoint {
+        app: app_router,
+        config: Config { url: Some("app.mycompany.ngrok.app".into()), ..Default::default() },
+    },
+    Endpoint {
+        app: api_router,
+        config: Config { url: Some("api.mycompany.ngrok.app".into()), ..Default::default() },
+    },
+])
+.await?;
+```
+
+`serve` is the one-endpoint case of `serve_many`.
+To put one router behind several listeners, clone the `Router` into more than one `Endpoint`.
+
+Every endpoint needs its own `url`, or `pooling: true` on each endpoint that shares one.
+If two endpoints would share a URL without pooling, including two endpoints that both leave `url` as `None` and land on your dev domain, `serve_many` returns an error before opening a session.
+Without that check, ngrok lets the most recently opened listener win and the other goes unreachable with no error.
+
+## Limits and availability
+
+- The crate opens HTTP endpoints only.
+For TCP or TLS endpoints, use the [Rust SDK](/getting-started/rust) directly.
+- The crate requires Axum 0.8.
+- An `Internal` binding requires a `url` that ends in `.internal`.
+ngrok rejects any other URL with [`ERR_NGROK_9029`](/errors/err_ngrok_9029).
+- A URL that another agent or a Cloud Endpoint already claims fails with [`ERR_NGROK_334`](/errors/err_ngrok_334).
+- Endpoint counts and domains follow your plan's limits.
+See [free plan limits](/pricing-limits/free-plan-limits).
+
+## What's next?
+
+- Browse [Traffic Policy examples](/gateway/traffic-policy/examples/add-authentication/) to add authentication, restrict access by IP, or rewrite URLs.
+- Read the [Rust SDK quickstart](/getting-started/rust) to see what the crate does under the hood.
+- See the [other framework libraries](/agent-sdks/frameworks/) for Next.js, Gin, and FastAPI.
+- Report issues or read the source in the [ngrok-samples/ngrok-axum](https://github.com/ngrok-samples/ngrok-axum) repository, which includes runnable examples for every option.
