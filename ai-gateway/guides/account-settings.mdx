@@ -1,7 +1,7 @@
 ---
 title: Configure account settings
 sidebarTitle: Configure account settings
-description: Configure account-wide AI Gateway timeouts and token limits.
+description: Configure account-wide AI Gateway timeouts, token limits, and request capture.
 ---
 
 Account-wide gateway settings apply to every request through `https://gateway.ngrok.ai`, so you can set defaults like timeouts and token limits once instead of repeating them on every [access key configuration](/ai-gateway/guides/access-key-configurations).
@@ -47,13 +47,35 @@ When your request asks for more, the gateway lowers it to your limit, and to the
 ## Request capture
 
 Request capture stores the request and response headers and bodies, including prompts and completions, for your request and each attempt the gateway sends to a provider.
-You can inspect them on the [Logs](https://app.ngrok.ai/usage) page.
+You can inspect them in the [request details panel](/ai-gateway/observability/index#inspect-a-request-in-app-ngrok-ai) on the [Activity](https://app.ngrok.ai/activity) page.
 Capture is off by default.
 
-To turn it on, open **Settings > Data Retention** in app.ngrok.ai and set **Request Capture** to enabled.
-Captures are kept for 30 days.
-Credential headers such as `Authorization` and `x-api-key` are redacted.
-Bodies are stored as sent.
+To turn it on:
+
+1. Open [Settings > Data Retention](https://app.ngrok.ai/settings/data-retention) in app.ngrok.ai.
+2. Under **Request Capture**, set **Full capture** to **Enabled**.
+3. Select **Save**.
+
+<Frame>
+  <img src="./img/data-retention-request-capture.png" alt="Data Retention settings page in app.ngrok.ai with the Request Capture section, Full capture set to Disabled, and a 30-day retention window" width="2422" height="620" />
+</Frame>
+
+Capture applies to requests from then on. It doesn't fill in requests that were made while it was off.
+Set **Full capture** to **Disabled** to stop capturing; only request metadata, such as tokens, latency, and cost, is then recorded.
+
+What capture stores:
+
+- Captures are kept for 30 days and then deleted.
+- Each body stores up to 4 MB and each set of headers up to 16 KiB. Anything past the limit isn't stored.
+- Headers with these names are redacted, in any letter case: `Authorization`, `Proxy-Authorization`, `Cookie`, `Set-Cookie`, `x-api-key`, `x-goog-api-key`, `api-key`, `api_key`, `apikey`, `access-token`, `access_token`, `accesstoken`, `token`, `bearer`, `secret`, and `password`.
+- When the gateway calls a provider with an ngrok-managed key, the provider's response headers are redacted except `Content-Type`.
+- Bodies are stored as sent, without redaction. The one exception is embedding vectors in embeddings responses, which are replaced with a placeholder that records the vector's dimensions and a SHA-256 hash.
+
+<Warning>
+Redaction matches whole header names only. A custom credential header with another name, such as `X-Auth-Token`, is stored as sent, and so is any secret inside a prompt or body.
+</Warning>
+
+Request capture is set in app.ngrok.ai only. The `/gateway-config` API doesn't read or change it.
 
 ## Via dashboard
 
