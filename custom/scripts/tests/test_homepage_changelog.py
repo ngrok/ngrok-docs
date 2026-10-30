@@ -24,6 +24,7 @@ class ChangelogTests(unittest.TestCase):
     def test_newest_three_sorted_and_deduplicated(self):
         result = changelog.render(feed(item(1), item(4), item(2), item(3), item(4)))
         self.assertEqual(result.count('<a href='), 3)
+        self.assertEqual(result.count('<span className="docs-home-date">'), 3)
         self.assertLess(result.index('/4"'), result.index('/3"'))
         self.assertLess(result.index('/3"'), result.index('/2"'))
         self.assertNotIn('/1"', result)

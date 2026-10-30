@@ -70,8 +70,8 @@ def render(feed):
     for date, link, title, description in latest:
         label = f"{date.strftime('%B')} {date.day}, {date.year}"
         lines.extend([f'  <a href="{escape(link)}">',
-                      f'    <time dateTime="{date.date().isoformat()}">{label}</time>',
-                      f'    <span>{escape(title)}</span>'])
+                      f'    <span className="docs-home-date">{label}</span>',
+                      f'    <span className="docs-home-title">{escape(title)}</span>'])
         if description:
             lines.append(f'    <p>{escape(description)}</p>')
         lines.append('  </a>')
