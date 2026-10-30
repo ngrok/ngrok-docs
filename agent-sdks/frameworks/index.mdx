@@ -1,0 +1,44 @@
+---
+title: Framework Libraries
+sidebarTitle: Overview
+description: Put a Next.js, Gin, FastAPI, or Axum app online with one call using ngrok's framework libraries, built on the Agent SDKs.
+---
+
+Framework libraries wrap the [Agent SDKs](/agent-sdks/) in the idiom of a specific web framework.
+Instead of opening a session, building a listener, and forwarding traffic yourself, you make one call in the place your framework already expects it, and your app gets a public URL.
+
+| Framework | Package | Built on |
+| --- | --- | --- |
+| [Next.js](/agent-sdks/frameworks/nextjs) | [`@ngrok/nextjs`](https://www.npmjs.com/package/@ngrok/nextjs) on npm | [JavaScript SDK](/getting-started/javascript) |
+| [Gin](/agent-sdks/frameworks/gin) | [`ngrok-gin`](https://pkg.go.dev/github.com/ngrok-samples/ngrok-gin) on pkg.go.dev | [Go SDK](/getting-started/go) |
+| [FastAPI](/agent-sdks/frameworks/fastapi) | [`ngrok-fastapi`](https://pypi.org/project/ngrok-fastapi/) on PyPI | [Python SDK](/getting-started/python) |
+| [Axum](/agent-sdks/frameworks/axum) | [`ngrok-axum`](https://crates.io/crates/ngrok-axum) on crates.io | [Rust SDK](/getting-started/rust) |
+
+Each page shows the install command and the one call that replaces your framework's usual server start.
+
+## What they have in common
+
+Every library reads your auth token from the `NGROK_AUTHTOKEN` environment variable and, when you don't set a URL, puts your app on your account's [dev domain](/gateway/domains/#dev-domains).
+
+Every library takes the same four endpoint options, spelled in each language's own style:
+
+| Option | What it does |
+| --- | --- |
+| URL | The [reserved domain](/gateway/domains/) for the endpoint. Omit it to use your dev domain. |
+| Pooling | Opts in to [endpoint pooling](/gateway/endpoints/endpoint-pooling) so more than one endpoint can share a URL. |
+| Traffic Policy | A raw [Traffic Policy](/gateway/traffic-policy/) document (YAML or JSON) that the library passes through to ngrok unchanged. |
+| Binding | The endpoint's [binding](/gateway/endpoints/bindings): `public`, `internal`, or `kubernetes`. |
+
+There are no per-feature options for authentication, IP restrictions, headers, or webhook verification.
+Those features all live in Traffic Policy, so the libraries stay small and don't go stale as Traffic Policy grows.
+
+Every library can also open more than one endpoint from a single process, and every library refuses to start if two endpoints would land on the same URL without pooling.
+Without that check, ngrok lets the most recently opened listener win and the other goes unreachable with no error.
+
+## Limits and availability
+
+- The libraries are published at version 0.1.x and live in the [ngrok-samples](https://github.com/ngrok-samples) GitHub organization, separate from the core SDK repositories.
+- An `internal` binding requires a URL that ends in `.internal`.
+ngrok rejects any other URL with [`ERR_NGROK_9029`](/errors/err_ngrok_9029).
+- Endpoint counts, domains, and bandwidth follow your plan's limits.
+See [free plan limits](/pricing-limits/free-plan-limits) and the [pricing page](https://ngrok.com/pricing).
