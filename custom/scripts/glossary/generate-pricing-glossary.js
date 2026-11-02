@@ -33,7 +33,8 @@ let glossaryContent = `${frontmatter}\n\n${comment}\n\n${intro}\n\n`;
 // Add each term as an H2 with meaning and optional Learn More link
 pricingTerms.forEach(term => {
   const heading = term.titles[0];
-  const meaning = term.meaning || 'Definition not available';
+  // One sentence per line, per the docs style guide
+  const meaning = (term.meaning || 'Definition not available').replace(/([.!?])\s+(?=[A-Z])/g, '$1\n');
   let link = term.link || '';
 
   // Trim /docs prefix from internal links (Mintlify convention)
