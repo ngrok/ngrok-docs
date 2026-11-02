@@ -22,107 +22,114 @@ Don't put it online without the token rule in step 2.
 - The [ngrok agent](https://download.ngrok.com) installed
 - An [ngrok account](https://dashboard.ngrok.com/signup) and your [authtoken](https://dashboard.ngrok.com/get-started/your-authtoken)
 
-## 1. Check that Ollama responds
+<Steps titleSize="h2">
+  <Step title="Check that Ollama responds">
 
-Make sure Ollama is running and answers on its default port:
+    Make sure Ollama is running and answers on its default port:
 
-```bash
-curl http://localhost:11434/v1/models
-```
-
-You should see a JSON list of the models you've pulled.
-
-## 2. Create a Traffic Policy that requires a token
-
-Generate a long random token:
-
-```bash
-openssl rand -hex 32
-```
-
-On the machine where Ollama runs, save this as `ollama.yaml`, replacing `YOUR_TOKEN` with the value you generated:
-
-```yaml
-on_http_request:
-  - expressions:
-      - "!hasReqHeader('Authorization') || getReqHeader('Authorization')[0] != 'Bearer YOUR_TOKEN'"
-    actions:
-      - type: deny
-        config:
-          status_code: 401
-  - actions:
-      - type: add-headers
-        config:
-          headers:
-            host: localhost
-```
-
-**What's happening here?**
-The first rule rejects any request that doesn't carry `Authorization: Bearer YOUR_TOKEN`.
-ngrok enforces it in its cloud, so rejected requests never reach your machine.
-The second rule rewrites the `Host` header to `localhost`, because Ollama rejects requests addressed to other hostnames.
-
-A bearer token is what OpenAI-compatible clients send in their **API key** field, so the same token works in `curl`, the OpenAI SDKs, Cursor, and Open WebUI.
-
-## 3. Put Ollama online
-
-```bash
-ngrok config add-authtoken <YOUR_AUTHTOKEN>
-ngrok http 11434 --traffic-policy-file ollama.yaml
-```
-
-ngrok prints your public URL, such as `https://your-assigned-name.ngrok-free.dev`.
-This is your account's [dev domain](/pricing-limits/free-plan-limits/).
-It stays the same every time you restart `ngrok http`, so you configure each client once.
-
-## 4. Try it out
-
-From any machine, send a prompt to your model, replacing `YOUR_TOKEN` and the model name with your own:
-
-```bash
-curl https://your-assigned-name.ngrok-free.dev/v1/chat/completions \
-  -H "Authorization: Bearer YOUR_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{
-        "model": "llama3.2",
-        "messages": [{"role": "user", "content": "Hello!"}]
-      }'
-```
-
-Send the same request without the `Authorization` header and you get `401 Unauthorized`.
-
-Open `http://localhost:4040` on the Ollama machine to watch each request and response in the ngrok inspector.
-
-## 5. Connect your apps
-
-Any app that speaks the OpenAI API can use your Ollama models.
-Set its base URL to your ngrok URL plus `/v1`, and its API key to your token.
-
-<Tabs>
-  <Tab title="OpenAI SDK (Python)">
-    ```python
-    from openai import OpenAI
-
-    client = OpenAI(
-        base_url="https://your-assigned-name.ngrok-free.dev/v1",
-        api_key="YOUR_TOKEN",
-    )
-
-    response = client.chat.completions.create(
-        model="llama3.2",
-        messages=[{"role": "user", "content": "Hello!"}],
-    )
-    print(response.choices[0].message.content)
+    ```bash
+    curl http://localhost:11434/v1/models
     ```
-  </Tab>
-  <Tab title="Cursor">
-    Cursor calls models from its own servers, so it needs a public URL.
-    Follow [Use a local LLM in Cursor](/gateway/examples/cursor-local-llm).
-  </Tab>
-  <Tab title="Open WebUI">
-    In **Admin Settings** > **Connections**, add an OpenAI API connection with your ngrok URL plus `/v1` and your token as the API key.
-  </Tab>
-</Tabs>
+
+    You should see a JSON list of the models you've pulled.
+  </Step>
+
+  <Step title="Create a Traffic Policy that requires a token">
+
+    Generate a long random token:
+
+    ```bash
+    openssl rand -hex 32
+    ```
+
+    On the machine where Ollama runs, save this as `ollama.yaml`, replacing `YOUR_TOKEN` with the value you generated:
+
+    ```yaml
+    on_http_request:
+      - expressions:
+          - "!hasReqHeader('Authorization') || getReqHeader('Authorization')[0] != 'Bearer YOUR_TOKEN'"
+        actions:
+          - type: deny
+            config:
+              status_code: 401
+      - actions:
+          - type: add-headers
+            config:
+              headers:
+                host: localhost
+    ```
+
+    **What's happening here?**
+    The first rule rejects any request that doesn't carry `Authorization: Bearer YOUR_TOKEN`.
+    ngrok enforces it in its cloud, so rejected requests never reach your machine.
+    The second rule rewrites the `Host` header to `localhost`, because Ollama rejects requests addressed to other hostnames.
+
+    A bearer token is what OpenAI-compatible clients send in their **API key** field, so the same token works in `curl`, the OpenAI SDKs, Cursor, and Open WebUI.
+  </Step>
+
+  <Step title="Put Ollama online">
+
+    ```bash
+    ngrok config add-authtoken <YOUR_AUTHTOKEN>
+    ngrok http 11434 --traffic-policy-file ollama.yaml
+    ```
+
+    ngrok prints your public URL, such as `https://your-assigned-name.ngrok-free.dev`.
+    This is your account's [dev domain](/pricing-limits/free-plan-limits/).
+    It stays the same every time you restart `ngrok http`, so you configure each client once.
+  </Step>
+
+  <Step title="Try it out">
+
+    From any machine, send a prompt to your model, replacing `YOUR_TOKEN` and the model name with your own:
+
+    ```bash
+    curl https://your-assigned-name.ngrok-free.dev/v1/chat/completions \
+      -H "Authorization: Bearer YOUR_TOKEN" \
+      -H "Content-Type: application/json" \
+      -d '{
+            "model": "llama3.2",
+            "messages": [{"role": "user", "content": "Hello!"}]
+          }'
+    ```
+
+    Send the same request without the `Authorization` header and you get `401 Unauthorized`.
+
+    Open `http://localhost:4040` on the Ollama machine to watch each request and response in the ngrok inspector.
+  </Step>
+
+  <Step title="Connect your apps">
+
+    Any app that speaks the OpenAI API can use your Ollama models.
+    Set its base URL to your ngrok URL plus `/v1`, and its API key to your token.
+
+    <Tabs>
+      <Tab title="OpenAI SDK (Python)">
+        ```python
+        from openai import OpenAI
+
+        client = OpenAI(
+            base_url="https://your-assigned-name.ngrok-free.dev/v1",
+            api_key="YOUR_TOKEN",
+        )
+
+        response = client.chat.completions.create(
+            model="llama3.2",
+            messages=[{"role": "user", "content": "Hello!"}],
+        )
+        print(response.choices[0].message.content)
+        ```
+      </Tab>
+      <Tab title="Cursor">
+        Cursor calls models from its own servers, so it needs a public URL.
+        Follow [Use a local LLM in Cursor](/gateway/examples/cursor-local-llm).
+      </Tab>
+      <Tab title="Open WebUI">
+        In **Admin Settings** > **Connections**, add an OpenAI API connection with your ngrok URL plus `/v1` and your token as the API key.
+      </Tab>
+    </Tabs>
+  </Step>
+</Steps>
 
 ## Use a custom domain
 

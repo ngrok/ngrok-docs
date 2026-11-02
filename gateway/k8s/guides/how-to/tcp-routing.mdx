@@ -22,7 +22,7 @@ With TCP routing, the gateway can route connections using:
 - Static or dynamic IP/port mappings to backend services.
 - Connection-level metadata, such as source IP or client certificate, if applicable.
 
-Key Benefits:
+Key benefits:
 
 - Protocol Agnostic Routing: Support non-HTTP services or custom TCP protocols.
 - High Performance: Route traffic with minimal latency and overhead.
@@ -33,7 +33,7 @@ Key Benefits:
 The following examples showcase how you can route TCP traffic to your upstream services.
 
 You must first create a [TCP Address](/gateway/domains/tcp-addresses/). 
-When you create a TCP address, a random hostname and port will be assigned to you, for example, `1.tcp.ngrok.io:12345`.
+When you create a TCP address, a random hostname and port are assigned to you, for example, `1.tcp.ngrok.io:12345`.
 See the [TCP Endpoints page](/gateway/endpoints/tcp/) for more details on how ngrok handles TCP endpoints.
 
 <Tabs>
@@ -52,82 +52,88 @@ spec:
 </Tab>
 <Tab title="CloudEndpoint with AgentEndpoint">
 
-### 1. Create an `AgentEndpoint` for your upstream `Service`
-```yaml
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-kind: AgentEndpoint
-metadata:
-  name: example-service
-  namespace: default
-spec:
-  url: tcp://example-service.internal:8443
-  upstream:
-    url: tcp://example-service.example-namespace:8443
-```
+<Steps titleSize="h3">
+  <Step title="Create an AgentEndpoint for your upstream Service">
+    ```yaml
+    apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+    kind: AgentEndpoint
+    metadata:
+      name: example-service
+      namespace: default
+    spec:
+      url: tcp://example-service.internal:8443
+      upstream:
+        url: tcp://example-service.example-namespace:8443
+    ```
+  </Step>
 
-### 2. Create a `CloudEndpoint` that routes to the `AgentEndpoint`
+  <Step title="Create a CloudEndpoint that routes to the AgentEndpoint">
+    ```yaml
+    apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+    kind: CloudEndpoint
+    metadata:
+      name: example-cloud-endpoint
+    spec:
+      url: tcp://1.tcp.ngrok.io:12345
+      trafficPolicy:
+        policy:
+          on_http_request:
+          - actions:
+            - type: forward-internal
+              config:
+                url: tcp://example-service.internal:8443
+    ```
+  </Step>
+</Steps>
 
-```yaml
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-kind: CloudEndpoint
-metadata:
-  name: example-cloud-endpoint
-spec:
-  url: tcp://1.tcp.ngrok.io:12345
-  trafficPolicy:
-    policy:
-      on_http_request:
-      - actions:
-        - type: forward-internal
-          config:
-            url: tcp://example-service.internal:8443
-```
 </Tab>
 <Tab title="Gateway API">
 
-For TLS and TCP Routes, you must put the domain in the `Gateway.Spec.Addresses` field as the ngrok Operator needs to know what domains to use when creating endpoints for you and Gateway API forbids using the hostname field
-on Gateway listeners for TCP/TLS protocols.
+For TLS and TCP Routes, you must put the domain in the `Gateway.Spec.Addresses` field as the ngrok Operator needs to know what domains to use when creating endpoints for you and Gateway API forbids using the hostname field on Gateway listeners for TCP/TLS protocols.
 
 Since the `Gateway.Spec.Addresses` are expected to bind to all listeners, you may want to create separate Gateways for TLS and TCP endpoints to prevent unwanted conflicts and overlap.
 For these reasons, TCP and TLS routing is often more easily configurable using the `AgentEndpoint` resources directly instead of Gateway API configuration.
 
-### 1. Create a `Gateway`
+<Steps titleSize="h3">
+  <Step title="Create a Gateway">
+    If you already have a `Gateway` you can use that instead
 
-If you already have a `Gateway` you can use that instead
+    ```yaml
+    apiVersion: gateway.networking.k8s.io/v1
+    kind: Gateway
+    metadata:
+      name: example-gateway
+      namespace: default
+    spec:
+      gatewayClassName: ngrok
+      addresses:
+      - type: Hostname
+        value: 1.tcp.ngrok.io
+      listeners:
+        - name: p12345
+          port: 12345
+          protocol: TCP
+    ```
+  </Step>
 
-```yaml
-apiVersion: gateway.networking.k8s.io/v1
-kind: Gateway
-metadata:
-  name: example-gateway
-  namespace: default
-spec:
-  gatewayClassName: ngrok
-  addresses:
-  - type: Hostname
-    value: 1.tcp.ngrok.io
-  listeners:
-    - name: p12345
-      port: 12345
-      protocol: TCP
-```
+  <Step title="Create a TCPRoute">
+    ```yaml
+    apiVersion: gateway.networking.k8s.io/v1alpha2
+    kind: TCPRoute
+    metadata:
+      name: example-tlsroute
+      namespace: default
+    spec:
+      parentRefs:
+        - name: example-gateway
+          sectionName: p12345
+      rules:
+        - backendRefs:
+            - name: example-service
+              port: 9000
+    ```
+  </Step>
+</Steps>
 
-### 2. Create a `TCPRoute`
-
-```yaml
-apiVersion: gateway.networking.k8s.io/v1alpha2
-kind: TCPRoute
-metadata:
-  name: example-tlsroute
-  namespace: default
-spec:
-  parentRefs:
-    - name: example-gateway
-      sectionName: p12345
-  rules:
-    - backendRefs:
-        - name: example-service
-          port: 9000
-```
 </Tab>
 </Tabs>

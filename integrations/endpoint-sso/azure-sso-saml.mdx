@@ -20,65 +20,71 @@ By integrating Azure AD B2C with ngrok, you can:
 - A Microsoft Azure account with access to an Azure AD B2C tenant.
 - An understanding of Azure AD B2C custom policies.
 
-## 1. Configure ngrok
+<Steps titleSize="h2">
+  <Step title="Configure ngrok">
 
-<Warning>
-The SAML Traffic Policy action is currently in [developer preview](/gateway/traffic-policy/actions/saml/).
-[Request access](https://dashboard.ngrok.com/early-access) to configure SAML via Traffic Policy.
-</Warning>
+    <Warning>
+    The SAML Traffic Policy action is currently in [developer preview](/gateway/traffic-policy/actions/saml/).
+    [Request access](https://dashboard.ngrok.com/early-access) to configure SAML via Traffic Policy.
+    </Warning>
 
-Once you have developer preview access, create a `policy.yaml` file with the following content.
-Leave `YOUR_IDP_METADATA_XML` as a placeholder for now; you replace it with the metadata XML from Azure AD B2C in a later step.
+    Once you have developer preview access, create a `policy.yaml` file with the following content.
+    Leave `YOUR_IDP_METADATA_XML` as a placeholder for now; you replace it with the metadata XML from Azure AD B2C in a later step.
 
-```yaml
-on_http_request:
-  - actions:
-      - type: saml
-        config:
-          idp_metadata: 'YOUR_IDP_METADATA_XML'
-```
+    ```yaml
+    on_http_request:
+      - actions:
+          - type: saml
+            config:
+              idp_metadata: 'YOUR_IDP_METADATA_XML'
+    ```
 
-The SAML action generates your ngrok service provider (SP) Entity ID and Assertion Consumer Service (ACS) URL based on your endpoint URL.
-Refer to the [SAML action documentation](/gateway/traffic-policy/actions/saml/) for how to retrieve these values, which you enter into Azure AD B2C in the next step.
+    The SAML action generates your ngrok service provider (SP) Entity ID and Assertion Consumer Service (ACS) URL based on your endpoint URL.
+    Refer to the [SAML action documentation](/gateway/traffic-policy/actions/saml/) for how to retrieve these values, which you enter into Azure AD B2C in the next step.
 
-Launch an endpoint with this policy:
+    Launch an endpoint with this policy:
 
-```bash
-ngrok http 3000 --traffic-policy-file policy.yaml --url YOUR_DOMAIN
-```
+    ```bash
+    ngrok http 3000 --traffic-policy-file policy.yaml --url YOUR_DOMAIN
+    ```
 
-Copy the URL next to **Forwarding**.
-You use this URL to test the integration.
+    Copy the URL next to **Forwarding**.
+    You use this URL to test the integration.
+  </Step>
 
-## 2. Create a SAML application in Azure AD B2C
+  <Step title="Create a SAML application in Azure AD B2C">
 
-Azure AD B2C doesn't support SAML applications through user flows, so you configure it as a SAML identity provider with custom policies.
-Follow Microsoft's guide, [Configure Azure AD B2C as a SAML IdP to your applications](https://learn.microsoft.com/en-us/azure/active-directory-b2c/saml-service-provider), to set up the custom policies, register your SAML application, and expose the Azure AD B2C SAML metadata endpoint.
+    Azure AD B2C doesn't support SAML applications through user flows, so you configure it as a SAML identity provider with custom policies.
+    Follow Microsoft's guide, [Configure Azure AD B2C as a SAML IdP to your applications](https://learn.microsoft.com/en-us/azure/active-directory-b2c/saml-service-provider), to set up the custom policies, register your SAML application, and expose the Azure AD B2C SAML metadata endpoint.
 
-When you register the application, use the following mapping to enter the ngrok values you retrieved in the previous step:
+    When you register the application, use the following mapping to enter the ngrok values you retrieved in the previous step:
 
-| Azure AD B2C      | ngrok         |
-| ----------------- | ------------- |
-| `RedirectURI`     | `ACS URL`     |
-| `identifierUri`   | `EntityID`    |
-| `samlMetadataUrl` | `SP Metadata` |
+    | Azure AD B2C      | ngrok         |
+    | ----------------- | ------------- |
+    | `RedirectURI`     | `ACS URL`     |
+    | `identifierUri`   | `EntityID`    |
+    | `samlMetadataUrl` | `SP Metadata` |
+  </Step>
 
-## 3. Update the ngrok configuration with the IdP metadata
+  <Step title="Update the ngrok configuration with the IdP metadata">
 
-- Retrieve the IdP metadata XML from the Azure AD B2C SAML metadata endpoint.
-  The URL follows this format: `https://<tenant-name>.b2clogin.com/<tenant-name>.onmicrosoft.com/<policy-name>/Samlp/metadata`.
-- Update the `idp_metadata` value in your `policy.yaml` with the metadata XML, replacing the placeholder value you set earlier.
-- Restart the endpoint so it picks up the updated policy.
+    - Retrieve the IdP metadata XML from the Azure AD B2C SAML metadata endpoint.
+      The URL follows this format: `https://<tenant-name>.b2clogin.com/<tenant-name>.onmicrosoft.com/<policy-name>/Samlp/metadata`.
+    - Update the `idp_metadata` value in your `policy.yaml` with the metadata XML, replacing the placeholder value you set earlier.
+    - Restart the endpoint so it picks up the updated policy.
+  </Step>
 
-## 4. Test the integration
+  <Step title="Test the integration">
 
-<Tip>
-This step assumes you have an app running locally (for example, at `localhost:3000`) with the ngrok agent installed.
-</Tip>
+    <Tip>
+    This step assumes you have an app running locally (for example, at `localhost:3000`) with the ngrok agent installed.
+    </Tip>
 
-Run: `ngrok http 3000 --traffic-policy-file policy.yaml --url YOUR_DOMAIN`
+    Run: `ngrok http 3000 --traffic-policy-file policy.yaml --url YOUR_DOMAIN`
 
-- Access your ngrok endpoint via your forwarding URL.
-- In your browser, launch an incognito window.
-- When prompted, log in or sign up.
-- After you log in, you see the application.
+    - Access your ngrok endpoint via your forwarding URL.
+    - In your browser, launch an incognito window.
+    - When prompted, log in or sign up.
+    - After you log in, you see the application.
+  </Step>
+</Steps>

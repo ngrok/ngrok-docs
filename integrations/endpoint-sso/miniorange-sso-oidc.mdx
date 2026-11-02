@@ -23,54 +23,59 @@ In this mode, users access ngrok endpoints and are redirected to miniOrange for 
 - A miniOrange account with administrative rights to create apps.
 - An ngrok Pay-as-you-go account with an authtoken or admin access to configure endpoints with OpenID Connect.
 
-## 1. Configure miniOrange
+<Steps titleSize="h2">
+  <Step title="Configure miniOrange">
 
-Add an OAuth2/OpenID Connect application in miniOrange by following [miniOrange's guide to adding an OAuth app](https://www.miniorange.com/iam/content-library/admin-docs/how-to-add-oauth-app).
-When you configure the application, enter `https://idp.ngrok.com/oauth2/callback` as the **Redirect-URL**.
+    Add an OAuth2/OpenID Connect application in miniOrange by following [miniOrange's guide to adding an OAuth app](https://www.miniorange.com/iam/content-library/admin-docs/how-to-add-oauth-app).
+    When you configure the application, enter `https://idp.ngrok.com/oauth2/callback` as the **Redirect-URL**.
 
-After you save the application, copy the following values, which you use when you configure ngrok:
+    After you save the application, copy the following values, which you use when you configure ngrok:
 
-- **Client ID** and **Client Secret** from the application's edit page.
-- The **Discovery Endpoint** URL from the application's **OAuth Endpoints** page.
-  Use this URL as the issuer URL in the next step, without the `/.well-known/openid-configuration` suffix (for example, `https://login.xecurify.com/moas/discovery/v2.0/abcd1234`).
+    - **Client ID** and **Client Secret** from the application's edit page.
+    - The **Discovery Endpoint** URL from the application's **OAuth Endpoints** page.
+      Use this URL as the issuer URL in the next step, without the `/.well-known/openid-configuration` suffix (for example, `https://login.xecurify.com/moas/discovery/v2.0/abcd1234`).
 
-Create at least one miniOrange user and grant it access to the application so that user can sign in through miniOrange.
+    Create at least one miniOrange user and grant it access to the application so that user can sign in through miniOrange.
+  </Step>
 
-## 2. Configure ngrok
+  <Step title="Configure ngrok">
 
-Use the [OpenID Connect Traffic Policy action](/gateway/traffic-policy/actions/oidc) to enforce miniOrange authentication on your endpoint.
+    Use the [OpenID Connect Traffic Policy action](/gateway/traffic-policy/actions/oidc) to enforce miniOrange authentication on your endpoint.
 
-<Note>
-This step assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok client installed.
-</Note>
+    <Note>
+    This step assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok client installed.
+    </Note>
 
-Create a `policy.yaml` file with the following content, replacing the placeholder values with those copied from miniOrange:
+    Create a `policy.yaml` file with the following content, replacing the placeholder values with those copied from miniOrange:
 
-```yaml
-on_http_request:
-  - actions:
-      - type: openid-connect
-        config:
-          issuer_url: 'YOUR_MINIORANGE_DISCOVERY_ENDPOINT_URL'
-          client_id: 'YOUR_MINIORANGE_CLIENT_ID'
-          client_secret: 'YOUR_MINIORANGE_CLIENT_SECRET'
-          scopes:
-            - openid
-            - profile
-            - email
-```
+    ```yaml
+    on_http_request:
+      - actions:
+          - type: openid-connect
+            config:
+              issuer_url: 'YOUR_MINIORANGE_DISCOVERY_ENDPOINT_URL'
+              client_id: 'YOUR_MINIORANGE_CLIENT_ID'
+              client_secret: 'YOUR_MINIORANGE_CLIENT_SECRET'
+              scopes:
+                - openid
+                - profile
+                - email
+    ```
 
-Start an ngrok endpoint with this policy, replacing `YOUR_DOMAIN` with your ngrok domain:
+    Start an ngrok endpoint with this policy, replacing `YOUR_DOMAIN` with your ngrok domain:
 
-```bash
-ngrok http 3000 --traffic-policy-file policy.yaml --url YOUR_DOMAIN
-```
+    ```bash
+    ngrok http 3000 --traffic-policy-file policy.yaml --url YOUR_DOMAIN
+    ```
 
-Copy the URL next to **Forwarding** (for example, `https://miniorange-sso-test.ngrok.app`).
+    Copy the URL next to **Forwarding** (for example, `https://miniorange-sso-test.ngrok.app`).
+  </Step>
 
-## 3. Test the integration
+  <Step title="Test the integration">
 
-- In your browser, launch an incognito window.
-- Access your ngrok endpoint using the copied endpoint URL (for example, `https://miniorange-sso-test.ngrok.app`).
-- When prompted, log in with your miniOrange credentials.
-- After you log in, you see your web app.
+    - In your browser, launch an incognito window.
+    - Access your ngrok endpoint using the copied endpoint URL (for example, `https://miniorange-sso-test.ngrok.app`).
+    - When prompted, log in with your miniOrange credentials.
+    - After you log in, you see your web app.
+  </Step>
+</Steps>

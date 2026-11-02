@@ -23,56 +23,61 @@ In this mode, users access ngrok endpoints and are redirected to JumpCloud for a
 - A JumpCloud account with administrative rights to create apps.
 - An ngrok Pay-as-you-go account with an authtoken or admin access to configure endpoints with OpenID Connect.
 
-## 1. Configure JumpCloud
+<Steps titleSize="h2">
+  <Step title="Configure JumpCloud">
 
-Create a custom OIDC application in JumpCloud by following [JumpCloud's SSO with OIDC guide](https://jumpcloud.com/support/sso-with-oidc).
-When you configure the application, use these ngrok-specific values:
+    Create a custom OIDC application in JumpCloud by following [JumpCloud's SSO with OIDC guide](https://jumpcloud.com/support/sso-with-oidc).
+    When you configure the application, use these ngrok-specific values:
 
-- **Redirect URI**: `https://idp.ngrok.com/oauth2/callback`
-- **Login URL**: the URL of your ngrok endpoint (for example, `https://myexample.ngrok.app`)
-- **Client Authentication Type**: Client Secret Basic
+    - **Redirect URI**: `https://idp.ngrok.com/oauth2/callback`
+    - **Login URL**: the URL of your ngrok endpoint (for example, `https://myexample.ngrok.app`)
+    - **Client Authentication Type**: Client Secret Basic
 
-After you activate the application, copy the **Client ID** and **Client Secret**.
-You use these values when you configure ngrok, along with the JumpCloud OIDC issuer URL `https://oauth.id.jumpcloud.com/`.
+    After you activate the application, copy the **Client ID** and **Client Secret**.
+    You use these values when you configure ngrok, along with the JumpCloud OIDC issuer URL `https://oauth.id.jumpcloud.com/`.
 
-Assign at least one user group to the application so those users can sign in through JumpCloud.
-Nobody can reach your endpoint through JumpCloud SSO until you assign a group.
+    Assign at least one user group to the application so those users can sign in through JumpCloud.
+    Nobody can reach your endpoint through JumpCloud SSO until you assign a group.
+  </Step>
 
-## 2. Configure ngrok
+  <Step title="Configure ngrok">
 
-Use the [OpenID Connect Traffic Policy action](/gateway/traffic-policy/actions/oidc) to enforce JumpCloud authentication on your endpoint.
+    Use the [OpenID Connect Traffic Policy action](/gateway/traffic-policy/actions/oidc) to enforce JumpCloud authentication on your endpoint.
 
-<Note>
-This step assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok client installed.
-</Note>
+    <Note>
+    This step assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok client installed.
+    </Note>
 
-Create a `policy.yaml` file with the following content, replacing the placeholder values with those copied from JumpCloud:
+    Create a `policy.yaml` file with the following content, replacing the placeholder values with those copied from JumpCloud:
 
-```yaml
-on_http_request:
-  - actions:
-      - type: openid-connect
-        config:
-          issuer_url: 'https://oauth.id.jumpcloud.com/'
-          client_id: 'YOUR_JUMPCLOUD_CLIENT_ID'
-          client_secret: 'YOUR_JUMPCLOUD_CLIENT_SECRET'
-          scopes:
-            - openid
-            - profile
-            - email
-```
+    ```yaml
+    on_http_request:
+      - actions:
+          - type: openid-connect
+            config:
+              issuer_url: 'https://oauth.id.jumpcloud.com/'
+              client_id: 'YOUR_JUMPCLOUD_CLIENT_ID'
+              client_secret: 'YOUR_JUMPCLOUD_CLIENT_SECRET'
+              scopes:
+                - openid
+                - profile
+                - email
+    ```
 
-Start an ngrok endpoint with this policy, replacing `YOUR_DOMAIN` with your ngrok domain:
+    Start an ngrok endpoint with this policy, replacing `YOUR_DOMAIN` with your ngrok domain:
 
-```bash
-ngrok http 3000 --traffic-policy-file policy.yaml --url YOUR_DOMAIN
-```
+    ```bash
+    ngrok http 3000 --traffic-policy-file policy.yaml --url YOUR_DOMAIN
+    ```
 
-Copy the URL next to **Forwarding** (for example, `https://jumpcloud-sso-test.ngrok.app`).
+    Copy the URL next to **Forwarding** (for example, `https://jumpcloud-sso-test.ngrok.app`).
+  </Step>
 
-## 3. Test the integration
+  <Step title="Test the integration">
 
-- In your browser, launch an incognito window.
-- Access your ngrok endpoint (for example, `https://jumpcloud-sso-test.ngrok.app` or using the copied endpoint URL).
-- When prompted, log in with your JumpCloud credentials.
-- After you log in, you see your web app.
+    - In your browser, launch an incognito window.
+    - Access your ngrok endpoint (for example, `https://jumpcloud-sso-test.ngrok.app` or using the copied endpoint URL).
+    - When prompted, log in with your JumpCloud credentials.
+    - After you log in, you see your web app.
+  </Step>
+</Steps>

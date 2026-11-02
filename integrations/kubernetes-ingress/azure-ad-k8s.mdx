@@ -1,5 +1,5 @@
 ---
-title: Ingress to apps secured by Microsoft Entra ID in Kubernetes
+title: Ingress to Apps Secured by Microsoft Entra ID in Kubernetes
 description: Use ngrok to add ingress to Kubernetes apps and authenticate users with Microsoft Entra ID.
 sidebarTitle: Microsoft Entra ID
 ---
@@ -20,181 +20,189 @@ The Operator and Microsoft Entra ID integrate so you can route public traffic to
 - The [ngrok Kubernetes Operator](/gateway/k8s/) installed on your cluster.
 - A reserved domain from the ngrok [dashboard](https://dashboard.ngrok.com/domains) or [API](/api-reference/reserveddomains/list); this guide refers to it as `<NGROK_DOMAIN>`.
 
-## 1. Create a cluster and deploy an example app
+<Steps titleSize="h2">
+  <Step title="Create a cluster and deploy an example app">
 
-This guide needs an app on a Kubernetes cluster to route traffic to.
-It uses the Online Boutique demo, which exposes a `frontend` service on port `80`.
+    This guide needs an app on a Kubernetes cluster to route traffic to.
+    It uses the Online Boutique demo, which exposes a `frontend` service on port `80`.
 
-If you already have a cluster and app, skip to [2. Add the ngrok Kubernetes Operator](#2-add-the-ngrok-kubernetes-operator).
-Otherwise, deploy Online Boutique by following Google's [microservices-demo instructions](https://github.com/GoogleCloudPlatform/microservices-demo).
-For a local cluster, [minikube](https://minikube.sigs.k8s.io/docs/start/) works.
+    If you already have a cluster and app, skip to the [Add the ngrok Kubernetes Operator](#add-the-ngrok-kubernetes-operator) step.
+    Otherwise, deploy Online Boutique by following Google's [microservices-demo instructions](https://github.com/GoogleCloudPlatform/microservices-demo).
+    For a local cluster, [minikube](https://minikube.sigs.k8s.io/docs/start/) works.
 
-Confirm your workloads are running before continuing:
+    Confirm your workloads are running before continuing:
 
-```bash
-kubectl get pods
-```
+    ```bash
+    kubectl get pods
+    ```
+  </Step>
 
-## 2. Add the ngrok Kubernetes Operator
+  <Step title="Add the ngrok Kubernetes Operator">
 
-If you haven't already, install the [ngrok Kubernetes Operator](/gateway/k8s/) so ngrok can route public traffic to your app.
-Follow the [Kubernetes ingress quickstart](/getting-started/kubernetes/ingress) to install the Operator with your ngrok credentials.
+    If you haven't already, install the [ngrok Kubernetes Operator](/gateway/k8s/) so ngrok can route public traffic to your app.
+    Follow the [Kubernetes ingress quickstart](/getting-started/kubernetes/ingress) to install the Operator with your ngrok credentials.
 
-You also need a reserved domain to serve as your `NGROK_DOMAIN`.
-Reserve one from the ngrok [dashboard](https://dashboard.ngrok.com/domains) or [API](/api-reference/reserveddomains/list).
+    You also need a reserved domain to serve as your `NGROK_DOMAIN`.
+    Reserve one from the ngrok [dashboard](https://dashboard.ngrok.com/domains) or [API](/api-reference/reserveddomains/list).
 
-Create a `boutique-ingress.yaml` file that tells the Operator to route traffic on your `NGROK_DOMAIN` to the Online Boutique `frontend` service.
+    Create a `boutique-ingress.yaml` file that tells the Operator to route traffic on your `NGROK_DOMAIN` to the Online Boutique `frontend` service.
 
-<Tip>
-Replace `NGROK_DOMAIN` in the manifest below with the domain you reserved (for example, `one-two-three.ngrok.app`).
-To expose a different app, change `metadata.name`, `service.name`, and `service.port.number` to match it.
-</Tip>
+    <Tip>
+    Replace `NGROK_DOMAIN` in the manifest below with the domain you reserved (for example, `one-two-three.ngrok.app`).
+    To expose a different app, change `metadata.name`, `service.name`, and `service.port.number` to match it.
+    </Tip>
 
-```yaml
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: boutique-ingress
-  namespace: default
-spec:
-  ingressClassName: ngrok
-  rules:
-    - host: NGROK_DOMAIN
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: frontend
-                port:
-                  number: 80
-```
+    ```yaml
+    apiVersion: networking.k8s.io/v1
+    kind: Ingress
+    metadata:
+      name: boutique-ingress
+      namespace: default
+    spec:
+      ingressClassName: ngrok
+      rules:
+        - host: NGROK_DOMAIN
+          http:
+            paths:
+              - path: /
+                pathType: Prefix
+                backend:
+                  service:
+                    name: frontend
+                    port:
+                      number: 80
+    ```
 
-Apply the manifest:
+    Apply the manifest:
 
-```bash
-kubectl apply -f boutique-ingress.yaml
-```
+    ```bash
+    kubectl apply -f boutique-ingress.yaml
+    ```
 
-Give your cluster a few moments to launch the necessary resources and for ngrok to pick up the new endpoint.
-If you see an error when applying the manifest, confirm you updated the `NGROK_DOMAIN` value and re-apply.
+    Give your cluster a few moments to launch the necessary resources and for ngrok to pick up the new endpoint.
+    If you see an error when applying the manifest, confirm you updated the `NGROK_DOMAIN` value and re-apply.
 
-Open your ngrok domain (for example, `https://one-two-three.ngrok.app`) in your browser to see the app, now served through ngrok.
+    Open your ngrok domain (for example, `https://one-two-three.ngrok.app`) in your browser to see the app, now served through ngrok.
+  </Step>
 
-## 3. Enable SAML with a Traffic Policy
+  <Step title="Enable SAML with a Traffic Policy">
 
-<Warning>
-The SAML Traffic Policy action is currently in [developer preview](/gateway/traffic-policy/actions/saml/).
-[Request access](https://dashboard.ngrok.com/early-access) to configure SAML via Traffic Policy.
-</Warning>
+    <Warning>
+    The SAML Traffic Policy action is currently in [developer preview](/gateway/traffic-policy/actions/saml/).
+    [Request access](https://dashboard.ngrok.com/early-access) to configure SAML via Traffic Policy.
+    </Warning>
 
-Your Kubernetes-based app is now publicly accessible through ngrok.
-To restrict access to authorized users with Microsoft Entra ID credentials, create a `NgrokTrafficPolicy` custom resource with the SAML action and apply it to your Ingress.
+    Your Kubernetes-based app is now publicly accessible through ngrok.
+    To restrict access to authorized users with Microsoft Entra ID credentials, create a `NgrokTrafficPolicy` custom resource with the SAML action and apply it to your Ingress.
 
-- Create a file named `saml-policy.yaml` with the following content:
+    - Create a file named `saml-policy.yaml` with the following content:
 
-  ```yaml
-  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-  kind: NgrokTrafficPolicy
-  metadata:
-    name: saml
-    namespace: default
-  spec:
-    policy:
-      on_http_request:
-        - actions:
-            - type: saml
-              config:
-                idp_metadata: 'YOUR_IDP_METADATA_XML'
-  ```
+      ```yaml
+      apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+      kind: NgrokTrafficPolicy
+      metadata:
+        name: saml
+        namespace: default
+      spec:
+        policy:
+          on_http_request:
+            - actions:
+                - type: saml
+                  config:
+                    idp_metadata: 'YOUR_IDP_METADATA_XML'
+      ```
 
-- Apply the Traffic Policy CR:
+    - Apply the Traffic Policy CR:
 
-  ```bash
-  kubectl apply -f saml-policy.yaml
-  ```
+      ```bash
+      kubectl apply -f saml-policy.yaml
+      ```
 
-- Update your `boutique-ingress.yaml` to reference this policy with an annotation:
+    - Update your `boutique-ingress.yaml` to reference this policy with an annotation:
 
-  ```yaml
-  apiVersion: networking.k8s.io/v1
-  kind: Ingress
-  metadata:
-    name: boutique-ingress
-    namespace: default
-    annotations:
-      k8s.ngrok.com/traffic-policy: saml
-  spec:
-    ingressClassName: ngrok
-    rules:
-      - host: NGROK_DOMAIN
-        http:
-          paths:
-            - path: /
-              pathType: Prefix
-              backend:
-                service:
-                  name: frontend
-                  port:
-                    number: 80
-  ```
+      ```yaml
+      apiVersion: networking.k8s.io/v1
+      kind: Ingress
+      metadata:
+        name: boutique-ingress
+        namespace: default
+        annotations:
+          k8s.ngrok.com/traffic-policy: saml
+      spec:
+        ingressClassName: ngrok
+        rules:
+          - host: NGROK_DOMAIN
+            http:
+              paths:
+                - path: /
+                  pathType: Prefix
+                  backend:
+                    service:
+                      name: frontend
+                      port:
+                        number: 80
+      ```
 
-- Re-apply the Ingress manifest:
+    - Re-apply the Ingress manifest:
 
-  ```bash
-  kubectl apply -f boutique-ingress.yaml
-  ```
+      ```bash
+      kubectl apply -f boutique-ingress.yaml
+      ```
 
-- Refer to the [SAML action documentation](/gateway/traffic-policy/actions/saml/) to retrieve your SP Entity ID and ACS URL values, which you'll need in the next step.
+    - Refer to the [SAML action documentation](/gateway/traffic-policy/actions/saml/) to retrieve your SP Entity ID and ACS URL values, which you'll need in the next step.
+  </Step>
 
-## 4. Create an enterprise app in Microsoft Entra ID
+  <Step title="Create an enterprise app in Microsoft Entra ID">
 
-With a SAML Traffic Policy applied to your Ingress, configure Microsoft Entra ID to operate as your identity provider (IdP).
+    With a SAML Traffic Policy applied to your Ingress, configure Microsoft Entra ID to operate as your identity provider (IdP).
 
-- Open your Microsoft Entra ID tenant in the Azure console.
+    - Open your Microsoft Entra ID tenant in the Azure console.
 
-- Click **Enterprise applications** in the left-hand sidebar, then **+ New application**, then **+ Create your own application**.
-  Give your app a name (for example, `online-boutique`) and select **Integrate any other application you don't find in the gallery (Non-gallery)**.
+    - Click **Enterprise applications** in the left-hand sidebar, then **+ New application**, then **+ Create your own application**.
+      Give your app a name (for example, `online-boutique`) and select **Integrate any other application you don't find in the gallery (Non-gallery)**.
 
-- Click **Create** to create your enterprise app; you'll be taken to its Overview dashboard.
+    - Click **Create** to create your enterprise app; you'll be taken to its Overview dashboard.
 
-- To give specific users or groups access to your app, click **Assign users and groups** and follow the steps, then go back to **Overview**.
+    - To give specific users or groups access to your app, click **Assign users and groups** and follow the steps, then go back to **Overview**.
 
-- Click **Set up single sign on** so users can sign in with their Microsoft Entra credentials, then choose **SAML** as the single sign-on protocol.
+    - Click **Set up single sign on** so users can sign in with their Microsoft Entra credentials, then choose **SAML** as the single sign-on protocol.
 
-- Click **Edit** in the **Basic SAML Configuration** box.
-  Refer to the [SAML action documentation](/gateway/traffic-policy/actions/saml/) to retrieve your SP Entity ID and ACS URL, then copy them into the **Identifier (Entity ID)** and **Reply URL (Assertion Consumer Service URL)** fields respectively.
-  Click **Save** before closing the modal.
+    - Click **Edit** in the **Basic SAML Configuration** box.
+      Refer to the [SAML action documentation](/gateway/traffic-policy/actions/saml/) to retrieve your SP Entity ID and ACS URL, then copy them into the **Identifier (Entity ID)** and **Reply URL (Assertion Consumer Service URL)** fields respectively.
+      Click **Save** before closing the modal.
 
-- In the **SAML Certificates** box, download the **Federation Metadata XML**.
+    - In the **SAML Certificates** box, download the **Federation Metadata XML**.
+  </Step>
 
-## 5. Update the Traffic Policy with the IdP metadata
+  <Step title="Update the Traffic Policy with the IdP metadata">
 
-With Microsoft Entra ID configured as your identity provider, update your Traffic Policy with the real IdP metadata.
+    With Microsoft Entra ID configured as your identity provider, update your Traffic Policy with the real IdP metadata.
 
-- Open your `saml-policy.yaml` and replace `YOUR_IDP_METADATA_XML` with the contents of the Federation Metadata XML file you downloaded.
+    - Open your `saml-policy.yaml` and replace `YOUR_IDP_METADATA_XML` with the contents of the Federation Metadata XML file you downloaded.
 
-- Re-apply the updated Traffic Policy:
+    - Re-apply the updated Traffic Policy:
 
-  ```bash
-  kubectl apply -f saml-policy.yaml
-  ```
+      ```bash
+      kubectl apply -f saml-policy.yaml
+      ```
+  </Step>
 
-## 6. Test authorization to your app using Microsoft Entra ID
+  <Step title="Test authorization to your app using Microsoft Entra ID">
 
-You've finished integrating the ngrok Kubernetes Operator and Microsoft Entra ID.
-Your app (the Online Boutique or a custom deployment) is now publicly accessible only to users authorized with their Microsoft Entra ID credentials.
+    You've finished integrating the ngrok Kubernetes Operator and Microsoft Entra ID.
+    Your app (the Online Boutique or a custom deployment) is now publicly accessible only to users authorized with their Microsoft Entra ID credentials.
 
-- Open an incognito or private browser window (or a different browser) and go to your `NGROK_DOMAIN`.
-  You should see a single sign-on screen from Microsoft.
+    - Open an incognito or private browser window (or a different browser) and go to your `NGROK_DOMAIN`.
+      You should see a single sign-on screen from Microsoft.
 
-- Enter credentials for a Microsoft account you assigned to your enterprise application in Microsoft Entra ID in [step 4](#4-create-an-enterprise-app-in-microsoft-entra-id).
+    - Enter credentials for a Microsoft account you assigned to your enterprise application in Microsoft Entra ID in the [Create an enterprise app in Microsoft Entra ID](#create-an-enterprise-app-in-microsoft-entra-id) step.
 
-  Behind the scenes, ngrok redirects you to your identity provider, Microsoft Entra ID, for authentication.
-  Once you sign in, or are already logged in, Microsoft Entra ID then returns a SAML assertion to ngrok, telling ngrok your authentication is confirmed and you have authorization to access the app.
+      Behind the scenes, ngrok redirects you to your identity provider, Microsoft Entra ID, for authentication.
+      Once you sign in, or are already logged in, Microsoft Entra ID then returns a SAML assertion to ngrok, telling ngrok your authentication is confirmed and you have authorization to access the app.
 
-  Microsoft Entra ID will then redirect you back to your app.
+      Microsoft Entra ID will then redirect you back to your app.
+  </Step>
+</Steps>
 
 ## What's next?
 
