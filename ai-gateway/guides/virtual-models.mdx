@@ -18,116 +18,121 @@ This also gives failover to clients that can't send a [`models` fallback list](/
 - Access to the models you want to list, either with [credits](/ai-gateway/guides/pay-with-credits) or with [your own provider keys](/ai-gateway/guides/attaching-provider-keys).
 - An [AI Gateway API key](/ai-gateway/concepts/access-keys#credentials-overview), if you want to use the API instead of the dashboard.
 
-## 1. Create a virtual model
+<Steps titleSize="h2">
+  <Step title="Create a virtual model">
 
-### Via the dashboard
+    ### Via the dashboard
 
-1. Open [**Virtual Models**](https://app.ngrok.ai/virtual-models) in app.ngrok.ai and click **Create virtual model**.
-2. Enter a **Name**, such as `chat-default`, and an optional **Description**.
-3. Under **Models**, click **Add model** and pick the model to try first.
-   Choose **Any provider** to let any provider that serves the model handle it, or choose a provider to pin the model to that provider.
-4. Add each fallback model in the order you want the gateway to try them.
-   To change the order, open a model's menu and move it up or down.
-5. Click **Create virtual model**.
+    1. Open [**Virtual Models**](https://app.ngrok.ai/virtual-models) in app.ngrok.ai and click **Create virtual model**.
+    2. Enter a **Name**, such as `chat-default`, and an optional **Description**.
+    3. Under **Models**, click **Add model** and pick the model to try first.
+       Choose **Any provider** to let any provider that serves the model handle it, or choose a provider to pin the model to that provider.
+    4. Add each fallback model in the order you want the gateway to try them.
+       To change the order, open a model's menu and move it up or down.
+    5. Click **Create virtual model**.
 
-### Via the AI Gateway API
+    ### Via the AI Gateway API
 
-Send the name and the models to the [Virtual Models API](/ai-gateway/api-reference/virtual-models/create):
+    Send the name and the models to the [Virtual Models API](/ai-gateway/api-reference/virtual-models/create):
 
-```bash
-curl -X POST https://api.ngrok.ai/virtual-models \
-  -H "Authorization: Bearer $AI_GATEWAY_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "chat-default",
-    "models": [
-      "anthropic/claude-sonnet-4-6",
-      "openai:gpt-5.1",
-      "google/gemini-3.6-flash"
-    ],
-    "description": "Default chat model for the support app"
-  }'
-```
+    ```bash
+    curl -X POST https://api.ngrok.ai/virtual-models \
+      -H "Authorization: Bearer $AI_GATEWAY_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "chat-default",
+        "models": [
+          "anthropic/claude-sonnet-4-6",
+          "openai:gpt-5.1",
+          "google/gemini-3.6-flash"
+        ],
+        "description": "Default chat model for the support app"
+      }'
+    ```
 
-The response is the new virtual model:
+    The response is the new virtual model:
 
-```json
-{
-  "id": "aigvm_2xyzABC123",
-  "uri": "/virtual-models/aigvm_2xyzABC123",
-  "name": "chat-default",
-  "models": [
-    "anthropic/claude-sonnet-4-6",
-    "openai:gpt-5.1",
-    "google/gemini-3.6-flash"
-  ],
-  "description": "Default chat model for the support app",
-  "createdAt": "2026-10-29T17:00:00Z",
-  "updatedAt": "2026-10-29T17:00:00Z",
-  "createdBy": { "id": "aigak_2abcDEF456", "uri": "/users/aigak_2abcDEF456" },
-  "lastUpdatedBy": { "id": "aigak_2abcDEF456", "uri": "/users/aigak_2abcDEF456" },
-  "warnings": []
-}
-```
+    ```json
+    {
+      "id": "aigvm_2xyzABC123",
+      "uri": "/virtual-models/aigvm_2xyzABC123",
+      "name": "chat-default",
+      "models": [
+        "anthropic/claude-sonnet-4-6",
+        "openai:gpt-5.1",
+        "google/gemini-3.6-flash"
+      ],
+      "description": "Default chat model for the support app",
+      "createdAt": "2026-10-29T17:00:00Z",
+      "updatedAt": "2026-10-29T17:00:00Z",
+      "createdBy": { "id": "aigak_2abcDEF456", "uri": "/users/aigak_2abcDEF456" },
+      "lastUpdatedBy": { "id": "aigak_2abcDEF456", "uri": "/users/aigak_2abcDEF456" },
+      "warnings": []
+    }
+    ```
+  </Step>
 
-## 2. Send a request with the virtual model
+  <Step title="Send a request with the virtual model">
 
-Use the name anywhere you'd put a model.
-Nothing else in the request changes.
+    Use the name anywhere you'd put a model.
+    Nothing else in the request changes.
 
-<CodeGroup>
-```python Python highlight={9}
-from openai import OpenAI
+    <CodeGroup>
+    ```python Python highlight={9}
+    from openai import OpenAI
 
-client = OpenAI(
-    base_url="https://gateway.ngrok.ai/v1",
-    api_key="ng-xxxxx-g1-xxxxx",  # Your access key
-)
+    client = OpenAI(
+        base_url="https://gateway.ngrok.ai/v1",
+        api_key="ng-xxxxx-g1-xxxxx",  # Your access key
+    )
 
-response = client.chat.completions.create(
-    model="chat-default",
-    messages=[{"role": "user", "content": "Hello"}],
-)
+    response = client.chat.completions.create(
+        model="chat-default",
+        messages=[{"role": "user", "content": "Hello"}],
+    )
 
-print(response.choices[0].message.content)
-```
+    print(response.choices[0].message.content)
+    ```
 
-```bash curl
-curl -i https://gateway.ngrok.ai/v1/chat/completions \
-  -H "Authorization: Bearer ng-xxxxx-g1-xxxxx" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "model": "chat-default",
-    "messages": [{"role": "user", "content": "Hello"}]
-  }'
-```
-</CodeGroup>
+    ```bash curl
+    curl -i https://gateway.ngrok.ai/v1/chat/completions \
+      -H "Authorization: Bearer ng-xxxxx-g1-xxxxx" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "model": "chat-default",
+        "messages": [{"role": "user", "content": "Hello"}]
+      }'
+    ```
+    </CodeGroup>
 
-The gateway tries `anthropic/claude-sonnet-4-6` first.
-If that attempt fails with a rate limit, an auth error, a server error, or a timeout, it tries `openai:gpt-5.1`, then `google/gemini-3.6-flash`.
+    The gateway tries `anthropic/claude-sonnet-4-6` first.
+    If that attempt fails with a rate limit, an auth error, a server error, or a timeout, it tries `openai:gpt-5.1`, then `google/gemini-3.6-flash`.
 
-The gateway matches the name without regard to case, so `chat-default` and `Chat-Default` are the same virtual model.
+    The gateway matches the name without regard to case, so `chat-default` and `Chat-Default` are the same virtual model.
 
-Virtual models work on every endpoint that takes a model name: Chat Completions, Responses, Messages, Gemini `generateContent` and Interactions, Decisions, and System One.
-On Gemini `generateContent`, put the name in the path, such as `/v1beta/models/chat-default:generateContent`.
+    Virtual models work on every endpoint that takes a model name: Chat Completions, Responses, Messages, Gemini `generateContent` and Interactions, Decisions, and System One.
+    On Gemini `generateContent`, put the name in the path, such as `/v1beta/models/chat-default:generateContent`.
+  </Step>
 
-## 3. See which model answered
+  <Step title="See which model answered">
 
-Read the `Ngrok-AIG-Model` [response header](/ai-gateway/how-it-works#response-headers).
-It names the model that served the request, not the virtual model name:
+    Read the `Ngrok-AIG-Model` [response header](/ai-gateway/how-it-works#response-headers).
+    It names the model that served the request, not the virtual model name:
 
-```http
-HTTP/2 200
-ngrok-aig-request-id: rq_2abcDEF456
-ngrok-aig-attempts: 2
-ngrok-aig-model: gpt-5.1
-```
+    ```http
+    HTTP/2 200
+    ngrok-aig-request-id: rq_2abcDEF456
+    ngrok-aig-attempts: 2
+    ngrok-aig-model: gpt-5.1
+    ```
 
-Here the first model failed and the second model in `chat-default` answered.
+    Here the first model failed and the second model in `chat-default` answered.
 
-To see each attempt, pass the request ID to [`GET /usage/requests/{requestId}`](/ai-gateway/api-reference/usage/request-attempts).
-Each attempt that came from a virtual model has a `virtualModel` field with its name.
-See [Why a request failed over](/ai-gateway/guides/why-a-request-failed-over).
+    To see each attempt, pass the request ID to [`GET /usage/requests/{requestId}`](/ai-gateway/api-reference/usage/request-attempts).
+    Each attempt that came from a virtual model has a `virtualModel` field with its name.
+    See [Why a request failed over](/ai-gateway/guides/why-a-request-failed-over).
+  </Step>
+</Steps>
 
 ## How to write the models in a virtual model
 

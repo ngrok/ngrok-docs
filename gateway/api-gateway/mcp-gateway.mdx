@@ -72,143 +72,150 @@ For those, use a [secret path](#use-a-secret-path) while you test, and [OAuth](#
 - An MCP server that serves Streamable HTTP or HTTP + SSE.
   This guide uses port `3001` and the path `/mcp`.
 
-### 1. Check that your MCP server responds
+<Steps titleSize="h3">
+  <Step title="Check that your MCP server responds">
 
-Send an MCP `initialize` request to your server:
+    Send an MCP `initialize` request to your server:
 
-```bash
-curl -s -X POST http://localhost:3001/mcp \
-  -H 'Content-Type: application/json' \
-  -H 'Accept: application/json, text/event-stream' \
-  -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"curl","version":"0"}}}'
-```
-
-A JSON-RPC response means the server is up.
-Many MCP servers return `404` or `405` for a plain `GET /`, so don't test in a browser.
-
-### 2. Create a Traffic Policy that requires a token
-
-Anyone with your URL can call your server, and MCP tools can act on your machine.
-Protect it before it goes online.
-
-This step uses a bearer token, which works for clients that can send a header.
-If your client only takes a URL, use the policy in [Use a secret path](#use-a-secret-path) instead, then continue with step 3.
-
-Generate a long random token:
-
-```bash
-openssl rand -hex 32
-```
-
-Save this as `policy.yml`, replacing `YOUR_TOKEN` with the value you generated:
-
-```yaml
-on_http_request:
-  - expressions:
-      - "!hasReqHeader('Authorization') || getReqHeader('Authorization')[0] != 'Bearer YOUR_TOKEN'"
-    actions:
-      - type: deny
-        config:
-          status_code: 401
-```
-
-This rule rejects any request without the right bearer token.
-
-On a paid plan, also limit how often each client can call your server with the [rate-limit](/gateway/traffic-policy/actions/rate-limit/) action.
-Add this rule after the first one:
-
-```yaml
-  - actions:
-      - type: rate-limit
-        config:
-          name: mcp
-          algorithm: sliding_window
-          capacity: 60
-          rate: 60s
-          bucket_key:
-            - conn.client_ip
-```
-
-### 3. Put your MCP server online
-
-```bash
-ngrok config add-authtoken <YOUR_AUTHTOKEN>
-ngrok http 3001 --traffic-policy-file policy.yml
-```
-
-ngrok prints your public URL, such as `https://your-assigned-name.ngrok-free.dev`.
-This is your account's [dev domain](/pricing-limits/free-plan-limits/).
-It stays the same every time you restart `ngrok http`, so your client configs keep working.
-
-Your MCP URL is the public URL plus your server's path:
-
-```text
-https://your-assigned-name.ngrok-free.dev/mcp
-```
-
-Confirm the policy works from another terminal:
-
-```bash
-# Without the token: 401
-curl -s -o /dev/null -w '%{http_code}\n' -X POST https://your-assigned-name.ngrok-free.dev/mcp
-
-# With the token: your server's response
-curl -s -X POST https://your-assigned-name.ngrok-free.dev/mcp \
-  -H 'Authorization: Bearer YOUR_TOKEN' \
-  -H 'Content-Type: application/json' \
-  -H 'Accept: application/json, text/event-stream' \
-  -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"curl","version":"0"}}}'
-```
-
-### 4. Connect your AI client
-
-<Tabs>
-  <Tab title="Claude Code">
     ```bash
-    claude mcp add --transport http tickets https://your-assigned-name.ngrok-free.dev/mcp \
-      --header "Authorization: Bearer YOUR_TOKEN"
+    curl -s -X POST http://localhost:3001/mcp \
+      -H 'Content-Type: application/json' \
+      -H 'Accept: application/json, text/event-stream' \
+      -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"curl","version":"0"}}}'
     ```
-  </Tab>
-  <Tab title="Cursor">
-    Add the server to `~/.cursor/mcp.json` for all projects, or `.cursor/mcp.json` for one project:
 
-    ```json
-    {
-      "mcpServers": {
-        "tickets": {
-          "url": "https://your-assigned-name.ngrok-free.dev/mcp",
-          "headers": { "Authorization": "Bearer YOUR_TOKEN" }
+    A JSON-RPC response means the server is up.
+    Many MCP servers return `404` or `405` for a plain `GET /`, so don't test in a browser.
+  </Step>
+
+  <Step title="Create a Traffic Policy that requires a token">
+
+    Anyone with your URL can call your server, and MCP tools can act on your machine.
+    Protect it before it goes online.
+
+    This step uses a bearer token, which works for clients that can send a header.
+    If your client only takes a URL, use the policy in [Use a secret path](#use-a-secret-path) instead, then continue with step 3.
+
+    Generate a long random token:
+
+    ```bash
+    openssl rand -hex 32
+    ```
+
+    Save this as `policy.yml`, replacing `YOUR_TOKEN` with the value you generated:
+
+    ```yaml
+    on_http_request:
+      - expressions:
+          - "!hasReqHeader('Authorization') || getReqHeader('Authorization')[0] != 'Bearer YOUR_TOKEN'"
+        actions:
+          - type: deny
+            config:
+              status_code: 401
+    ```
+
+    This rule rejects any request without the right bearer token.
+
+    On a paid plan, also limit how often each client can call your server with the [rate-limit](/gateway/traffic-policy/actions/rate-limit/) action.
+    Add this rule after the first one:
+
+    ```yaml
+      - actions:
+          - type: rate-limit
+            config:
+              name: mcp
+              algorithm: sliding_window
+              capacity: 60
+              rate: 60s
+              bucket_key:
+                - conn.client_ip
+    ```
+  </Step>
+
+  <Step title="Put your MCP server online">
+
+    ```bash
+    ngrok config add-authtoken <YOUR_AUTHTOKEN>
+    ngrok http 3001 --traffic-policy-file policy.yml
+    ```
+
+    ngrok prints your public URL, such as `https://your-assigned-name.ngrok-free.dev`.
+    This is your account's [dev domain](/pricing-limits/free-plan-limits/).
+    It stays the same every time you restart `ngrok http`, so your client configs keep working.
+
+    Your MCP URL is the public URL plus your server's path:
+
+    ```text
+    https://your-assigned-name.ngrok-free.dev/mcp
+    ```
+
+    Confirm the policy works from another terminal:
+
+    ```bash
+    # Without the token: 401
+    curl -s -o /dev/null -w '%{http_code}\n' -X POST https://your-assigned-name.ngrok-free.dev/mcp
+
+    # With the token: your server's response
+    curl -s -X POST https://your-assigned-name.ngrok-free.dev/mcp \
+      -H 'Authorization: Bearer YOUR_TOKEN' \
+      -H 'Content-Type: application/json' \
+      -H 'Accept: application/json, text/event-stream' \
+      -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"curl","version":"0"}}}'
+    ```
+  </Step>
+
+  <Step title="Connect your AI client">
+
+    <Tabs>
+      <Tab title="Claude Code">
+        ```bash
+        claude mcp add --transport http tickets https://your-assigned-name.ngrok-free.dev/mcp \
+          --header "Authorization: Bearer YOUR_TOKEN"
+        ```
+      </Tab>
+      <Tab title="Cursor">
+        Add the server to `~/.cursor/mcp.json` for all projects, or `.cursor/mcp.json` for one project:
+
+        ```json
+        {
+          "mcpServers": {
+            "tickets": {
+              "url": "https://your-assigned-name.ngrok-free.dev/mcp",
+              "headers": { "Authorization": "Bearer YOUR_TOKEN" }
+            }
+          }
         }
-      }
-    }
-    ```
-  </Tab>
-  <Tab title="ChatGPT">
-    Turn on [developer mode](https://help.openai.com/en/articles/12584461), then create a connector.
-    ChatGPT can't send a bearer token, so give it your [secret path](#use-a-secret-path) URL, or set up [OAuth](#use-oauth-for-real-users-and-real-data).
-  </Tab>
-  <Tab title="Claude.ai">
-    Add a custom connector in **Settings** > **Connectors**.
-    Claude.ai can't send a bearer token, so give it your [secret path](#use-a-secret-path) URL, or set up [OAuth](#use-oauth-for-real-users-and-real-data).
-  </Tab>
-  <Tab title="Grok">
-    Go to [grok.com/connectors](https://grok.com/connectors), click **New Connector**, choose **Custom**, and paste your MCP URL.
-    On Grok Business and Enterprise, an admin provisions the connector first.
-    If the connector settings don't let you add a header, use a [secret path](#use-a-secret-path) or [OAuth](#use-oauth-for-real-users-and-real-data) instead.
-  </Tab>
-</Tabs>
+        ```
+      </Tab>
+      <Tab title="ChatGPT">
+        Turn on [developer mode](https://help.openai.com/en/articles/12584461), then create a connector.
+        ChatGPT can't send a bearer token, so give it your [secret path](#use-a-secret-path) URL, or set up [OAuth](#use-oauth-for-real-users-and-real-data).
+      </Tab>
+      <Tab title="Claude.ai">
+        Add a custom connector in **Settings** > **Connectors**.
+        Claude.ai can't send a bearer token, so give it your [secret path](#use-a-secret-path) URL, or set up [OAuth](#use-oauth-for-real-users-and-real-data).
+      </Tab>
+      <Tab title="Grok">
+        Go to [grok.com/connectors](https://grok.com/connectors), click **New Connector**, choose **Custom**, and paste your MCP URL.
+        On Grok Business and Enterprise, an admin provisions the connector first.
+        If the connector settings don't let you add a header, use a [secret path](#use-a-secret-path) or [OAuth](#use-oauth-for-real-users-and-real-data) instead.
+      </Tab>
+    </Tabs>
 
-Then ask your client:
+    Then ask your client:
 
-<Prompt description="Ask your AI client which tools it can see. The request appears in the ngrok inspector at localhost:4040." actions={["copy", "cursor"]}>
-What tools do you have available from the tickets MCP server?
-</Prompt>
+    <Prompt description="Ask your AI client which tools it can see. The request appears in the ngrok inspector at localhost:4040." actions={["copy", "cursor"]}>
+    What tools do you have available from the tickets MCP server?
+    </Prompt>
+  </Step>
 
-### 5. Watch the traffic
+  <Step title="Watch the traffic">
 
-Open `http://localhost:4040` while your client connects.
-The ngrok inspector shows every request your client sends and every response your server returns, including JSON-RPC bodies.
-When a client says it can't list tools, start here: you see whether the request arrived, what it contained, and what your server sent back.
+    Open `http://localhost:4040` while your client connects.
+    The ngrok inspector shows every request your client sends and every response your server returns, including JSON-RPC bodies.
+    When a client says it can't list tools, start here: you see whether the request arrived, what it contained, and what your server sent back.
+  </Step>
+</Steps>
 
 ## Secure clients that only take a URL
 
