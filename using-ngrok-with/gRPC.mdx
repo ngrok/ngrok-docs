@@ -1,13 +1,23 @@
 ---
 title: Using ngrok with gRPC
 sidebarTitle: gRPC
-description: Learn how to use ngrok with gRPC services by specifying the HTTP/2 app protocol or using TCP endpoints.
+description: Learn how to use ngrok with gRPC services by forwarding to your upstream over HTTP/2 or using TCP endpoints.
 ---
 
-Since gRPC uses HTTP/2, you may need to specify the `app-protocol` when forwarding a gRPC endpoint:
+Since gRPC uses HTTP/2, you may need to set the [upstream protocol](/gateway/agent/config/v3/#upstream) to `http2` in your agent configuration file when forwarding a gRPC endpoint:
 
-`ngrok http --app-protocol=http2 80`
+```yaml
+version: 3
+endpoints:
+  - name: grpc
+    url: https://your-domain.ngrok.app
+    upstream:
+      url: 80
+      protocol: http2
+```
+
+Then start the endpoint with `ngrok start grpc`.
 
 This works with other ngrok features like custom domains and ports.
 
-This [Stack Overflow user](https://stackoverflow.com/a/59555606/7282727) also reports that forwarding to gRPC services works using `proto: tcp`.
+This [Stack Overflow user](https://stackoverflow.com/a/59555606/7282727) also reports that forwarding to gRPC services works using a [TCP endpoint](/gateway/endpoints/tcp/).

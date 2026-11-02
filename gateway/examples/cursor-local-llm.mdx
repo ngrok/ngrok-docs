@@ -1,0 +1,163 @@
+---
+title: Use a Local LLM in Cursor with Ollama
+sidebarTitle: Local LLM in Cursor
+description: Cursor can use a local LLM, but not at localhost. Give Ollama or LM Studio a public HTTPS URL with ngrok and add it to Cursor as a custom OpenAI base URL.
+---
+
+Cursor can use a model running on your own machine, such as one served by Ollama or LM Studio.
+It can't reach it at `localhost`, though.
+Cursor sends every model request through its own servers to build the prompt, so the base URL you give it has to be reachable from the internet.
+
+This guide gives your local model a stable public HTTPS URL with ngrok, requires a token so only Cursor can call it, and connects it to Cursor.
+It works on every ngrok plan, including free.
+
+## Why localhost doesn't work
+
+When you set **Override OpenAI Base URL** to `http://localhost:11434/v1`, Cursor's servers try to call `localhost` on their own machines, not yours.
+The request never arrives, and chat hangs or shows a connection error.
+A LAN address such as `192.168.1.20` fails for the same reason.
+
+ngrok gives your model a public URL that Cursor's servers can reach, and forwards each request to `localhost` on your machine.
+
+## What you'll need
+
+- [Cursor](https://cursor.com)
+- [Ollama](https://ollama.com/download) with a model pulled, such as `ollama pull qwen2.5-coder`, or [LM Studio](https://lmstudio.ai) with its local server started
+- The [ngrok agent](https://download.ngrok.com) installed
+- An [ngrok account](https://dashboard.ngrok.com/signup) and your [authtoken](https://dashboard.ngrok.com/get-started/your-authtoken)
+
+## 1. Create a Traffic Policy that requires a token
+
+Your URL is public, so anyone who finds it could use your GPU.
+Cursor sends its **API key** as a bearer token, so require one.
+
+Generate a token:
+
+```bash
+openssl rand -hex 32
+```
+
+Save this as `policy.yaml`, replacing `YOUR_TOKEN` with the value you generated:
+
+```yaml
+on_http_request:
+  - expressions:
+      - "!hasReqHeader('Authorization') || getReqHeader('Authorization')[0] != 'Bearer YOUR_TOKEN'"
+    actions:
+      - type: deny
+        config:
+          status_code: 401
+  - actions:
+      - type: add-headers
+        config:
+          headers:
+            host: localhost
+```
+
+The first rule rejects requests without your token before they reach your machine.
+The second rewrites the `Host` header, because Ollama rejects requests addressed to other hostnames.
+
+## 2. Put your model online
+
+<Tabs>
+  <Tab title="Ollama">
+    ```bash
+    ngrok config add-authtoken <YOUR_AUTHTOKEN>
+    ngrok http 11434 --traffic-policy-file policy.yaml
+    ```
+  </Tab>
+  <Tab title="LM Studio">
+    Start the server in LM Studio's **Developer** tab, then:
+
+    ```bash
+    ngrok config add-authtoken <YOUR_AUTHTOKEN>
+    ngrok http 1234 --traffic-policy-file policy.yaml
+    ```
+  </Tab>
+</Tabs>
+
+ngrok prints your public URL, such as `https://your-assigned-name.ngrok-free.dev`.
+This is your account's [dev domain](/pricing-limits/free-plan-limits/), and it stays the same every time you restart, so you only configure Cursor once.
+
+Check it from another terminal:
+
+```bash
+curl https://your-assigned-name.ngrok-free.dev/v1/models \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+You should see your models.
+Note the exact model ID, such as `qwen2.5-coder:latest`; you need it in the next step.
+
+## 3. Add the model to Cursor
+
+1. Open **Cursor Settings** > **Models**.
+1. Under **API Keys**, turn on **OpenAI API Key** and paste `YOUR_TOKEN` as the key.
+1. Turn on **Override OpenAI Base URL** and enter your ngrok URL plus `/v1`:
+
+    ```text
+    https://your-assigned-name.ngrok-free.dev/v1
+    ```
+
+1. Click **Add model** and enter the model ID exactly as `/v1/models` returned it.
+1. Turn off other models while you test, so Cursor doesn't fall back to a hosted one.
+1. Click **Verify**.
+
+Open a chat, pick your model, and send a prompt.
+
+## 4. Watch the traffic
+
+Open `http://localhost:4040` while you chat.
+The ngrok inspector shows each request Cursor sends and each response your model returns.
+If chat hangs, check here first: you see whether the request arrived, whether ngrok rejected it, and what your model sent back.
+
+## What works with a local model
+
+| Cursor feature | Uses your local model? |
+| --- | --- |
+| Chat and Agent | Yes, when you select it |
+| Inline edit (Cmd/Ctrl+K) | Yes, when you select it |
+| Tab autocomplete | No. Tab always uses Cursor's own model |
+
+Cursor still sends your prompts through its servers, so a local model keeps inference on your hardware but doesn't keep your code off the network.
+
+## Troubleshooting
+
+| Symptom | Likely cause | Fix |
+| --- | --- | --- |
+| Chat hangs and nothing appears in the inspector | Base URL is `localhost` or a LAN IP | Use your ngrok URL plus `/v1` |
+| `401` in the inspector | Cursor's API key doesn't match your token | Paste the same token into Cursor's OpenAI API key field |
+| `403` from Ollama | Ollama rejected the `Host` header | Keep the `add-headers` rule in your policy |
+| "Invalid model" or "model is required" | Model ID doesn't match what the server reports | Copy the ID exactly from `/v1/models` |
+| Responses are slow or cut off | The model is too large for your hardware or context window | Try a smaller model or raise Ollama's context length |
+
+## Frequently asked questions
+
+<AccordionGroup>
+  <Accordion title="Can Cursor use a local LLM?">
+    Yes, for Chat, Agent, and inline edit.
+    Cursor needs a public HTTPS URL for the model, because its servers make the request.
+    Run `ngrok http 11434` in front of Ollama and set that URL, plus `/v1`, as Cursor's OpenAI base URL.
+  </Accordion>
+  <Accordion title="Why can't Cursor reach localhost:11434?">
+    Cursor routes model requests through its own servers, which can't see your machine's `localhost` or local network.
+  </Accordion>
+  <Accordion title="Does the ngrok URL change when I restart?">
+    No.
+    Every ngrok account, including free, gets a dev domain that `ngrok http` reuses on every run.
+  </Accordion>
+  <Accordion title="Can I run the model on a different machine than Cursor?">
+    Yes.
+    Run Ollama and ngrok on the machine with the GPU, and use its ngrok URL in Cursor on any other machine.
+  </Accordion>
+  <Accordion title="Is my code private if I use a local model?">
+    Inference runs on your hardware, but Cursor still routes prompts through its servers.
+    If your code can't leave your network, a local model in Cursor doesn't solve that by itself.
+  </Accordion>
+</AccordionGroup>
+
+## What's next
+
+- [Secure and share your Ollama API](/gateway/examples/ollama) with other apps.
+- [Expose a local MCP server](/gateway/api-gateway/mcp-gateway) so Cursor and other AI clients can call your tools.
+- Route between local and hosted models with failover using the [AI Gateway](/ai-gateway/custom-providers/ollama).

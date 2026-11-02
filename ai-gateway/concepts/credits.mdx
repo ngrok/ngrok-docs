@@ -3,50 +3,54 @@ title: Credits
 description: Understanding AI Gateway credits, pricing, and balance management.
 ---
 
-AI Gateway credits are a prepaid balance you purchase through [app.ngrok.ai](https://app.ngrok.ai). Every request through `https://gateway.ngrok.ai` spends credits.
-
-Each request pays a small [processing fee](#processing-fee). When you use ngrok.ai inference for built-in OpenAI and Anthropic, credits also cover the model cost. See [How credits are consumed](#how-credits-are-consumed) for the full breakdown.
-
-AI Gateway credits are separate from your ngrok platform billing on [dashboard.ngrok.com](https://dashboard.ngrok.com).
+AI Gateway credits are a prepaid balance you buy in [app.ngrok.ai](https://app.ngrok.ai). Every request through `https://gateway.ngrok.ai` pays a small [processing fee](#processing-fee) from your credits. If you don't use your own provider key, credits also pay for the model. See [How credits are consumed](#how-credits-are-consumed).
 
 ## Accounts and plans
 
-You don't need a specific ngrok subscription plan to use the AI Gateway or purchase credits. Sign in at [app.ngrok.ai](https://app.ngrok.ai), buy credits, and create an [access key](/ai-gateway/concepts/access-keys).
+You don't need an ngrok subscription to use the AI Gateway. Sign in to [app.ngrok.ai](https://app.ngrok.ai) with your ngrok account, buy credits, and create an [access key](/ai-gateway/concepts/access-keys).
 
-The AI Gateway and your broader ngrok account share the same ngrok account, but they are separate systems:
+AI Gateway credits are separate from your ngrok plan. Your ngrok plan doesn't pay for AI Gateway usage, and credits don't pay for other ngrok features.
 
-| | [app.ngrok.ai](https://app.ngrok.ai) | [dashboard.ngrok.com](https://dashboard.ngrok.com) |
-|---|---|---|
-| **Purpose** | AI Gateway: keys, providers, credits, usage | ngrok platform: subscription, team members, tunnels, endpoints |
-| **Credits** | AI Gateway credits (this page) | Not used for AI Gateway traffic |
+| Manage | Where |
+|---|---|
+| Access keys, providers, credits, and usage | [app.ngrok.ai](https://app.ngrok.ai) |
+| Your ngrok plan, team members, tunnels, and endpoints | [dashboard.ngrok.com](https://dashboard.ngrok.com) |
 
-If you want ngrok platform features alongside the AI Gateway (such as team members, or [internal endpoints](/ai-gateway/concepts/custom-providers) to reach self-hosted models) you can manage those through [dashboard.ngrok.com](https://dashboard.ngrok.com). This generally requires a paid ngrok plan such as [Pay-as-you-go](https://ngrok.com/pricing); using the gateway with credits alone does not.
+To reach a model you run yourself through an [internal endpoint](/ai-gateway/concepts/custom-providers), set up the endpoint in dashboard.ngrok.com. Some ngrok features need a paid plan; see [pricing](https://ngrok.com/pricing).
 
 ## Purchasing credits
 
-Visit the [Credits page](https://app.ngrok.ai/credits) and purchase at least USD $5.00.
+1. Open the [Billing page](https://app.ngrok.ai/billing) and select **Add credits**. If you haven't saved a card yet, you'll add one first.
+2. Pick an amount, or enter your own. The minimum is \$5, and your balance can be at most \$500.
+3. Select **Buy** to confirm.
 
-You can also start checkout via the AI Gateway API:
-
-```bash
-curl -X POST https://api.ngrok.ai/credits/checkout-session \
-  -H "Authorization: Bearer $AI_GATEWAY_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{ "amount": 500 }'
-```
+To buy credits from code, use the [Credits API](/ai-gateway/api-reference/credits/purchase-create).
 
 Credits expire **one year** after purchase.
 
+## Automatic top-up
+
+Automatic top-up adds credits from your saved card when your balance runs low.
+
+To set it up:
+
+1. Open the [Billing page](https://app.ngrok.ai/billing) and make sure you have a saved card.
+2. Select **Enable auto top-up**, then turn on **Enable auto top-up** in the dialog.
+3. Set **When your balance reaches** (at least \$5) and **Top up to** (up to \$500).
+4. Optional: select **Set a spending limit** and enter a **Maximum spend every billing period**.
+5. Select **Save changes**.
+
 ## How credits are consumed
 
-| Routing | Credits pay for | You pay separately |
-|---------|-----------------|------------------|
-| Built-in OpenAI or Anthropic (ngrok.ai inference) | Processing fee and upstream model cost | Nothing |
-| Built-in provider with your provider key | Processing fee | Upstream model cost to your provider |
+| If the request uses | Credits pay for | You pay separately |
+|---------------------|-----------------|--------------------|
+| An ngrok.ai key | Processing fee and model usage, including hosted tools like web search | Nothing |
+| Your own provider key | Processing fee | Model usage, billed by your provider |
+| A model you run yourself | Processing fee | Your own infrastructure |
 
 ## Balance tracking
 
-You can view your balance on the [Credits page](https://app.ngrok.ai/credits), or via the API:
+You can view your balance on the [Billing page](https://app.ngrok.ai/billing), or via the API:
 
 ```bash
 curl https://api.ngrok.ai/credits/balance \
@@ -55,13 +59,17 @@ curl https://api.ngrok.ai/credits/balance \
 
 ## What happens when credits run out
 
-When your credit balance reaches zero, the gateway rejects new requests until you purchase more credits.
+When your credit balance reaches zero, the gateway rejects new requests with HTTP 402 and [`ERR_NGROK_27206`](/ai-gateway/reference/error-codes#err_ngrok_27206) until you purchase more credits. That's true even if you use your own provider keys, since every request pays a small processing fee from your credits.
+
+To avoid this, turn on [automatic top-up](#automatic-top-up) so your balance refills before it runs out.
+
+The balance updates shortly after usage, so requests already in flight can take it slightly below zero. The [balance API](/ai-gateway/api-reference/credits/balance) reports a negative value when that happens.
 
 ## Processing fee
 
-Every successful request through the gateway incurs a processing fee at **USD $0.05 per million tokens**. The fee is based on the tokens in your request and response. It applies to all traffic—ngrok.ai inference, your own [provider keys](/ai-gateway/guides/attaching-provider-keys), and [custom providers](/ai-gateway/concepts/custom-providers)—and does not vary by model or provider.
+Every successful request through the gateway incurs a processing fee at **USD $0.05 per million tokens**. The fee is based on the tokens in your request and response. It applies to all traffic—requests paid with credits, your own [provider keys](/ai-gateway/guides/attaching-provider-keys), and [custom providers](/ai-gateway/concepts/custom-providers)—and does not vary by model or provider. With [`ngrok/auto`](/ai-gateway/guides/automatic-model-selection#billing), the tokens ngrok.ai reads to pick a model also count toward the fee.
 
-When you use ngrok.ai inference for built-in OpenAI and Anthropic providers, credits also cover upstream model cost. When you bring your own key, upstream costs stay on your provider account and credits cover only the processing fee.
+When you pay with credits, credits also cover the provider's model cost. When you bring your own key, model costs stay on your provider account and credits cover only the processing fee.
 
 ## Next steps
 

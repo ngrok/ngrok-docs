@@ -1,0 +1,65 @@
+---
+title: Pi
+sidebarTitle: Pi
+description: Connect the Pi terminal coding agent to the ngrok AI Gateway to reach any model in the catalog, or a model you run yourself.
+---
+
+[Pi](https://pi.dev) is a terminal coding agent.
+It reaches the AI Gateway as a custom provider in its models file, so one access key covers every model you list there.
+
+## What you'll need
+
+- [Pi](https://pi.dev) installed.
+- An [access key](/ai-gateway/concepts/access-keys) from [app.ngrok.ai](https://app.ngrok.ai).
+
+## Add the gateway as a provider
+
+Export your access key so Pi can read it:
+
+```bash
+export NGROK_AI_GATEWAY_KEY="ng-xxxxx-g1-xxxxx"
+```
+
+Add the gateway as a provider in `~/.pi/agent/models.json`:
+
+```json
+{
+  "providers": {
+    "ngrok": {
+      "baseUrl": "https://gateway.ngrok.ai/v1",
+      "apiKey": "$NGROK_AI_GATEWAY_KEY",
+      "api": "openai-completions",
+      "models": [
+        { "id": "gpt-5.5" },
+        { "id": "claude-sonnet-5-5" }
+      ]
+    }
+  }
+}
+```
+
+`id` is the model name Pi sends to the gateway: a model ID from the [model catalog](/ai-gateway/reference/model-catalog), or `provider:model` to pin a provider.
+It's the only field a model entry needs, though you can add `name`, `contextWindow`, and `maxTokens` to label it and track context accurately.
+
+## Test the connection
+
+Send a single prompt from the command line:
+
+```bash
+pi --provider ngrok --model "gpt-5.5" -p "Explain what a hash map is in two sentences."
+```
+
+In an interactive session, run `/model` and pick one of the **ngrok** models instead.
+
+Confirm the request in AI Gateway [observability](/ai-gateway/observability) in [app.ngrok.ai](https://app.ngrok.ai).
+
+## Use a model you run yourself
+
+To reach a model on your own machine, register it as a [custom provider](/ai-gateway/concepts/custom-providers), then add its `provider:model` name to `models`, such as `ollama:llama3.2`.
+See [Use a model you run yourself](/ai-gateway/guides/use-a-model-you-run-yourself) for the full setup.
+
+## Next steps
+
+- [Restrict providers and models](/ai-gateway/guides/restrict-providers-and-models): Scope what an access key can call
+- [Configure fallback models](/ai-gateway/guides/configure-fallback-models): Try another model when the first one fails
+- [Observability](/ai-gateway/observability): See which model served each request

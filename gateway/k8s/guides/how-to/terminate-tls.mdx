@@ -41,6 +41,7 @@ The following examples showcase how you can create an endpoint that:
 
 <Steps titleSize="h3">
   <Step title="Generate certificates">
+
     ```bash
     # 1. Generate CA private key (ca.key)
     openssl genpkey -algorithm RSA -out ca.key -pkeyopt rsa_keygen_bits:2048
@@ -82,228 +83,231 @@ The following examples showcase how you can create an endpoint that:
   </Step>
 
   <Step title="Create an endpoint with custom TLS termination">
-  </Step>
-</Steps>
 
-<Tabs>
-<Tab title="AgentEndpoint">
-Check out the [terminate TLS Traffic Policy action](/gateway/traffic-policy/actions/terminate-tls/) page for more details about how it functions and the parameters it accepts.
+    <Tabs>
+    <Tab title="AgentEndpoint">
+    Check out the [terminate TLS Traffic Policy action](/gateway/traffic-policy/actions/terminate-tls/) page for more details about how it functions and the parameters it accepts.
 
-```yaml
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-kind: AgentEndpoint
-metadata:
-  name: example-agent-endpoint
-spec:
-  url: https://example-hostname.ngrok.io
-  upstream:
-    url: http://my-service.my-namespace:8080
-  trafficPolicy:
-    inline:
-      on_tcp_connect:
-        - actions:
-            - type: terminate-tls
-              config:
-                min_version: "1.3"
-                max_version: "1.3"
-                server_private_key: |-
-                  -----BEGIN PRIVATE KEY-----
-                  ... private key ...
-                  -----END PRIVATE KEY-----
-                server_certificate: |-
-                  -----BEGIN CERTIFICATE-----
-                  ... certificate ...
-                  -----END CERTIFICATE-----
-                mutual_tls_certificate_authorities:
-                  - |-
-                    -----BEGIN CERTIFICATE-----
-                    ... certificate ...
-                    -----END CERTIFICATE-----
-```
-</Tab>
-<Tab title="CloudEndpoint">
-Check out the [terminate TLS Traffic Policy action](/gateway/traffic-policy/actions/terminate-tls/) page for more details about how it functions and the parameters it accepts.
-
-```yaml
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-kind: CloudEndpoint
-metadata:
-  name: example-cloud-endpoint
-spec:
-  url: https://example-hostname.ngrok.io
-  trafficPolicy:
-    policy:
-      on_tcp_connect:
-        - actions:
-            - type: terminate-tls
-              config:
-                min_version: "1.3"
-                max_version: "1.3"
-                server_private_key: |-
-                  -----BEGIN PRIVATE KEY-----
-                  ... private key ...
-                  -----END PRIVATE KEY-----
-                server_certificate: |-
-                  -----BEGIN CERTIFICATE-----
-                  ... certificate ...
-                  -----END CERTIFICATE-----
-                mutual_tls_certificate_authorities:
-                  - |-
-                    -----BEGIN CERTIFICATE-----
-                    ... certificate ...
-                    -----END CERTIFICATE-----
-```
-</Tab>
-<Tab title="Ingress">
-💡 `Ingress` resources do not natively support advanced TLS termination options, but they can be extended using a Traffic Policy.
-
-Check out the [terminate TLS Traffic Policy action](/gateway/traffic-policy/actions/terminate-tls/) page for more details about how it functions and the parameters it accepts.
-
-
-<Steps titleSize="h3">
-  <Step title="Create an NgrokTrafficPolicy">
     ```yaml
     apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-    kind: NgrokTrafficPolicy
+    kind: AgentEndpoint
     metadata:
-      name: example-tp
-      namespace: default
+      name: example-agent-endpoint
     spec:
-      policy:
-        on_tcp_connect:
-          - actions:
-              - type: terminate-tls
-                config:
-                  min_version: "1.3"
-                  max_version: "1.3"
-                  server_private_key: |-
-                    -----BEGIN PRIVATE KEY-----
-                    ... private key ...
-                    -----END PRIVATE KEY-----
-                  server_certificate: |-
-                    -----BEGIN CERTIFICATE-----
-                    ... certificate ...
-                    -----END CERTIFICATE-----
-                  mutual_tls_certificate_authorities:
-                    - |-
+      url: https://example-hostname.ngrok.app
+      upstream:
+        url: http://my-service.my-namespace:8080
+      trafficPolicy:
+        inline:
+          on_tcp_connect:
+            - actions:
+                - type: terminate-tls
+                  config:
+                    min_version: "1.3"
+                    max_version: "1.3"
+                    server_private_key: |-
+                      -----BEGIN PRIVATE KEY-----
+                      ... private key ...
+                      -----END PRIVATE KEY-----
+                    server_certificate: |-
                       -----BEGIN CERTIFICATE-----
                       ... certificate ...
                       -----END CERTIFICATE-----
+                    mutual_tls_certificate_authorities:
+                      - |-
+                        -----BEGIN CERTIFICATE-----
+                        ... certificate ...
+                        -----END CERTIFICATE-----
     ```
-  </Step>
+    </Tab>
+    <Tab title="CloudEndpoint">
+    Check out the [terminate TLS Traffic Policy action](/gateway/traffic-policy/actions/terminate-tls/) page for more details about how it functions and the parameters it accepts.
 
-  <Step title="Use the NgrokTrafficPolicy on an Ingress">
     ```yaml
-    apiVersion: networking.k8s.io/v1
-    kind: Ingress
+    apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+    kind: CloudEndpoint
     metadata:
-      annotations:
-        k8s.ngrok.com/traffic-policy: example-tp
-      name: example-ingress
-      namespace: default
+      name: example-cloud-endpoint
     spec:
-      ingressClassName: ngrok
-      rules:
-        - host: example-hostname.ngrok.io
-          http:
-            paths:
-              - path: /
-                pathType: Prefix
-                backend:
-                  service:
-                    name: example-service
-                    port:
-                      number: 80
+      url: https://example-hostname.ngrok.app
+      trafficPolicy:
+        policy:
+          on_tcp_connect:
+            - actions:
+                - type: terminate-tls
+                  config:
+                    min_version: "1.3"
+                    max_version: "1.3"
+                    server_private_key: |-
+                      -----BEGIN PRIVATE KEY-----
+                      ... private key ...
+                      -----END PRIVATE KEY-----
+                    server_certificate: |-
+                      -----BEGIN CERTIFICATE-----
+                      ... certificate ...
+                      -----END CERTIFICATE-----
+                    mutual_tls_certificate_authorities:
+                      - |-
+                        -----BEGIN CERTIFICATE-----
+                        ... certificate ...
+                        -----END CERTIFICATE-----
     ```
-  </Step>
-</Steps>
+    </Tab>
+    <Tab title="Ingress">
+    💡 `Ingress` resources do not natively support advanced TLS termination options, but they can be extended using a Traffic Policy.
 
-</Tab>
-<Tab title="Gateway API">
-✅ Gateway API natively supports TLS termination, and this feature is fully supported by the ngrok Kubernetes Operator.
+    Check out the [terminate TLS Traffic Policy action](/gateway/traffic-policy/actions/terminate-tls/) page for more details about how it functions and the parameters it accepts.
 
-<Steps titleSize="h3">
-  <Step title="Create a Secret to terminate TLS">
-    Create a Kubernetes `Secret` to configure TLS termination.
+    <Steps titleSize="h3">
+      <Step title="Create an NgrokTrafficPolicy">
 
-    ```bash
-    kubectl create secret tls server-cert-secret \
-    --cert=server.crt \
-    --key=server.key
-    ```
-  </Step>
+        ```yaml
+        apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+        kind: NgrokTrafficPolicy
+        metadata:
+          name: example-tp
+          namespace: default
+        spec:
+          policy:
+            on_tcp_connect:
+              - actions:
+                  - type: terminate-tls
+                    config:
+                      min_version: "1.3"
+                      max_version: "1.3"
+                      server_private_key: |-
+                        -----BEGIN PRIVATE KEY-----
+                        ... private key ...
+                        -----END PRIVATE KEY-----
+                      server_certificate: |-
+                        -----BEGIN CERTIFICATE-----
+                        ... certificate ...
+                        -----END CERTIFICATE-----
+                      mutual_tls_certificate_authorities:
+                        - |-
+                          -----BEGIN CERTIFICATE-----
+                          ... certificate ...
+                          -----END CERTIFICATE-----
+        ```
+      </Step>
 
-  <Step title="Create a ConfigMap to validate client certificates">
-    Create a Kubernetes `ConfigMap` containing the CA so that client certificates can be validated.
+      <Step title="Use the NgrokTrafficPolicy on an Ingress">
 
-    ```bash
-    kubectl create configmap ca-cert-config \
-    --from-file=ca.crt
-    ```
-  </Step>
+        ```yaml
+        apiVersion: networking.k8s.io/v1
+        kind: Ingress
+        metadata:
+          annotations:
+            k8s.ngrok.com/traffic-policy: example-tp
+          name: example-ingress
+          namespace: default
+        spec:
+          ingressClassName: ngrok
+          rules:
+            - host: example-hostname.ngrok.app
+              http:
+                paths:
+                  - path: /
+                    pathType: Prefix
+                    backend:
+                      service:
+                        name: example-service
+                        port:
+                          number: 80
+        ```
+      </Step>
+    </Steps>
+    </Tab>
+    <Tab title="Gateway API">
+    ✅ Gateway API natively supports TLS termination, and this feature is fully supported by the ngrok Kubernetes Operator.
 
-  <Step title="Create a Gateway that terminates TLS using the generated certificates">
-    ```yaml
-    apiVersion: gateway.networking.k8s.io/v1
-    kind: Gateway
-    metadata:
-      name: example-gateway
-      namespace: default
-    spec:
-      gatewayClassName: ngrok
-      listeners:
-        - name: example
-          hostname: "example-hostname.ngrok.io"
-          port: 443
-          protocol: HTTPS
-          tls:
-            mode: Terminate
-            certificateRefs:
-            - kind: Secret
-              name: server-cert-secret
-            frontendValidation:
-              caCertificateRefs:
-              - kind: ConfigMap
-                name: ca-cert-config
-            options:
-              "k8s.ngrok.com/terminate-tls.min_version": "1.2"
-              "k8s.ngrok.com/terminate-tls.max_version": "1.3"
-              "k8s.ngrok.com/terminate-tls.mutual_tls_verification_strategy": "require-and-verify"
-    ```
-  </Step>
+    <Steps titleSize="h3">
+      <Step title="Create a Secret to terminate TLS">
 
-  <Step title="Generate an HTTPRoute to route to the upstream">
-    ```yaml
-    apiVersion: gateway.networking.k8s.io/v1
-    kind: HTTPRoute
-    metadata:
-      name: example-route
-      namespace: default
-    spec:
-      hostnames:
-      - example-hostname.ngrok.io
-      parentRefs:
-      - group: gateway.networking.k8s.io
+        Create a Kubernetes `Secret` to configure TLS termination.
+
+        ```bash
+        kubectl create secret tls server-cert-secret \
+        --cert=server.crt \
+        --key=server.key
+        ```
+      </Step>
+
+      <Step title="Create a ConfigMap to validate client certificates">
+
+        Create a Kubernetes `ConfigMap` containing the CA so that client certificates can be validated.
+
+        ```bash
+        kubectl create configmap ca-cert-config \
+        --from-file=ca.crt
+        ```
+      </Step>
+
+      <Step title="Create a Gateway that terminates TLS using the generated certificates">
+
+        ```yaml
+        apiVersion: gateway.networking.k8s.io/v1
         kind: Gateway
-        name: example-gateway
-        namespace: default
-      rules:
-      - matches:
-        - path:
-            type: PathPrefix
-            value: /
-        backendRefs:
-          - group: ""
-            kind: Service
-            name: example-service
-            port: 80
-            weight: 1
-    ```
+        metadata:
+          name: example-gateway
+          namespace: default
+        spec:
+          gatewayClassName: ngrok
+          listeners:
+            - name: example
+              hostname: "example-hostname.ngrok.app"
+              port: 443
+              protocol: HTTPS
+              tls:
+                mode: Terminate
+                certificateRefs:
+                - kind: Secret
+                  name: server-cert-secret
+                frontendValidation:
+                  caCertificateRefs:
+                  - kind: ConfigMap
+                    name: ca-cert-config
+                options:
+                  "k8s.ngrok.com/terminate-tls.min_version": "1.2"
+                  "k8s.ngrok.com/terminate-tls.max_version": "1.3"
+                  "k8s.ngrok.com/terminate-tls.mutual_tls_verification_strategy": "require-and-verify"
+        ```
+      </Step>
+
+      <Step title="Generate an HTTPRoute to route to the upstream">
+
+        ```yaml
+        apiVersion: gateway.networking.k8s.io/v1
+        kind: HTTPRoute
+        metadata:
+          name: example-route
+          namespace: default
+        spec:
+          hostnames:
+          - example-hostname.ngrok.app
+          parentRefs:
+          - group: gateway.networking.k8s.io
+            kind: Gateway
+            name: example-gateway
+            namespace: default
+          rules:
+          - matches:
+            - path:
+                type: PathPrefix
+                value: /
+            backendRefs:
+              - group: ""
+                kind: Service
+                name: example-service
+                port: 80
+                weight: 1
+        ```
+      </Step>
+    </Steps>
+    </Tab>
+    </Tabs>
   </Step>
 </Steps>
-
-</Tab>
-</Tabs>
 
 
 ### Use the client certificates while making requests

@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Generate bot token
-        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v2
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v2
         id: generate-token
         with:
           app-id: ${{ secrets.NGROK_DOCS_BOT_APP_ID }}
@@ -27,15 +27,13 @@ jobs:
           token: ${{ steps.generate-token.outputs.token }}
           ref: main
 
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '24'
+          check-latest: true
+
       - name: Fetch and Update Changelog
-        run: |
-          CHANGELOG_URL="https://raw.githubusercontent.com/ngrok/ngrok-operator/refs/heads/main/CHANGELOG.md"
-          OUTPUT_PATH="snippets/k8s/_changelog.mdx"
-          
-          # Fetch and process using perl to remove the title and leading newlines exactly as the script did
-          curl -sSL --fail "$CHANGELOG_URL" | perl -0777 -pe 's/^# Changelog\n*//m' > "$OUTPUT_PATH"
-          
-          echo "Updated $OUTPUT_PATH"
+        run: node custom/scripts/fetch-k8s-changelog.js
 
       - name: Check for changes
         id: check

@@ -32,6 +32,7 @@ The following examples showcase how you can configure client certificates to be 
 
 <Steps titleSize="h3">
   <Step title="Generate certificates">
+
     ```bash
     # 1. Generate CA private key (ca.key)
     openssl genpkey -algorithm RSA -out ca.key -pkeyopt rsa_keygen_bits:2048
@@ -73,6 +74,7 @@ The following examples showcase how you can configure client certificates to be 
   </Step>
 
   <Step title="Configure your upstream">
+
     If you're testing this with an upstream service that you have. It will need to make use of the following files that were generated.
     - `server.crt`: Used to terminate TLS
     - `server.key`: Used to terminate TLS
@@ -80,6 +82,7 @@ The following examples showcase how you can configure client certificates to be 
   </Step>
 
   <Step title="Create a Kubernetes Secret for the client certificate">
+
     ```bash
     kubectl create secret tls client-cert-secret \
       --cert=client.crt \
@@ -87,115 +90,33 @@ The following examples showcase how you can configure client certificates to be 
     ```
 
     The following examples showcase using the client certificate when connecting to the upstream.
-  </Step>
-</Steps>
 
-<Tabs>
-<Tab title="AgentEndpoint">
+    <Tabs>
+    <Tab title="AgentEndpoint">
+    <Steps titleSize="h3">
+      <Step title="Create an AgentEndpoint that uses the client certificate">
 
-<Steps titleSize="h3">
-  <Step titleSize="h3" title="Create an AgentEndpoint that uses the client certificate">
-    ```yaml
-    apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-    kind: AgentEndpoint
-    metadata:
-      name: example-agent-endpoint
-    spec:
-      url: https://example-hostname.ngrok.io
-      upstream:
-        url: https://my-service.my-namespace:8443
-      clientCertificateRefs:
-      - name: client-cert-secret
-        namespace: default
-    ```
-  </Step>
-</Steps>
+        ```yaml
+        apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+        kind: AgentEndpoint
+        metadata:
+          name: example-agent-endpoint
+        spec:
+          url: https://example-hostname.ngrok.app
+          upstream:
+            url: https://my-service.my-namespace:8443
+          clientCertificateRefs:
+          - name: client-cert-secret
+            namespace: default
+        ```
+      </Step>
+    </Steps>
+    </Tab>
+    <Tab title="Ingress">
+    ❌ `Ingress` resources do not natively support advanced upstream TLS options, so this option requires using Gateway API or the `AgentEndpoint` resources directly.
 
-</Tab>
-<Tab title="Ingress">
-❌ `Ingress` resources do not natively support advanced upstream TLS options, so this option requires using Gateway API or the `AgentEndpoint` resources directly.
-
-You can still use TLS upstream services with `Ingress` resources although you will not be able to configure mutual TLS between the Operator and the upstream service.
-If your service expects HTTPS instead of HTTP, then you can annotate the `Service` like the following example to let the ngrok Kubernetes Operator know which ports are HTTPS and which are HTTP
-
-```yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: example-service
-  labels:
-    app: example-app
-  annotations:
-    k8s.ngrok.com/app-protocols: '{"https-port":"https","http-port":"http"}'
-spec:
-  ports:
-    - name: https-port
-      port: 443
-      protocol: TCP
-      targetPort: 8443
-    - name: http-port
-      port: 80
-      protocol: TCP
-      targetPort: 8080
-  selector:
-    app: example-app
-```
-</Tab>
-<Tab title="Gateway API">
-✅ Gateway API natively supports upstream TLS configuration, and this feature is fully supported by the ngrok Kubernetes Operator.
-
-<Steps titleSize="h3">
-  <Step title="Create a Gateway that uses the client certificate Secret">
-    ```yaml
-    apiVersion: gateway.networking.k8s.io/v1
-    kind: Gateway
-    metadata:
-      name: example-gateway
-      namespace: default
-    spec:
-      backendTLS:
-        clientCertificateRef:
-          name: client-cert-secret
-      gatewayClassName: ngrok
-      listeners:
-        - name: example
-          hostname: "example-hostname.ngrok.io"
-          port: 443
-          protocol: HTTPS
-    ```
-  </Step>
-
-  <Step title="Create an HTTPRoute that routes to the upstream">
-    ```yaml
-    apiVersion: gateway.networking.k8s.io/v1
-    kind: HTTPRoute
-    metadata:
-      name: example-route
-      namespace: default
-    spec:
-      hostnames:
-      - example-hostname.ngrok.io
-      parentRefs:
-      - group: gateway.networking.k8s.io
-        kind: Gateway
-        name: example-gateway
-        namespace: default
-      rules:
-      - matches:
-        - path:
-            type: PathPrefix
-            value: /
-        backendRefs:
-          - group: ""
-            kind: Service
-            name: example-service
-            port: 443
-            weight: 1
-    ```
-  </Step>
-
-  <Step title="Annotate the service">
-    In order for the Operator to understand what protocol each port of the `Service` expects, add the following annotation to your upstream `Service`.
+    You can still use TLS upstream services with `Ingress` resources although you will not be able to configure mutual TLS between the Operator and the upstream service.
+    If your service expects HTTPS instead of HTTP, then you can annotate the `Service` like the following example to let the ngrok Kubernetes Operator know which ports are HTTPS and which are HTTP
 
     ```yaml
     apiVersion: v1
@@ -219,8 +140,91 @@ spec:
       selector:
         app: example-app
     ```
+    </Tab>
+    <Tab title="Gateway API">
+    ✅ Gateway API natively supports upstream TLS configuration, and this feature is fully supported by the ngrok Kubernetes Operator.
+
+    <Steps titleSize="h3">
+      <Step title="Create a Gateway that uses the client certificate Secret">
+
+        ```yaml
+        apiVersion: gateway.networking.k8s.io/v1
+        kind: Gateway
+        metadata:
+          name: example-gateway
+          namespace: default
+        spec:
+          backendTLS:
+            clientCertificateRef:
+              name: client-cert-secret
+          gatewayClassName: ngrok
+          listeners:
+            - name: example
+              hostname: "example-hostname.ngrok.app"
+              port: 443
+              protocol: HTTPS
+        ```
+      </Step>
+
+      <Step title="Create an HTTPRoute that routes to the upstream">
+
+        ```yaml
+        apiVersion: gateway.networking.k8s.io/v1
+        kind: HTTPRoute
+        metadata:
+          name: example-route
+          namespace: default
+        spec:
+          hostnames:
+          - example-hostname.ngrok.app
+          parentRefs:
+          - group: gateway.networking.k8s.io
+            kind: Gateway
+            name: example-gateway
+            namespace: default
+          rules:
+          - matches:
+            - path:
+                type: PathPrefix
+                value: /
+            backendRefs:
+              - group: ""
+                kind: Service
+                name: example-service
+                port: 443
+                weight: 1
+        ```
+      </Step>
+
+      <Step title="Annotate the service">
+
+        In order for the Operator to understand what protocol each port of the `Service` expects, add the following annotation to your upstream `Service`.
+
+        ```yaml
+        apiVersion: v1
+        kind: Service
+        metadata:
+          name: example-service
+          labels:
+            app: example-app
+          annotations:
+            k8s.ngrok.com/app-protocols: '{"https-port":"https","http-port":"http"}'
+        spec:
+          ports:
+            - name: https-port
+              port: 443
+              protocol: TCP
+              targetPort: 8443
+            - name: http-port
+              port: 80
+              protocol: TCP
+              targetPort: 8080
+          selector:
+            app: example-app
+        ```
+      </Step>
+    </Steps>
+    </Tab>
+    </Tabs>
   </Step>
 </Steps>
-
-</Tab>
-</Tabs>

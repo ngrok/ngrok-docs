@@ -2,22 +2,24 @@ extends: existence
 message: "Avoid first-person pronouns such as '%s'—speak to 'you' the reader instead."
 link: 'https://developers.google.com/style/pronouns#personal-pronouns'
 ignorecase: true
-level: warning
+level: error
 nonword: true
-# Make it ignore headings
+# Ignore headings, which can mirror search queries (for example, "Can I use ngrok on Starlink?")
 scope: ~heading
+# Quoted search queries are skipped, and lookarounds prevent matches inside
+# identifiers and domains, like kind-my-cluster or us.zpagov.zpa.
 tokens:
-  - (?:^|\s)I\s
-  - (?:^|\s)I,\s
-  - \bI'm\b
-  - \bme\b
-  - \bmy\b
-  - \bmine\b
-  - \bwe\b
-  - \bwe'(?:ve|re)\b
-  - \bours?\b
-  - \bus\b
-  - \blet's\b(?:\s+Encrypt)?
+  - (?!(?<=["“][^"“”\n]*)[^"“”\n]*["”])(?:^|\s)I\s
+  - (?!(?<=["“][^"“”\n]*)[^"“”\n]*["”])(?:^|\s)I,\s
+  - (?!(?<=["“][^"“”\n]*)[^"“”\n]*["”])\bI'm\b
+  - (?!(?<=["“][^"“”\n]*)[^"“”\n]*["”])(?<![\w.-])me(?![\w-]|\.\w)
+  - (?!(?<=["“][^"“”\n]*)[^"“”\n]*["”])(?<![\w.-])my(?![\w-]|\.\w)
+  - (?!(?<=["“][^"“”\n]*)[^"“”\n]*["”])(?<![\w.-])mine(?![\w-]|\.\w)
+  - (?!(?<=["“][^"“”\n]*)[^"“”\n]*["”])(?<![\w.-])we(?![\w-]|\.\w)
+  - (?!(?<=["“][^"“”\n]*)[^"“”\n]*["”])(?<![\w.-])we'(?:ve|re)\b
+  - (?!(?<=["“][^"“”\n]*)[^"“”\n]*["”])(?<![\w.-])ours?(?![\w-]|\.\w)
+  - (?!(?<=["“][^"“”\n]*)[^"“”\n]*["”])(?<![\w.-])us(?![\w-]|\.\w)
+  - (?!(?<=["“][^"“”\n]*)[^"“”\n]*["”])\blet's\b(?:\s+Encrypt)?
 exceptions:
   - Let's Encrypt
   - US

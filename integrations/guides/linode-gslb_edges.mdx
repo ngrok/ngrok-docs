@@ -58,7 +58,7 @@ ngrok's GSLB even works on top of Linode's internal load balancing mechanism, No
     **Custom domains within ngrok**
 
     Using CNAMEs, ngrok can host an endpoint on your domain while also managing the complete TLS certificate lifecycle on your behalf.
-    If you'd prefer to use a custom domain rather than an ngrok-managed one, [follow our guide](/gateway/domains/custom-domains/) to set up your DNS and replace your custom domain in the `export` command above.
+    If you'd prefer to use a custom domain rather than an ngrok-managed one, [follow the custom domains guide](/gateway/domains/custom-domains/) to set up your DNS and replace your custom domain in the `export` command above.
     </Tip>
   </Step>
 
@@ -147,14 +147,16 @@ ngrok's GSLB even works on top of Linode's internal load balancing mechanism, No
     Set the `url` to the internal endpoint for that VM, matching the location names you used in the Traffic Policy in [step 2](#create-a-cloud-endpoint) (for example, `dc-atlanta`, `dc-osaka`, and `dc-frankfurt`):
 
     ```yaml
-    version: 2
-    authtoken: <YOUR_NGROK_AUTHTOKEN>
-    log_level: debug
-    log: stdout
-    tunnels:
-      vps-demo:
-        addr: 5000
+    version: 3
+    agent:
+      authtoken: <YOUR_NGROK_AUTHTOKEN>
+      log_level: debug
+      log: stdout
+    endpoints:
+      - name: vps-demo
         url: https://dc-<LOCATION_NAME>.internal
+        upstream:
+          url: 5000
     ```
 
     Build and start the containerized API deployment, passing the hostname of the VM to the hostname of the Docker container:
@@ -272,6 +274,7 @@ ngrok's GSLB even works on top of Linode's internal load balancing mechanism, No
     ```
   </Step>
 </Steps>
+
 ## What's next?
 
 You now have a globally load-balanced API deployment using three Linode VMs, three ngrok agents, three secure tunnels, one Cloud Endpoint, and a single convenient endpoint for your users.

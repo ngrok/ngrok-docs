@@ -1,0 +1,82 @@
+---
+title: Agents
+sidebarTitle: Overview
+description: Route Claude Code, Codex, Cursor, Hermes, and other coding agents through the ngrok AI Gateway to share model access and track usage.
+---
+
+<Note>
+**Prerequisite**: Complete the [Quickstart](/ai-gateway/quickstart) to create an access key on [app.ngrok.ai](https://app.ngrok.ai).
+</Note>
+
+Coding agents that let you change their base URL can send their model requests through the AI Gateway.
+Each agent then authenticates with an ngrok.ai [access key](/ai-gateway/concepts/access-keys) instead of a separate provider account, and every request shows up in one place.
+
+Routing agents through the gateway gives you:
+
+- One access key for every provider in the [model catalog](/ai-gateway/reference/model-catalog), billed to your credits or your own provider keys
+- Per-request [observability](/ai-gateway/observability), with usage you can group by access key
+- [Fallback models](/ai-gateway/guides/configure-fallback-models) and automatic retries when a provider fails
+- Limits on which providers and models each key can call
+- A path to [models you run yourself](/ai-gateway/guides/use-a-model-you-run-yourself), such as Ollama or vLLM
+
+## Supported agents
+
+<CardGroup cols={2}>
+  <Card title="Claude Code" icon="message-bot" href="/ai-gateway/agents/claude-code">
+    Anthropic's agentic coding tool, configured with two environment variables
+  </Card>
+  <Card title="Codex" icon="circle-nodes" href="/ai-gateway/agents/codex">
+    OpenAI's terminal coding agent, configured as a custom model provider
+  </Card>
+  <Card title="Cursor" icon="arrow-pointer" href="/ai-gateway/agents/cursor">
+    AI code editor, configured with an OpenAI base URL override
+  </Card>
+  <Card title="Hermes" icon="feather" href="/ai-gateway/agents/hermes">
+    Nous Research's terminal agent, configured with the ngrok plugin
+  </Card>
+  <Card title="OpenCode" icon="terminal" href="/ai-gateway/agents/opencode">
+    Open-source terminal agent, configured as a custom provider
+  </Card>
+  <Card title="Pi" icon="terminal" href="/ai-gateway/agents/pi">
+    Terminal coding agent, configured in its models file
+  </Card>
+  <Card title="Zed" icon="code" href="/ai-gateway/agents/zed">
+    Code editor with an agent panel, configured as an OpenAI-compatible provider
+  </Card>
+  <Card title="Other agents" icon="plug" href="/ai-gateway/agents/other">
+    Any agent that accepts a custom OpenAI or Anthropic base URL
+  </Card>
+</CardGroup>
+
+## How each agent connects
+
+Each agent speaks one API format, which decides the base URL it needs:
+
+| Agent | API format | Base URL |
+|-------|------------|----------|
+| Claude Code | Anthropic Messages | `https://gateway.ngrok.ai` |
+| Codex | OpenAI Responses | `https://gateway.ngrok.ai/v1` |
+| Cursor | OpenAI Chat Completions | `https://gateway.ngrok.ai/v1` |
+| Hermes | OpenAI Chat Completions | `https://gateway.ngrok.ai/v1`, set by the plugin |
+| OpenCode | OpenAI Chat Completions | `https://gateway.ngrok.ai/v1` |
+| Pi | OpenAI Chat Completions | `https://gateway.ngrok.ai/v1` |
+| Zed | OpenAI Chat Completions | `https://gateway.ngrok.ai/v1` |
+
+The format also decides which models an agent can reach.
+Chat Completions reaches the most providers.
+The Messages and Responses formats only reach providers that support them, so Claude Code works with Claude models and Codex works best with OpenAI models.
+
+## Set up for agent traffic
+
+Coding agents send long, streaming requests, often many per task.
+A few settings keep that traffic manageable:
+
+- Create a separate access key for each agent or teammate, so you can [group usage by access key](/ai-gateway/observability) and revoke one without touching the others.
+- Set `totalTimeout` to `15m` in [account settings](/ai-gateway/guides/account-settings#streaming-responses). A saved total timeout caps the whole stream, and saving any account setting stores the `2m` default, which can cut off a long agent response.
+- Scope each key to the models it needs with an [access key configuration](/ai-gateway/guides/restrict-providers-and-models).
+
+## Next steps
+
+- [Claude Code](/ai-gateway/agents/claude-code): Route Claude Code through the gateway
+- [Codex](/ai-gateway/agents/codex): Add the gateway as a Codex model provider
+- [Use a model you run yourself](/ai-gateway/guides/use-a-model-you-run-yourself): Reach a model on your own machine, such as Ollama or vLLM

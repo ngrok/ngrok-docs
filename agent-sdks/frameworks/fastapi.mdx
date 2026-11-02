@@ -1,0 +1,146 @@
+---
+title: FastAPI Library
+sidebarTitle: FastAPI
+description: Open an ngrok endpoint to a FastAPI app from its lifespan hook with one call using the ngrok-fastapi Python package, and configure it with a Traffic Policy.
+---
+
+[`ngrok-fastapi`](https://pypi.org/project/ngrok-fastapi/) opens an ngrok endpoint to a FastAPI app with one call:
+
+```python
+ngrok_fastapi.attach(app, ngrok_fastapi.Config(port=8000))
+```
+
+The package is built on the [Python SDK](/getting-started/python).
+`attach()` wraps your app's lifespan, so the endpoint opens when the app starts and closes when it stops.
+If you already pass a `lifespan=` to `FastAPI()`, `attach()` composes with it rather than replacing it.
+
+<Info>
+`ngrok-fastapi` is published on PyPI at version 0.1.0 and maintained in the [ngrok-samples/ngrok-fastapi](https://github.com/ngrok-samples/ngrok-fastapi) repository.
+</Info>
+
+## What you'll need
+
+- An [ngrok account](https://dashboard.ngrok.com/signup).
+- Your [ngrok auth token](https://dashboard.ngrok.com/get-started/your-authtoken).
+- [Python 3.9 or later](https://www.python.org/downloads/) installed on your machine.
+
+## 1. Install the package
+
+```bash
+pip install ngrok-fastapi uvicorn
+```
+
+The package depends on `fastapi` and the `ngrok` Python SDK, so `pip` installs those too.
+You need an ASGI server such as `uvicorn` to run the app.
+
+## 2. Set your auth token
+
+Export your auth token as an environment variable:
+
+```bash
+export NGROK_AUTHTOKEN=your_actual_auth_token_here
+```
+
+The package reads `NGROK_AUTHTOKEN` from the environment when the app starts.
+
+## 3. Attach ngrok to your app
+
+Call `attach()` right after you create the app, with the port your ASGI server listens on:
+
+```python title="main.py"
+import uvicorn
+from fastapi import FastAPI
+
+import ngrok_fastapi
+
+app = FastAPI()
+ngrok_fastapi.attach(app, ngrok_fastapi.Config(port=8000))
+
+
+@app.get("/")
+def root():
+    return {"message": "Hello from FastAPI!"}
+
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)
+```
+
+The `port` in `Config` must match the port your server binds, because the endpoint forwards to `localhost:<port>`.
+It defaults to `8000`.
+
+## 4. Test your endpoint
+
+Run your app:
+
+```bash
+python main.py
+```
+
+The package prints `Ingress established at:` followed by the public URL.
+With no `url` in `Config`, that URL is your account's [dev domain](/gateway/domains/#dev-domains).
+Open it in your browser to see your FastAPI app.
+
+## Configuration
+
+Pass a `Config` to set the URL, add a Traffic Policy, or change the binding:
+
+```python
+ngrok_fastapi.attach(app, ngrok_fastapi.Config(
+    port=8000,
+    url="your-reserved-domain.ngrok.app",
+    traffic_policy="""
+on_http_request:
+  - actions:
+      - type: basic-auth
+        config:
+          credentials:
+            - "user:password123"
+""",
+))
+```
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `port` | `int` | The local port the endpoint forwards to. Defaults to `8000`. |
+| `url` | `str` or `None` | The [reserved domain](/gateway/domains/) for the endpoint. `None` uses your account's dev domain. |
+| `pooling` | `bool` | Opts in to [endpoint pooling](/gateway/endpoints/endpoint-pooling) so more than one endpoint can share a URL. |
+| `traffic_policy` | `str` or `None` | A raw [Traffic Policy](/gateway/traffic-policy/) document (YAML or JSON) that the package passes through to ngrok unchanged. Use it for [authentication](/gateway/traffic-policy/actions/basic-auth), [IP restrictions](/gateway/traffic-policy/actions/restrict-ips), [webhook verification](/gateway/traffic-policy/actions/verify-webhook), and any other action. |
+| `binding` | `ngrok_fastapi.Binding` or `None` | The endpoint's [binding](/gateway/endpoints/bindings): `Binding.PUBLIC`, `Binding.INTERNAL`, or `Binding.KUBERNETES`. |
+
+## Multiple endpoints
+
+`attach_many()` opens one endpoint per `Config`, on a single session, and ties all of them to the same app's lifespan:
+
+```python
+ngrok_fastapi.attach_many(app, [
+    ngrok_fastapi.Config(port=8000, url="app.mycompany.ngrok.app"),
+    ngrok_fastapi.Config(port=8001, url="api.mycompany.ngrok.app"),
+])
+```
+
+`attach()` is the one-endpoint case of `attach_many()`.
+Each `Config` can point at a different local port, so one FastAPI app can front other services running on the same machine.
+
+Every endpoint needs its own `url`, or `pooling=True` on each endpoint that shares one.
+If two endpoints would share a URL without pooling, including two endpoints that both leave `url` unset and land on your dev domain, the package raises `ngrok_fastapi.CollisionError` during startup before opening a session.
+Without that check, ngrok lets the most recently opened listener win and the other goes unreachable with no error.
+
+## Limits and availability
+
+- The package opens HTTP endpoints only.
+For TCP or TLS endpoints, use the [Python SDK](/getting-started/python) directly.
+- The endpoint opens during lifespan startup, so your ASGI server must run lifespan events.
+`uvicorn` does by default.
+- An `INTERNAL` binding requires a `url` that ends in `.internal`.
+ngrok rejects any other URL with [`ERR_NGROK_9029`](/errors/err_ngrok_9029).
+- A URL that another agent or a Cloud Endpoint already claims fails with [`ERR_NGROK_334`](/errors/err_ngrok_334).
+- Endpoint counts and domains follow your plan's limits.
+See [free plan limits](/pricing-limits/free-plan-limits).
+
+## What's next?
+
+- Browse [Traffic Policy examples](/gateway/traffic-policy/examples/add-authentication/) to add authentication, restrict access by IP, or rewrite URLs.
+- Read the [Python SDK quickstart](/getting-started/python) to see what the package does under the hood.
+- See the [other framework libraries](/agent-sdks/frameworks/) for Next.js, Gin, and Axum.
+- Report issues or read the source in the [ngrok-samples/ngrok-fastapi](https://github.com/ngrok-samples/ngrok-fastapi) repository.

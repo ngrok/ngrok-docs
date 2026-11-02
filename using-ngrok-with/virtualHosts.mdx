@@ -5,14 +5,21 @@ description: Learn how to expose virtual hosts from MAMP, WAMP, and similar web 
 ---
 
 
-Popular web servers such as MAMP and WAMP rely on a technique popularly referred to as 'Virtual Hosting' which means that they consult the HTTP request's `Host` header to determine which of their multiple sites they should serve. To expose a site like this it is possible to ask ngrok to rewrite the `Host` header of all requests to match what your web server expects. You can do this by using the `--host-header` option (see: [Rewriting the Host header](/gateway/endpoints/http/#rewrite-host-header)) to pick which virtual host you want to target. For example, to route to your local site `myapp.dev`, you would run:
+Popular web servers such as MAMP and WAMP rely on a technique popularly referred to as 'Virtual Hosting' which means that they consult the HTTP request's `Host` header to determine which of their multiple sites they should serve. To expose a site like this it is possible to ask ngrok to rewrite the `Host` header of all requests to match what your web server expects. You can do this with the [`add-headers`](/gateway/traffic-policy/actions/add-headers/) Traffic Policy action (see: [Rewriting the Host header](/gateway/endpoints/http/#rewrite-host-header)) to pick which virtual host you want to target. For example, to route to your local site `myapp.dev`, save the following as `traffic-policy.yml`:
 
-```bash
-ngrok http --host-header=myapp.dev 80
+```yaml
+on_http_request:
+  - actions:
+      - type: add-headers
+        config:
+          headers:
+            host: myapp.dev
 ```
 
-You can also use `rewrite` to tell ngrok to use the local address hostname.
+Then start the agent with that Traffic Policy:
 
 ```bash
-ngrok http --host-header=rewrite 80
+ngrok http 80 --traffic-policy-file traffic-policy.yml
 ```
+
+To use the local address hostname instead, set `host` to `localhost`.

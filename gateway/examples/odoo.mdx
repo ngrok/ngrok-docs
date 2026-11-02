@@ -18,7 +18,8 @@ This guide follows the style of the [n8n example](/gateway/examples/n8n/) and ad
 
 <Steps titleSize="h2">
   <Step title="Reserve a static domain">
-    A static domain ensures your URL doesn't change across restarts (important for Odoo links, redirects, and webhooks).
+
+    Your account's [dev domain](/gateway/domains/#dev-domains) already stays the same across restarts, but reserving a domain lets you choose a name for Odoo links, redirects, and webhooks.
 
     In the ngrok dashboard, go to **Domains** → **New +**.
     Reserve a domain (this example uses `https://your-odoo.ngrok.app`) and save it as an environment variable:
@@ -35,16 +36,18 @@ This guide follows the style of the [n8n example](/gateway/examples/n8n/) and ad
   </Step>
 
   <Step title="Start the ngrok endpoint for Odoo">
+
     Expose Odoo on port `8069` at your static domain:
 
     ```bash
-    ngrok http --domain=$NGROK_DOMAIN 8069
+    ngrok http --url=$NGROK_DOMAIN 8069
     ```
 
     Open `https://$NGROK_DOMAIN` to see the Odoo login page (`/web/login`).
   </Step>
 
   <Step title="(Recommended) Configure Odoo for a proxy and stable URLs">
+
     Make sure Odoo generates correct HTTPS links and doesn't rewrite your base URL.
 
     ### Enable proxy mode
@@ -73,6 +76,7 @@ This guide follows the style of the [n8n example](/gateway/examples/n8n/) and ad
   </Step>
 
   <Step title="Apply a Traffic Policy (secure your admin)">
+
     Protect sensitive paths like `/web` and `/web/login` using Traffic Policy.
     Create a policy file (such as `odoo-policy.yaml`) and run the agent with `--traffic-policy-file`.
 
@@ -91,7 +95,7 @@ This guide follows the style of the [n8n example](/gateway/examples/n8n/) and ad
     Run:
 
     ```bash
-    ngrok http --domain=$NGROK_DOMAIN 8069 \
+    ngrok http --url=$NGROK_DOMAIN 8069 \
       --traffic-policy-file odoo-policy.yaml
     ```
 
@@ -119,6 +123,7 @@ This guide follows the style of the [n8n example](/gateway/examples/n8n/) and ad
   </Step>
 
   <Step title="Test your endpoint">
+
     From a terminal:
 
     ```bash
