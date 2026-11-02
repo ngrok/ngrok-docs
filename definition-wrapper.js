@@ -4,7 +4,14 @@ const terms = [
 		titles: ["Agent Endpoint"],
 		meaning:
 			"An Agent Endpoint is an ngrok endpoint created by an ngrok agent (or Agent SDK) that connects to an upstream service. The agent establishes a secure tunnel to the ngrok cloud, which forwards traffic to your local or remote service.",
-		link: "/docs/gateway/agent-endpoints/",
+		link: "/docs/endpoints/agent-endpoints/",
+		pluralEnding: "s",
+	},
+	{
+		titles: ["AI Gateway"],
+		meaning:
+			"An AI Gateway is a proxy layer that sits between applications and one or more AI model providers, giving a single integration point to route, secure, and observe inference traffic across hosted or self-hosted models.",
+		link: "https://ngrok.ai/",
 		pluralEnding: "s",
 	},
 	{
@@ -13,6 +20,20 @@ const terms = [
 		link: "https://en.wikipedia.org/wiki/Application-Layer_Protocol_Negotiation",
 		meaning:
 			"ALPN (Application-Layer Protocol Negotiation) allows a client and server to negotiate which application protocol (like HTTP/2 or HTTP/1.1) to use over a secure connection during the TLS handshake.",
+	},
+	{
+		titles: ["API Gateway"],
+		meaning:
+			"An API Gateway is a single entry point that sits in front of one or more backend services, handling routing, authentication, rate limiting, and traffic transformation before requests reach the upstream application.",
+		link: "/docs/gateway/api-gateway/get-started/",
+		pluralEnding: "s",
+	},
+	{
+		titles: ["BYOC", "Bring Your Own Cloud"],
+		caseSensitive: true,
+		meaning:
+			"BYOC (Bring Your Own Cloud) is a deployment model where a vendor's software runs inside the customer's own cloud account or infrastructure instead of the vendor's, so data and compute stay under the customer's control while the vendor still operates the service.",
+		link: "https://ngrok.com/security",
 	},
 	{
 		titles: ["CEL"],
@@ -32,7 +53,7 @@ const terms = [
 		titles: ["Cloud Endpoint"],
 		meaning:
 			"A Cloud Endpoint is a persistent ngrok endpoint that runs in ngrok's cloud service. Configured entirely in the ngrok dashboard or API, Cloud Endpoints can route traffic to upstream URLs and other endpoints, send custom responses, and more using Traffic Policy.",
-		link: "/docs/gateway/cloud-endpoints/",
+		link: "/docs/endpoints/cloud-endpoints/",
 		pluralEnding: "s",
 	},
 	{
@@ -51,10 +72,16 @@ const terms = [
 		pluralEnding: "s",
 	},
 	{
+		titles: ["Device Gateway"],
+		meaning:
+			"A Device Gateway is a managed connectivity layer for reaching a fleet of remote devices — kiosks, IoT hardware, edge servers — without opening inbound ports or managing a VPN per device. ngrok's Device Gateway gives each device a secure outbound tunnel and a stable way to reach it.",
+		link: "/docs/gateway/device-gateway/overview/",
+	},
+	{
 		titles: ["Endpoint Pooling", "Endpoint pool"],
 		meaning:
 			'When your create two ngrok endpoints with the same URL (and binding), those endpoints automatically form a "pool" and share incoming traffic.',
-		link: "/docs/gateway/endpoint-pooling/",
+		link: "/docs/endpoints/endpoint-pooling/",
 		pluralEnding: "s",
 	},
 	{
@@ -86,6 +113,12 @@ const terms = [
 		link: "https://en.wikipedia.org/wiki/HMAC",
 	},
 	{
+		titles: ["Hybrid Cloud Connectivity"],
+		meaning:
+			"Hybrid cloud connectivity is networking between infrastructure that spans more than one environment — public cloud, private data center, or on-prem — so services in one location can securely reach services in another.",
+		link: "https://ngrok.com/use-cases/saas-customer-connectivity",
+	},
+	{
 		titles: ["IdP"],
 		caseSensitive: true,
 		meaning:
@@ -102,7 +135,7 @@ const terms = [
 		titles: ["Internal Endpoint"],
 		meaning:
 			"Internal Endpoints are only accessible to traffic from your other ngrok endpoints, enabling service-to-service communication without exposing traffic to the public internet. Internal Endpoints use the .internal top-level domain.",
-		link: "/docs/gateway/internal-endpoints/",
+		link: "/docs/endpoints/internal-endpoints/",
 		pluralEnding: "s",
 	},
 	{
@@ -135,10 +168,42 @@ const terms = [
 		link: "https://kubernetes.io/docs/concepts/overview/",
 	},
 	{
+		titles: ["Kubernetes Ingress"],
+		meaning:
+			"A Kubernetes Ingress is an API object that manages external HTTP(S) access to services running inside a Kubernetes cluster, typically handling routing, TLS termination, and load balancing at the cluster edge.",
+		link: "/docs/integrations/kubernetes-ingress/",
+		pluralEnding: "es",
+	},
+	{
+		titles: ["Kubernetes Operator"],
+		meaning:
+			"A Kubernetes Operator is a controller that extends the Kubernetes API to automate the deployment and lifecycle of an application through custom resources. The ngrok Kubernetes Operator manages ngrok endpoints, domains, and Traffic Policy as native Kubernetes resources.",
+		link: "/docs/gateway/k8s/",
+		pluralEnding: "s",
+	},
+	{
 		titles: ["Let's Encrypt", "Let's Encrypt", "LetsEncrypt", "Lets encrypt"],
 		meaning:
 			"A free, automated, and open certificate authority (CA) that provides digital certificates to enable HTTPS (SSL/TLS) for websites.",
 		link: "https://letsencrypt.org/about/",
+	},
+	{
+		titles: ["LLM Gateway"],
+		meaning:
+			"An LLM Gateway is another term for an AI Gateway: a single proxy endpoint that routes requests to one or more large language model providers, centralizing authentication, rate limiting, and failover.",
+		link: "https://ngrok.ai/",
+	},
+	{
+		titles: ["LLM Proxy"],
+		meaning:
+			"An LLM Proxy is a lightweight intermediary placed in front of a large language model API that forwards requests while adding logging, rate limiting, or credential management, without changing how the application calls the model.",
+		link: "/docs/ai-gateway/overview/",
+	},
+	{
+		titles: ["LLM Router"],
+		meaning:
+			"An LLM Router is the decision layer inside an AI Gateway that picks which model or provider handles a given request — for example based on cost, latency, capability, or a failover rule when a provider is down.",
+		link: "/docs/ai-gateway/overview/",
 	},
 	{
 		titles: ["MCP server", "MCP"],
@@ -202,6 +267,13 @@ const terms = [
 		meaning:
 			"Reverse proxies are an extra security layer between public traffic and your internal services. They live on servers or cloud services, and they intercept and forward traffic to upstream services.",
 	},
+	{
+		titles: ["Reverse Tunnel", "reverse tunnel"],
+		meaning:
+			"A reverse tunnel is a connection initiated outbound from a private network to a public relay, which then forwards inbound traffic back through that same connection. It lets a service behind a firewall or NAT become reachable without opening inbound ports — the mechanism the ngrok agent uses to expose local services.",
+		link: "https://en.wikipedia.org/wiki/Tunneling_protocol",
+		pluralEnding: "s",
+	},
   {
     titles: ["Service User", "Service Users"],
     caseSensitive: false,
@@ -228,6 +300,12 @@ const terms = [
 		meaning:
 			"Shadow IT refers to IT systems, software, and cloud services used by individuals within an organization without the IT department's knowledge or approval.",
 		link: "https://en.wikipedia.org/wiki/Shadow_IT",
+	},
+	{
+		titles: ["Site-to-Site VPN"],
+		meaning:
+			"A site-to-site VPN is an encrypted tunnel connecting two private networks — for example, a company's data center and a customer's on-prem network — so devices on either side can reach each other as if on the same LAN. It typically requires matching VPN appliances and firewall changes on both ends; ngrok's site-to-site connectivity reaches the same outcome without inbound firewall rules on either side.",
+		link: "/docs/gateway/site-to-site-connectivity/overview/",
 	},
 	{
 		titles: ["SSO"],
@@ -265,7 +343,7 @@ const terms = [
 		titles: ["TLS Termination"],
 		meaning:
 			"TLS (Transport Layer Security) termination is the process of decrypting incoming TLS traffic at a server or load balancer before passing the unencrypted traffic to internal systems.",
-		link: "/docs/gateway/tls-termination/",
+		link: "/docs/domains/tls-termination/",
 	},
 	{
 		titles: ["Traffic Policy", "Traffic Policies"],
@@ -298,11 +376,24 @@ const terms = [
 			"A web application firewall (WAF) is an intermediary service in the cloud or on a server that protects web services by filtering and monitoring HTTP traffic.",
 	},
 	{
+		titles: ["Webhook Gateway"],
+		meaning:
+			"A Webhook Gateway is a managed entry point for receiving webhooks from third-party services and routing them to internal or on-prem systems, typically adding verification, retries, and observability in front of the receiving application.",
+		link: "/docs/gateway/webhooks-to-on-prem/overview/",
+	},
+	{
 		titles: ["WebSocket"],
 		meaning:
 			"WebSocket is a communication protocol that provides full-duplex (two-way) communication channels over a single TCP connection, enabling real-time data exchange between a client and server.",
 		link: "https://en.wikipedia.org/wiki/WebSocket",
 		pluralEnding: "s",
+	},
+	{
+		titles: ["ZTNA", "Zero Trust Network Access"],
+		caseSensitive: true,
+		meaning:
+			"ZTNA (Zero Trust Network Access) is a security model that grants access to specific applications or resources based on verified identity and policy for each request, rather than placing a user on a network and trusting everything reachable from it.",
+		link: "https://ngrok.com/use-cases/saas-customer-connectivity",
 	},
 ];
 
@@ -311,7 +402,7 @@ const pricingTerms = [
 	{
 		titles: ["Online endpoints"],
 		meaning: "The number of endpoints you can have online at the same time.",
-		link: "/docs/gateway/agent-endpoints/",
+		link: "/docs/endpoints/agent-endpoints/",
 	},
 	{
 		titles: ["Development endpoint hours"],
@@ -328,7 +419,7 @@ const pricingTerms = [
 		titles: ["Endpoint protocols"],
 		meaning:
 			"These are the different protocols available to you as a subscriber of each plan.",
-      link: "/docs/gateway/agent-endpoints#protocols%2C-binding-and-pooling"
+      link: "/docs/endpoints/agent-endpoints#protocols%2C-binding-and-pooling"
 	},
 	{
 		titles: ["Endpoint hours"],
@@ -338,23 +429,23 @@ const pricingTerms = [
 	{
 		titles: ["Load balancing"],
 		meaning: "Load balancing at ngrok is called endpoint pooling.",
-    link: "/docs/gateway/endpoint-pooling"
+    link: "/docs/endpoints/endpoint-pooling"
 	},
 	{
 		titles: ["Domains"],
 		meaning: "Domains you own registered in the ngrok dashboard.",
-		link: "/docs/gateway/domains/",
+		link: "/docs/domains/",
 	},
 	{
 		titles: ["Development domain"],
 		meaning:
 			"Your development domain is specific to your account, and does not incur usage charges. You can use anything for free on your sandbox domain within your account's limits.",
-		link: "/docs/gateway/domains/",
+		link: "/docs/domains/",
 	},
 	{
 		titles: ["ngrok-branded domains"],
 		meaning: "Use any ngrok-branded domain that you pick from ngrok's pool.",
-		link: "/docs/gateway/domains/",
+		link: "/docs/domains/",
 	},
   {
     titles: ["Traffic Policy Units"],
@@ -364,19 +455,19 @@ const pricingTerms = [
 	{
 		titles: ["Bring your own custom domains"],
 		meaning: "Use any custom domain name that you already own with ngrok.",
-		link: "/docs/gateway/custom-domains/",
+		link: "/docs/domains/custom-domains/",
 	},
 	{
 		titles: ["Wildcard Domains"],
 		meaning:
 			"You can create an endpoint which will receive traffic for all of the subdomains matching a given wildcard domain like *.example.com.",
-		link: "/docs/gateway/http/#wildcard-endpoints",
+		link: "/docs/endpoints/http/#wildcard-endpoints",
 	},
 	{
 		titles: ["TCP Addresses"],
 		meaning:
 			"TCP Addresses enable you to create public TCP Endpoints on a fixed address.",
-		link: "/docs/gateway/tcp-addresses/",
+		link: "/docs/domains/tcp-addresses/",
 	},
 	{
 		titles: ["Data transfer out"],
@@ -388,13 +479,13 @@ const pricingTerms = [
 		titles: ["Requests to HTTP/s endpoints"],
 		meaning:
 			"The maximum number of HTTP/s requests a client can make to an account's endpoints in a month.",
-		link: "/docs/gateway/http/",
+		link: "/docs/endpoints/http/",
 	},
 	{
 		titles: ["Connections to TCP / TLS endpoints"],
 		meaning:
 			"The maximum number of TCP/TLS connections a client can make to an account's endpoints in a month.",
-		link: "/docs/gateway/tcp/",
+		link: "/docs/endpoints/tcp/",
 	},
 	{
 		titles: ["HTTP Requests"],
@@ -413,13 +504,13 @@ const pricingTerms = [
 		titles: ["Bring your own certificates"],
 		meaning:
 			"Upload your own TLS certificates if you don't want to use the TLS certificates that ngrok automatically provisions for you.",
-		link: "/docs/gateway/tls/",
+		link: "/docs/endpoints/tls/",
 	},
 	{
 		titles: ["End to End TLS"],
 		meaning:
 			"Terminate TLS at your upstream service or at the ngrok agent to achieve end-to-end encryption.",
-		link: "/docs/gateway/tls-termination/",
+		link: "/docs/domains/tls-termination/",
 	},
 	{
 		titles: ["Mutual TLS"],
@@ -527,7 +618,7 @@ const pricingTerms = [
 	{
 		titles: ["HIPAA / BAAs"],
 		meaning:
-			"HIPAA compliance is built in: ngrok handles the BAA so you can focus on building the app.",
+			"Self-serve Pay-as-you-go add-on: enable it from the dashboard billing page and sign the BAA yourself. Usage-based charges are billed at +50%.",
 	},
 	{
 		titles: ["SOC2"],

@@ -1,6 +1,25 @@
+When creating a reverse tunnel, you must provide a publicly accessible URL to your Traffic Policy file, as shown in this example.
+
+First, create the `headers-policy.yml` file:
+
+```yaml
+on_http_request:
+  - actions:
+      - type: add-headers
+        config:
+          headers:
+            is-ngrok: 1
+            country: ${conn.geo.country_code}
+      - type: remove-headers
+        config:
+          headers: ["referrer"]
+```
+
+Store this file at a publicly accessible address online. For example, you could add it to a GitHub repository.
+
+Finally, add your Traffic Policy to your reverse tunnel using the `--traffic-policy-url` flag.
+
 ```bash
 ssh -R 443:localhost:80 v2@connect.ngrok-agent.com http \
-  --request-header-add='is-ngrok: 1' \
-  --request-header-add='country: ${conn.geo.country_code}' \
-  --request-header-remove='referrer'
+  --traffic-policy-url=https://some-website/headers-policy.yml
 ```

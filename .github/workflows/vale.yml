@@ -17,14 +17,15 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
 
       - name: Setup Node.js
-        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: '24'
+          check-latest: true
 
       - name: Install dependencies
         run: |
@@ -32,23 +33,36 @@ jobs:
           corepack install
           pnpm install
 
+      # scripts/vale holds an mdx2vast wrapper that lints text inside MDX
+      # components, so it has to come before the upstream CLI in node_modules.
       - name: Setup PATH for mdx2vast
-        run: echo "PATH=${{ github.workspace }}/node_modules/.bin:$PATH" >> $GITHUB_ENV
+        run: echo "PATH=${{ github.workspace }}/scripts/vale:${{ github.workspace }}/node_modules/.bin:$PATH" >> $GITHUB_ENV
 
       - name: Get changed files
         id: changed-files
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Ensure we have the base ref so git diff can run (fixes empty file list on PRs)
-          git fetch origin ${{ github.event.pull_request.base.ref }}
-          # Get changed markdown files, excluding specific directories and files
-          git diff --name-only --diff-filter=ACMR \
-            ${{ github.event.pull_request.base.sha }} ${{ github.sha }} \
-            | grep -E '\.(mdx|md)$' \
-            | grep -v '^snippets/' \
+          # Ask the API for the PR's file list rather than diffing base.sha against
+          # github.sha. github.sha is the ephemeral merge commit of the PR head into
+          # main's *current* tip, so that diff also picks up every change main gained
+          # since the PR branched. Those extra files are outside the PR diff, which
+          # reviewdog cannot comment on (see filter_mode below).
+          gh api --paginate \
+            "repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files" \
+            --jq '.[] | select(.status != "removed") | .filename' \
+            > pr_files.txt
+
+          # Keep markdown only, excluding generated files: Vale findings there have
+          # to be fixed at the source. The agent CLI pages and the errors, obs, and
+          # API example snippets come from the ngrok monorepo; the operator changelog
+          # and Helm values come from the auto-gen workflows in this repo.
+          grep -E '\.(mdx|md)$' pr_files.txt \
+            | grep -vE '^snippets/(api|errors|obs)/' \
+            | grep -vE '^snippets/k8s/_(changelog|helm-config)\.mdx$' \
             | grep -v '^errors/' \
             | grep -v '^\.skills/' \
-            | grep -v '^agent/cli-api.mdx$' \
-            | grep -v '^agent/cli.mdx$' \
+            | grep -vE '^(gateway/)?agent/cli(-api)?\.mdx$' \
             | grep -v '^style-guide.mdx$' \
             > changed_files.txt || true
 
@@ -62,13 +76,67 @@ jobs:
 
       - name: Run Vale
         if: steps.changed-files.outputs.has_files == 'true'
-        uses: vale-cli/vale-action@2.1.2
+        # reviewdog exits non-zero when GitHub refuses to serve the PR's diff, which
+        # is a size failure rather than a lint one -- see the reporter note below.
+        # fail_on_error only covers findings, not this, so the step is allowed to
+        # fail without taking the job with it. Vale findings still render as check
+        # run annotations either way.
+        continue-on-error: true
+        uses: vale-cli/vale-action@v3.0.0
         with:
           files: ${{ steps.changed-files.outputs.files }}
-          reporter: github-pr-review
-          # Report all issues in changed files, not only newly added lines.
-          # Vale line numbers can differ from diff positions after MDX parsing.
+          # Reports via the Checks API rather than the PR review API. The review
+          # reporter fetches the PR's unified diff to anchor its comments, and
+          # GitHub 406s on large PRs -- there are two independent caps, 20000 diff
+          # lines and 300 changed files.
+          # This reporter avoids the fetch reviewdog makes in Run() via Diff(), which
+          # is what tripped the line cap on #2270. It does NOT avoid parsing the diff
+          # when posting, so the 300-file cap still 406s -- #2292 hit it at 353 files.
+          # Hence continue-on-error above; no reporter setting clears both.
+          reporter: github-check
+          # Report all issues in the changed files, not only newly added lines:
+          # Vale's line numbers can drift from diff positions after MDX parsing.
+          # The "Get changed files" step above already scopes Vale to the PR's own
+          # files, so diff-based filtering here would be redundant as well as
+          # size-dependent. Findings on lines inside the diff still surface inline
+          # on Files changed; the rest land in the check run summary.
           filter_mode: nofilter
           fail_on_error: false
+          version: 3.12.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # The step above only annotates, and can't fail the job (see its comment).
+      # This one is the gate: any Vale finding, at any level, in a file the PR
+      # changes fails the check. Each file runs on its own with a timeout, since
+      # one Vale process over hundreds of MDX files can stall.
+      - name: Fail on Vale findings
+        if: steps.changed-files.outputs.has_files == 'true'
+        env:
+          VALE_VERSION: 3.12.0
+          VALE_SHA256: 3f4ea05cd1f2291b660ecf11a77cbb6b544b0f3b780604ad183f63285611321b
+        run: |
+          curl -sSfL -o "$RUNNER_TEMP/vale.tar.gz" \
+            "https://github.com/vale-cli/vale/releases/download/v${VALE_VERSION}/vale_${VALE_VERSION}_Linux_64-bit.tar.gz"
+          echo "${VALE_SHA256}  $RUNNER_TEMP/vale.tar.gz" | sha256sum -c -
+          tar -xzf "$RUNNER_TEMP/vale.tar.gz" -C "$RUNNER_TEMP" vale
+
+          failed=0
+          while IFS= read -r file; do
+            if ! out=$(timeout 120 "$RUNNER_TEMP/vale" --no-exit --minAlertLevel=suggestion --output=line "$file" 2>&1); then
+              echo "::error file=$file::Vale could not lint this file"
+              echo "$out"
+              failed=1
+              continue
+            fi
+            if [ -n "$out" ]; then
+              # path:line:col:rule:message -> a GitHub error annotation
+              echo "$out" | sed -E 's/^([^:]+):([0-9]+):([0-9]+):([^:]+):(.*)$/::error file=\1,line=\2,col=\3,title=\4::\5/'
+              failed=1
+            fi
+          done < changed_files.txt
+
+          if [ "$failed" -ne 0 ]; then
+            echo "::error::Vale flagged the files above. Fix every finding before merging; run 'pnpm run vale' to check locally."
+            exit 1
+          fi

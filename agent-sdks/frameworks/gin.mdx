@@ -1,0 +1,145 @@
+---
+title: Gin Library
+sidebarTitle: Gin
+description: Serve a Gin router through an ngrok endpoint with one call using the ngrok-gin Go library, and configure it with a Traffic Policy or a reserved domain.
+---
+
+[`ngrok-gin`](https://pkg.go.dev/github.com/ngrok-samples/ngrok-gin) serves a Gin router through an ngrok endpoint with one call:
+
+```go
+ngrokgin.Serve(context.Background(), router, ngrokgin.Config{})
+```
+
+The library is built on the [Go SDK](/getting-started/go).
+`Serve` opens an endpoint listener and hands it to Gin's `RunListener`, so Gin serves ngrok traffic the same way it serves a local port.
+
+<Info>
+`ngrok-gin` is published on the Go module proxy at v0.1.0 and maintained in the [ngrok-samples/ngrok-gin](https://github.com/ngrok-samples/ngrok-gin) repository.
+</Info>
+
+## What you'll need
+
+- An [ngrok account](https://dashboard.ngrok.com/signup).
+- Your [ngrok auth token](https://dashboard.ngrok.com/get-started/your-authtoken).
+- [Go 1.26 or later](https://go.dev/doc/install) installed on your machine.
+
+## 1. Install the library
+
+In your Go module, run:
+
+```bash
+go get github.com/ngrok-samples/ngrok-gin
+```
+
+## 2. Set your auth token
+
+Export your auth token as an environment variable:
+
+```bash
+export NGROK_AUTHTOKEN=your_actual_auth_token_here
+```
+
+The library uses the Go SDK's default agent, which reads `NGROK_AUTHTOKEN` from the environment.
+
+## 3. Serve your router
+
+Replace `router.Run()` with `ngrokgin.Serve()`:
+
+```go title="main.go"
+package main
+
+import (
+	"context"
+	"log"
+
+	"github.com/gin-gonic/gin"
+	ngrokgin "github.com/ngrok-samples/ngrok-gin"
+)
+
+func main() {
+	router := gin.Default()
+	router.GET("/", func(c *gin.Context) {
+		c.String(200, "Hello from Gin!")
+	})
+
+	if err := ngrokgin.Serve(context.Background(), router, ngrokgin.Config{}); err != nil {
+		log.Fatal(err)
+	}
+}
+```
+
+`Serve` blocks until the listener closes or a connection error occurs, the same as `router.Run()`.
+
+## 4. Test your endpoint
+
+Run your app:
+
+```bash
+go run main.go
+```
+
+The library prints `Ingress established at:` followed by the public URL.
+With an empty `Config`, that URL is your account's [dev domain](/gateway/domains/#dev-domains).
+Open it in your browser to see your Gin app.
+
+## Configuration
+
+Pass a `Config` to set the URL, add a Traffic Policy, or change the binding:
+
+```go
+config := ngrokgin.Config{
+	URL: "your-reserved-domain.ngrok.app",
+	TrafficPolicy: `
+on_http_request:
+  - actions:
+      - type: basic-auth
+        config:
+          credentials:
+            - "user:password123"
+`,
+}
+
+ngrokgin.Serve(context.Background(), router, config)
+```
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `URL` | `string` | The [reserved domain](/gateway/domains/) for the endpoint. An empty string uses your account's dev domain. |
+| `Pooling` | `bool` | Opts in to [endpoint pooling](/gateway/endpoints/endpoint-pooling) so more than one endpoint can share a URL. |
+| `TrafficPolicy` | `string` | A raw [Traffic Policy](/gateway/traffic-policy/) document (YAML or JSON) that the library passes through to ngrok unchanged. Use it for [authentication](/gateway/traffic-policy/actions/basic-auth), [IP restrictions](/gateway/traffic-policy/actions/restrict-ips), [webhook verification](/gateway/traffic-policy/actions/verify-webhook), and any other action. |
+| `Binding` | `ngrokgin.Binding` | The endpoint's [binding](/gateway/endpoints/bindings): `ngrokgin.BindingPublic`, `ngrokgin.BindingInternal`, or `ngrokgin.BindingKubernetes`. |
+
+## Multiple endpoints
+
+`ServeMany` opens one endpoint per `Endpoint`, each with its own router and `Config`, on a single agent:
+
+```go
+err := ngrokgin.ServeMany(context.Background(), []ngrokgin.Endpoint{
+	{Router: appRouter, Config: ngrokgin.Config{URL: "app.mycompany.ngrok.app"}},
+	{Router: apiRouter, Config: ngrokgin.Config{URL: "api.mycompany.ngrok.app"}},
+})
+```
+
+`Serve` is the one-endpoint case of `ServeMany`.
+To put one router behind several listeners, reuse the same `*gin.Engine` in more than one `Endpoint`.
+
+Every endpoint needs its own `URL`, or `Pooling: true` on each endpoint that shares one.
+If two endpoints would share a URL without pooling, including two endpoints that both leave `URL` empty and land on your dev domain, `ServeMany` returns a `*ngrokgin.CollisionError` before opening a session.
+Without that check, ngrok lets the most recently opened listener win and the other goes unreachable with no error.
+
+## Limits and availability
+
+- The library opens HTTP endpoints only.
+For TCP or TLS endpoints, use the [Go SDK](/getting-started/go) directly.
+- An `internal` binding requires a `URL` that ends in `.internal`.
+ngrok rejects any other URL with [`ERR_NGROK_9029`](/errors/err_ngrok_9029).
+- A URL that another agent or a Cloud Endpoint already claims fails with [`ERR_NGROK_334`](/errors/err_ngrok_334).
+- Endpoint counts and domains follow your plan's limits.
+See [free plan limits](/pricing-limits/free-plan-limits).
+
+## What's next?
+
+- Browse [Traffic Policy examples](/gateway/traffic-policy/examples/add-authentication/) to add authentication, restrict access by IP, or rewrite URLs.
+- Read the [Go SDK quickstart](/getting-started/go) to see what the library does under the hood.
+- See the [other framework libraries](/agent-sdks/frameworks/) for Next.js, FastAPI, and Axum.
+- Report issues or read the source in the [ngrok-samples/ngrok-gin](https://github.com/ngrok-samples/ngrok-gin) repository, which includes runnable examples for every option.

@@ -327,7 +327,7 @@ const Protocols = {
 					<Card 
 						key={action.type}
 						className="my-8"
-						href={`/traffic-policy/actions/${action.type}`}
+						href={`/gateway/traffic-policy/actions/${action.type}`}
 					>
 						<h3 className="text-lg font-bold mb-3">{action.type}</h3>
 						<p className="m-0 p-0">{action.description}</p>

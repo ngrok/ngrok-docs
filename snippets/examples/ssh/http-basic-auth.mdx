@@ -1,5 +1,23 @@
+When creating a reverse tunnel, you must provide a publicly accessible URL to your Traffic Policy file.
+Because anyone with that URL can read the file, store passwords in [Vaults & Secrets](/gateway/traffic-policy/secrets) instead of in the file.
+
+First, create the `basic-auth-policy.yml` file:
+
+```yaml
+on_http_request:
+  - actions:
+      - type: basic-auth
+        config:
+          credentials:
+            - "username1:${secrets.get('my-vault', 'password1')}"
+            - "username2:${secrets.get('my-vault', 'password2')}"
+```
+
+Store this file at a publicly accessible address online. For example, you could add it to a GitHub repository.
+
+Finally, add your Traffic Policy to your reverse tunnel using the `--traffic-policy-url` flag.
+
 ```bash
 ssh -R 443:localhost:80 v2@connect.ngrok-agent.com http \
-  --basic-auth "username1:password1" \
-  --basic-auth "username2:password2"
+  --traffic-policy-url=https://some-website/basic-auth-policy.yml
 ```

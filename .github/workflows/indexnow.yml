@@ -1,0 +1,115 @@
+name: Notify IndexNow
+
+permissions: {}
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '**/*.mdx'
+      - 'docs.json'
+  workflow_dispatch:
+    inputs:
+      full:
+        description: 'Submit every URL in the docs sitemap'
+        type: boolean
+        default: true
+
+concurrency:
+  group: indexnow
+  cancel-in-progress: false
+
+env:
+  # IndexNow key for ngrok.com. It is public by design (the protocol proves host
+  # ownership by serving it at https://ngrok.com/<key>.txt), and it must match
+  # apps/www/public/<key>.txt in ngrok-private/frontend. See that repo's SEO.md.
+  INDEXNOW_KEY: de1cf654bb26ad9de6a206af442e722b
+  SITEMAP_URL: https://ngrok.com/docs/sitemap.xml
+
+jobs:
+  notify:
+    permissions:
+      contents: read
+      checks: read
+    runs-on: ubuntu-latest
+    # Indexing hints must never block or fail docs publishing.
+    continue-on-error: true
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Collect changed pages
+        id: changed
+        env:
+          BEFORE: ${{ github.event.before }}
+          FULL: ${{ github.event_name == 'workflow_dispatch' && inputs.full }}
+        run: |
+          # Nav or redirect changes move URLs, so resubmit everything.
+          if [ "$FULL" = "true" ] || [ -z "$BEFORE" ] || [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
+            echo "mode=full" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          changed=$(git diff --name-only --diff-filter=AMR "$BEFORE" "$GITHUB_SHA")
+          if printf '%s\n' "$changed" | grep -qx 'docs.json'; then
+            echo "mode=full" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          printf '%s\n' "$changed" \
+            | grep '\.mdx$' \
+            | grep -v -e '^snippets/' -e '^custom/' \
+            | sed -e 's#\.mdx$##' -e 's#/index$##' -e 's#^index$##' \
+            | sed 's#^#https://ngrok.com/docs/#; s#/$##' > changed_urls.txt || true
+          echo "mode=changed" >> "$GITHUB_OUTPUT"
+
+      - name: Wait for the Mintlify deployment of this commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for i in $(seq 1 40); do
+            state=$(gh api "repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA/check-runs" \
+              --jq '[.check_runs[] | select(.name == "Mintlify Deployment")][0] | "\(.status) \(.conclusion)"' || true)
+            case "$state" in
+              "completed success") echo "Mintlify deployment finished."; sleep 60; exit 0 ;;
+              "completed "*) echo "Mintlify deployment did not succeed ($state); skipping."; exit 1 ;;
+            esac
+            sleep 15
+          done
+          echo "Timed out waiting for the Mintlify deployment; skipping."
+          exit 1
+
+      - name: Submit URLs to IndexNow
+        env:
+          MODE: ${{ steps.changed.outputs.mode }}
+        run: |
+          served=$(curl -fsS "https://ngrok.com/${INDEXNOW_KEY}.txt" || true)
+          if [ "$served" != "$INDEXNOW_KEY" ]; then
+            echo "::warning::https://ngrok.com/${INDEXNOW_KEY}.txt does not serve the key; was it rotated in ngrok-private/frontend?"
+            exit 1
+          fi
+
+          # Only submit URLs the live sitemap lists (drops deleted pages and non-page files).
+          curl -fsS "$SITEMAP_URL" | grep -o '<loc>[^<]*</loc>' | sed 's#</*loc>##g' | sort -u > sitemap_urls.txt
+          if [ "$MODE" = "full" ]; then
+            cp sitemap_urls.txt submit_urls.txt
+          else
+            sort -u changed_urls.txt | comm -12 - sitemap_urls.txt > submit_urls.txt
+          fi
+
+          count=$(wc -l < submit_urls.txt | tr -d ' ')
+          if [ "$count" -eq 0 ]; then
+            echo "No published URLs changed."
+            exit 0
+          fi
+          echo "Submitting $count URL(s) ($MODE):"
+          cat submit_urls.txt
+
+          jq -Rn --arg key "$INDEXNOW_KEY" \
+            '{host: "ngrok.com", key: $key, keyLocation: "https://ngrok.com/\($key).txt", urlList: [inputs | select(length > 0)]}' \
+            < submit_urls.txt > payload.json
+          status=$(curl -sS -o response.txt -w '%{http_code}' -X POST https://api.indexnow.org/indexnow \
+            -H 'Content-Type: application/json; charset=utf-8' --data @payload.json)
+          echo "IndexNow responded HTTP $status"
+          cat response.txt
+          case "$status" in 200|202) ;; *) exit 1 ;; esac

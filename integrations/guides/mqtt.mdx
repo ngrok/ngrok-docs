@@ -15,42 +15,34 @@ It covers setting up a local MQTT server, creating an ngrok TCP tunnel, and conn
 
 ## 1. Start an MQTT server
 
-For this tutorial, use the [Eclipse Mosquitto quickstart](https://github.com/eclipse-mosquitto/mosquitto).
-
-Start the server by running this command in your terminal:
+This guide uses [Eclipse Mosquitto](https://mosquitto.org/) as the MQTT server.
+Follow the [Mosquitto download and install instructions](https://mosquitto.org/download/) for your operating system, then start the server:
 
 ```bash
 mosquitto
 ```
 
-The server runs by default on port `1883`.
-You'll see output like this:
-
-```bash
-1734408888: mosquitto version 2.0.20 starting
-1734408888: Using default config.
-1734408888: Starting in local only mode. Connections will only be possible from clients running on this machine.
-1734408888: Create a configuration file which defines a listener to allow remote access.
-1734408888: For more details see https://mosquitto.org/documentation/authentication-methods/
-1734408888: Opening ipv4 listen socket on port 1883.
-1734408888: Opening ipv6 listen socket on port 1883.
-1734408888: mosquitto version 2.0.20 running
-```
+Mosquitto listens on port `1883` by default and starts in local-only mode, so connections are only possible from the same machine until you expose it.
+For listener and authentication options, see the [Mosquitto documentation](https://mosquitto.org/documentation/).
 
 ## 2. Launch ngrok
 
-Once your MQTT server is running successfully on `localhost`, you can put it online securely using ngrok.
+With your MQTT server running on `localhost`, put it online with an ngrok TCP endpoint.
 
-Go to the [ngrok dashboard](https://dashboard.ngrok.com) and copy your authtoken.
+If you haven't already, add your authtoken from the [ngrok dashboard](https://dashboard.ngrok.com/get-started/your-authtoken):
 
-Start ngrok by running the following command:
+```bash
+ngrok config add-authtoken TOKEN
+```
+
+Start a TCP endpoint that forwards to Mosquitto's port:
 
 ```bash
 ngrok tcp 1883
 ```
 
-ngrok will display a URL where your localhost application is exposed to the internet.
-Copy this URL for use with MQTT Explorer.
+ngrok displays a `tcp://` forwarding address where your server is exposed to the internet.
+Copy this address for use with MQTT Explorer.
 
 ## 3. Connect with MQTT Explorer
 

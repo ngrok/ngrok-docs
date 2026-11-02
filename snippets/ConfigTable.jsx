@@ -20,7 +20,7 @@ export const ConfigField = ({
               </a>
             </div>
             <div className="font-semibold text-primary dark:text-primary-light overflow-wrap-anywhere">{title}</div>
-            <div className="inline items-center gap-2 text-xs font-medium [&_div]:inline [&_div]:mr-2 [&_div]:leading-5 [&_a]:inline [&_a]:mr-2 [&_a]:leading-5">
+            <div className="flex items-center flex-wrap gap-2 text-xs font-medium leading-5">
               {type && (<div className="flex items-center px-2 py-0.5 rounded-md bg-gray-100/50 dark:bg-white/5 break-all">
                 <span className="text-gray-600 dark:text-gray-200 !font-medium">{type}</span>
               </div>)}
@@ -33,7 +33,7 @@ export const ConfigField = ({
               {required && (<div className="px-2 py-0.5 rounded-md bg-red-100/50 dark:bg-red-400/10 whitespace-nowrap">
                 <span className="text-red-600 dark:text-red-300 !font-medium">Required</span>
               </div>)}
-              {cel && (<a className="px-2 py-0.5 rounded-md !border-none bg-blue-100/50 dark:bg-blue-400/10 whitespace-nowrap" href="/traffic-policy/concepts/cel-interpolation">
+              {cel && (<a className="px-2 py-0.5 rounded-md !border-none bg-blue-100/50 dark:bg-blue-400/10 whitespace-nowrap" href="/gateway/traffic-policy/concepts/cel-interpolation">
                 <span className="text-blue-600 dark:text-blue-300 !font-medium">Supports CEL</span>
               </a>)}
             </div>
@@ -92,7 +92,7 @@ export const OldConfigItem = ({
               </a>
             </div>
             <div className="font-semibold text-primary dark:text-primary-light overflow-wrap-anywhere">{title}</div>
-            <div className="inline items-center gap-2 text-xs font-medium [&_div]:inline [&_div]:mr-2 [&_div]:leading-5 [&_a]:inline [&_a]:mr-2 [&_a]:leading-5">
+            <div className="flex items-center flex-wrap gap-2 text-xs font-medium leading-5">
               {type && (<div className="flex items-center px-2 py-0.5 rounded-md bg-gray-100/50 dark:bg-white/5 break-all">
                 <span className="text-gray-600 dark:text-gray-200 !font-medium">{type}</span>
               </div>)}
@@ -105,7 +105,7 @@ export const OldConfigItem = ({
               {required && (<div className="px-2 py-0.5 rounded-md bg-red-100/50 dark:bg-red-400/10 whitespace-nowrap">
                 <span className="text-red-600 dark:text-red-300 !font-medium">Required</span>
               </div>)}
-              {cel && (<a className="px-2 py-0.5 rounded-md !border-none bg-blue-100/50 dark:bg-blue-400/10 whitespace-nowrap" href="/traffic-policy/concepts/cel-interpolation">
+              {cel && (<a className="px-2 py-0.5 rounded-md !border-none bg-blue-100/50 dark:bg-blue-400/10 whitespace-nowrap" href="/gateway/traffic-policy/concepts/cel-interpolation">
                 <span className="text-blue-600 dark:text-blue-300 !font-medium">Supports CEL</span>
               </a>)}
             </div>

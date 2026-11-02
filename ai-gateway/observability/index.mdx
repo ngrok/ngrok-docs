@@ -18,21 +18,47 @@ Monitor AI Gateway usage from [app.ngrok.ai](https://app.ngrok.ai) and the AI Ga
   </Card>
 </CardGroup>
 
+## Identify a request
+
+Every gateway response carries `Ngrok-AIG-Request-Id`, plus headers such as `Ngrok-AIG-Attempts`, `Ngrok-AIG-Model`, `Ngrok-AIG-Rejected-Models`, and `Ngrok-AIG-Removed-Params` that describe how the request was served.
+Record the request ID in your application logs so you can tie a client-side failure to gateway usage data later.
+See [Response headers](/ai-gateway/how-it-works#response-headers).
+
 ## Usage API
 
 Query usage with the AI Gateway API:
 
 ```bash
-curl https://api.ngrok.ai/usage/overview \
+curl "https://api.ngrok.ai/usage/overview?startTime=2026-10-01T00:00:00Z&groupBy=accessKey" \
   -H "Authorization: Bearer $AI_GATEWAY_API_KEY"
 ```
 
-List individual usage events with the [Usage API](/ai-gateway/observability#usage-api). View usage summaries in [app.ngrok.ai](https://app.ngrok.ai) when available.
+The overview returns daily cost, request, and error series for the window.
+`startTime` is required.
+Group by `provider` (the default) or `accessKey`.
 
-## Roadmap
+[List individual usage events](/ai-gateway/api-reference/usage/list) to see one record per upstream attempt.
+Each event reports the provider, model, status code, token counts, and a per-attempt cost breakdown.
+Attempts of the same client request share a `requestId`.
+When an attempt's model came from a [virtual model](/ai-gateway/guides/virtual-models), `virtualModel` holds the virtual model's name as it was when the request ran.
 
-- Provider and retry tracking in usage events
-- Token usage visualization in app.ngrok.ai
-- Cost analytics per access key
+By default the list returns only each request's terminal attempt.
+Pass `includeRetries=true` to see the retries the gateway made along the way.
+
+<Note>
+When a provider reports no usage of its own, `usageEstimated` is `true` and the provider-reported token fields are all zero.
+Read `inputTokensEstimate` and `outputTokensEstimate` on those attempts instead.
+</Note>
+
+## Look up one request
+
+To see every attempt the gateway made for one request, pass its `Ngrok-AIG-Request-Id` to [`GET /usage/requests/{requestId}`](/ai-gateway/api-reference/usage/request-attempts).
+See [Why a request failed over](/ai-gateway/guides/why-a-request-failed-over).
+
+## Logs in app.ngrok.ai
+
+The [Logs](https://app.ngrok.ai/usage) page in app.ngrok.ai lists recent requests.
+Open a request to see its attempts.
+If you turn on [request capture](/ai-gateway/guides/account-settings#request-capture), the request detail also shows the captured headers and bodies.
 
 **Have feedback?** Email [niji@ngrok.ai](mailto:niji@ngrok.ai) with observability requests.
