@@ -74,7 +74,7 @@ const terms = [
 	{
 		titles: ["Device Gateway"],
 		meaning:
-			"A Device Gateway is a managed connectivity layer for reaching a fleet of remote devices — kiosks, IoT hardware, edge servers — without opening inbound ports or managing a VPN per device. ngrok's Device Gateway gives each device a secure outbound tunnel and a stable way to reach it.",
+			"A Device Gateway is a managed connectivity layer for reaching a fleet of remote devices—kiosks, IoT hardware, edge servers—without opening inbound ports or managing a VPN per device. ngrok's Device Gateway gives each device a secure outbound tunnel and a stable way to reach it.",
 		link: "/docs/gateway/device-gateway/overview/",
 	},
 	{
@@ -115,7 +115,7 @@ const terms = [
 	{
 		titles: ["Hybrid Cloud Connectivity"],
 		meaning:
-			"Hybrid cloud connectivity is networking between infrastructure that spans more than one environment — public cloud, private data center, or on-prem — so services in one location can securely reach services in another.",
+			"Hybrid cloud connectivity is networking between infrastructure that spans more than one environment—public cloud, private data center, or on-prem—so services in one location can securely reach services in another.",
 		link: "https://ngrok.com/use-cases/saas-customer-connectivity",
 	},
 	{
@@ -202,7 +202,7 @@ const terms = [
 	{
 		titles: ["LLM Router"],
 		meaning:
-			"An LLM Router is the decision layer inside an AI Gateway that picks which model or provider handles a given request — for example based on cost, latency, capability, or a failover rule when a provider is down.",
+			"An LLM Router is the decision layer inside an AI Gateway that picks which model or provider handles a given request—for example based on cost, latency, capability, or a failover rule when a provider is down.",
 		link: "/docs/ai-gateway/overview/",
 	},
 	{
@@ -270,7 +270,7 @@ const terms = [
 	{
 		titles: ["Reverse Tunnel", "reverse tunnel"],
 		meaning:
-			"A reverse tunnel is a connection initiated outbound from a private network to a public relay, which then forwards inbound traffic back through that same connection. It lets a service behind a firewall or NAT become reachable without opening inbound ports — the mechanism the ngrok agent uses to expose local services.",
+			"A reverse tunnel is a connection initiated outbound from a private network to a public relay, which then forwards inbound traffic back through that same connection. It lets a service behind a firewall or NAT become reachable without opening inbound ports—the mechanism the ngrok agent uses to expose local services.",
 		link: "https://en.wikipedia.org/wiki/Tunneling_protocol",
 		pluralEnding: "s",
 	},
@@ -304,7 +304,7 @@ const terms = [
 	{
 		titles: ["Site-to-Site VPN"],
 		meaning:
-			"A site-to-site VPN is an encrypted tunnel connecting two private networks — for example, a company's data center and a customer's on-prem network — so devices on either side can reach each other as if on the same LAN. It typically requires matching VPN appliances and firewall changes on both ends; ngrok's site-to-site connectivity reaches the same outcome without inbound firewall rules on either side.",
+			"A site-to-site VPN is an encrypted tunnel connecting two private networks—for example, a company's data center and a customer's on-prem network—so devices on either side can reach each other as if on the same LAN. It typically requires matching VPN appliances and firewall changes on both ends; ngrok's site-to-site connectivity reaches the same outcome without inbound firewall rules on either side.",
 		link: "/docs/gateway/site-to-site-connectivity/overview/",
 	},
 	{
