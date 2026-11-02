@@ -136,14 +136,7 @@ You never paste a token into your AI agent.
 		Then use Cline's authorize action.
 	</Tab>
 	<Tab title="Pi">
-		Run:
-
-		```bash
-		pi mcp add ngrok --url https://mcp.ngrok.com/mcp
-		```
-
-		Pi doesn't use client ID metadata documents (CIMD) by default yet, so `pi mcp login ngrok` fails with "Authorization server does not support dynamic client registration."
-		To fix this, set `clientRegistration` to `cimd` for the server in `~/.pi/agent/mcp.json`:
+		Add this to `~/.pi/agent/mcp.json`:
 
 		```json
 		{
@@ -163,6 +156,10 @@ You never paste a token into your AI agent.
 		```bash
 		pi mcp login ngrok
 		```
+
+		Pi doesn't use client ID metadata documents (CIMD) by default yet, so the `clientRegistration` setting is required.
+		Without it, `pi mcp login ngrok` fails with "Authorization server does not support dynamic client registration."
+		`pi mcp add` can't set this option, so edit the file instead of running it.
 	</Tab>
 	<Tab title="VS Code">
 		Add this to `.vscode/mcp.json` (workspace) or your user MCP configuration:
@@ -229,6 +226,7 @@ After you sign in, confirm that your client sees the ngrok tools:
 
 - Claude Code: run `/mcp` and select `ngrok`.
 - Codex: run `codex mcp list`.
+- Pi: run `pi mcp list`.
 - Any client: ask your AI agent "What ngrok tools do you have?"
 
 Then ask "Which ngrok account am I signed in to?"
@@ -338,6 +336,7 @@ See [Clients without OAuth](#clients-without-oauth).
 - **"Got new credentials, but ngrok rejected them":** Your account doesn't have access to the MCP server.
   Contact [ngrok support](mailto:support@ngrok.com).
 - **Sign-in fails or the server isn't found:** Check that the URL ends in `/mcp`.
+- **Pi fails with "Authorization server does not support dynamic client registration":** Set `oauth.clientRegistration` to `cimd` for the server in `~/.pi/agent/mcp.json`, then run `pi mcp login ngrok` again.
 - **Claude Code uses an old callback port:** Run `claude mcp remove ngrok --scope user`, then add the server again.
 - **A PAT is rejected:** The token is invalid, expired, or revoked.
   Create a new one and update the `Authorization` header.
