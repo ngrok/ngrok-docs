@@ -31,3 +31,19 @@ This is a PR-time snapshot, not a Mintlify build hook.
 An unchanged PR doesn't refresh merely because it merges or Mintlify rebuilds it.
 No schedule, separate PR, or direct push to the deployment branch is added.
 The first successful fetch replaces the committed initial snapshot.
+
+## Image sizes
+
+`check-image-sizes.sh` fails on images over 500 KB and warns on images over 200 KB.
+The **Check image sizes** GitHub Action runs it on every image a PR adds or modifies, so existing images don't block unrelated PRs.
+Mintlify's CDN already resizes content images and converts them to modern formats, so this check mainly keeps oversized originals out of the repo.
+
+Check every image in the repo, or specific files:
+
+```sh
+pnpm check-images
+bash custom/scripts/check-image-sizes.sh img/docs/my-diagram.png
+```
+
+To shrink an image, export screenshots at 1x or 2x rather than larger, and compress PNGs with a tool such as [Squoosh](https://squoosh.app), `pngquant`, or `oxipng`.
+Set `IMAGE_MAX_KB` or `IMAGE_WARN_KB` to change the limits.
