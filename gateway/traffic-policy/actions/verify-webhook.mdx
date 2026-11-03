@@ -11,12 +11,12 @@ import RequestWebhookProvider from "/snippets/_request-webhook-provider.mdx";
 import { ConfigField } from "/snippets/ConfigTable.jsx";
 import { ConfigChildren } from "/snippets/ConfigChildren.jsx";
 
-The **Verify Webhook** Traffic Policy action enables you to validate incoming webhook signatures against a known secret to ensure authenticity. Depending on the verification result, it either forwards the request to the next action or rejects it, safeguarding your endpoints from unauthorized or tampered webhooks.
+The **Verify Webhook** Traffic Policy action enables you to validate incoming webhook signatures against a known secret to ensure authenticity.
+Depending on the verification result, it either forwards the request to the next action or rejects it, safeguarding your endpoints from unauthorized or tampered webhooks.
 
 ## Configuration reference
 
-This is the [Traffic Policy](/gateway/traffic-policy/) configuration
-reference for this action.
+This is the [Traffic Policy](/gateway/traffic-policy/) configuration reference for this action.
 
 ### Supported phases
 
@@ -30,7 +30,8 @@ reference for this action.
 
     <ConfigField title="provider" type="string" required={true}>
         <p>The name of the provider to verify webhook requests from.</p>
-        <p>Value must be a [supported provider](#supported-providers) identifier. Don't see your provider? [Request support for it here](https://dashboard.ngrok.com/early-access#webhook-providers).</p>
+        <p>Value must be a [supported provider](#supported-providers) identifier.
+        Don't see your provider? [Request support for it here](https://dashboard.ngrok.com/early-access#webhook-providers).</p>
     </ConfigField>
 
     <ConfigField title="secret" type="string" required={true} cel={true}>
@@ -39,23 +40,31 @@ reference for this action.
     </ConfigField>
 
     <ConfigField title="enforce" type="bool" required={false}>
-        <p>When `true`, the request will be halted if the webhook is not valid and no further actions will run. However when `false`, subsequent actions will run even if the webhook was not valid.</p>
+        <p>When `true`, ngrok halts the request if the webhook isn't valid, and no further actions run.
+        However, when `false`, subsequent actions run even if the webhook isn't valid.</p>
         <p>Default <code>true</code>.</p>
     </ConfigField>
 
 ## Behavior
 
-The **verify-webhook** action ensures the authenticity of incoming webhook requests by validating their signatures against a known secret. Upon receiving a request, the action performs the signature verification. If verification succeeds, the request proceeds through the action chain. If it fails, the request is terminated with a `403 Forbidden` response, unless `enforce` is set to `false`, in which case the request proceeds without termination.
+The **verify-webhook** action ensures the authenticity of incoming webhook requests by validating their signatures against a known secret.
+When it receives a request, the action performs the signature verification.
+If verification succeeds, the request proceeds through the action chain.
+If it fails, ngrok terminates the request with a `403 Forbidden` response, unless `enforce` is set to `false`, in which case the request proceeds without termination.
 
 ### Verification process
 
-- **Signature Validation**: The action validates incoming webhook signature to confirm the request originates from the configured provider and that the payload has not been tampered with.
-- **Request Handling**: If the webhook verification is successful, the request is forwarded to the next action. If the verification fails, the request chain is terminated with a `403` response.
-- **Configurable Enforcement**: By default, verification failures result in termination. However, setting `enforce: false` allows unverified requests to proceed, while logging the verification result. This option is useful for debugging, testing, and crafting your own custom responses with action result variables.
+- **Signature validation**: The action validates the incoming webhook signature to confirm the request originates from the configured provider and that no one has tampered with the payload.
+- **Request handling**: If the webhook verification succeeds, ngrok forwards the request to the next action.
+If the verification fails, ngrok terminates the request chain with a `403` response.
+- **Configurable enforcement**: By default, verification failures result in termination.
+However, setting `enforce: false` allows unverified requests to proceed, while logging the verification result.
+This option is useful for debugging, testing, and crafting your own custom responses with action result variables.
 
 ### Endpoint verification
 
-Some webhook providers require an initial endpoint verification challenge to validate that your application is legitimate before sending webhook events. The **verify-webhook** action automatically handles endpoint verification challenges for supported providers.
+Some webhook providers require an initial endpoint verification challenge to validate that your application is legitimate before sending webhook events.
+The **verify-webhook** action automatically handles endpoint verification challenges for supported providers.
 
 - Supported providers:
   - Twitter
@@ -69,7 +78,8 @@ To prevent replay attacks, ngrok verifies that the webhook’s timestamp falls w
 
 #### Secret handling and encryption
 
-All secrets used for webhook verification are encrypted at config validation. When ngrok processes a requests the secret is decrypted.
+ngrok encrypts all secrets used for webhook verification at config validation.
+When ngrok processes a request, it decrypts the secret.
 
 ### Non-terminating action
 
@@ -79,7 +89,7 @@ All secrets used for webhook verification are encrypted at config validation. Wh
 
 Currently, these integration guides refer to modules.
 
-| Provider                    | Provider Identifier     | Integration Guide                                                                                    |
+| Provider                    | Provider identifier     | Integration guide                                                                                    |
 | --------------------------- | ----------------------- | ---------------------------------------------------------------------------------------------------- |
 | AfterShip                   | `aftership`             | [Documentation](/integrations/webhooks/aftership-webhooks)                                              |
 | Airship                     | `airship`               | [Documentation](/integrations/webhooks/airship-webhooks)                                                |
@@ -157,7 +167,9 @@ Currently, these integration guides refer to modules.
 
 ### Basic example
 
-This example configuration sets up an endpoint (`gitlab-webhook-example.ngrok.app`) that receives webhook requests from GitLab. The **Verify Webhook** action checks the authenticity of the request using a shared secret. If the request is verified, a custom response is sent back with a status `200 OK` and a plain text confirmation message.
+This example configuration sets up an endpoint (`gitlab-webhook-example.ngrok.app`) that receives webhook requests from GitLab.
+The **Verify Webhook** action checks the authenticity of the request using a shared secret.
+If the action verifies the request, ngrok sends back a custom response with a status `200 OK` and a plain text confirmation message.
 
 #### Example Traffic Policy document
 
@@ -223,7 +235,8 @@ $ curl --location --request POST 'https://gitlab-webhook-example.ngrok.app/' \
 ...
 ```
 
-This request will first be processed by the Verify Webhook action. If the GitLab webhook verification is successful, ngrok will return a `200 OK` response with the message GitLab webhook verified.
+The Verify Webhook action processes this request first.
+If the GitLab webhook verification succeeds, ngrok returns a `200 OK` response with the message GitLab webhook verified.
 
 ```bash
 HTTP/2 200 OK
