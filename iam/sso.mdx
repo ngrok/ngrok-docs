@@ -17,8 +17,7 @@ must use SSO to log into your ngrok account.
 Once you have configured SSO, you may also enable [SCIM](#scim) to
 automate user provisioning of your ngrok account.
 
-Set up SSO on the [Account Settings page](https://dashboard.ngrok.com/settings)
-of your ngrok dashboard.
+Set up SSO in the **Single Sign-On (SSO)** section of [Settings > Auth](https://dashboard.ngrok.com/settings/auth) in your ngrok dashboard.
 
 ## Verified identity providers
 
@@ -53,13 +52,18 @@ users out of the account.
 
 ## IdP-initiated login
 
-ngrok supports IdP-initiated login flows for SAML IdPs. An IdP-initiated login
-flow is one in which users can log into your ngrok account by clicking on a
-link in your IdP's dashboard.
+ngrok supports IdP-initiated login flows for SAML IdPs.
+In an IdP-initiated flow, users sign in to your ngrok account by clicking the ngrok app in your IdP's dashboard, such as the Okta or Microsoft Entra ID app launcher, instead of starting at [login.ngrok.com](https://login.ngrok.com).
 
-You may enable IdP-initiated login on a per-IdP basis. The OpenID Connect
-protocol does not support IdP-Initiated login so it is not supported for IdPs
-you connect that way.
+You may enable IdP-initiated login on a per-IdP basis.
+In the IdP's settings under **Options**, select **IdP Initiated Auth**.
+It's selected by default for new IdPs.
+Configure your IdP's ngrok app with the **ACS URL** and **SP Entity ID** that the dashboard shows for that IdP.
+Existing SAML app configurations, including ones that point to `idp.ngrok.com`, keep working without changes.
+
+The OpenID Connect protocol does not support IdP-initiated login, so it is not supported for IdPs you connect that way.
+For OpenID Connect IdPs, allow the **Redirect URI** that the dashboard shows, `https://login.ngrok.com/sso/callback`.
+The older `https://idp.ngrok.com/oauth2/callback` redirect URI no longer works.
 
 ## User provisioning
 
@@ -79,6 +83,19 @@ Provisioning](/iam/users/#provisioning) for more details.
 You may configure multiple IdPs to use for SSO. If you do, when a user tries to
 log in, they will be presented with a choice of which provider to use
 to log in. The description provided when configuring the IdP in your account will be displayed to the user here and can be used to distinguish similar providers.
+
+## Users in multiple accounts
+
+A user can belong to more than one ngrok account, and each account applies its own SSO settings to that user.
+Signing in through one account's IdP doesn't satisfy another account's SSO requirement.
+
+- When you sign in with SSO, ngrok signs you in to the account that owns that IdP.
+  You can also open your other accounts that don't enforce SSO.
+- When you switch to an account that enforces SSO, ngrok sends you to that account's IdP to sign in, even if you're already signed in to ngrok.
+- If your email address is connected to more than one IdP, ngrok shows a **Select an identity provider** page when you sign in with SSO.
+
+For example, say you belong to a personal account and to your company's account, which enforces SSO with Okta.
+You can sign in with your password and use the personal account, but when you open the company account, ngrok sends you to Okta.
 
 ## SCIM
 
