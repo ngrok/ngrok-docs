@@ -98,15 +98,22 @@ You never paste a token into your AI agent.
 		Then run `/mcp auth ngrok` in Gemini CLI.
 	</Tab>
 	<Tab title="Amp">
-		Run these on the machine that runs Amp:
+		Run these on the machine that runs Amp.
+		They need `curl` and [`jq`](https://jqlang.org):
 
 		```bash
 		amp mcp add ngrok https://mcp.ngrok.com/mcp
+		SCOPES=$(curl -s \
+		  https://mcp.ngrok.com/.well-known/oauth-protected-resource/mcp \
+		  | jq -r '.scopes_supported | join(",")')
 		amp mcp oauth login ngrok \
 		  --server-url https://mcp.ngrok.com/mcp \
-		  --client-id iamcli_3KeO0uXWr4mqAa5QKHWzGNdqtv0
+		  --client-id iamcli_3KeO0uXWr4mqAa5QKHWzGNdqtv0 \
+		  --scopes "$SCOPES"
 		```
 
+		Amp's CLI doesn't look up the server's scopes on its own, so the command passes them.
+		`SCOPES` holds the server's current scope list.
 		Don't set `--client-secret`.
 		Then start Amp to finish signing in.
 	</Tab>
@@ -293,6 +300,8 @@ See [Clients without OAuth](#clients-without-oauth).
 - **"Got new credentials, but ngrok rejected them":** Your account doesn't have access to the MCP server.
   Contact [ngrok support](mailto:support@ngrok.com).
 - **Sign-in fails or the server isn't found:** Check that the URL ends in `/mcp`.
+- **Sign-in ends with `access_denied` after you approve:** Your client requested no scopes.
+  If it lets you set scopes, pass the `scopes_supported` list from `https://mcp.ngrok.com/.well-known/oauth-protected-resource/mcp`.
 - **Pi fails with "Authorization server does not support dynamic client registration":** Set `oauth.clientRegistration` to `cimd` for the server in `~/.pi/agent/mcp.json`, then run `pi mcp login ngrok` again.
 - **Claude Code uses an old callback port:** Run `claude mcp remove ngrok --scope user`, then add the server again.
 - **A PAT is rejected:** The token is invalid, expired, or revoked.
