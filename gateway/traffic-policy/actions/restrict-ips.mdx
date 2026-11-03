@@ -89,11 +89,29 @@ If this action denies the connection:
 
 ### IPv6 support
 
-This action supports IPv6 addresses for all IP rules. You may use standard
-abbreviated notations such as `"::/0"`.
+This action supports IPv6 addresses for all IP rules.
+You may use standard abbreviated notations such as `"::/0"`.
 
-Don't forget to create IPv6 rules. It is easy to test with only IPv4 and then
-suddenly things don't work as expected because you forgot to create IPv6 rules.
+<Warning>
+Include both the IPv4 and IPv6 ranges for every client you want to allow.
+ngrok endpoints accept connections over both protocols, and most browsers and operating systems use [Happy Eyeballs](https://datatracker.ietf.org/doc/html/rfc8305) to pick whichever one connects first.
+The same client can arrive from its IPv4 address on one request and its IPv6 address on the next.
+If you allow only one, requests from that client fail intermittently with a `403` or a closed connection.
+</Warning>
+
+To find both addresses for a network, visit a site such as `https://test-ipv6.com` from that network, or run `curl -4 https://ifconfig.co` and `curl -6 https://ifconfig.co`.
+Then add a CIDR for each:
+
+```yaml
+on_http_request:
+  - actions:
+      - type: restrict-ips
+        config:
+          enforce: true
+          allow:
+            - 203.0.113.0/24
+            - 2001:db8:1234::/48
+```
 
 ### Non-terminating action
 
