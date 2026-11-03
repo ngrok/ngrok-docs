@@ -5,8 +5,10 @@
  *
  * Mintlify's generated llms.txt only lists pages in the navigation, so the
  * individual errors/err_ngrok_* pages never appear in it. This script writes
- * errors/llms.txt, which links to one sub-index per error code range under
- * errors/llms/, mirroring the split indexes Mintlify serves under /_llms/.
+ * errors/llms.txt, which links to one sub-index per error code range at
+ * errors/llms/<range>/llms.txt, mirroring the split indexes Mintlify serves
+ * under /_llms/. Every file is named llms.txt because Mintlify only serves
+ * other .txt files on Enterprise plans.
  *
  * Run after error pages change: node custom/scripts/generate-errors-llms-txt.js
  */
@@ -72,7 +74,8 @@ for (const group of sortedGroups) {
     "",
     ...group.errors.map((error) => pageLink(error.slug, error.title)),
   ];
-  fs.writeFileSync(path.join(subIndexDir, `${group.slug}.txt`), lines.join("\n") + "\n");
+  fs.mkdirSync(path.join(subIndexDir, group.slug));
+  fs.writeFileSync(path.join(subIndexDir, group.slug, "llms.txt"), lines.join("\n") + "\n");
 }
 
 const overview = frontmatter("index.mdx");
@@ -95,7 +98,7 @@ const index = [
   "",
   ...sortedGroups.map(
     (group) =>
-      `- [${group.title} (${group.errors.length} errors)](${BASE_URL}/errors/llms/${group.slug}.txt): ${group.description}`
+      `- [${group.title} (${group.errors.length} errors)](${BASE_URL}/errors/llms/${group.slug}/llms.txt): ${group.description}`
   ),
 ];
 fs.writeFileSync(path.join(errorsDir, "llms.txt"), index.join("\n") + "\n");
