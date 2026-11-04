@@ -107,7 +107,10 @@ fs.writeFileSync(path.join(errorsDir, "llms.txt"), index.join("\n") + "\n");
 // Mintlify then includes the pages in its own llms.txt, the sitemap, and site
 // search without showing them in the sidebar. Only the pages array that holds
 // errors/index is rewritten, so the rest of docs.json keeps its formatting.
+// The boost below 1 keeps error pages from crowding out guides in site search
+// for general words, while a search for an error code still ranks its page first.
 const NAV_GROUP = "Error codes";
+const NAV_GROUP_SEARCH_BOOST = 0.5;
 const docsJsonPath = path.join(__dirname, "../../docs.json");
 const docsJson = fs.readFileSync(docsJsonPath, "utf8");
 
@@ -130,6 +133,7 @@ pages.push({
   group: NAV_GROUP,
   hidden: true,
   searchable: true,
+  boost: NAV_GROUP_SEARCH_BOOST,
   pages: sortedGroups.map((group) => ({
     group: group.title,
     pages: group.errors.map((error) => `errors/${error.slug}`),
