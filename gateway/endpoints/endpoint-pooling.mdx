@@ -130,6 +130,45 @@ When only a single endpoint remains in a pool, it is no longer pooled with other
 Endpoint pooling is disabled by default. Endpoint pooling is enabled on a per-endpoint basis. You must enable pooling on each endpoint you want to pool by setting
 `pooling_enabled` to `true`.
 
+## Drain and close a pool
+
+A pool exists only while two or more endpoints share its URL and binding, so you drain a pool by stopping endpoints in it.
+When you stop an endpoint, ngrok stops routing traffic to it, and the remaining endpoints in the pool receive all of the traffic.
+
+To list the endpoints in a pool, filter your endpoints by URL:
+
+```bash
+ngrok api endpoints list --filter 'obj.url == "https://your-domain.ngrok.app"'
+```
+
+### Stop an endpoint in a pool
+
+- **Agent Endpoint:** Stop the ngrok agent, or remove the endpoint from your agent configuration file or SDK code.
+- **Cloud Endpoint:** Delete the endpoint with `ngrok api endpoints delete <endpoint_id>`.
+
+To take the URL offline entirely, stop every endpoint in the pool.
+If the pool has only one endpoint left, stopping that endpoint takes the URL offline.
+
+### Turn a pooled endpoint into a non-pooled endpoint
+
+You can't turn off pooling while other endpoints share the URL, so first stop every other endpoint in the pool.
+
+- **Cloud Endpoint:** After it's the only endpoint on its URL, update it to turn pooling off.
+  The URL stays online throughout.
+
+  ```bash
+  ngrok api endpoints update <endpoint_id> --pooling-enabled=false
+  ```
+
+  If another endpoint still shares the URL, the update fails with a `400` error.
+- **Agent Endpoint:** You can't change pooling on a running Agent Endpoint.
+  Stop every Agent Endpoint in the pool, then start a new endpoint without `--pooling-enabled` (or with `pooling_enabled: false` in your configuration file).
+  The URL is offline between stopping the last pooled endpoint and starting the new one.
+
+  ```bash
+  ngrok http 8080 --url https://your-domain.ngrok.app
+  ```
+
 ## Pool size
 
 There is no limit on the number of endpoints that may be in a pool.
@@ -145,8 +184,8 @@ The URLs of all endpoints in a pool must share the same protocol. For example,
 you may not pool the endpoints `https://foo.internal:1234` and
 `tcp://foo.internal:1234` together because they have a different protocol.
 
-Conflicts can only occur during endpoint creation because both the URL and the
-pooling enabled property may not be updated after an endpoint has been created.
+For Agent Endpoints, conflicts can only occur when the endpoint starts, because you can't change the URL or pooling setting of a running Agent Endpoint.
+For Cloud Endpoints, conflicts can also occur when you update the URL or pooling setting.
 
 ## Load balancing
 
