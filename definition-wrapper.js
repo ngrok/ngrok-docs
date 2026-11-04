@@ -3,7 +3,7 @@ const terms = [
 	{
 		titles: ["Agent Endpoint"],
 		meaning:
-			"An Agent Endpoint is an ngrok endpoint created by an ngrok agent (or Agent SDK) that connects to an upstream service. The agent establishes a secure tunnel to the ngrok cloud, which forwards traffic to your local or remote service.",
+			"An Agent Endpoint is an ngrok endpoint created by an ngrok agent (or SDK) that connects to an upstream service. The agent establishes a secure tunnel to the ngrok cloud, which forwards traffic to your local or remote service.",
 		link: "/docs/endpoints/agent-endpoints/",
 		pluralEnding: "s",
 	},
