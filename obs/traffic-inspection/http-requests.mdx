@@ -11,9 +11,34 @@ This can dramatically speed up development of webhooks or callbacks that are dif
 To see the connection a request traveled over, open the request's **Connection** tab.
 See [Connections and requests](/obs/traffic-inspection/tcp-connections#connections-and-requests).
 
+## What Traffic Inspector stores
+
+By default, Traffic Inspector stores metadata about each request and response, not their contents.
+For each request, ngrok stores:
+
+- The method, host, and path.
+  ngrok stores the URL without its query string.
+- The names of query parameters, but not their values.
+- The names of request headers, but not their values.
+  The exceptions are `User-Agent`, `Content-Type`, `Content-Encoding`, and `Accept`, which ngrok stores in full.
+- The authorization scheme, such as `Basic` or `Bearer`, but not the credentials.
+- The size of the body, but not the body.
+- The client IP address and its geolocation.
+- The identity of the user, such as their name and email address, when an [OAuth](/gateway/traffic-policy/actions/oauth/) action authenticated the request.
+
+For each response, ngrok stores the status code, the names of the response headers, the `Content-Type` and `Content-Encoding` values, and the size of the body.
+
+For example, on an OAuth callback such as `/callback?code=...&state=...`, Traffic Inspector stores the path `/callback` and the parameter names `code` and `state`, but not their values.
+A `POST` body that carries tokens or client secrets isn't stored either.
+
+Full capture mode changes this.
+When it's on, Traffic Inspector also stores the full URL including query values, every header value, and the request and response bodies, and it doesn't redact any of them.
+
+Traffic Inspector is separate from [log exporting](/obs/events/), which sends the fields you select to a destination you configure.
+Exported HTTP logs can include values such as `http.request.headers` and `http.request.url.query`, so choose fields with care if your traffic carries secrets.
+
 ## Full capture mode
 
-By default, the ngrok Traffic Inspector only stores the metadata about each request and response.
 Full Capture mode is an opt-in setting on your ngrok account that stores the full request and response parameters, headers, and bodies for each traffic event that flows through your endpoints.
 Account admins can enable it by visiting the **Observability** section in the [ngrok Settings Page](https://dashboard.ngrok.com/settings#observability) after logging in.
 
