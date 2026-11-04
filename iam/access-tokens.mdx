@@ -1,0 +1,277 @@
+---
+title: Access Tokens
+description: Access tokens are scoped credentials for the ngrok agent, the ngrok API, and the ngrok MCP server that act as a user or Service User.
+---
+
+## Overview
+
+An access token is a credential that acts as its owner, a [User](/iam/users/) or a [Service User](/iam/service-users/), and can do only what its scopes allow.
+Use access tokens for anything that automates ngrok: agents, CI jobs, scripts, and AI agents that connect through the [ngrok MCP server](/mcp-server/).
+
+One access token works with:
+
+- The ngrok agent, in place of an authtoken.
+- The [ngrok API](/api/), in place of an API key.
+- The `ngrok api` CLI commands.
+- The [ngrok MCP server](/mcp-server/).
+
+You can see and manage your access tokens on the [Access Tokens](https://dashboard.ngrok.com/access-tokens) page of the dashboard.
+
+## Access tokens, authtokens, and API keys
+
+ngrok has three kinds of credentials for automation.
+Use access tokens for everything new.
+Your existing authtokens and API keys keep working as they do today.
+
+|  | Access token | [Authtoken](/gateway/agent/authtokens/) | [API key](/api/#authentication) |
+|---|---|---|---|
+| Works with | Agent, API, `ngrok api`, MCP server | Agent | API, `ngrok api` |
+| Limits what it can do | Scopes you choose | [ACLs](/gateway/agent/authtokens#authtoken-acls) on agent binds | None |
+| Limited by the owner's role | Yes | No | No |
+| Expires | Optional, set when you create it | No | No |
+| Value starts with | `ngrok_pat_` | No fixed prefix | No fixed prefix |
+
+## Create an access token
+
+1. In the dashboard, go to [Access Tokens](https://dashboard.ngrok.com/access-tokens) and click **New Access Token**.
+1. Enter a description, such as the job or machine that uses the token.
+1. Administrators can pick the owner: themselves, another User, or a Service User.
+   Everyone else creates tokens for themselves.
+1. Choose when the token expires: 30 days, 60 days, 90 days, 1 year (the default), or **Indefinite**.
+   You can't change the expiration later.
+1. Add the [scopes](#scopes) the token needs.
+1. Save the token, then copy its value.
+   The dashboard shows the value only once.
+
+<Warning>
+Store the token the way you store other secrets, such as in a secrets manager or an environment variable.
+Anyone who has the value can act as the token's owner, within its scopes.
+</Warning>
+
+To create a token with the API, send `POST /access_tokens`.
+The API creates tokens for the caller only.
+
+## Use an access token with the agent
+
+The agent accepts an access token anywhere it accepts an authtoken.
+The token needs the `tunnel:start` scope.
+
+1. Save the token to your agent configuration file:
+
+   ```bash
+   ngrok config add-authtoken ngrok_pat_<your-token>
+   ```
+
+   You can also set the `NGROK_AUTHTOKEN` environment variable instead.
+
+1. Start an endpoint:
+
+   ```bash
+   ngrok http 80
+   ```
+
+1. Confirm that the agent shows `Session Status online` and an endpoint URL.
+
+## Use an access token with the API
+
+Send the token as a bearer token, the same way you send an API key:
+
+```bash
+curl \
+  -H "Authorization: Bearer $NGROK_ACCESS_TOKEN" \
+  -H "Ngrok-Version: 2" \
+  https://api.ngrok.com/endpoints
+```
+
+A token with `endpoints:read` gets a `200 OK` response with the list of your endpoints.
+
+The `ngrok api` CLI commands take the token through the `--api-key` flag or the `NGROK_API_KEY` environment variable:
+
+```bash
+ngrok api endpoints list --api-key $NGROK_ACCESS_TOKEN
+```
+
+To connect an AI agent with an access token, see [Clients without OAuth](/mcp-server/#clients-without-oauth).
+
+## Scopes
+
+Scopes decide what an access token can do.
+Each scope names a resource and an action, such as `endpoints:read` or `domains:write`.
+
+A token can use a scope only while its owner's [role](/iam/rbac/) also allows it.
+If the owner's role changes, the token loses any scope the new role doesn't allow, without an edit to the token.
+When you create or edit a token, you can grant only the scopes that both you and the token's owner have.
+
+Most resources have a `read` scope, to view them, and a `write` scope, to create, change, and delete them.
+A few have other actions:
+
+- `tunnel:start` lets the agent start endpoints.
+- `tunnel-sessions:manage` lets the token restart, update, and stop agent sessions.
+
+The dashboard lists the scopes in these groups.
+
+### Endpoints & traffic
+
+| Resource | Scopes | What it covers |
+|---|---|---|
+| Agent ingresses | `agent-ingresses:read`, `agent-ingresses:write` | Custom ingress addresses agents connect through. |
+| Agents | `agents:read`, `agents:write`, `agents:manage` | ngrok agents connected to your account. |
+| Endpoints | `endpoints:read`, `endpoints:write`, `endpoints:admin` | Cloud Endpoints and Agent Endpoints serving your traffic. |
+| Kubernetes Operators | `kubernetes-operators:read`, `kubernetes-operators:write` | Kubernetes Operators managing ngrok resources in your clusters. |
+| Networks | `networks:read`, `networks:write` | Private networks and the peers that join them. |
+| TCP addresses | `tcp-addrs:read`, `tcp-addrs:write` | Reserved TCP addresses. |
+| Tunnel sessions | `tunnel-sessions:read`, `tunnel-sessions:manage` | Agent sessions backing your tunnels. |
+| Tunnels | `tunnels:read`, `tunnel:start` | Active tunnels established by your agents. |
+
+### Domains & certificates
+
+| Resource | Scopes | What it covers |
+|---|---|---|
+| Certificate authorities | `certificate-authorities:read`, `certificate-authorities:write` | Certificate authorities used for mutual TLS. |
+| Domains | `domains:read`, `domains:write`, `domains:write:certificates` | Reserved domains pointed at your endpoints. |
+| TLS certificates | `tls-certificates:read`, `tls-certificates:write` | Uploaded TLS certificates. |
+
+### SSH
+
+| Resource | Scopes | What it covers |
+|---|---|---|
+| SSH certificate authorities | `ssh-certificate-authorities:read`, `ssh-certificate-authorities:write` | Authorities that sign SSH certificates. |
+| SSH credentials | `ssh-credentials:read`, `ssh-credentials:write` | SSH public keys authorized to connect agents. |
+| SSH host certificates | `ssh-host-certificates:read`, `ssh-host-certificates:write` | Certificates identifying your SSH hosts. |
+| SSH user certificates | `ssh-user-certificates:read`, `ssh-user-certificates:write` | Certificates identifying SSH users. |
+
+### Identity & access
+
+| Resource | Scopes | What it covers |
+|---|---|---|
+| API keys | `api-keys:read`, `api-keys:write` | API keys used against the ngrok API. |
+| App sessions | `app-sessions:read`, `app-sessions:write` | Active end-user sessions on your endpoints. |
+| App users | `app-users:read`, `app-users:write` | End users authenticating through your endpoints. |
+| Bot users | `bot-users:read`, `bot-users:write` | Legacy bot user principals. |
+| Credentials | `credentials:read`, `credentials:write` | Agent authtokens and access tokens. |
+| SCIM provisioning | `scim:read`, `scim:write` | Automatic user provisioning from your identity provider. |
+| Service users | `service-users:read`, `service-users:write` | Non-human principals that own automation credentials. |
+| Team | `team:read`, `team:write` | Team membership. |
+| Team invitations | `ngrok:invitations:write` | Invitations to join your account. |
+| Vaults | `vaults:read`, `vaults:write` | Secret vaults available to Traffic Policy. |
+
+### Security & policy
+
+| Resource | Scopes | What it covers |
+|---|---|---|
+| Abuse reports | `abuse-reports:read`, `abuse-reports:write` | Abuse reports filed against your endpoints. |
+| IP policies | `ip-policies:read`, `ip-policies:write` | Reusable allow and deny IP rule sets. |
+| IP restrictions | `ip-restrictions:read`, `ip-restrictions:write` | IP policies applied to dashboard and API access. |
+
+### Observability & billing
+
+| Resource | Scopes | What it covers |
+|---|---|---|
+| Billing | `billing:read`, `billing:write` | Subscription, invoices, and payment method. |
+| Events | `events:read`, `events:write` | Event subscriptions and destinations. |
+
+### AI Gateway
+
+| Resource | Scopes | What it covers |
+|---|---|---|
+| Access keys | `ai-gateway:access-keys:read`, `ai-gateway:access-keys:write` | Keys clients use to send requests through AI Gateway. |
+| Captures | `ai-gateway:captures:read` | Recorded request and response content. |
+| Credits | `ai-gateway:credits:read`, `ai-gateway:credits:write` | Prepaid credit balance and automatic top-ups. |
+| Provider API keys | `ai-gateway:api-keys:read`, `ai-gateway:api-keys:write` | API keys AI Gateway uses to call model providers. |
+| Providers | `ai-gateway:providers:read`, `ai-gateway:providers:write` | Model providers and the models AI Gateway can route to. |
+| Settings | `ai-gateway:settings:read`, `ai-gateway:settings:write` | Account-wide AI Gateway configuration. |
+| Usage | `ai-gateway:usage:read` | Request and token usage across providers. |
+| Virtual models | `ai-gateway:virtual-models:read`, `ai-gateway:virtual-models:write` | Model names clients call, routed to provider models. |
+
+### Apps & integrations
+
+| Resource | Scopes | What it covers |
+|---|---|---|
+| Chatbot | `chatbot:read`, `chatbot:write` | The AI chat agent and its connected Slack workspaces. |
+| Integrations | `integrations:read`, `integrations:write` | Third-party services connected to your account. |
+| Ship apps | `ship:apps:read`, `ship:apps:write` | Container apps deployed and run by Ship. |
+
+## Missing scopes
+
+When a token calls the API without a scope it needs, the API returns `403 Forbidden` with [ERR_NGROK_29001](/errors/err_ngrok_29001) and names the missing scope:
+
+```http
+HTTP/1.1 403 Forbidden
+WWW-Authenticate: Bearer error="insufficient_scope", scope="endpoints:write"
+
+{
+  "error_code": "ERR_NGROK_29001",
+  "status_code": 403,
+  "msg": "You don't have permission to perform this action. Your credentials are missing the 'endpoints:write' scope.",
+  "details": {
+    "operation_id": "op_2RfSBcv0nsy71XCHWOegjx1OoKh"
+  }
+}
+```
+
+When an agent starts with a token that doesn't have `tunnel:start`, the agent fails with [ERR_NGROK_15014](/errors/err_ngrok_15014).
+
+To fix either error, [edit the token](#manage-access-tokens) and add the scope.
+If you can't add it, the token's owner doesn't have it.
+Ask an Administrator for a [role](/iam/rbac/) that grants it.
+
+## Manage access tokens
+
+Open a token from the [Access Tokens](https://dashboard.ngrok.com/access-tokens) page to change it:
+
+- **Edit** changes the description and the scopes.
+  You can't change a token's owner or expiration.
+  Create a new token instead.
+- **Revoke** stops the token from working.
+  The token stays in the list, marked revoked, so you keep its record.
+- **Delete** stops the token from working and removes it from the list.
+
+The API has the same actions: `PATCH /access_tokens/{id}`, `POST /access_tokens/{id}/revoke`, and `DELETE /access_tokens/{id}`.
+
+Who can see and change tokens:
+
+- Anyone with `credentials:read` sees every access token in the account.
+  This includes Users with the read-only [Developer](/iam/rbac/#developer) role.
+- To change a token, you need `credentials:write` and you must be its owner or an Administrator ([ERR_NGROK_256](/errors/err_ngrok_256)).
+- Only Administrators can create tokens for another User or a Service User ([ERR_NGROK_257](/errors/err_ngrok_257)).
+
+## Revocation and expiration
+
+A token stops working when you revoke or delete it, when it expires, or when its owner is removed from the account or suspended.
+Agents using the token disconnect, and API and MCP calls with it fail, within about two minutes.
+
+Removing a User from the account, or deleting a Service User, also deletes their access tokens.
+
+Role changes take effect in the same window.
+If an owner loses a role, their tokens lose the scopes that role granted.
+
+## Limits
+
+Each owner can have up to 10,000 active access tokens.
+Creating more fails with [ERR_NGROK_29000](/errors/err_ngrok_29000).
+Revoke or delete tokens you no longer use.
+
+Access token values start with `ngrok_pat_`, followed by 43 letters and numbers.
+Secret scanners can use this prefix to find leaked tokens.
+
+## Troubleshooting
+
+- **The token owner has no role that grants access:** The owner has no role, so the token can't do anything.
+  Give the owner a [role](/iam/rbac/), then try again.
+- **The agent fails with [ERR_NGROK_107](/errors/err_ngrok_107):** The token is revoked, deleted, or expired, or it was copied wrong.
+  Create a new token and update your configuration.
+- **The API fails with [ERR_NGROK_203](/errors/err_ngrok_203):** The token is revoked, deleted, or expired, or it was copied wrong.
+  Create a new token and update the `Authorization` header.
+- **The API or agent says a scope is missing:** See [Missing scopes](#missing-scopes).
+
+## Access tokens pricing
+
+Access tokens are available on all plans.
+For more information, see the [ngrok Pricing page](https://ngrok.com/pricing).
+
+## What's next?
+
+- Learn how roles limit tokens in [Role-Based Access Control](/iam/rbac/).
+- Create tokens for automation that outlives any one person with [Service Users](/iam/service-users/).
+- Connect an AI agent to your account with the [ngrok MCP server](/mcp-server/).
+- Manage tokens programmatically with the [Access Tokens API](/api-reference/accesstokens/list).
