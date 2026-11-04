@@ -48,6 +48,26 @@ bash custom/scripts/check-image-sizes.sh img/docs/my-diagram.png
 To shrink an image, export screenshots at 1x or 2x rather than larger, and compress PNGs with a tool such as [Squoosh](https://squoosh.app), `pngquant`, or `oxipng`.
 Set `IMAGE_MAX_KB` or `IMAGE_WARN_KB` to change the limits.
 
+## Traffic Policy action list
+
+`gateway/traffic-policy/actions.json` is the source of truth for the list of Traffic Policy actions.
+It's published at `https://ngrok.com/docs/gateway/traffic-policy/actions.json` for agents and tools, such as the [ngrok agent skills](https://github.com/ngrok/skills), so keep each entry's `type` and `url` stable.
+
+Each action's page lives at `gateway/traffic-policy/actions/<type>.mdx`, so its URL path is the same as the `type` you use in a Traffic Policy document.
+`traffic-policy-actions.js` checks that convention, and that each entry's `type` and `phases` match the `### Type` and `### Supported phases` sections of its action page.
+It then generates two snippets that `gateway/traffic-policy/actions/index.mdx` imports:
+
+- `snippets/traffic-policy/actions-data.jsx`: the data for the interactive action hub that people see.
+- `snippets/traffic-policy/actions-list.mdx`: a Markdown table that only the `.md` version of the page shows.
+
+When you add or change an action, edit `actions.json`, then regenerate the snippets:
+
+```sh
+pnpm traffic-policy-actions
+```
+
+The **CI Checks** GitHub Action runs `pnpm traffic-policy-actions --check`, which fails when `actions.json` disagrees with an action page or the snippets are out of date.
+
 ## Errors llms.txt
 
 Mintlify's generated `llms.txt` only lists pages in the navigation, so it doesn't include the individual `errors/err_ngrok_*` pages.
