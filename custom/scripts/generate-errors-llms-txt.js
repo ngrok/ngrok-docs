@@ -110,7 +110,7 @@ fs.writeFileSync(path.join(errorsDir, "llms.txt"), index.join("\n") + "\n");
 // The boost below 1 keeps error pages from crowding out guides in site search
 // for general words, while a search for an error code still ranks its page first.
 const NAV_GROUP = "Error codes";
-const NAV_GROUP_SEARCH_BOOST = 0.5;
+const NAV_GROUP_SEARCH_BOOST = 0.75;
 const docsJsonPath = path.join(__dirname, "../../docs.json");
 const docsJson = fs.readFileSync(docsJsonPath, "utf8");
 
