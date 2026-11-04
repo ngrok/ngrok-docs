@@ -1,0 +1,58 @@
+---
+title: Open-Weight Models
+description: Learn which AI Gateway models are open-weight and what that means for how you can use them.
+---
+
+An open-weight model is one whose author publishes the trained weights for anyone to download.
+You can call it through a hosted provider, like any other model, or run the same weights on your own hardware.
+
+## What open-weight means
+
+The weights are the parameters a model learns during training.
+With a closed model, such as GPT-5.5 or Claude, only the author and its partners can run the weights, so you can only reach the model through their APIs.
+With an open-weight model, the author releases the weights under a license, and any provider or person can serve them.
+
+Open-weight isn't the same as open source.
+Authors often publish the weights without the training data or training code.
+Licenses also differ: some, like Apache 2.0 and MIT, allow almost any use, while others, like the Llama Community License, add conditions.
+Check the license on the author's model card before you use a model commercially or fine-tune it.
+
+## What it means in the AI Gateway
+
+You send requests to open-weight models the same way you send them to closed models.
+Being open-weight changes where the model can run:
+
+- **More than one provider can serve it.** When several providers in the [model catalog](/ai-gateway/reference/model-catalog) serve the same model, the gateway can [fail over](/ai-gateway/guides/configure-fallback-models) between them. Use a `provider:model` prefix to keep requests on one provider.
+- **You can run it yourself.** Serve the weights with a tool like Ollama or vLLM, then [add it as a custom provider](/ai-gateway/guides/use-a-model-you-run-yourself). Your apps call it through the same gateway endpoint and access keys as your hosted models.
+- **You can mix self-hosted and hosted copies.** List your own server first and a hosted provider as a fallback, so requests keep working when your server is down.
+
+For example, this request tries Qwen3-32B on your own Ollama server first, then on Groq:
+
+```json
+{
+  "model": "ollama:qwen3:32b",
+  "models": ["groq:qwen/qwen3-32b"],
+  "messages": [{"role": "user", "content": "Hello"}]
+}
+```
+
+## Open-weight models in the catalog
+
+These models in the [model catalog](/ai-gateway/reference/model-catalog) are open-weight.
+The list isn't complete: other catalog models may also have published weights, so check the author's model card when a model isn't listed here.
+
+| Author | Model IDs | Providers |
+|--------|-----------|-----------|
+| OpenAI | `openai/gpt-oss-120b`, `openai/gpt-oss-20b`, `openai/gpt-oss-safeguard-20b` | Groq |
+| Meta | `meta-llama/llama-4-scout-17b-16e-instruct`, `meta-llama/llama-prompt-guard-2-86m`, `meta-llama/llama-prompt-guard-2-22m` | Groq |
+| Alibaba Qwen | `qwen/qwen3-32b` | Groq |
+| Alibaba Qwen | `qwen/qwen3.8-2.4t-a95b` | QwenCloud |
+| Z.ai | `z-ai/glm-5` | Z.ai, Tencent TokenHub |
+| Z.ai | `z-ai/glm-4.7`, `z-ai/glm-4.7-flash`, `z-ai/glm-4.6`, `z-ai/glm-4.5`, `z-ai/glm-4.5-air` | Z.ai |
+| MiniMax | `minimax/minimax-m3.1-flash`, `minimax/minimax-m2.5`, `minimax/minimax-m2.1`, `minimax/minimax-m2` | MiniMax |
+
+## Next steps
+
+- [Models](/ai-gateway/concepts/models): How the gateway names and resolves models
+- [Use a model you run yourself](/ai-gateway/guides/use-a-model-you-run-yourself): Connect Ollama, vLLM, or LM Studio
+- [Configure fallback models](/ai-gateway/guides/configure-fallback-models): Try another model when the first one fails
