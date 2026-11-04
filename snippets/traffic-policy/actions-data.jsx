@@ -137,7 +137,7 @@ export const actions = [
       "on_http_request"
     ],
     "terminating": false,
-    "path": "/gateway/traffic-policy/actions/oidc"
+    "path": "/gateway/traffic-policy/actions/openid-connect"
   },
   {
     "type": "owasp-crs-request",

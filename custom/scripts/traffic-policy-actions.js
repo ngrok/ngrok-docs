@@ -51,12 +51,12 @@ function validate(actions) {
         const unknown = action.phases.filter((phase) => !PHASES.includes(phase));
         if (unknown.length) errors.push(`${where}: unknown phases ${unknown.join(', ')}`);
         if (i > 0 && actions[i - 1].type >= action.type) errors.push(`${where}: entries must be sorted by unique "type"`);
-        if (typeof action.url !== 'string' || !action.url.startsWith(URL_PREFIX)) {
-            errors.push(`${where}: "url" must start with ${URL_PREFIX}`);
+        if (action.url !== URL_PREFIX + action.type) {
+            errors.push(`${where}: "url" must be ${URL_PREFIX + action.type}, so the page path matches the type`);
             return;
         }
 
-        const pageFile = `${PAGES_DIR}/${action.url.slice(URL_PREFIX.length)}.mdx`;
+        const pageFile = `${PAGES_DIR}/${action.type}.mdx`;
         if (!fs.existsSync(path.join(ROOT, pageFile))) {
             errors.push(`${where}: ${pageFile} does not exist`);
             return;
@@ -79,7 +79,7 @@ function validate(actions) {
 function generate(actions) {
     const data = actions.map(({ url, ...action }) => ({
         ...action,
-        path: `/gateway/traffic-policy/actions/${url.slice(URL_PREFIX.length)}`,
+        path: `/gateway/traffic-policy/actions/${action.type}`,
     }));
     const rows = data.map((action) => [
         `[\`${action.type}\`](${action.path})`,
