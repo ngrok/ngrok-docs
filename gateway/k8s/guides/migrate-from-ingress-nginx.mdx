@@ -1,0 +1,262 @@
+---
+title: Migrate from ingress-nginx to the ngrok Kubernetes Operator
+sidebarTitle: Migrate from ingress-nginx
+description: Move your Kubernetes Ingress traffic from the retired ingress-nginx controller to the ngrok Kubernetes Operator without downtime.
+---
+
+import K8sSetup from "/snippets/k8s/_setup.mdx";
+import K8sInstall from "/snippets/k8s/_install.mdx";
+
+The Kubernetes project [retired ingress-nginx](https://kubernetes.io/blog/2025/11/11/ingress-nginx-retirement/) on March 24, 2026.
+Existing installations keep running, but they no longer receive releases, bug fixes, or security patches.
+
+This guide moves an existing `Ingress` to the [ngrok Kubernetes Operator](/gateway/k8s/) without downtime.
+You run both controllers side by side, point your DNS at ngrok, and then remove ingress-nginx.
+
+<Note>
+  ingress-nginx (`kubernetes/ingress-nginx`) is a different project from F5's [NGINX Ingress Controller](https://github.com/nginx/kubernetes-ingress), which F5 still maintains.
+  ingress-nginx annotations start with `nginx.ingress.kubernetes.io/`, while F5's start with `nginx.org/` or `nginx.com/`.
+</Note>
+
+To check whether your cluster runs ingress-nginx, list its pods:
+
+```bash
+kubectl get pods --all-namespaces --selector app.kubernetes.io/name=ingress-nginx
+```
+
+## What you'll need
+
+- An ngrok account on the [Pay-as-you-go plan](https://ngrok.com/pricing), which you need to bring your own domain.
+- A cluster where ingress-nginx serves at least one `Ingress` for a domain you control.
+- Access to your domain's DNS records.
+- [`kubectl`](https://kubernetes.io/docs/reference/kubectl/) and [Helm](https://helm.sh/docs/intro/install/) 3.0.0 or later.
+
+<Steps titleSize="h2">
+  <Step title="Install the ngrok Kubernetes Operator">
+    <K8sSetup />
+    <K8sInstall />
+  </Step>
+
+  <Step title="Register your domain">
+    Choose how ngrok gets a TLS certificate for your domain during the migration.
+
+    ### Option 1: Upload your current certificate (no downtime)
+
+    ngrok can't issue an automated certificate until your DNS points at ngrok.
+    Uploading the certificate that ingress-nginx serves today lets ngrok serve valid HTTPS from the moment you change DNS.
+
+    If cert-manager issues your certificate, export it from the `Secret` named in your `Ingress`'s `spec.tls`:
+
+    ```bash
+    kubectl get secret $TLS_SECRET -n $NAMESPACE -o jsonpath='{.data.tls\.crt}' | base64 -d > tls.crt
+    kubectl get secret $TLS_SECRET -n $NAMESPACE -o jsonpath='{.data.tls\.key}' | base64 -d > tls.key
+    ```
+
+    Treat `tls.key` as a secret, and make sure the certificate won't expire before you finish the migration.
+
+    1. Upload `tls.crt` and `tls.key` on the [**TLS Certificates**](https://dashboard.ngrok.com/tls-certs) page of the dashboard.
+    2. Add your domain on the [**Domains**](https://dashboard.ngrok.com/domains) page and select the certificate you uploaded.
+    3. Don't change your DNS records yet.
+
+    Do this before you create the ngrok `Ingress`.
+    The Operator uses a domain that already exists in your account instead of reserving a new one.
+
+    ### Option 2: Use an automated certificate (brief certificate warning)
+
+    Skip the dashboard.
+    When you create the ngrok `Ingress` in the next step, the Operator reserves your domain with an automated certificate from Let's Encrypt.
+
+    ngrok requests that certificate only after you change DNS.
+    Until ngrok issues it, usually within a few minutes, clients see a certificate name-mismatch warning.
+    See [TLS certificate provisioning](/gateway/domains/tls-certificates#expected-behavior-while-a-certificate-is-provisioning) for details.
+  </Step>
+
+  <Step title="Create a parallel ngrok Ingress">
+    Copy your existing `Ingress` to a new one with a different name and `ingressClassName: ngrok`.
+    Leave the original in place so ingress-nginx keeps serving traffic until you change DNS.
+
+    Drop `spec.tls` and any `cert-manager.io/*` annotations from the copy.
+    ngrok terminates TLS with your domain's certificate, and the Operator ignores `spec.tls`.
+
+    ```yaml title="ngrok-ingress.yaml"
+    apiVersion: networking.k8s.io/v1
+    kind: Ingress
+    metadata:
+      name: my-app-ngrok
+      namespace: default
+    spec:
+      ingressClassName: ngrok
+      rules:
+        - host: app.example.com
+          http:
+            paths:
+              - path: /
+                pathType: Prefix
+                backend:
+                  service:
+                    name: my-app
+                    port:
+                      number: 80
+    ```
+
+    If your original `Ingress` has `nginx.ingress.kubernetes.io/*` annotations, translate them with the [annotation table](#map-ingress-nginx-annotations-to-ngrok) before you continue.
+
+    Apply the manifest and check its address:
+
+    ```bash
+    kubectl apply -f ngrok-ingress.yaml
+    kubectl get ingress my-app-ngrok -n default
+    ```
+
+    After a few seconds, the `ADDRESS` column shows a hostname ending in `ngrok-cname.com`.
+    This guide calls it `$CNAME_TARGET`.
+    If the address stays empty, see [troubleshooting](/gateway/k8s/guides/troubleshooting).
+
+    Test the ngrok path before you change DNS by sending a request straight to `$CNAME_TARGET`:
+
+    ```bash
+    curl --connect-to app.example.com:443:$CNAME_TARGET:443 https://app.example.com/
+    ```
+
+    If you chose an automated certificate, add `--insecure`, because ngrok can't issue your certificate until DNS points at it.
+  </Step>
+
+  <Step title="Cut over DNS">
+    1. A day ahead, lower the TTL on your domain's current DNS record so the change propagates quickly.
+    2. Replace the record with a CNAME that points to `$CNAME_TARGET`.
+       For an apex domain such as `example.com`, use an ALIAS, ANAME, or flattened CNAME record instead, as described in [apex domains](/gateway/domains/custom-domains#apex-domains).
+    3. Confirm requests arrive in [Traffic Inspector](https://dashboard.ngrok.com/traffic-inspector).
+
+    If you run [ExternalDNS](https://github.com/kubernetes-sigs/external-dns), it can publish the ngrok `Ingress`'s address as soon as the Operator sets it.
+    Limit ExternalDNS to the `nginx` ingress class (for example, `--ingress-class=nginx`) until you're ready to cut over, or let it make the DNS change for you at this step.
+  </Step>
+
+  <Step title="Switch to automated TLS">
+    If you uploaded a certificate, switch your domain to automated TLS certificates on the [**Domains**](https://dashboard.ngrok.com/domains) page as soon as DNS points at ngrok.
+    ngrok keeps serving your uploaded certificate until the automated one is ready, so clients don't notice the change.
+
+    Afterward, delete the uploaded certificate from the [**TLS Certificates**](https://dashboard.ngrok.com/tls-certs) page.
+    An uploaded certificate costs $0.27 per domain per active hour, and ngrok doesn't renew it for you.
+    See [TLS certificates pricing](/gateway/domains/tls-certificates#tls-certificates-pricing).
+  </Step>
+
+  <Step title="Remove ingress-nginx">
+    Once your old DNS record's TTL has passed and no traffic reaches ingress-nginx, delete the original `Ingress`:
+
+    ```bash
+    kubectl delete ingress my-app -n default
+    ```
+
+    When no `Ingress` uses the `nginx` class anymore, uninstall ingress-nginx.
+    If you installed it with Helm, run `helm uninstall ingress-nginx --namespace ingress-nginx`.
+  </Step>
+</Steps>
+
+## Map ingress-nginx annotations to ngrok
+
+The ngrok Operator doesn't read `nginx.ingress.kubernetes.io/*` annotations.
+Most of them map to [Traffic Policy](/gateway/traffic-policy/) actions, which you put in an `NgrokTrafficPolicy` resource and attach to your `Ingress` with the `ngrok.com/traffic-policy` annotation.
+The table omits the `nginx.ingress.kubernetes.io/` prefix.
+
+| ingress-nginx annotation | ngrok equivalent | Guide |
+| --- | --- | --- |
+| `kubernetes.io/ingress.class: nginx` | `spec.ingressClassName: ngrok` | [Using Ingresses](/gateway/k8s/guides/using-ingresses) |
+| `rewrite-target` | `url-rewrite` action | [Rewrite URL](/gateway/k8s/guides/how-to/rewrite-url) |
+| `permanent-redirect`, `temporal-redirect`, `app-root`, `from-to-www-redirect` | `redirect` action | [Redirects](/gateway/k8s/guides/how-to/redirects) |
+| `ssl-redirect`, `force-ssl-redirect` | Not needed for the `Ingress`, because its endpoints only serve HTTPS. To redirect plain HTTP, create a [`CloudEndpoint`](/gateway/k8s/crds/cloudendpoint) with an `http://` URL and a `redirect` action. | [Redirects](/gateway/k8s/guides/how-to/redirects) |
+| `limit-rps`, `limit-rpm` | `rate-limit` action with `bucket_key: [conn.client_ip]`. The shortest window is `60s`, so `limit-rps: "10"` becomes `capacity: 600` with `rate: 60s`. | [Rate limiting](/gateway/k8s/guides/how-to/rate-limiting) |
+| `auth-type: basic`, `auth-secret`, `auth-realm` | `basic-auth` action | [Basic auth](/gateway/k8s/guides/how-to/basic-auth) |
+| `auth-url`, `auth-signin` | No direct equivalent. Use the built-in `oauth`, `oidc`, or `jwt-validation` action. | [OAuth](/gateway/k8s/guides/how-to/oauth), [OIDC](/gateway/k8s/guides/how-to/oidc), [JWT validation](/gateway/k8s/guides/how-to/jwt-validation) |
+| `whitelist-source-range`, `denylist-source-range` | `restrict-ips` action | [Restrict IPs](/gateway/k8s/guides/how-to/restrict-ips) |
+| `custom-headers`, `x-forwarded-prefix`, header changes in `configuration-snippet` | `add-headers` and `remove-headers` actions | [Manipulate headers](/gateway/k8s/guides/how-to/manipulate-headers) |
+| `auth-tls-secret`, `auth-tls-verify-client` | `terminate-tls` action with `mutual_tls_certificate_authorities` | [Terminate TLS](/gateway/k8s/guides/how-to/terminate-tls) |
+| `backend-protocol: "HTTPS"` | `ngrok.com/app-protocols` annotation on the `Service` | [Ingress HTTPS upstreams](/gateway/k8s/guides/using-ingresses#ingress-https-upstreams) |
+| `proxy-ssl-secret`, `proxy-ssl-verify` | Upstream TLS or mutual TLS | [Upstream TLS](/gateway/k8s/guides/how-to/upstream-tls) |
+| `ssl-passthrough` | TLS endpoint that forwards without terminating | [TLS routing](/gateway/k8s/guides/how-to/tls-routing) |
+| `canary`, `canary-weight`, `canary-by-header` | Traffic Policy rules that forward to internal endpoints | [Canary deployments](/gateway/examples/canary-deployments) |
+| `enable-modsecurity`, `enable-owasp-core-rules` | `owasp-crs-request` and `owasp-crs-response` actions | [OWASP CRS request action](/gateway/traffic-policy/actions/owasp-crs-request) |
+| `use-regex` | The Operator treats `ImplementationSpecific` paths as `Prefix`. Use `Prefix` or `Exact` paths, or match with a regular expression in a rule's `expressions`. | [Expressions](/gateway/traffic-policy/concepts/expressions) |
+| `server-alias` | Add a `rules[].host` entry for each hostname | [Using Ingresses](/gateway/k8s/guides/using-ingresses) |
+
+Annotations that tune NGINX itself, such as timeouts, buffer sizes, and `server-snippet`, have no one-to-one equivalent.
+Review what each one does for your app before you cut over.
+
+### Example: IP allowlist and rate limit
+
+This ingress-nginx `Ingress` allows one IP range and limits each client to 60 requests per minute:
+
+```yaml
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/whitelist-source-range: "203.0.113.0/24"
+    nginx.ingress.kubernetes.io/limit-rpm: "60"
+```
+
+The ngrok version puts both behaviors in one `NgrokTrafficPolicy` and attaches it to the parallel `Ingress`:
+
+```yaml title="ngrok-ingress.yaml"
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: NgrokTrafficPolicy
+metadata:
+  name: my-app-policy
+  namespace: default
+spec:
+  policy:
+    on_tcp_connect:
+      - actions:
+          - type: restrict-ips
+            config:
+              enforce: true
+              allow:
+                - 203.0.113.0/24
+    on_http_request:
+      - actions:
+          - type: rate-limit
+            config:
+              name: 60 requests per minute per client
+              algorithm: sliding_window
+              capacity: 60
+              rate: 60s
+              bucket_key:
+                - conn.client_ip
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-app-ngrok
+  namespace: default
+  annotations:
+    ngrok.com/traffic-policy: my-app-policy
+spec:
+  ingressClassName: ngrok
+  rules:
+    - host: app.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: my-app
+                port:
+                  number: 80
+```
+
+<Note>
+  The `ngrok.com/traffic-policy` annotation applies to every request for the `Ingress`'s hostnames, and every `Ingress` that shares a hostname must use the same policy.
+  If you split paths across several ingress-nginx `Ingress` resources to give them different annotations, add `expressions` such as `req.url.path.startsWith('/api')` to the policy's rules instead.
+  See [using `NgrokTrafficPolicy` with `Ingress`](/gateway/k8s/guides/using-ingresses#using-ngroktrafficpolicy-with-ingress).
+</Note>
+
+<Note>
+  Operator versions before 0.22 (Helm chart 0.24) read the older `k8s.ngrok.com/` annotation prefix.
+  Newer versions accept both prefixes but prefer `ngrok.com/`.
+</Note>
+
+## Use Gateway API instead
+
+The ngrok Operator also implements [Gateway API](/getting-started/kubernetes/gateway-api), the Kubernetes successor to `Ingress`.
+If you'd rather move off `Ingress` during this migration, [ingress2gateway](https://github.com/kubernetes-sigs/ingress2gateway) can convert your ingress-nginx resources with `ingress2gateway print --providers=ingress-nginx`.
+Set `gatewayClassName: ngrok` on the generated `Gateway` and review the warnings for annotations it couldn't translate.
+The domain, DNS, and TLS steps in this guide stay the same.
+See [using Gateway API](/gateway/k8s/guides/using-gwapi) for how the Operator handles these resources.
