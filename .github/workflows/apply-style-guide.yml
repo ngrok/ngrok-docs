@@ -75,6 +75,16 @@ jobs:
             echo "has_files=false" >> $GITHUB_OUTPUT
           fi
 
+      # Read the style guide from the base branch, since PR branches can predate
+      # its latest rules. Like the file list, it is never committed.
+      - name: Fetch base style guide
+        if: steps.changed-files.outputs.has_files == 'true'
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          git fetch --depth=1 origin "$BASE_REF"
+          git show FETCH_HEAD:style-guide.mdx > .style-guide.mdx
+
       - name: Apply style guide with Claude
         if: steps.changed-files.outputs.has_files == 'true'
         uses: anthropics/claude-code-action@cab360f6565aa35a51d6ce9e43f1f4287c0a32ea # v1.0.241
@@ -90,17 +100,19 @@ jobs:
           prompt: |
             You are editing the prose of an ngrok documentation pull request so it follows the repo's style guide.
 
-            1. Read `style-guide.mdx` in full. It is the source of truth.
+            1. Read `.style-guide.mdx` in full. It is the current style guide from the base branch. It is the source of truth.
             2. Read `.style-guide-files.txt`. It lists the files this PR changed, one per line.
             3. Edit each listed file so its prose follows the style guide.
 
             Rules:
-            - Edit only the files listed in `.style-guide-files.txt`. Never edit `style-guide.mdx` or `.style-guide-files.txt`.
+            - Edit only the files listed in `.style-guide-files.txt`. Never edit `style-guide.mdx`, `.style-guide.mdx`, or `.style-guide-files.txt`.
             - Change prose only. Leave code blocks, inline code, frontmatter keys, import statements, JSX component names and props, URLs, and link targets as they are.
             - The frontmatter `title` and `description` values are prose, so apply the style guide to them too. The `title` must use title case, as the "Titles and headings" section requires, even when other pages in the same section don't.
             - Keep the technical meaning exactly the same. If a fix would change what the docs say, skip it.
             - Make the smallest edit that fixes each issue. Don't rewrite text that already follows the guide.
             - Put each sentence on its own line, as the style guide requires.
+            - Convert sequential instructions to the `<Steps>` and `<Step>` components, as the "Listing steps" section requires. This is the one structural change you make. It covers numbered headings such as `## 1. Install the agent` and top-level numbered Markdown lists of steps. Drop the number from each step title, and set `titleSize` to the level of the headings being replaced (`h2` for `##`, `h3` for `###`). Indent each step's content inside its `<Step>`, including code blocks, without changing the code. A short numbered list inside a step can stay as a list. Don't touch numbered lists that aren't instructions, such as ranked items.
+            - Step titles get anchors without the number, so update links in the same file from `#1-install-the-agent` to `#install-the-agent`.
 
       - name: Commit and push changes
         # Runs even if the Claude step failed (e.g. hit the turn cap), so finished edits aren't lost.
