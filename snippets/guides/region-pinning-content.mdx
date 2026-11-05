@@ -31,7 +31,8 @@ You can do this through the API or the dashboard, both of which are described be
 The `resolves_to` property tells your domain how to resolve requests.
 You can specify a list of ngrok physical PoPs (like "Frankfurt" or "California"), [dedicated IPs](/gateway/domains/dedicated-ips/), or both.
 
-The following sections describe how to create, update, and un-pin a domain.
+The following sections describe how to create and update a pinned domain.
+To remove pinning, see [Unpin a domain](#unpin-a-domain).
 
 #### Create a pinned domain
 
@@ -86,24 +87,6 @@ curl --request PATCH \
   }'
 ```
 
-#### Un-pin a domain
-
-You can "un-pin" a domain. Removing Regional Resolution settings restores the domain to its *default* IP resolution behavior: [global load balancing](https://ngrok.com/docs/domains/global-load-balancer) across *all* ngrok points of presence.
-
-Use `PATCH` to [remove the list of pinned regions](/api-reference/reserveddomains/update), by setting the `resolves_to` property to an empty list.
-
-```json
-# Revert to Global Routing
-curl --request PATCH \
- --url https://api.ngrok.com/reserved_domains/{id}  \
- --header "Authorization: Bearer <token>" \
- --header "Content-Type: application/json" \
- --header "ngrok-version: 2" \
- --data '{
-   "resolves_to": [] 
- }'  
-```
-
 #### API error handling
 
 If a request contains invalid syntax or an invalid region code, the API request fails.
@@ -123,13 +106,54 @@ Content-Type: application/json; charset=utf-8
 
 ### Using the dashboard
 
-You can also make these changes through the [ngrok dashboard](https://dashboard.ngrok.com/domains). 
+You can also make these changes through the [ngrok dashboard](https://dashboard.ngrok.com/domains).
 
-To configure your Region Resolution targets: 
+To configure your Region Resolution targets:
 
 1. View [your existing domains in the dashboard](https://dashboard.ngrok.com/domains), or create a new one.
-2. Click the domain you wish to modify. 
-3. Enter a comma-separated list of PoPs, region aliases that cover multiple PoPs, or both.
+2. Click the domain you wish to modify.
+3. Under **Region & IP resolution**, open the **Resolves to** menu and select the PoPs, region aliases, or both that the domain can use.
+4. Click **Save**.
+
+## Unpin a domain
+
+Unpinning a domain removes its Region Resolution settings and restores the default behavior: [global load balancing](/gateway/domains/global-load-balancer/) across all ngrok points of presence.
+You don't need to change any DNS records, and the domain keeps its CNAME target.
+
+### Using the dashboard
+
+1. View [your domains in the dashboard](https://dashboard.ngrok.com/domains) and click the pinned domain.
+2. Under **Region & IP resolution**, open the **Resolves to** menu and select **global**.
+   Selecting **global** removes the individual PoPs from the list.
+3. Click **Save**.
+
+### Using the API
+
+Use `PATCH` to [update the domain](/api-reference/reserveddomains/update), and set the `resolves_to` property to an empty list.
+
+```bash
+curl --request PATCH \
+ --url https://api.ngrok.com/reserved_domains/{domain_id} \
+ --header "Authorization: Bearer <token>" \
+ --header "Content-Type: application/json" \
+ --header "ngrok-version: 2" \
+ --data '{
+   "resolves_to": []
+ }'
+```
+
+Setting `resolves_to` to `[{ "value": "global" }]` has the same effect.
+If the list includes `global` alongside other PoPs, `global` takes precedence and the domain is unpinned.
+
+If you leave `resolves_to` out of an update request, the domain's pinning doesn't change.
+
+### Using the ngrok CLI
+
+Pass an empty list to the `--resolves-to` flag of [`ngrok api reserved-domains update`](/gateway/agent/cli-api/#ngrok-api-reserved-domains-update):
+
+```bash
+ngrok api reserved-domains update {domain_id} --resolves-to '[]'
+```
 
 ## Dedicated IPs (preview)
 <Warning>
@@ -175,6 +199,11 @@ Slightly different answer for each sub-feature:
 
 Nothing. That is, it uses the standard domain behavior: global load balancing, which automatically routes traffic to the best point of presence for that end-user. 
 This is the baseline behavior for domains, and is used by the vast majority of customers. 
+
+### How do I remove region pinning from a domain?
+
+Set the domain's `resolves_to` list to empty, or select **global** in the dashboard.
+See [Unpin a domain](#unpin-a-domain) for the steps.
 
 ### Is it necessary to specify every region manually?
 

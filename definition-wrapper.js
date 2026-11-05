@@ -3,7 +3,7 @@ const terms = [
 	{
 		titles: ["Agent Endpoint"],
 		meaning:
-			"An Agent Endpoint is an ngrok endpoint created by an ngrok agent (or Agent SDK) that connects to an upstream service. The agent establishes a secure tunnel to the ngrok cloud, which forwards traffic to your local or remote service.",
+			"An Agent Endpoint is an ngrok endpoint created by an ngrok agent (or SDK) that connects to an upstream service. The agent establishes a secure tunnel to the ngrok cloud, which forwards traffic to your local or remote service.",
 		link: "/docs/endpoints/agent-endpoints/",
 		pluralEnding: "s",
 	},
@@ -74,7 +74,7 @@ const terms = [
 	{
 		titles: ["Device Gateway"],
 		meaning:
-			"A Device Gateway is a managed connectivity layer for reaching a fleet of remote devices — kiosks, IoT hardware, edge servers — without opening inbound ports or managing a VPN per device. ngrok's Device Gateway gives each device a secure outbound tunnel and a stable way to reach it.",
+			"A Device Gateway is a managed connectivity layer for reaching a fleet of remote devices—kiosks, IoT hardware, edge servers—without opening inbound ports or managing a VPN per device. ngrok's Device Gateway gives each device a secure outbound tunnel and a stable way to reach it.",
 		link: "/docs/gateway/device-gateway/overview/",
 	},
 	{
@@ -115,7 +115,7 @@ const terms = [
 	{
 		titles: ["Hybrid Cloud Connectivity"],
 		meaning:
-			"Hybrid cloud connectivity is networking between infrastructure that spans more than one environment — public cloud, private data center, or on-prem — so services in one location can securely reach services in another.",
+			"Hybrid cloud connectivity is networking between infrastructure that spans more than one environment—public cloud, private data center, or on-prem—so services in one location can securely reach services in another.",
 		link: "https://ngrok.com/use-cases/saas-customer-connectivity",
 	},
 	{
@@ -202,7 +202,7 @@ const terms = [
 	{
 		titles: ["LLM Router"],
 		meaning:
-			"An LLM Router is the decision layer inside an AI Gateway that picks which model or provider handles a given request — for example based on cost, latency, capability, or a failover rule when a provider is down.",
+			"An LLM Router is the decision layer inside an AI Gateway that picks which model or provider handles a given request—for example based on cost, latency, capability, or a failover rule when a provider is down.",
 		link: "/docs/ai-gateway/overview/",
 	},
 	{
@@ -270,7 +270,7 @@ const terms = [
 	{
 		titles: ["Reverse Tunnel", "reverse tunnel"],
 		meaning:
-			"A reverse tunnel is a connection initiated outbound from a private network to a public relay, which then forwards inbound traffic back through that same connection. It lets a service behind a firewall or NAT become reachable without opening inbound ports — the mechanism the ngrok agent uses to expose local services.",
+			"A reverse tunnel is a connection initiated outbound from a private network to a public relay, which then forwards inbound traffic back through that same connection. It lets a service behind a firewall or NAT become reachable without opening inbound ports—the mechanism the ngrok agent uses to expose local services.",
 		link: "https://en.wikipedia.org/wiki/Tunneling_protocol",
 		pluralEnding: "s",
 	},
@@ -304,7 +304,7 @@ const terms = [
 	{
 		titles: ["Site-to-Site VPN"],
 		meaning:
-			"A site-to-site VPN is an encrypted tunnel connecting two private networks — for example, a company's data center and a customer's on-prem network — so devices on either side can reach each other as if on the same LAN. It typically requires matching VPN appliances and firewall changes on both ends; ngrok's site-to-site connectivity reaches the same outcome without inbound firewall rules on either side.",
+			"A site-to-site VPN is an encrypted tunnel connecting two private networks—for example, a company's data center and a customer's on-prem network—so devices on either side can reach each other as if on the same LAN. It typically requires matching VPN appliances and firewall changes on both ends; ngrok's site-to-site connectivity reaches the same outcome without inbound firewall rules on either side.",
 		link: "/docs/gateway/site-to-site-connectivity/overview/",
 	},
 	{
@@ -402,12 +402,12 @@ const pricingTerms = [
 	{
 		titles: ["Online endpoints"],
 		meaning: "The number of endpoints you can have online at the same time.",
-		link: "/docs/endpoints/agent-endpoints/",
+		link: "/docs/gateway/endpoints/agent-endpoints/",
 	},
 	{
 		titles: ["Development endpoint hours"],
 		meaning:
-			"Public endpoints started with your development domain do not accrue endpoint hours.",
+			"Public endpoints started with your development domain don't accrue endpoint hours.",
 		link: "/docs/pricing-limits/#limits-and-licensing",
 	},
 	{
@@ -417,57 +417,56 @@ const pricingTerms = [
 	},
 	{
 		titles: ["Endpoint protocols"],
-		meaning:
-			"These are the different protocols available to you as a subscriber of each plan.",
-      link: "/docs/endpoints/agent-endpoints#protocols%2C-binding-and-pooling"
+		meaning: "The protocols available on each plan.",
+		link: "/docs/gateway/endpoints/agent-endpoints#protocols%2C-binding-and-pooling",
 	},
 	{
 		titles: ["Endpoint hours"],
-		meaning:
-			"The amount of time your endpoints are online.",
+		meaning: "The amount of time your endpoints are online.",
 	},
 	{
 		titles: ["Load balancing"],
 		meaning: "Load balancing at ngrok is called endpoint pooling.",
-    link: "/docs/endpoints/endpoint-pooling"
+		link: "/docs/gateway/endpoints/endpoint-pooling",
 	},
 	{
 		titles: ["Domains"],
-		meaning: "Domains you own registered in the ngrok dashboard.",
-		link: "/docs/domains/",
+		meaning: "Domains you own and register with ngrok.",
+		link: "/docs/gateway/domains/",
 	},
 	{
 		titles: ["Development domain"],
 		meaning:
-			"Your development domain is specific to your account, and does not incur usage charges. You can use anything for free on your sandbox domain within your account's limits.",
-		link: "/docs/domains/",
+			"Your development domain is specific to your account, and doesn't incur usage charges. Endpoints on it are free within your account's limits.",
+		link: "/docs/gateway/domains/",
 	},
 	{
 		titles: ["ngrok-branded domains"],
 		meaning: "Use any ngrok-branded domain that you pick from ngrok's pool.",
-		link: "/docs/domains/",
+		link: "/docs/gateway/domains/",
 	},
-  {
-    titles: ["Traffic Policy Units"],
-    meaning: "Traffic Processing Units (TPUs) are ngrok’s usage-based metric for measuring the work your Traffic Policies perform.",
-    link: "/docs/pricing-limits/traffic-policy-unit-pricing"
-  },
+	{
+		titles: ["Traffic Policy Units"],
+		meaning:
+			"Traffic Policy Units (TPUs) are ngrok's usage-based metric for measuring the work your Traffic Policies perform.",
+		link: "/docs/pricing-limits/traffic-policy-unit-pricing",
+	},
 	{
 		titles: ["Bring your own custom domains"],
 		meaning: "Use any custom domain name that you already own with ngrok.",
-		link: "/docs/domains/custom-domains/",
+		link: "/docs/gateway/domains/custom-domains/",
 	},
 	{
 		titles: ["Wildcard Domains"],
 		meaning:
-			"You can create an endpoint which will receive traffic for all of the subdomains matching a given wildcard domain like *.example.com.",
-		link: "/docs/endpoints/http/#wildcard-endpoints",
+			"You can create an endpoint that receives traffic for all of the subdomains matching a wildcard domain like `*.example.com`.",
+		link: "/docs/gateway/endpoints/http/#wildcard-endpoints",
 	},
 	{
 		titles: ["TCP Addresses"],
 		meaning:
 			"TCP Addresses enable you to create public TCP Endpoints on a fixed address.",
-		link: "/docs/domains/tcp-addresses/",
+		link: "/docs/gateway/domains/tcp-addresses/",
 	},
 	{
 		titles: ["Data transfer out"],
@@ -476,16 +475,16 @@ const pricingTerms = [
 		link: "/docs/pricing-limits/#limits-and-licensing",
 	},
 	{
-		titles: ["Requests to HTTP/s endpoints"],
+		titles: ["Requests to HTTP/S endpoints"],
 		meaning:
-			"The maximum number of HTTP/s requests a client can make to an account's endpoints in a month.",
-		link: "/docs/endpoints/http/",
+			"The maximum number of HTTP/S requests a client can make to an account's endpoints in a month.",
+		link: "/docs/gateway/endpoints/http/",
 	},
 	{
-		titles: ["Connections to TCP / TLS endpoints"],
+		titles: ["Connections to TCP/TLS endpoints"],
 		meaning:
 			"The maximum number of TCP/TLS connections a client can make to an account's endpoints in a month.",
-		link: "/docs/endpoints/tcp/",
+		link: "/docs/gateway/endpoints/tcp/",
 	},
 	{
 		titles: ["HTTP Requests"],
@@ -504,44 +503,44 @@ const pricingTerms = [
 		titles: ["Bring your own certificates"],
 		meaning:
 			"Upload your own TLS certificates if you don't want to use the TLS certificates that ngrok automatically provisions for you.",
-		link: "/docs/endpoints/tls/",
+		link: "/docs/gateway/endpoints/tls/",
 	},
 	{
-		titles: ["End to End TLS"],
+		titles: ["End-to-End TLS"],
 		meaning:
 			"Terminate TLS at your upstream service or at the ngrok agent to achieve end-to-end encryption.",
-		link: "/docs/domains/tls-termination/",
+		link: "/docs/gateway/domains/tls-termination/",
 	},
 	{
 		titles: ["Mutual TLS"],
 		meaning:
-			"Mutual TLS Authentication (mTLS) is a network security protocol that ensures both the client and server authenticate each other using digital certificates.",
-		link: "/docs/traffic-policy/",
+			"Mutual TLS (mTLS) is a protocol in which the client and server authenticate each other with certificates.",
+		link: "/docs/gateway/traffic-policy/",
 	},
 	// Traffic Policy
 	{
 		titles: ["Traffic Policy Units (TPUs)"],
 		meaning:
-			"This is a combination of the actions, macros, and variables applied to a request. WAF, mTLS, and more are included in TPUs.",
+			"The actions and variables applied to a request. Features such as WAF and mTLS consume TPUs.",
 		link: "/docs/pricing-limits/traffic-policy-unit-pricing/",
 	},
 	{
 		titles: ["Traffic Identities"],
 		meaning:
-			"OAuth/SAML/OIDC. This is calculated by the number of end users that authenticate into your app or service via the traffic policy action.",
-		link: "/docs/traffic-policy/",
+			"The number of end users who authenticate to your app or service through a Traffic Policy action, such as OAuth, SAML, or OIDC.",
+		link: "/docs/gateway/traffic-policy/",
 	},
 	// Traffic Observability
 	{
 		titles: ["Traffic Inspector Retention"],
 		meaning:
-			"This is the number of hours ngrok retains your traffic data in traffic inspector.",
+			"The number of hours ngrok retains your traffic data in Traffic Inspector.",
 		link: "/docs/obs/traffic-inspection",
 	},
 	{
 		titles: ["Traffic Log Exporting"],
 		meaning:
-			"Export event logs when traffic transits through your endpoints to S3, Datadog, Azure Logs, CloudWatch Logs + more.",
+			"Export event logs for traffic through your endpoints to S3, Datadog, Azure Logs, CloudWatch Logs, and more.",
 		link: "/docs/obs/",
 	},
 	// Secure Tunnels
@@ -549,52 +548,59 @@ const pricingTerms = [
 		titles: ["Concurrent Agents"],
 		meaning:
 			"The maximum number of ngrok agents that can be simultaneously connected to the ngrok cloud service under a single account.",
-		link: "/docs/agent/",
+		link: "/docs/gateway/agent/",
 	},
 	{
 		titles: ["Dedicated Agent Connect IPs"],
 		meaning: "Get a constant, dedicated IP for your account's agents.",
-		link: "/docs/agent/",
+		link: "/docs/gateway/agent/",
 	},
 	{
 		titles: ["Custom Agent Connect URLs"],
 		meaning: "Customize the URL that the agent connects to.",
-		link: "/docs/agent/",
+		link: "/docs/gateway/agent/",
 	},
 	{
 		titles: ["Remote Agent Update Operations"],
-		meaning: "Run ngrok in the background as a service.",
-		link: "/docs/agent/",
+		meaning:
+			"Remotely stop, restart, or update ngrok agents running as a service.",
+		link: "/docs/gateway/agent/",
 	},
 	// Identity & Access
 	{
 		titles: ["Users"],
-		meaning: "Members of your account that can view or create endpoints.",
+		meaning: "Members of your account who can view or create endpoints.",
 		link: "/docs/iam/users/",
 	},
 	{
 		titles: ["Service Users"],
 		meaning:
-			"Service users are accounts for automated systems that programmatically interact with your ngrok accounts either by starting ngrok Agents or making requests to the API.",
+			"Service users are accounts for automated systems that programmatically interact with your ngrok accounts by starting ngrok agents or making requests to the API.",
 		link: "/docs/iam/service-users/",
 	},
 	{
 		titles: ["SSO/RBAC"],
 		meaning:
-			"Federate auth to your Identity Provider (IdP) with SAML or OpenID Connect.",
+			"Federate authentication to your identity provider (IdP) with SAML or OpenID Connect.",
 		link: "/docs/iam/sso/",
 	},
 	{
 		titles: ["Identity and Access Governance Suite"],
 		meaning:
-			"SCIM, Domain Controls, Account-Wide IP Restrictions, Audit Logs.",
+			"Includes SCIM provisioning, account-wide IP restrictions, and audit logs.",
 		link: "/docs/iam/",
+	},
+	{
+		titles: ["Domain Controls"],
+		meaning:
+			"Claim ownership of an email domain and control which accounts users with that domain can create or join. Domain Controls aren't self-serve, so contact ngrok to enable them on your account.",
+		link: "/docs/iam/domain-controls/",
 	},
 	{
 		titles: ["Authtoken ACLs"],
 		meaning:
-			"Authtoken ACLs restrict what endpoints an ngrok agent can create when using that authtoken.",
-		link: "/docs/agent/config/",
+			"Authtoken ACLs restrict which endpoints an ngrok agent can create when using that authtoken.",
+		link: "/docs/gateway/agent/config/",
 	},
 	// Support
 	{
@@ -603,36 +609,37 @@ const pricingTerms = [
 	},
 	{
 		titles: ["Slack and MS Teams"],
-		meaning: "Dedicated channel with 24 hour response SLA.",
+		meaning:
+			"A dedicated Slack or Microsoft Teams channel with a 24-hour response SLA.",
 	},
 	{
 		titles: ["Dedicated On-Call"],
-		meaning: "Committed/Contractual Uptime SLA and Support SLA.",
+		meaning: "Contractual uptime and support SLAs.",
 	},
 	// Compliance
 	{
 		titles: ["Region-specific routing"],
 		meaning:
-			"Configure your domains to only route traffic through specific geographic regions.",
+			"Configure your domains to route traffic only through specific geographic regions.",
 	},
 	{
 		titles: ["HIPAA / BAAs"],
 		meaning:
-			"Self-serve Pay-as-you-go add-on: enable it from the dashboard billing page and sign the BAA yourself. Usage-based charges are billed at +50%.",
+			"Self-serve Pay-as-you-go add-on: enable it from the dashboard billing page and sign the BAA yourself. Usage-based charges cost 50% more.",
 	},
 	{
-		titles: ["SOC2"],
+		titles: ["SOC 2"],
 		meaning: "Independent verification that your data is secure.",
 	},
 	{
 		titles: ["Security questionnaires"],
 		meaning:
-			"If your team requires a security questionnaire, ngrok can prepare it.",
+			"If your team needs a security questionnaire, ngrok can prepare it.",
 	},
 	{
 		titles: ["Invoicing"],
 		meaning:
-			"If your team requires an invoice for billing purposes, ngrok can send it.",
+			"If your team needs an invoice for billing purposes, ngrok can send it.",
 	},
 ];
 

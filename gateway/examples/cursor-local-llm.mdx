@@ -26,90 +26,96 @@ ngrok gives your model a public URL that Cursor's servers can reach, and forward
 - The [ngrok agent](https://download.ngrok.com) installed
 - An [ngrok account](https://dashboard.ngrok.com/signup) and your [authtoken](https://dashboard.ngrok.com/get-started/your-authtoken)
 
-## 1. Create a Traffic Policy that requires a token
+<Steps titleSize="h2">
+  <Step title="Create a Traffic Policy that requires a token">
 
-Your URL is public, so anyone who finds it could use your GPU.
-Cursor sends its **API key** as a bearer token, so require one.
+    Your URL is public, so anyone who finds it could use your GPU.
+    Cursor sends its **API key** as a bearer token, so require one.
 
-Generate a token:
-
-```bash
-openssl rand -hex 32
-```
-
-Save this as `policy.yaml`, replacing `YOUR_TOKEN` with the value you generated:
-
-```yaml
-on_http_request:
-  - expressions:
-      - "!hasReqHeader('Authorization') || getReqHeader('Authorization')[0] != 'Bearer YOUR_TOKEN'"
-    actions:
-      - type: deny
-        config:
-          status_code: 401
-  - actions:
-      - type: add-headers
-        config:
-          headers:
-            host: localhost
-```
-
-The first rule rejects requests without your token before they reach your machine.
-The second rewrites the `Host` header, because Ollama rejects requests addressed to other hostnames.
-
-## 2. Put your model online
-
-<Tabs>
-  <Tab title="Ollama">
-    ```bash
-    ngrok config add-authtoken <YOUR_AUTHTOKEN>
-    ngrok http 11434 --traffic-policy-file policy.yaml
-    ```
-  </Tab>
-  <Tab title="LM Studio">
-    Start the server in LM Studio's **Developer** tab, then:
+    Generate a token:
 
     ```bash
-    ngrok config add-authtoken <YOUR_AUTHTOKEN>
-    ngrok http 1234 --traffic-policy-file policy.yaml
-    ```
-  </Tab>
-</Tabs>
-
-ngrok prints your public URL, such as `https://your-assigned-name.ngrok-free.dev`.
-This is your account's [dev domain](/pricing-limits/free-plan-limits/), and it stays the same every time you restart, so you only configure Cursor once.
-
-Check it from another terminal:
-
-```bash
-curl https://your-assigned-name.ngrok-free.dev/v1/models \
-  -H "Authorization: Bearer YOUR_TOKEN"
-```
-
-You should see your models.
-Note the exact model ID, such as `qwen2.5-coder:latest`; you need it in the next step.
-
-## 3. Add the model to Cursor
-
-1. Open **Cursor Settings** > **Models**.
-1. Under **API Keys**, turn on **OpenAI API Key** and paste `YOUR_TOKEN` as the key.
-1. Turn on **Override OpenAI Base URL** and enter your ngrok URL plus `/v1`:
-
-    ```text
-    https://your-assigned-name.ngrok-free.dev/v1
+    openssl rand -hex 32
     ```
 
-1. Click **Add model** and enter the model ID exactly as `/v1/models` returned it.
-1. Turn off other models while you test, so Cursor doesn't fall back to a hosted one.
-1. Click **Verify**.
+    Save this as `policy.yaml`, replacing `YOUR_TOKEN` with the value you generated:
 
-Open a chat, pick your model, and send a prompt.
+    ```yaml
+    on_http_request:
+      - expressions:
+          - "!hasReqHeader('Authorization') || getReqHeader('Authorization')[0] != 'Bearer YOUR_TOKEN'"
+        actions:
+          - type: deny
+            config:
+              status_code: 401
+      - actions:
+          - type: add-headers
+            config:
+              headers:
+                host: localhost
+    ```
 
-## 4. Watch the traffic
+    The first rule rejects requests without your token before they reach your machine.
+    The second rewrites the `Host` header, because Ollama rejects requests addressed to other hostnames.
+  </Step>
 
-Open `http://localhost:4040` while you chat.
-The ngrok inspector shows each request Cursor sends and each response your model returns.
-If chat hangs, check here first: you see whether the request arrived, whether ngrok rejected it, and what your model sent back.
+  <Step title="Put your model online">
+
+    <Tabs>
+      <Tab title="Ollama">
+        ```bash
+        ngrok config add-authtoken <YOUR_AUTHTOKEN>
+        ngrok http 11434 --traffic-policy-file policy.yaml
+        ```
+      </Tab>
+      <Tab title="LM Studio">
+        Start the server in LM Studio's **Developer** tab, then:
+
+        ```bash
+        ngrok config add-authtoken <YOUR_AUTHTOKEN>
+        ngrok http 1234 --traffic-policy-file policy.yaml
+        ```
+      </Tab>
+    </Tabs>
+
+    ngrok prints your public URL, such as `https://your-assigned-name.ngrok-free.dev`.
+    This is your account's [dev domain](/pricing-limits/free-plan-limits/), and it stays the same every time you restart, so you only configure Cursor once.
+
+    Check it from another terminal:
+
+    ```bash
+    curl https://your-assigned-name.ngrok-free.dev/v1/models \
+      -H "Authorization: Bearer YOUR_TOKEN"
+    ```
+
+    You should see your models.
+    Note the exact model ID, such as `qwen2.5-coder:latest`; you need it in the next step.
+  </Step>
+
+  <Step title="Add the model to Cursor">
+
+    1. Open **Cursor Settings** > **Models**.
+    1. Under **API Keys**, turn on **OpenAI API Key** and paste `YOUR_TOKEN` as the key.
+    1. Turn on **Override OpenAI Base URL** and enter your ngrok URL plus `/v1`:
+
+        ```text
+        https://your-assigned-name.ngrok-free.dev/v1
+        ```
+
+    1. Click **Add model** and enter the model ID exactly as `/v1/models` returned it.
+    1. Turn off other models while you test, so Cursor doesn't fall back to a hosted one.
+    1. Click **Verify**.
+
+    Open a chat, pick your model, and send a prompt.
+  </Step>
+
+  <Step title="Watch the traffic">
+
+    Open `http://localhost:4040` while you chat.
+    The ngrok inspector shows each request Cursor sends and each response your model returns.
+    If chat hangs, check here first: you see whether the request arrived, whether ngrok rejected it, and what your model sent back.
+  </Step>
+</Steps>
 
 ## What works with a local model
 

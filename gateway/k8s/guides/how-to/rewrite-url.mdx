@@ -18,7 +18,7 @@ By rewriting URLs at the network edge, you can:
 
 URL rewriting is an essential feature for API gateways, load balancers, and proxy servers, allowing for seamless request transformation before traffic reaches the backend.
 
-Key Benefits:
+Key benefits:
 
 - **Enable Backward Compatibility:** Allow older clients to use new API paths without breaking compatibility.
 - **Simplify Microservices Routing:** Adjust URLs dynamically when forwarding requests to multiple backend services.
@@ -31,9 +31,10 @@ Key Benefits:
 
 ## Rewrite full path
 
-The following examples showcase how to create an endpoint that rewrites requests. The hostname, scheme, and port are kept the same, but the entire path of the request is changed.
-- Requests to `https://example-hostname.ngrok.app/example` will be rewritten to `https://example-hostname.ngrok.app/rewrite`
-- Requests to `https://example-hostname.ngrok.app/example/foo` will be rewritten to `https://example-hostname.ngrok.app/rewrite`
+The following examples showcase how to create an endpoint that rewrites requests.
+The hostname, scheme, and port are kept the same, but the entire path of the request is changed.
+- Requests to `https://example-hostname.ngrok.app/example` are rewritten to `https://example-hostname.ngrok.app/rewrite`
+- Requests to `https://example-hostname.ngrok.app/example/foo` are rewritten to `https://example-hostname.ngrok.app/rewrite`
 
 <Tabs>
 <Tab title="AgentEndpoint">
@@ -82,114 +83,123 @@ spec:
 💡 Ingress resources do not have native URL rewriting capabilities, but they can be extended using a Traffic Policy.
 Check out the [URL rewrite Traffic Policy action](/gateway/traffic-policy/actions/url-rewrite/) page for more details about how it functions and the parameters it accepts.
 
-### 1. Create an `NgrokTrafficPolicy`
+<Steps titleSize="h3">
+  <Step title="Create an NgrokTrafficPolicy">
 
-```yaml
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-kind: NgrokTrafficPolicy
-metadata:
-  name: example-tp
-  namespace: default
-spec:
-  policy:
-    on_http_request:
-      - actions:
-          - type: url-rewrite
-            config:
-              from: /.*
-              to: /rewrite
-```
+    ```yaml
+    apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+    kind: NgrokTrafficPolicy
+    metadata:
+      name: example-tp
+      namespace: default
+    spec:
+      policy:
+        on_http_request:
+          - actions:
+              - type: url-rewrite
+                config:
+                  from: /.*
+                  to: /rewrite
+    ```
+  </Step>
 
-### 2. Use the `NgrokTrafficPolicy` on an `Ingress`
+  <Step title="Use the NgrokTrafficPolicy on an Ingress">
 
-```yaml
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  annotations:
-    k8s.ngrok.com/traffic-policy: example-tp
-  name: example-ingress
-  namespace: default
-spec:
-  ingressClassName: ngrok
-  rules:
-    - host: example-hostname.ngrok.app
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: example-service
-                port:
-                  number: 80
-```
+    ```yaml
+    apiVersion: networking.k8s.io/v1
+    kind: Ingress
+    metadata:
+      annotations:
+        k8s.ngrok.com/traffic-policy: example-tp
+      name: example-ingress
+      namespace: default
+    spec:
+      ingressClassName: ngrok
+      rules:
+        - host: example-hostname.ngrok.app
+          http:
+            paths:
+              - path: /
+                pathType: Prefix
+                backend:
+                  service:
+                    name: example-service
+                    port:
+                      number: 80
+    ```
+  </Step>
+</Steps>
 </Tab>
 <Tab title="Gateway API">
 ✅ Gateway API natively supports URL rewriting, and this feature is fully supported by the ngrok Kubernetes Operator.
 
-### 1. Create a `Gateway`
+<Steps titleSize="h3">
+  <Step title="Create a Gateway">
 
-If you already have a `Gateway` you can use that instead
+    If you already have a `Gateway` you can use that instead
 
-```yaml
-apiVersion: gateway.networking.k8s.io/v1
-kind: Gateway
-metadata:
-  name: example-gateway
-  namespace: default
-spec:
-  gatewayClassName: ngrok
-  listeners:
-    - name: example
-      hostname: "example-hostname.ngrok.app"
-      port: 443
-      protocol: HTTPS
-```
-
-### 2. Create an `HTTPRoute` with a URLRewrite Filter
-
-```yaml
-apiVersion: gateway.networking.k8s.io/v1
-kind: HTTPRoute
-metadata:
-  name: example-route
-  namespace: default
-spec:
-  hostnames:
-  - example-hostname.ngrok.app
-  parentRefs:
-  - group: gateway.networking.k8s.io
+    ```yaml
+    apiVersion: gateway.networking.k8s.io/v1
     kind: Gateway
-    name: example-gateway
-    namespace: default
-  rules:
-  - matches:
-    - path:
-        type: PathPrefix
-        value: /example
-    backendRefs:
-      - group: ""
-        kind: Service
-        name: example-service
-        port: 443
-        weight: 1
-    filters:
-    - type: URLRewrite
-      urlRewrite:
-        path: 
-          type: ReplaceFullPath
-          replaceFullPath: "/rewrite"
-```
+    metadata:
+      name: example-gateway
+      namespace: default
+    spec:
+      gatewayClassName: ngrok
+      listeners:
+        - name: example
+          hostname: "example-hostname.ngrok.app"
+          port: 443
+          protocol: HTTPS
+    ```
+  </Step>
+
+  <Step title="Create an HTTPRoute with a URLRewrite Filter">
+
+    ```yaml
+    apiVersion: gateway.networking.k8s.io/v1
+    kind: HTTPRoute
+    metadata:
+      name: example-route
+      namespace: default
+    spec:
+      hostnames:
+      - example-hostname.ngrok.app
+      parentRefs:
+      - group: gateway.networking.k8s.io
+        kind: Gateway
+        name: example-gateway
+        namespace: default
+      rules:
+      - matches:
+        - path:
+            type: PathPrefix
+            value: /example
+        backendRefs:
+          - group: ""
+            kind: Service
+            name: example-service
+            port: 443
+            weight: 1
+        filters:
+        - type: URLRewrite
+          urlRewrite:
+            path: 
+              type: ReplaceFullPath
+              replaceFullPath: "/rewrite"
+    ```
+  </Step>
+</Steps>
 </Tab>
 </Tabs>
 
 
 ## Rewrite path prefix
 
-The following examples showcase how to create an endpoint that rewrites requests. The hostname, scheme, and port are kept the same, but only the prefix is changed.
-- Requests to `https://example-hostname.ngrok.app/example` will be rewritten to `https://example-hostname.ngrok.app/rewrite`
-- Requests to `https://example-hostname.ngrok.app/example/foo` will be rewritten to `https://example-hostname.ngrok.app/rewrite/foo`
+The following examples showcase how to create an endpoint that rewrites requests.
+The hostname, scheme, and port are kept the same, but only the prefix is changed.
+- Requests to `https://example-hostname.ngrok.app/example` are rewritten to `https://example-hostname.ngrok.app/rewrite`
+- Requests to `https://example-hostname.ngrok.app/example/foo` are rewritten to `https://example-hostname.ngrok.app/rewrite/foo`
 
 <Tabs>
 <Tab title="AgentEndpoint">
@@ -238,107 +248,116 @@ spec:
 💡 Ingress resources do not have native URL rewriting capabilities, but they can be extended using a Traffic Policy.
 Check out the [URL rewrite Traffic Policy action](/gateway/traffic-policy/actions/url-rewrite/) page for more details about how it functions and the parameters it accepts.
 
-### 1. Create an `NgrokTrafficPolicy`
+<Steps titleSize="h3">
+  <Step title="Create an NgrokTrafficPolicy">
 
-```yaml
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-kind: NgrokTrafficPolicy
-metadata:
-  name: example-tp
-  namespace: default
-spec:
-  policy:
-    on_http_request:
-      - actions:
-          - type: url-rewrite
-            config:
-              from: /example(.*)
-              to: /rewrite$1
-```
+    ```yaml
+    apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+    kind: NgrokTrafficPolicy
+    metadata:
+      name: example-tp
+      namespace: default
+    spec:
+      policy:
+        on_http_request:
+          - actions:
+              - type: url-rewrite
+                config:
+                  from: /example(.*)
+                  to: /rewrite$1
+    ```
+  </Step>
 
-### 2. Use the `NgrokTrafficPolicy` on an `Ingress`
+  <Step title="Use the NgrokTrafficPolicy on an Ingress">
 
-```yaml
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  annotations:
-    k8s.ngrok.com/traffic-policy: example-tp
-  name: example-ingress
-  namespace: default
-spec:
-  ingressClassName: ngrok
-  rules:
-    - host: example-hostname.ngrok.app
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: example-service
-                port:
-                  number: 80
-```
+    ```yaml
+    apiVersion: networking.k8s.io/v1
+    kind: Ingress
+    metadata:
+      annotations:
+        k8s.ngrok.com/traffic-policy: example-tp
+      name: example-ingress
+      namespace: default
+    spec:
+      ingressClassName: ngrok
+      rules:
+        - host: example-hostname.ngrok.app
+          http:
+            paths:
+              - path: /
+                pathType: Prefix
+                backend:
+                  service:
+                    name: example-service
+                    port:
+                      number: 80
+    ```
+  </Step>
+</Steps>
 </Tab>
 <Tab title="Gateway API">
 ✅ Gateway API natively supports URL rewriting, and this feature is fully supported by the ngrok Kubernetes Operator.
 
-### 1. Create a `Gateway`
+<Steps titleSize="h3">
+  <Step title="Create a Gateway">
 
-If you already have a `Gateway` you can use that instead
+    If you already have a `Gateway` you can use that instead
 
-```yaml
-apiVersion: gateway.networking.k8s.io/v1
-kind: Gateway
-metadata:
-  name: example-gateway
-  namespace: default
-spec:
-  gatewayClassName: ngrok
-  listeners:
-    - name: example
-      hostname: "example-hostname.ngrok.app"
-      port: 443
-      protocol: HTTPS
-```
-
-### 2. Create an `HTTPRoute` with a URLRewrite Filter
-
-```yaml
-apiVersion: gateway.networking.k8s.io/v1
-kind: HTTPRoute
-metadata:
-  name: example-route
-  namespace: default
-spec:
-  hostnames:
-  - example-hostname.ngrok.app
-  parentRefs:
-  - group: gateway.networking.k8s.io
+    ```yaml
+    apiVersion: gateway.networking.k8s.io/v1
     kind: Gateway
-    name: example-gateway
-    namespace: default
-  rules:
-  - matches:
-    - path:
-        type: PathPrefix
-        value: /example
-    filters:
-    - type: URLRewrite
-      urlRewrite:
-        path: 
-          type: ReplacePrefixMatch
-          replacePrefixMatch: "/rewrite"
-```
+    metadata:
+      name: example-gateway
+      namespace: default
+    spec:
+      gatewayClassName: ngrok
+      listeners:
+        - name: example
+          hostname: "example-hostname.ngrok.app"
+          port: 443
+          protocol: HTTPS
+    ```
+  </Step>
+
+  <Step title="Create an HTTPRoute with a URLRewrite Filter">
+
+    ```yaml
+    apiVersion: gateway.networking.k8s.io/v1
+    kind: HTTPRoute
+    metadata:
+      name: example-route
+      namespace: default
+    spec:
+      hostnames:
+      - example-hostname.ngrok.app
+      parentRefs:
+      - group: gateway.networking.k8s.io
+        kind: Gateway
+        name: example-gateway
+        namespace: default
+      rules:
+      - matches:
+        - path:
+            type: PathPrefix
+            value: /example
+        filters:
+        - type: URLRewrite
+          urlRewrite:
+            path: 
+              type: ReplacePrefixMatch
+              replacePrefixMatch: "/rewrite"
+    ```
+  </Step>
+</Steps>
 </Tab>
 </Tabs>
 
 
 ## Rewrite port
 
-The following examples showcase how to create an endpoint that rewrites requests. The hostname, scheme, and path are kept the same, but only the port is changed.
-- Requests to `https://example-hostname.ngrok.app:8080` will be rewritten to `https://example-hostname.ngrok.app:9000`
+The following examples showcase how to create an endpoint that rewrites requests.
+The hostname, scheme, and path are kept the same, but only the port is changed.
+- Requests to `https://example-hostname.ngrok.app:8080` are rewritten to `https://example-hostname.ngrok.app:9000`
 
 <Tabs>
 <Tab title="AgentEndpoint">
@@ -387,105 +406,114 @@ spec:
 💡 Ingress resources do not have native URL rewriting capabilities, but they can be extended using a Traffic Policy.
 Check out the [URL rewrite Traffic Policy action](/gateway/traffic-policy/actions/url-rewrite/) page for more details about how it functions and the parameters it accepts.
 
-### 1. Create an `NgrokTrafficPolicy`
+<Steps titleSize="h3">
+  <Step title="Create an NgrokTrafficPolicy">
 
-```yaml
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-kind: NgrokTrafficPolicy
-metadata:
-  name: example-tp
-  namespace: default
-spec:
-  policy:
-    on_http_request:
-      - actions:
-          - type: url-rewrite
-            config:
-              from: :8080
-              to: :9090
-```
+    ```yaml
+    apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+    kind: NgrokTrafficPolicy
+    metadata:
+      name: example-tp
+      namespace: default
+    spec:
+      policy:
+        on_http_request:
+          - actions:
+              - type: url-rewrite
+                config:
+                  from: :8080
+                  to: :9090
+    ```
+  </Step>
 
-### 2. Use the `NgrokTrafficPolicy` on an `Ingress`
+  <Step title="Use the NgrokTrafficPolicy on an Ingress">
 
-```yaml
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  annotations:
-    k8s.ngrok.com/traffic-policy: example-tp
-  name: example-ingress
-  namespace: default
-spec:
-  ingressClassName: ngrok
-  rules:
-    - host: example-hostname.ngrok.app
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: example-service
-                port:
-                  number: 80
-```
+    ```yaml
+    apiVersion: networking.k8s.io/v1
+    kind: Ingress
+    metadata:
+      annotations:
+        k8s.ngrok.com/traffic-policy: example-tp
+      name: example-ingress
+      namespace: default
+    spec:
+      ingressClassName: ngrok
+      rules:
+        - host: example-hostname.ngrok.app
+          http:
+            paths:
+              - path: /
+                pathType: Prefix
+                backend:
+                  service:
+                    name: example-service
+                    port:
+                      number: 80
+    ```
+  </Step>
+</Steps>
 </Tab>
 <Tab title="Gateway API">
 ✅ Gateway API natively supports URL rewriting, and this feature is fully supported by the ngrok Kubernetes Operator.
 
-### 1. Create a `Gateway`
+<Steps titleSize="h3">
+  <Step title="Create a Gateway">
 
-If you already have a `Gateway` you can use that instead
+    If you already have a `Gateway` you can use that instead
 
-```yaml
-apiVersion: gateway.networking.k8s.io/v1
-kind: Gateway
-metadata:
-  name: example-gateway
-  namespace: default
-spec:
-  gatewayClassName: ngrok
-  listeners:
-    - name: example
-      hostname: "example-hostname.ngrok.app"
-      port: 8080
-      protocol: HTTPS
-```
-
-### 2. Create an `HTTPRoute` with a URLRewrite Filter
-
-```yaml
-apiVersion: gateway.networking.k8s.io/v1
-kind: HTTPRoute
-metadata:
-  name: example-route
-  namespace: default
-spec:
-  hostnames:
-  - example-hostname.ngrok.app
-  parentRefs:
-  - group: gateway.networking.k8s.io
+    ```yaml
+    apiVersion: gateway.networking.k8s.io/v1
     kind: Gateway
-    name: example-gateway
-    namespace: default
-  rules:
-  - matches:
-    - path:
-        type: PathPrefix
-        value: /example
-    filters:
-    - type: URLRewrite
-      urlRewrite:
-        port: 9090
-```
+    metadata:
+      name: example-gateway
+      namespace: default
+    spec:
+      gatewayClassName: ngrok
+      listeners:
+        - name: example
+          hostname: "example-hostname.ngrok.app"
+          port: 8080
+          protocol: HTTPS
+    ```
+  </Step>
+
+  <Step title="Create an HTTPRoute with a URLRewrite Filter">
+
+    ```yaml
+    apiVersion: gateway.networking.k8s.io/v1
+    kind: HTTPRoute
+    metadata:
+      name: example-route
+      namespace: default
+    spec:
+      hostnames:
+      - example-hostname.ngrok.app
+      parentRefs:
+      - group: gateway.networking.k8s.io
+        kind: Gateway
+        name: example-gateway
+        namespace: default
+      rules:
+      - matches:
+        - path:
+            type: PathPrefix
+            value: /example
+        filters:
+        - type: URLRewrite
+          urlRewrite:
+            port: 9090
+    ```
+  </Step>
+</Steps>
 </Tab>
 </Tabs>
 
 
 ## Rewrite hostname
 
-The following examples showcase how to create an endpoint that rewrites requests. The scheme, port, and path are kept the same, but only the hostname is changed.
-- Requests to `https://example-hostname.ngrok.app` will be rewritten to `https://other-example-hostname.ngrok.app`
+The following examples showcase how to create an endpoint that rewrites requests.
+The scheme, port, and path are kept the same, but only the hostname is changed.
+- Requests to `https://example-hostname.ngrok.app` are rewritten to `https://other-example-hostname.ngrok.app`
 
 
 <Tabs>
@@ -535,96 +563,104 @@ spec:
 💡 Ingress resources do not have native URL rewriting capabilities, but they can be extended using a Traffic Policy.
 Check out the [URL rewrite Traffic Policy action](/gateway/traffic-policy/actions/url-rewrite/) page for more details about how it functions and the parameters it accepts.
 
-### 1. Create an `NgrokTrafficPolicy`
+<Steps titleSize="h3">
+  <Step title="Create an NgrokTrafficPolicy">
 
-```yaml
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-kind: NgrokTrafficPolicy
-metadata:
-  name: example-tp
-  namespace: default
-spec:
-  policy:
-    on_http_request:
-      - actions:
-          - type: url-rewrite
-            config:
-              from: example-hostname.ngrok.app
-              to: other-example-hostname.ngrok.app
-```
+    ```yaml
+    apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+    kind: NgrokTrafficPolicy
+    metadata:
+      name: example-tp
+      namespace: default
+    spec:
+      policy:
+        on_http_request:
+          - actions:
+              - type: url-rewrite
+                config:
+                  from: example-hostname.ngrok.app
+                  to: other-example-hostname.ngrok.app
+    ```
+  </Step>
 
-### 2. Use the `NgrokTrafficPolicy` on an `Ingress`
+  <Step title="Use the NgrokTrafficPolicy on an Ingress">
 
-```yaml
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  annotations:
-    k8s.ngrok.com/traffic-policy: example-tp
-  name: example-ingress
-  namespace: default
-spec:
-  ingressClassName: ngrok
-  rules:
-    - host: example-hostname.ngrok.app
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: example-service
-                port:
-                  number: 80
-```
+    ```yaml
+    apiVersion: networking.k8s.io/v1
+    kind: Ingress
+    metadata:
+      annotations:
+        k8s.ngrok.com/traffic-policy: example-tp
+      name: example-ingress
+      namespace: default
+    spec:
+      ingressClassName: ngrok
+      rules:
+        - host: example-hostname.ngrok.app
+          http:
+            paths:
+              - path: /
+                pathType: Prefix
+                backend:
+                  service:
+                    name: example-service
+                    port:
+                      number: 80
+    ```
+  </Step>
+</Steps>
 </Tab>
 <Tab title="Gateway API">
 ✅ Gateway API natively supports URL rewriting, and this feature is fully supported by the ngrok Kubernetes Operator.
 
-### 1. Create a `Gateway`
+<Steps titleSize="h3">
+  <Step title="Create a Gateway">
 
-If you already have a `Gateway` you can use that instead
+    If you already have a `Gateway` you can use that instead
 
-```yaml
-apiVersion: gateway.networking.k8s.io/v1
-kind: Gateway
-metadata:
-  name: example-gateway
-  namespace: default
-spec:
-  gatewayClassName: ngrok
-  listeners:
-    - name: example
-      hostname: "example-hostname.ngrok.app"
-      port: 443
-      protocol: HTTPS
-```
-
-### 2. Create an `HTTPRoute` with a URLRewrite Filter
-
-```yaml
-apiVersion: gateway.networking.k8s.io/v1
-kind: HTTPRoute
-metadata:
-  name: example-route
-  namespace: default
-spec:
-  hostnames:
-  - example-hostname.ngrok.app
-  parentRefs:
-  - group: gateway.networking.k8s.io
+    ```yaml
+    apiVersion: gateway.networking.k8s.io/v1
     kind: Gateway
-    name: example-gateway
-    namespace: default
-  rules:
-  - matches:
-    - path:
-        type: PathPrefix
-        value: /example
-    filters:
-    - type: URLRewrite
-      urlRewrite:
-        hostname: other-example-hostname.ngrok.app
-```
+    metadata:
+      name: example-gateway
+      namespace: default
+    spec:
+      gatewayClassName: ngrok
+      listeners:
+        - name: example
+          hostname: "example-hostname.ngrok.app"
+          port: 443
+          protocol: HTTPS
+    ```
+  </Step>
+
+  <Step title="Create an HTTPRoute with a URLRewrite Filter">
+
+    ```yaml
+    apiVersion: gateway.networking.k8s.io/v1
+    kind: HTTPRoute
+    metadata:
+      name: example-route
+      namespace: default
+    spec:
+      hostnames:
+      - example-hostname.ngrok.app
+      parentRefs:
+      - group: gateway.networking.k8s.io
+        kind: Gateway
+        name: example-gateway
+        namespace: default
+      rules:
+      - matches:
+        - path:
+            type: PathPrefix
+            value: /example
+        filters:
+        - type: URLRewrite
+          urlRewrite:
+            hostname: other-example-hostname.ngrok.app
+    ```
+  </Step>
+</Steps>
 </Tab>
 </Tabs>

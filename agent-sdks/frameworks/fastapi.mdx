@@ -24,62 +24,68 @@ If you already pass a `lifespan=` to `FastAPI()`, `attach()` composes with it ra
 - Your [ngrok auth token](https://dashboard.ngrok.com/get-started/your-authtoken).
 - [Python 3.9 or later](https://www.python.org/downloads/) installed on your machine.
 
-## 1. Install the package
+<Steps titleSize="h2">
+  <Step title="Install the package">
 
-```bash
-pip install ngrok-fastapi uvicorn
-```
+    ```bash
+    pip install ngrok-fastapi uvicorn
+    ```
 
-The package depends on `fastapi` and the `ngrok` Python SDK, so `pip` installs those too.
-You need an ASGI server such as `uvicorn` to run the app.
+    The package depends on `fastapi` and the `ngrok` Python SDK, so `pip` installs those too.
+    You need an ASGI server such as `uvicorn` to run the app.
+  </Step>
 
-## 2. Set your auth token
+  <Step title="Set your auth token">
 
-Export your auth token as an environment variable:
+    Export your auth token as an environment variable:
 
-```bash
-export NGROK_AUTHTOKEN=your_actual_auth_token_here
-```
+    ```bash
+    export NGROK_AUTHTOKEN=your_actual_auth_token_here
+    ```
 
-The package reads `NGROK_AUTHTOKEN` from the environment when the app starts.
+    The package reads `NGROK_AUTHTOKEN` from the environment when the app starts.
+  </Step>
 
-## 3. Attach ngrok to your app
+  <Step title="Attach ngrok to your app">
 
-Call `attach()` right after you create the app, with the port your ASGI server listens on:
+    Call `attach()` right after you create the app, with the port your ASGI server listens on:
 
-```python title="main.py"
-import uvicorn
-from fastapi import FastAPI
+    ```python title="main.py"
+    import uvicorn
+    from fastapi import FastAPI
 
-import ngrok_fastapi
+    import ngrok_fastapi
 
-app = FastAPI()
-ngrok_fastapi.attach(app, ngrok_fastapi.Config(port=8000))
-
-
-@app.get("/")
-def root():
-    return {"message": "Hello from FastAPI!"}
+    app = FastAPI()
+    ngrok_fastapi.attach(app, ngrok_fastapi.Config(port=8000))
 
 
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
-```
+    @app.get("/")
+    def root():
+        return {"message": "Hello from FastAPI!"}
 
-The `port` in `Config` must match the port your server binds, because the endpoint forwards to `localhost:<port>`.
-It defaults to `8000`.
 
-## 4. Test your endpoint
+    if __name__ == "__main__":
+        uvicorn.run(app, host="0.0.0.0", port=8000)
+    ```
 
-Run your app:
+    The `port` in `Config` must match the port your server binds, because the endpoint forwards to `localhost:<port>`.
+    It defaults to `8000`.
+  </Step>
 
-```bash
-python main.py
-```
+  <Step title="Test your endpoint">
 
-The package prints `Ingress established at:` followed by the public URL.
-With no `url` in `Config`, that URL is your account's [dev domain](/gateway/domains/#dev-domains).
-Open it in your browser to see your FastAPI app.
+    Run your app:
+
+    ```bash
+    python main.py
+    ```
+
+    The package prints `Ingress established at:` followed by the public URL.
+    With no `url` in `Config`, that URL is your account's [dev domain](/gateway/domains/#dev-domains).
+    Open it in your browser to see your FastAPI app.
+  </Step>
+</Steps>
 
 ## Configuration
 

@@ -1,16 +1,11 @@
 ---
 title: ngrok MCP Server
-sidebarTitle: MCP server
+sidebarTitle: Get started
 description: Connect Claude Code, Codex, Cursor, and other AI agents to the ngrok MCP server to inspect and manage your endpoints, traffic, and account.
 ---
 
 The ngrok MCP server lets your AI agent read and manage your ngrok account.
 Connect a client such as Claude Code, Codex, or Cursor, then ask about your endpoints, traffic, usage, and team, or ask it to make changes, in plain language.
-
-<Note>
-The ngrok MCP server is invite-only.
-You can [request access](https://dashboard.ngrok.com/early-access#mcp-server) in the dashboard.
-</Note>
 
 <Note>
 This page covers ngrok's own MCP server.
@@ -136,14 +131,7 @@ You never paste a token into your AI agent.
 		Then use Cline's authorize action.
 	</Tab>
 	<Tab title="Pi">
-		Run:
-
-		```bash
-		pi mcp add ngrok --url https://mcp.ngrok.com/mcp
-		```
-
-		Pi doesn't use client ID metadata documents (CIMD) by default yet, so `pi mcp login ngrok` fails with "Authorization server does not support dynamic client registration."
-		To fix this, set `clientRegistration` to `cimd` for the server in `~/.pi/agent/mcp.json`:
+		Add this to `~/.pi/agent/mcp.json`:
 
 		```json
 		{
@@ -163,6 +151,10 @@ You never paste a token into your AI agent.
 		```bash
 		pi mcp login ngrok
 		```
+
+		Pi doesn't use client ID metadata documents (CIMD) by default yet, so the `clientRegistration` setting is required.
+		Without it, `pi mcp login ngrok` fails with "Authorization server does not support dynamic client registration."
+		`pi mcp add` can't set this option, so edit the file instead of running it.
 	</Tab>
 	<Tab title="VS Code">
 		Add this to `.vscode/mcp.json` (workspace) or your user MCP configuration:
@@ -229,6 +221,7 @@ After you sign in, confirm that your client sees the ngrok tools:
 
 - Claude Code: run `/mcp` and select `ngrok`.
 - Codex: run `codex mcp list`.
+- Pi: run `pi mcp list`.
 - Any client: ask your AI agent "What ngrok tools do you have?"
 
 Then ask "Which ngrok account am I signed in to?"
@@ -254,23 +247,16 @@ Your AI agent can change:
 
 These examples show what a conversation with the ngrok MCP server looks like.
 Your AI agent picks the tools, so the exact steps can differ.
+For more prompts you can copy, grouped by job, see [Example prompts](/mcp-server/prompts).
 
+<div className="mcp-examples">
 <AccordionGroup>
 	<Accordion title="Show me the 500s on my endpoints by hour for the last day">
 		The AI agent queries Traffic Inspector for status 500 over the last 24 hours, counted per hour in your time zone.
 		You get an hourly breakdown, plus the paths and client IPs behind the spikes.
 		Follow up with "Show me one of those requests" to see its headers, timing, and error detail.
 	</Accordion>
-	<Accordion title="Who's hammering /login, and from where?">
-		The AI agent groups requests to `/login` by client IP, then by country.
-		You get the top sources with request counts and the countries they come from.
-	</Accordion>
-	<Accordion title="Block the top IP hitting /login">
-		The AI agent finds the source, checks which IP policy your endpoint's [`restrict-ips`](/gateway/traffic-policy/actions/restrict-ips) action uses, and asks to add a deny rule to it.
-		This call changes your account, so your client asks you to approve it first.
-		If no `restrict-ips` action names the policy yet, the AI agent tells you that the rule doesn't block anything until one does.
-	</Accordion>
-	<Accordion title="I got an ngrok error page with request ID 0a1b2c3d…. What happened?">
+	<Accordion title="I got an ngrok error page with request ID req_0a1b2c3d. What happened?">
 		The AI agent looks up that request and reads the `ERR_NGROK` code in the docs.
 		You get what failed, where it failed (ngrok, your ngrok agent, or your upstream), and how to fix it.
 	</Accordion>
@@ -279,38 +265,6 @@ Your AI agent picks the tools, so the exact steps can differ.
 		If validation fails, it fixes the errors and validates again.
 		Then it asks to update your Cloud Endpoint's Traffic Policy.
 	</Accordion>
-	<Accordion title="Set up api.example.com as a Cloud Endpoint that forwards to my internal service">
-		The AI agent reserves the domain and replies with the CNAME record to add at your DNS provider.
-		Then it creates a Cloud Endpoint for `https://api.example.com` with a Traffic Policy that forwards to your [internal endpoint](/gateway/endpoints/internal-endpoints).
-		The endpoint serves traffic once your DNS record and certificate are ready.
-	</Accordion>
-	<Accordion title="Store my Stripe webhook secret in a vault and verify webhooks with it">
-		The AI agent creates a vault, or uses one you name, and adds the secret to it.
-		Then it updates your endpoint's Traffic Policy to verify webhooks with [`secrets.get()`](/gateway/traffic-policy/secrets).
-		Tools never return secret values, so the AI agent can confirm the secret exists but can't read it back.
-	</Accordion>
-	<Accordion title="Release the TCP addresses that no endpoint uses">
-		The AI agent compares your reserved TCP addresses with your endpoints and lists the ones that are unused.
-		After you confirm the list, it releases each one.
-		A released address might not be available again, so the AI agent asks before it deletes anything.
-	</Accordion>
-	<Accordion title="Am I being rate limited? Why are my requests failing?">
-		The AI agent checks which limits are blocking your account right now.
-		You get each limit's current value and cap, when the block lifts, and the exact error your callers saw.
-	</Accordion>
-	<Accordion title="Which endpoints used the most data this month?">
-		The AI agent reads your account's usage beside what your plan includes, then ranks your endpoints by data transfer out.
-		You get the top endpoints with their requests, connections, and data transfer.
-	</Accordion>
-	<Accordion title="Which of my ngrok agents are out of date, and which endpoints are online?">
-		The AI agent lists connected ngrok agents with their versions and any deprecation deadlines, and the endpoints they serve.
-		You get the ngrok agents that need an upgrade and by when.
-		An Agent Endpoint that's missing from the list means its ngrok agent isn't connected.
-	</Accordion>
-	<Accordion title="Why does my custom domain show TLS errors?">
-		The AI agent checks the domain's certificate status.
-		If provisioning failed, you get the DNS record to fix.
-	</Accordion>
 	<Accordion title="Who on my team has API keys? Revoke the ones that belong to people who left">
 		The AI agent joins your team with your API keys.
 		You get each key's owner, description, and status.
@@ -318,6 +272,7 @@ Your AI agent picks the tools, so the exact steps can differ.
 		Tools never return the key, token, or secret values themselves.
 	</Accordion>
 </AccordionGroup>
+</div>
 
 <Note>
 Traffic questions use [Traffic Inspector](/obs/traffic-inspection) data, so the window your AI agent can see depends on your plan's retention.
@@ -338,6 +293,7 @@ See [Clients without OAuth](#clients-without-oauth).
 - **"Got new credentials, but ngrok rejected them":** Your account doesn't have access to the MCP server.
   Contact [ngrok support](mailto:support@ngrok.com).
 - **Sign-in fails or the server isn't found:** Check that the URL ends in `/mcp`.
+- **Pi fails with "Authorization server does not support dynamic client registration":** Set `oauth.clientRegistration` to `cimd` for the server in `~/.pi/agent/mcp.json`, then run `pi mcp login ngrok` again.
 - **Claude Code uses an old callback port:** Run `claude mcp remove ngrok --scope user`, then add the server again.
 - **A PAT is rejected:** The token is invalid, expired, or revoked.
   Create a new one and update the `Authorization` header.

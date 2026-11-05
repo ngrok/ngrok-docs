@@ -13,61 +13,66 @@ It covers setting up a local MQTT server, creating an ngrok TCP tunnel, and conn
 - [MQTT Explorer](https://mqtt-explorer.com/) installed.
 - The [Mosquitto binary](https://mosquitto.org/download/) installed.
 
-## 1. Start an MQTT server
+<Steps titleSize="h2">
+  <Step title="Start an MQTT server">
 
-This guide uses [Eclipse Mosquitto](https://mosquitto.org/) as the MQTT server.
-Follow the [Mosquitto download and install instructions](https://mosquitto.org/download/) for your operating system, then start the server:
+    This guide uses [Eclipse Mosquitto](https://mosquitto.org/) as the MQTT server.
+    Follow the [Mosquitto download and install instructions](https://mosquitto.org/download/) for your operating system, then start the server:
 
-```bash
-mosquitto
-```
+    ```bash
+    mosquitto
+    ```
 
-Mosquitto listens on port `1883` by default and starts in local-only mode, so connections are only possible from the same machine until you expose it.
-For listener and authentication options, see the [Mosquitto documentation](https://mosquitto.org/documentation/).
+    Mosquitto listens on port `1883` by default and starts in local-only mode, so connections are only possible from the same machine until you expose it.
+    For listener and authentication options, see the [Mosquitto documentation](https://mosquitto.org/documentation/).
+  </Step>
 
-## 2. Launch ngrok
+  <Step title="Launch ngrok">
 
-With your MQTT server running on `localhost`, put it online with an ngrok TCP endpoint.
+    With your MQTT server running on `localhost`, put it online with an ngrok TCP endpoint.
 
-If you haven't already, add your authtoken from the [ngrok dashboard](https://dashboard.ngrok.com/get-started/your-authtoken):
+    If you haven't already, add your authtoken from the [ngrok dashboard](https://dashboard.ngrok.com/get-started/your-authtoken):
 
-```bash
-ngrok config add-authtoken TOKEN
-```
+    ```bash
+    ngrok config add-authtoken TOKEN
+    ```
 
-Start a TCP endpoint that forwards to Mosquitto's port:
+    Start a TCP endpoint that forwards to Mosquitto's port:
 
-```bash
-ngrok tcp 1883
-```
+    ```bash
+    ngrok tcp 1883
+    ```
 
-ngrok displays a `tcp://` forwarding address where your server is exposed to the internet.
-Copy this address for use with MQTT Explorer.
+    ngrok displays a `tcp://` forwarding address where your server is exposed to the internet.
+    Copy this address for use with MQTT Explorer.
+  </Step>
 
-## 3. Connect with MQTT Explorer
+  <Step title="Connect with MQTT Explorer">
 
-Open [MQTT Explorer](https://mqtt-explorer.com/) and click the plus sign to create a new MQTT connection.
-Enter the TCP address from the last step and click **Connect**.
+    Open [MQTT Explorer](https://mqtt-explorer.com/) and click the plus sign to create a new MQTT connection.
+    Enter the TCP address from the last step and click **Connect**.
 
-You'll see a few new lines in your MQTT server logs:
+    You'll see a few new lines in your MQTT server logs:
 
-```bash
-1734410153: New connection on port 1883.
-1734410153: New client connected as mqtt-explorer-ba9b56f9 (p2, c1, k60).
-```
+    ```bash
+    1734410153: New connection on port 1883.
+    1734410153: New client connected as mqtt-explorer-ba9b56f9 (p2, c1, k60).
+    ```
 
-MQTT Explorer is now connected to your server over the public internet.
-To get messages from the client, subscribe to a topic.
-In your terminal, open a tab and enter:
+    MQTT Explorer is now connected to your server over the public internet.
+    To get messages from the client, subscribe to a topic.
+    In your terminal, open a tab and enter:
 
-```bash
-mosquitto_sub -t 'example/topic' -v
-```
+    ```bash
+    mosquitto_sub -t 'example/topic' -v
+    ```
 
-Back in MQTT Explorer, publish a message to `example/topic`.
+    Back in MQTT Explorer, publish a message to `example/topic`.
 
-You'll see the message in the terminal tab where you subscribed to the topic:
+    You'll see the message in the terminal tab where you subscribed to the topic:
 
-```bash
-example/topic hello world
-```
+    ```bash
+    example/topic hello world
+    ```
+  </Step>
+</Steps>

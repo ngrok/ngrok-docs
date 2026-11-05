@@ -23,55 +23,60 @@ In this mode, users access ngrok endpoints and are redirected to Frontegg for au
 - A Frontegg account with administrative rights to create apps.
 - An ngrok Pay-as-you-go account with an authtoken or admin access to configure endpoints with OpenID Connect.
 
-## 1. Configure Frontegg
+<Steps titleSize="h2">
+  <Step title="Configure Frontegg">
 
-In the Frontegg Portal, set up Frontegg's hosted login to act as an OIDC identity provider for ngrok.
-For the full steps, follow Frontegg's [Use OIDC](https://developers.frontegg.com/ciam/guides/management/frontegg-idp/via-oidc) guide.
+    In the Frontegg Portal, set up Frontegg's hosted login to act as an OIDC identity provider for ngrok.
+    For the full steps, follow Frontegg's [Use OIDC](https://developers.frontegg.com/ciam/guides/management/frontegg-idp/via-oidc) guide.
 
-While configuring hosted login, set these values so it works with ngrok:
+    While configuring hosted login, set these values so it works with ngrok:
 
-- Under **Authentication** > **Login method**, add `https://idp.ngrok.com/oauth2/callback` to the **Hosted login** allowed redirect URLs and save.
-- Under **Env settings**, copy the **Client ID** and the **API key**.
-- On the **Domains** tab, copy the **Domain name**.
+    - Under **Authentication** > **Login method**, add `https://idp.ngrok.com/oauth2/callback` to the **Hosted login** allowed redirect URLs and save.
+    - Under **Env settings**, copy the **Client ID** and the **API key**.
+    - On the **Domains** tab, copy the **Domain name**.
 
-You use the Client ID, API key, and Domain name to configure ngrok.
-Make sure the users who need access are added to the environment before you test.
+    You use the Client ID, API key, and Domain name to configure ngrok.
+    Make sure the users who need access are added to the environment before you test.
+  </Step>
 
-## 2. Configure ngrok
+  <Step title="Configure ngrok">
 
-Secure your endpoint with the [OpenID Connect Traffic Policy action](/gateway/traffic-policy/actions/oidc).
+    Secure your endpoint with the [OpenID Connect Traffic Policy action](/gateway/traffic-policy/actions/openid-connect).
 
-<Note>
-This step assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok agent installed.
-</Note>
+    <Note>
+    This step assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok agent installed.
+    </Note>
 
-Create a `policy.yaml` file with the following content, replacing the placeholder values with those copied from Frontegg:
+    Create a `policy.yaml` file with the following content, replacing the placeholder values with those copied from Frontegg:
 
-```yaml
-on_http_request:
-  - actions:
-      - type: openid-connect
-        config:
-          issuer_url: 'https://app-123456.frontegg.com'
-          client_id: 'YOUR_FRONTEGG_CLIENT_ID'
-          client_secret: 'YOUR_FRONTEGG_API_KEY'
-          scopes:
-            - openid
-            - profile
-            - email
-```
+    ```yaml
+    on_http_request:
+      - actions:
+          - type: openid-connect
+            config:
+              issuer_url: 'https://app-123456.frontegg.com'
+              client_id: 'YOUR_FRONTEGG_CLIENT_ID'
+              client_secret: 'YOUR_FRONTEGG_API_KEY'
+              scopes:
+                - openid
+                - profile
+                - email
+    ```
 
-Start an ngrok endpoint with this policy:
+    Start an ngrok endpoint with this policy:
 
-```bash
-ngrok http 3000 --traffic-policy-file policy.yaml --url YOUR_DOMAIN
-```
+    ```bash
+    ngrok http 3000 --traffic-policy-file policy.yaml --url YOUR_DOMAIN
+    ```
 
-Copy the URL next to **Forwarding** (for example, `https://frontegg-sso-test.ngrok.app`).
+    Copy the URL next to **Forwarding** (for example, `https://frontegg-sso-test.ngrok.app`).
+  </Step>
 
-## 3. Test the integration
+  <Step title="Test the integration">
 
-- In your browser, open an incognito window.
-- Access your ngrok endpoint (for example, `https://frontegg-sso-test.ngrok.app` or using the copied endpoint URL).
-- When prompted, log in with your Frontegg credentials.
-- After you log in, you see your web app.
+    - In your browser, open an incognito window.
+    - Access your ngrok endpoint (for example, `https://frontegg-sso-test.ngrok.app` or using the copied endpoint URL).
+    - When prompted, log in with your Frontegg credentials.
+    - After you log in, you see your web app.
+  </Step>
+</Steps>

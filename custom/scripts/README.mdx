@@ -1,5 +1,5 @@
 This directory contains scripts used to automate certain aspects of the docs site.
-For example, `parse-integrations` generates integrations metadata which can be used to display the integrations hub at `/integrations`.
+For example, `parse-integrations` generates integrations metadata that you can use to display the integrations hub at `/integrations`.
 
 ## Homepage changelog
 
@@ -29,5 +29,57 @@ Otherwise, a failed check doesn't itself prevent a merge.
 
 This is a PR-time snapshot, not a Mintlify build hook.
 An unchanged PR doesn't refresh merely because it merges or Mintlify rebuilds it.
-No schedule, separate PR, or direct push to the deployment branch is added.
+The workflow doesn't add a schedule, a separate PR, or a direct push to the deployment branch.
 The first successful fetch replaces the committed initial snapshot.
+
+## Image sizes
+
+`check-image-sizes.sh` fails on images over 500 KB and warns on images over 200 KB.
+The **Check image sizes** GitHub Action runs it on every image a PR adds or modifies, so existing images don't block unrelated PRs.
+Mintlify's CDN already resizes content images and converts them to modern formats, so this check mainly keeps oversized originals out of the repo.
+
+Check every image in the repo, or specific files:
+
+```sh
+pnpm check-images
+bash custom/scripts/check-image-sizes.sh img/docs/my-diagram.png
+```
+
+To shrink an image, export screenshots at 1x or 2x rather than larger, and compress PNGs with a tool such as [Squoosh](https://squoosh.app), `pngquant`, or `oxipng`.
+Set `IMAGE_MAX_KB` or `IMAGE_WARN_KB` to change the limits.
+
+## Traffic Policy action list
+
+`gateway/traffic-policy/actions.json` is the source of truth for the list of Traffic Policy actions.
+It's published at `https://ngrok.com/docs/gateway/traffic-policy/actions.json` for agents and tools, such as the [ngrok agent skills](https://github.com/ngrok/skills), so keep each entry's `type` and `url` stable.
+
+Each action's page lives at `gateway/traffic-policy/actions/<type>.mdx`, so its URL path is the same as the `type` you use in a Traffic Policy document.
+`traffic-policy-actions.js` checks that convention, and that each entry's `type` and `phases` match the `### Type` and `### Supported phases` sections of its action page.
+It then generates two snippets that `gateway/traffic-policy/actions/index.mdx` imports:
+
+- `snippets/traffic-policy/actions-data.jsx`: the data for the interactive action hub that people see.
+- `snippets/traffic-policy/actions-list.mdx`: a Markdown table that only the `.md` version of the page shows.
+
+When you add or change an action, edit `actions.json`, then regenerate the snippets:
+
+```sh
+pnpm traffic-policy-actions
+```
+
+The **CI Checks** GitHub Action runs `pnpm traffic-policy-actions --check`, which fails when `actions.json` disagrees with an action page or the snippets are out of date.
+
+## Errors llms.txt
+
+Mintlify's generated `llms.txt` only lists pages in the navigation, so it doesn't include the individual `errors/err_ngrok_*` pages.
+`generate-errors-llms-txt.js` reads those pages' frontmatter and writes `errors/llms.txt`, which links to one sub-index per error code range at `errors/llms/<range>/llms.txt`.
+Mintlify serves these as static files, such as `https://ngrok.com/docs/errors/llms.txt`.
+Every file must be named `llms.txt`: Mintlify only serves other `.txt` files on Enterprise plans.
+
+Run locally:
+
+```sh
+pnpm run generate-errors-llms
+```
+
+The **Update errors llms.txt** GitHub Action runs on PRs that change `errors/**` or the script, including the auto-generated docs PRs.
+It commits the regenerated files to the same PR branch when they change, the same way as the homepage changelog action.

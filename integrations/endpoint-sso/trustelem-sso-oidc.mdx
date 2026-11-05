@@ -23,54 +23,59 @@ In this mode, users access ngrok endpoints and are redirected to Wallix Trustele
 - A Wallix Trustelem account with administrative rights to create apps.
 - An ngrok Pay-as-you-go account with an authtoken or admin access to configure endpoints with OpenID Connect.
 
-## 1. Configure Wallix Trustelem
+<Steps titleSize="h2">
+  <Step title="Configure Wallix Trustelem">
 
-Create an OpenID Connect application in Wallix Trustelem by following [Trustelem's OpenID Connect documentation](https://trustelem-doc.wallix.com/books/trustelem-applications/page/openid-connect).
-When you configure the application, use these ngrok-specific values:
+    Create an OpenID Connect application in Wallix Trustelem by following [Trustelem's OpenID Connect documentation](https://trustelem-doc.wallix.com/books/trustelem-applications/page/openid-connect).
+    When you configure the application, use these ngrok-specific values:
 
-- **RedirectURI**: `https://idp.ngrok.com/oauth2/callback`
-- **Login URL**: the URL of your ngrok endpoint (for example, `https://trustelem-sso-test.ngrok.app`)
+    - **RedirectURI**: `https://idp.ngrok.com/oauth2/callback`
+    - **Login URL**: the URL of your ngrok endpoint (for example, `https://trustelem-sso-test.ngrok.app`)
 
-After you save the application, copy the **ClientID**, **ClientSecret**, and **Issuer** URL.
-You use these values when you configure ngrok.
+    After you save the application, copy the **ClientID**, **ClientSecret**, and **Issuer** URL.
+    You use these values when you configure ngrok.
 
-Create at least one Wallix Trustelem user and grant it access to the application so that user can sign in through Wallix Trustelem.
+    Create at least one Wallix Trustelem user and grant it access to the application so that user can sign in through Wallix Trustelem.
+  </Step>
 
-## 2. Configure ngrok
+  <Step title="Configure ngrok">
 
-Use the [OpenID Connect Traffic Policy action](/gateway/traffic-policy/actions/oidc) to enforce Wallix Trustelem authentication on your endpoint.
+    Use the [OpenID Connect Traffic Policy action](/gateway/traffic-policy/actions/openid-connect) to enforce Wallix Trustelem authentication on your endpoint.
 
-<Note>
-This step assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok client installed.
-</Note>
+    <Note>
+    This step assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok client installed.
+    </Note>
 
-Create a `policy.yaml` file with the following content, replacing the placeholder values with those copied from Wallix Trustelem:
+    Create a `policy.yaml` file with the following content, replacing the placeholder values with those copied from Wallix Trustelem:
 
-```yaml
-on_http_request:
-  - actions:
-      - type: openid-connect
-        config:
-          issuer_url: 'YOUR_TRUSTELEM_ISSUER_URL'
-          client_id: 'YOUR_TRUSTELEM_CLIENT_ID'
-          client_secret: 'YOUR_TRUSTELEM_CLIENT_SECRET'
-          scopes:
-            - openid
-            - profile
-            - email
-```
+    ```yaml
+    on_http_request:
+      - actions:
+          - type: openid-connect
+            config:
+              issuer_url: 'YOUR_TRUSTELEM_ISSUER_URL'
+              client_id: 'YOUR_TRUSTELEM_CLIENT_ID'
+              client_secret: 'YOUR_TRUSTELEM_CLIENT_SECRET'
+              scopes:
+                - openid
+                - profile
+                - email
+    ```
 
-Start an ngrok endpoint with this policy, replacing `YOUR_DOMAIN` with your ngrok domain:
+    Start an ngrok endpoint with this policy, replacing `YOUR_DOMAIN` with your ngrok domain:
 
-```bash
-ngrok http 3000 --traffic-policy-file policy.yaml --url YOUR_DOMAIN
-```
+    ```bash
+    ngrok http 3000 --traffic-policy-file policy.yaml --url YOUR_DOMAIN
+    ```
 
-Copy the URL next to **Forwarding** (for example, `https://trustelem-sso-test.ngrok.app`).
+    Copy the URL next to **Forwarding** (for example, `https://trustelem-sso-test.ngrok.app`).
+  </Step>
 
-## 3. Test the integration
+  <Step title="Test the integration">
 
-- In your browser, launch an incognito window.
-- Access your ngrok endpoint (for example, `https://trustelem-sso-test.ngrok.app` or using the copied endpoint URL).
-- When prompted, log in with your Wallix Trustelem credentials.
-- After you log in, you see your web app.
+    - In your browser, launch an incognito window.
+    - Access your ngrok endpoint (for example, `https://trustelem-sso-test.ngrok.app` or using the copied endpoint URL).
+    - When prompted, log in with your Wallix Trustelem credentials.
+    - After you log in, you see your web app.
+  </Step>
+</Steps>

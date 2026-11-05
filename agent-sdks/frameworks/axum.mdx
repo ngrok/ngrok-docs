@@ -24,55 +24,61 @@ Axum 0.7 removed `axum::Server`, which took away the one-line way to serve an ap
 - Your [ngrok auth token](https://dashboard.ngrok.com/get-started/your-authtoken).
 - [Rust installed](https://www.rust-lang.org/tools/install) on your machine.
 
-## 1. Install the crate
+<Steps titleSize="h2">
+  <Step title="Install the crate">
 
-Add the crate alongside Axum 0.8 and Tokio:
+    Add the crate alongside Axum 0.8 and Tokio:
 
-```toml title="Cargo.toml"
-[dependencies]
-ngrok-axum = "0.1"
-axum = "0.8"
-tokio = { version = "1", features = ["full"] }
-```
+    ```toml title="Cargo.toml"
+    [dependencies]
+    ngrok-axum = "0.1"
+    axum = "0.8"
+    tokio = { version = "1", features = ["full"] }
+    ```
+  </Step>
 
-## 2. Set your auth token
+  <Step title="Set your auth token">
 
-Export your auth token as an environment variable:
+    Export your auth token as an environment variable:
 
-```bash
-export NGROK_AUTHTOKEN=your_actual_auth_token_here
-```
+    ```bash
+    export NGROK_AUTHTOKEN=your_actual_auth_token_here
+    ```
 
-The crate reads `NGROK_AUTHTOKEN` from the environment when it opens the session.
+    The crate reads `NGROK_AUTHTOKEN` from the environment when it opens the session.
+  </Step>
 
-## 3. Serve your router
+  <Step title="Serve your router">
 
-Replace `axum::serve` with `ngrok_axum::serve`:
+    Replace `axum::serve` with `ngrok_axum::serve`:
 
-```rust title="src/main.rs"
-use axum::{routing::get, Router};
+    ```rust title="src/main.rs"
+    use axum::{routing::get, Router};
 
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
-    let app = Router::new().route("/", get(|| async { "Hello from Axum!" }));
-    ngrok_axum::serve(app, ngrok_axum::Config::default()).await?;
-    Ok(())
-}
-```
+    #[tokio::main]
+    async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+        let app = Router::new().route("/", get(|| async { "Hello from Axum!" }));
+        ngrok_axum::serve(app, ngrok_axum::Config::default()).await?;
+        Ok(())
+    }
+    ```
 
-`serve` runs until the listener closes or a connection error occurs.
+    `serve` runs until the listener closes or a connection error occurs.
+  </Step>
 
-## 4. Test your endpoint
+  <Step title="Test your endpoint">
 
-Run your app:
+    Run your app:
 
-```bash
-cargo run
-```
+    ```bash
+    cargo run
+    ```
 
-The crate prints `Ingress established at:` followed by the public URL.
-With `Config::default()`, that URL is your account's [dev domain](/gateway/domains/#dev-domains).
-Open it in your browser to see your Axum app.
+    The crate prints `Ingress established at:` followed by the public URL.
+    With `Config::default()`, that URL is your account's [dev domain](/gateway/domains/#dev-domains).
+    Open it in your browser to see your Axum app.
+  </Step>
+</Steps>
 
 ## Configuration
 
