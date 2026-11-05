@@ -257,6 +257,55 @@ spec:
 
 The ngrok Operator also implements [Gateway API](/getting-started/kubernetes/gateway-api), the Kubernetes successor to `Ingress`.
 If you'd rather move off `Ingress` during this migration, [ingress2gateway](https://github.com/kubernetes-sigs/ingress2gateway) can convert your ingress-nginx resources with `ingress2gateway print --providers=ingress-nginx`.
-Set `gatewayClassName: ngrok` on the generated `Gateway` and review the warnings for annotations it couldn't translate.
+It translates some annotations, such as `rewrite-target`, into Gateway API filters, and warns about the ones it can't translate.
+
+Make three changes to its output before you apply it:
+
+1. Set `gatewayClassName: ngrok` on each `Gateway`.
+   ingress2gateway names the class after your old ingress class.
+2. Change each `Gateway` listener to `protocol: HTTPS` and `port: 443`.
+   ingress2gateway writes HTTP listeners on port 80, and the Operator creates only an `http://` endpoint for them, so HTTPS requests fail with [ERR_NGROK_3200](/errors/err_ngrok_3200).
+   Leave the `port` in each `HTTPRoute`'s `backendRefs` unchanged, because it's your `Service`'s port.
+3. Replace each `RegularExpression` path match with a `PathPrefix` or `Exact` match.
+   ingress2gateway writes matches such as `(?i)/.*` for an `Ingress` that uses `rewrite-target` or `use-regex`.
+   The Operator doesn't support regular expression matches and compares the value as a literal path prefix, so those routes return 404.
+
+```yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: my-app
+  namespace: default
+spec:
+  gatewayClassName: ngrok
+  listeners:
+    - name: app-example-com
+      hostname: app.example.com
+      protocol: HTTPS
+      port: 443
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: my-app
+  namespace: default
+spec:
+  parentRefs:
+    - name: my-app
+  hostnames:
+    - app.example.com
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: my-app
+          port: 80
+```
+
+If you already applied a `Gateway` with an HTTP listener, delete it and apply it again.
+The Operator can't change an endpoint from `http://` to `https://` in place, so updating the listener fails with [ERR_NGROK_18005](/errors/err_ngrok_18005).
+
 The domain, DNS, and TLS steps in this guide stay the same.
 See [using Gateway API](/gateway/k8s/guides/using-gwapi) for how the Operator handles these resources.
