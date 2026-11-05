@@ -29,124 +29,126 @@ You run both controllers side by side, point your DNS at ngrok, and then remove 
 - Access to your domain's DNS records.
 - [`kubectl`](https://kubernetes.io/docs/reference/kubectl/) and [Helm](https://helm.sh/docs/intro/install/) 3.0.0 or later.
 
-## 1. Install the ngrok Kubernetes Operator
+<Steps titleSize="h2">
+  <Step title="Install the ngrok Kubernetes Operator">
+    <K8sSetup />
+    <K8sInstall />
+  </Step>
 
-<K8sSetup />
-<K8sInstall />
+  <Step title="Register your domain">
+    Choose how ngrok gets a TLS certificate for your domain during the migration.
 
-## 2. Register your domain
+    ### Option 1: Upload your current certificate (no downtime)
 
-Choose how ngrok gets a TLS certificate for your domain during the migration.
+    ngrok can't issue an automated certificate until your DNS points at ngrok.
+    Uploading the certificate that ingress-nginx serves today lets ngrok serve valid HTTPS from the moment you change DNS.
 
-### Option 1: Upload your current certificate (no downtime)
+    If cert-manager issues your certificate, export it from the `Secret` named in your `Ingress`'s `spec.tls`:
 
-ngrok can't issue an automated certificate until your DNS points at ngrok.
-Uploading the certificate that ingress-nginx serves today lets ngrok serve valid HTTPS from the moment you change DNS.
+    ```bash
+    kubectl get secret $TLS_SECRET -n $NAMESPACE -o jsonpath='{.data.tls\.crt}' | base64 -d > tls.crt
+    kubectl get secret $TLS_SECRET -n $NAMESPACE -o jsonpath='{.data.tls\.key}' | base64 -d > tls.key
+    ```
 
-If cert-manager issues your certificate, export it from the `Secret` named in your `Ingress`'s `spec.tls`:
+    Treat `tls.key` as a secret, and make sure the certificate won't expire before you finish the migration.
 
-```bash
-kubectl get secret $TLS_SECRET -n $NAMESPACE -o jsonpath='{.data.tls\.crt}' | base64 -d > tls.crt
-kubectl get secret $TLS_SECRET -n $NAMESPACE -o jsonpath='{.data.tls\.key}' | base64 -d > tls.key
-```
+    1. Upload `tls.crt` and `tls.key` on the [**TLS Certificates**](https://dashboard.ngrok.com/tls-certs) page of the dashboard.
+    2. Add your domain on the [**Domains**](https://dashboard.ngrok.com/domains) page and select the certificate you uploaded.
+    3. Don't change your DNS records yet.
 
-Treat `tls.key` as a secret, and make sure the certificate won't expire before you finish the migration.
+    Do this before you create the ngrok `Ingress`.
+    The Operator uses a domain that already exists in your account instead of reserving a new one.
 
-1. Upload `tls.crt` and `tls.key` on the [**TLS Certificates**](https://dashboard.ngrok.com/tls-certs) page of the dashboard.
-2. Add your domain on the [**Domains**](https://dashboard.ngrok.com/domains) page and select the certificate you uploaded.
-3. Don't change your DNS records yet.
+    ### Option 2: Use an automated certificate (brief certificate warning)
 
-Do this before you create the ngrok `Ingress`.
-The Operator uses a domain that already exists in your account instead of reserving a new one.
+    Skip the dashboard.
+    When you create the ngrok `Ingress` in the next step, the Operator reserves your domain with an automated certificate from Let's Encrypt.
 
-### Option 2: Use an automated certificate (brief certificate warning)
+    ngrok requests that certificate only after you change DNS.
+    Until ngrok issues it, usually within a few minutes, clients see a certificate name-mismatch warning.
+    See [TLS certificate provisioning](/gateway/domains/tls-certificates#expected-behavior-while-a-certificate-is-provisioning) for details.
+  </Step>
 
-Skip the dashboard.
-When you create the ngrok `Ingress` in the next step, the Operator reserves your domain with an automated certificate from Let's Encrypt.
+  <Step title="Create a parallel ngrok Ingress">
+    Copy your existing `Ingress` to a new one with a different name and `ingressClassName: ngrok`.
+    Leave the original in place so ingress-nginx keeps serving traffic until you change DNS.
 
-ngrok requests that certificate only after you change DNS.
-Until ngrok issues it, usually within a few minutes, clients see a certificate name-mismatch warning.
-See [TLS certificate provisioning](/gateway/domains/tls-certificates#expected-behavior-while-a-certificate-is-provisioning) for details.
+    Drop `spec.tls` and any `cert-manager.io/*` annotations from the copy.
+    ngrok terminates TLS with your domain's certificate, and the Operator ignores `spec.tls`.
 
-## 3. Create a parallel ngrok Ingress
+    ```yaml title="ngrok-ingress.yaml"
+    apiVersion: networking.k8s.io/v1
+    kind: Ingress
+    metadata:
+      name: my-app-ngrok
+      namespace: default
+    spec:
+      ingressClassName: ngrok
+      rules:
+        - host: app.example.com
+          http:
+            paths:
+              - path: /
+                pathType: Prefix
+                backend:
+                  service:
+                    name: my-app
+                    port:
+                      number: 80
+    ```
 
-Copy your existing `Ingress` to a new one with a different name and `ingressClassName: ngrok`.
-Leave the original in place so ingress-nginx keeps serving traffic until you change DNS.
+    If your original `Ingress` has `nginx.ingress.kubernetes.io/*` annotations, translate them with the [annotation table](#map-ingress-nginx-annotations-to-ngrok) before you continue.
 
-Drop `spec.tls` and any `cert-manager.io/*` annotations from the copy.
-ngrok terminates TLS with your domain's certificate, and the Operator ignores `spec.tls`.
+    Apply the manifest and check its address:
 
-```yaml title="ngrok-ingress.yaml"
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: my-app-ngrok
-  namespace: default
-spec:
-  ingressClassName: ngrok
-  rules:
-    - host: app.example.com
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: my-app
-                port:
-                  number: 80
-```
+    ```bash
+    kubectl apply -f ngrok-ingress.yaml
+    kubectl get ingress my-app-ngrok -n default
+    ```
 
-If your original `Ingress` has `nginx.ingress.kubernetes.io/*` annotations, translate them with the [annotation table](#map-ingress-nginx-annotations-to-ngrok) before you continue.
+    After a few seconds, the `ADDRESS` column shows a hostname ending in `ngrok-cname.com`.
+    This guide calls it `$CNAME_TARGET`.
+    If the address stays empty, see [troubleshooting](/gateway/k8s/guides/troubleshooting).
 
-Apply the manifest and check its address:
+    Test the ngrok path before you change DNS by sending a request straight to `$CNAME_TARGET`:
 
-```bash
-kubectl apply -f ngrok-ingress.yaml
-kubectl get ingress my-app-ngrok -n default
-```
+    ```bash
+    curl --connect-to app.example.com:443:$CNAME_TARGET:443 https://app.example.com/
+    ```
 
-After a few seconds, the `ADDRESS` column shows a hostname ending in `ngrok-cname.com`.
-This guide calls it `$CNAME_TARGET`.
-If the address stays empty, see [troubleshooting](/gateway/k8s/guides/troubleshooting).
+    If you chose an automated certificate, add `--insecure`, because ngrok can't issue your certificate until DNS points at it.
+  </Step>
 
-Test the ngrok path before you change DNS by sending a request straight to `$CNAME_TARGET`:
+  <Step title="Cut over DNS">
+    1. A day ahead, lower the TTL on your domain's current DNS record so the change propagates quickly.
+    2. Replace the record with a CNAME that points to `$CNAME_TARGET`.
+       For an apex domain such as `example.com`, use an ALIAS, ANAME, or flattened CNAME record instead, as described in [apex domains](/gateway/domains/custom-domains#apex-domains).
+    3. Confirm requests arrive in [Traffic Inspector](https://dashboard.ngrok.com/traffic-inspector).
 
-```bash
-curl --connect-to app.example.com:443:$CNAME_TARGET:443 https://app.example.com/
-```
+    If you run [ExternalDNS](https://github.com/kubernetes-sigs/external-dns), it can publish the ngrok `Ingress`'s address as soon as the Operator sets it.
+    Limit ExternalDNS to the `nginx` ingress class (for example, `--ingress-class=nginx`) until you're ready to cut over, or let it make the DNS change for you at this step.
+  </Step>
 
-If you chose an automated certificate, add `--insecure`, because ngrok can't issue your certificate until DNS points at it.
+  <Step title="Switch to automated TLS">
+    If you uploaded a certificate, switch your domain to automated TLS certificates on the [**Domains**](https://dashboard.ngrok.com/domains) page as soon as DNS points at ngrok.
+    ngrok keeps serving your uploaded certificate until the automated one is ready, so clients don't notice the change.
 
-## 4. Cut over DNS
+    Afterward, delete the uploaded certificate from the [**TLS Certificates**](https://dashboard.ngrok.com/tls-certs) page.
+    An uploaded certificate costs $0.27 per domain per active hour, and ngrok doesn't renew it for you.
+    See [TLS certificates pricing](/gateway/domains/tls-certificates#tls-certificates-pricing).
+  </Step>
 
-1. A day ahead, lower the TTL on your domain's current DNS record so the change propagates quickly.
-2. Replace the record with a CNAME that points to `$CNAME_TARGET`.
-   For an apex domain such as `example.com`, use an ALIAS, ANAME, or flattened CNAME record instead, as described in [apex domains](/gateway/domains/custom-domains#apex-domains).
-3. Confirm requests arrive in [Traffic Inspector](https://dashboard.ngrok.com/traffic-inspector).
+  <Step title="Remove ingress-nginx">
+    Once your old DNS record's TTL has passed and no traffic reaches ingress-nginx, delete the original `Ingress`:
 
-If you run [ExternalDNS](https://github.com/kubernetes-sigs/external-dns), it can publish the ngrok `Ingress`'s address as soon as the Operator sets it.
-Limit ExternalDNS to the `nginx` ingress class (for example, `--ingress-class=nginx`) until you're ready to cut over, or let it make the DNS change for you at this step.
+    ```bash
+    kubectl delete ingress my-app -n default
+    ```
 
-## 5. Switch to automated TLS
-
-If you uploaded a certificate, switch your domain to automated TLS certificates on the [**Domains**](https://dashboard.ngrok.com/domains) page as soon as DNS points at ngrok.
-ngrok keeps serving your uploaded certificate until the automated one is ready, so clients don't notice the change.
-
-Afterward, delete the uploaded certificate from the [**TLS Certificates**](https://dashboard.ngrok.com/tls-certs) page.
-An uploaded certificate costs $0.27 per domain per active hour, and ngrok doesn't renew it for you.
-See [TLS certificates pricing](/gateway/domains/tls-certificates#tls-certificates-pricing).
-
-## 6. Remove ingress-nginx
-
-Once your old DNS record's TTL has passed and no traffic reaches ingress-nginx, delete the original `Ingress`:
-
-```bash
-kubectl delete ingress my-app -n default
-```
-
-When no `Ingress` uses the `nginx` class anymore, uninstall ingress-nginx.
-If you installed it with Helm, run `helm uninstall ingress-nginx --namespace ingress-nginx`.
+    When no `Ingress` uses the `nginx` class anymore, uninstall ingress-nginx.
+    If you installed it with Helm, run `helm uninstall ingress-nginx --namespace ingress-nginx`.
+  </Step>
+</Steps>
 
 ## Map ingress-nginx annotations to ngrok
 
