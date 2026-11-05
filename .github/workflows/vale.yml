@@ -12,7 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      pull-requests: read
+      pull-requests: write
+      checks: write
 
     steps:
       - name: Checkout code
@@ -45,7 +46,8 @@ jobs:
           # Ask the API for the PR's file list rather than diffing base.sha against
           # github.sha. github.sha is the ephemeral merge commit of the PR head into
           # main's *current* tip, so that diff also picks up every change main gained
-          # since the PR branched, so it would lint files the PR never touched.
+          # since the PR branched. Those extra files are outside the PR diff, which
+          # reviewdog cannot comment on (see filter_mode below).
           gh api --paginate \
             "repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files" \
             --jq '.[] | select(.status != "removed") | .filename' \
@@ -65,14 +67,50 @@ jobs:
             > changed_files.txt || true
 
           if [ -s changed_files.txt ]; then
+            # Build JSON array of files for vale-action's files input
+            echo "files=$(jq -R -s -c 'split("\n") | map(select(length > 0))' changed_files.txt)" >> $GITHUB_OUTPUT
             echo "has_files=true" >> $GITHUB_OUTPUT
           else
             echo "has_files=false" >> $GITHUB_OUTPUT
           fi
 
-      # Any Vale finding, at any level, in a file the PR changes fails the check.
-      # Each file runs on its own with a timeout, since one Vale process over
-      # hundreds of MDX files can stall.
+      - name: Run Vale
+        if: steps.changed-files.outputs.has_files == 'true'
+        # reviewdog exits non-zero when GitHub refuses to serve the PR's diff, which
+        # is a size failure rather than a lint one -- see the reporter note below.
+        # fail_on_error only covers findings, not this, so the step is allowed to
+        # fail without taking the job with it. Vale findings still render as check
+        # run annotations either way.
+        continue-on-error: true
+        uses: vale-cli/vale-action@v3.0.0
+        with:
+          files: ${{ steps.changed-files.outputs.files }}
+          # Reports via the Checks API rather than the PR review API. The review
+          # reporter fetches the PR's unified diff to anchor its comments, and
+          # GitHub 406s on large PRs -- there are two independent caps, 20000 diff
+          # lines and 300 changed files.
+          # This reporter avoids the fetch reviewdog makes in Run() via Diff(), which
+          # is what tripped the line cap on #2270. It does NOT avoid parsing the diff
+          # when posting, so the 300-file cap still 406s -- #2292 hit it at 353 files.
+          # Hence continue-on-error above; no reporter setting clears both.
+          reporter: github-check
+          # Report all issues in the changed files, not only newly added lines:
+          # Vale's line numbers can drift from diff positions after MDX parsing.
+          # The "Get changed files" step above already scopes Vale to the PR's own
+          # files, so diff-based filtering here would be redundant as well as
+          # size-dependent. Findings on lines inside the diff still surface inline
+          # on Files changed; the rest land in the check run summary.
+          filter_mode: nofilter
+          fail_on_error: false
+          version: 3.12.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # The step above only annotates, and can't fail the job (see its comment).
+      # This one is the gate: any Vale finding, at any level, in a file the PR
+      # changes fails the check. It lists findings in the log without annotating
+      # them, so each finding appears once on the PR. Each file runs on its own with a timeout, since
+      # one Vale process over hundreds of MDX files can stall.
       - name: Fail on Vale findings
         if: steps.changed-files.outputs.has_files == 'true'
         env:
@@ -93,8 +131,9 @@ jobs:
               continue
             fi
             if [ -n "$out" ]; then
-              # path:line:col:rule:message -> a GitHub error annotation
-              echo "$out" | sed -E 's/^([^:]+):([0-9]+):([0-9]+):([^:]+):(.*)$/::error file=\1,line=\2,col=\3,title=\4::\5/'
+              # Log only: the vale-action step already annotates each finding, and
+              # GitHub caps workflow-command annotations at 10 per step.
+              echo "$out"
               failed=1
             fi
           done < changed_files.txt
