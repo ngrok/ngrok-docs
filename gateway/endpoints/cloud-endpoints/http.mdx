@@ -34,9 +34,8 @@ on_http_request:
 
 ## URL
 
-URLs are validated differently depending on their
-[binding](/gateway/endpoints/bindings). Consult the
-following documentation for details on valid URLs for TCP endpoints:
+ngrok validates URLs differently depending on their [binding](/gateway/endpoints/bindings).
+Consult the following documentation for details on valid URLs for HTTP endpoints:
 
 - [Public Endpoint URLs](/gateway/endpoints/public-endpoints/#urls)
 - [Internal Endpoint URLs](/gateway/endpoints/internal-endpoints/#urls)
@@ -47,7 +46,8 @@ following documentation for details on valid URLs for TCP endpoints:
 #### HTTP
 
 - The hostname must be a domain with a valid [public suffix](https://publicsuffix.org/).
-- The port must be `80`. If you do not specify a port, the default `80` will be used for you.
+- The port must be `80`.
+  If you don't specify a port, ngrok uses the default `80` for you.
 
 **Examples**
 
@@ -61,19 +61,16 @@ following documentation for details on valid URLs for TCP endpoints:
 #### HTTPS
 
 - The hostname must be a domain with a valid [public suffix](https://publicsuffix.org/).
-- The port must be `443`. If you do not specify a port, the default `443` will be used for you.
+- The port must be `443`.
+  If you don't specify a port, ngrok uses the default `443` for you.
 
-#### Internal
-
-#### Kubernetes
-
-##### Valid URLs
+**Valid URLs**
 
 - https://example.ngrok.app
 - https://example.ngrok.app:443
 - https://example.party
 
-#### Invalid URLs
+**Invalid URLs**
 
 - https://example.ngrok.app:8443
 - https://example.nosuchtld
@@ -81,27 +78,23 @@ following documentation for details on valid URLs for TCP endpoints:
 
 ### Validation
 
-When you create a
-Cloud Endpoint, you must always specify both a scheme and hostname.
+When you create a Cloud Endpoint, you must always specify both a scheme and hostname.
 
-If you would like to listen for both http and https traffic, create two endpoints.
+To listen for both HTTP and HTTPS traffic, create two endpoints.
 
 #### Domains
 
-When you create a public endpoint, it must match a
-[Domain](/domains) on your account. Domains help you set up
-branded domains and manage TLS certificates. You may create wildcard endpoints as well.
+When you create a public endpoint, it must match a [Domain](/domains) on your account.
+Domains help you set up branded domains and manage TLS certificates.
+You may create wildcard endpoints as well.
 
 ### Bring your own domain 
 
-If you want to bring your own domain, first [create a Domain record and set up
-a DNS CNAME record](/gateway/domains/#branded-domains). Then
-create an endpoint on that domain by specifying a URL with a matching hostname.
+To bring your own domain, first [create a Domain record and set up a DNS CNAME record](/gateway/domains/#branded-domains).
+Then create an endpoint on that domain by specifying a URL with a matching hostname.
 
-For example, to create an HTTPS endpoint on `https://app.example.com`, [create
-a Domain](https://dashboard.ngrok.com/domains) and follow the instructions to
-set up a CNAME record. Then create a [Cloud Endpoint](https://dashboard.ngrok.com/endpoints/new) in the dashboard or use the following example to start an endpoint on
-your domain
+For example, to create an HTTPS endpoint on `https://app.example.com`, [create a Domain](https://dashboard.ngrok.com/domains) and follow the instructions to set up a CNAME record.
+Then create a [Cloud Endpoint](https://dashboard.ngrok.com/endpoints/new) in the dashboard or use the following example to start an endpoint on your domain:
 
 
 ```bash title="Command line"
@@ -112,23 +105,17 @@ ngrok api endpoints create \
 
 ### Wildcard endpoints
 
-You can create a wildcard endpoint which will receive traffic for all of the subdomains
-matching a wildcard pattern like `*.example.com`. To create a public wildcard endpoint, you must first reserve a [wildcard domain](/gateway/domains/#wildcard-domains).
+You can create a wildcard endpoint which receives traffic for all of the subdomains matching a wildcard pattern like `*.example.com`.
+To create a public wildcard endpoint, you must first reserve a [wildcard domain](/gateway/domains/#wildcard-domains).
 
-For example, if you create the wildcard endpoint `https://*.example.com`, it
-will receive traffic for `https://foo.example.com` and
-`https://bar.example.com`.
+For example, if you create the wildcard endpoint `https://*.example.com`, it receives traffic for `https://foo.example.com` and `https://bar.example.com`.
 
-- Connections to URLs which match an online wildcard endpoint will be routed to
-  it. For example, if you have created a wildcard endpoint
-  `https://*.example.com`, connections to `https://foo.bar.baz.example.com` will
-  route to it.
-- Connections are routed to the most specific online endpoint. For example, if
-  the endpoints `https://*.example.com` and `https://app.example.com` are both
-  online, a connection to `https://app.example.com` will not be routed to the
-  wildcard endpoint.
+- Connections to URLs which match an online wildcard endpoint are routed to it.
+  For example, if you have created a wildcard endpoint `https://*.example.com`, connections to `https://foo.bar.baz.example.com` route to it.
+- Connections are routed to the most specific online endpoint.
+  For example, if the endpoints `https://*.example.com` and `https://app.example.com` are both online, a connection to `https://app.example.com` isn't routed to the wildcard endpoint.
 
-You can create a Cloud Endpoint with a Wildcard domain in the [ngrok dashboard](https://dashboard.ngrok.com/endpoints/new/cloud), or with the following terminal command:
+You can create a Cloud Endpoint with a wildcard domain in the [ngrok dashboard](https://dashboard.ngrok.com/endpoints/new/cloud), or with the following terminal command:
 
 
 ```bash title="Command line"
@@ -162,8 +149,7 @@ You can secure your endpoints with [Traffic Policy](/traffic-policy) with any of
 
 #### Basic auth example
 
-Adds a username and password with the [Basic
-Auth](/gateway/traffic-policy/actions/basic-auth) Traffic Policy action.
+The following example adds a username and password with the [Basic Auth](/gateway/traffic-policy/actions/basic-auth) Traffic Policy action.
 
 <CodeGroup>
 ```yaml policy.yml
@@ -221,9 +207,7 @@ on_http_request:
 
 #### Google OAuth example
 
-The following example enforces a browser-based OAuth redirect flow in front of
-your endpoint using Google as the identity provider by using the
-[OAuth](/gateway/traffic-policy/actions/oauth) Traffic Policy action.
+The following example enforces a browser-based OAuth redirect flow in front of your endpoint using Google as the identity provider by using the [OAuth](/gateway/traffic-policy/actions/oauth) Traffic Policy action.
 
 <CodeGroup>
 ```yaml policy.yml
@@ -252,24 +236,17 @@ on_http_request:
 ```
 </CodeGroup>
 
-The `provider` value can be replaced with any of the [Supported Providers](/gateway/traffic-policy/actions/oauth/#supported-providers) that have an
-a managed app available.
+You can replace the `provider` value with any of the [Supported Providers](/gateway/traffic-policy/actions/oauth/#supported-providers) that have a managed app available.
 
 #### Rewriting the `host` header 
 
-Some application servers expect the `host` header to match a specific value
-when they receive requests and some use the `host` header to determine which of
-many sites to display. ngrok can rewrite the `host` header of incoming requests
-so that your application behaves correctly.
+Some application servers expect the `host` header to match a specific value when they receive requests and some use the `host` header to determine which of many sites to display.
+ngrok can rewrite the `host` header of incoming requests so that your application behaves correctly.
 
-When you rewrite the `host` header, ngrok also rewrites the `location` header of
-HTTP responses automatically to match the hostname of your Endpoint URL.
+When you rewrite the `host` header, ngrok also rewrites the `location` header of HTTP responses automatically to match the hostname of your Endpoint URL.
 
-The following example rewrites the `host` header to the value `localhost` using
-the [`add-headers`](/gateway/traffic-policy/actions/add-headers) Traffic Policy action.
-Adding the `Host` header [is a special
-case](/gateway/traffic-policy/actions/add-headers/#special-cases) that replaces the existing
-`Host` header instead of appending a second value.
+The following example rewrites the `host` header to the value `localhost` using the [`add-headers`](/gateway/traffic-policy/actions/add-headers) Traffic Policy action.
+Adding the `Host` header [is a special case](/gateway/traffic-policy/actions/add-headers/#special-cases) that replaces the existing `Host` header instead of appending a second value.
 
 <CodeGroup>
 ```yaml policy.yml
@@ -304,15 +281,13 @@ on_http_request:
 
 ### Traffic Inspector
 
-[Traffic Inspector](/obs/traffic-inspection/) gives you a real-time view in the
-ngrok dashboard of the HTTP traffic flowing through your HTTP/S endpoints. You
-can choose whether Traffic Inspector captures only request metadata or full
-request and response bodies.
+[Traffic Inspector](/obs/traffic-inspection/) gives you a real-time view in the ngrok dashboard of the HTTP traffic flowing through your HTTP/S endpoints.
+You can choose whether Traffic Inspector captures only request metadata or full request and response bodies.
 
 ### Log export logs
 
-You can export logs of traffic to HTTP/S endpoints with [ngrok's events
-system](/obs/). The following events are published for log exporting:
+You can export logs of traffic to HTTP/S endpoints with [ngrok's events system](/obs/).
+ngrok publishes the following events for log exporting:
 
 | Log                                                                      | When                                                              |
 | ------------------------------------------------------------------------ | ----------------------------------------------------------------- |
@@ -327,51 +302,43 @@ HTTP/S endpoints are standards-compliant HTTP reverse proxies.
 
 - HTTP/S endpoints support HTTP/1.1.
 - HTTPS endpoints support HTTP/1.1 and HTTP/2.
-- HTTP/1.0, HTTP/3 and QUIC are **not** supported.
+- HTTP/1.0, HTTP/3, and QUIC are **not** supported.
 
 ### HTTP/2
 
-HTTPS endpoints will automatically use HTTP/2 for all connections if the client
-supports it. Client support is determined via standard ALPN negotiation.
+HTTPS endpoints automatically use HTTP/2 for all connections if the client supports it.
+Client support is determined via standard ALPN negotiation.
 
-HTTP/2 is used between the client and your endpoint even even if your upstream
-service does not support HTTP/2.
+HTTP/2 is used between the client and your endpoint even if your upstream service doesn't support HTTP/2.
 
 To configure the use of HTTP/2 when sending traffic to an upstream service, consider [using an Agent Endpoint](/gateway/endpoints/http/#http2-forwarding).
 
 ### WebSockets
 
-WebSocket connections are supported out-of-the-box. No configuration is required.
+WebSocket connections are supported out-of-the-box.
+No configuration is required.
 
 ### Hop by hop headers
 
-ngrok does not forward any [hop-by-hop
-headers](https://datatracker.ietf.org/doc/html/rfc2616#section-13.5.1) to the
-upstream service. As an exception, `Connection: upgrade` headers are forwarded
-to support [websockets](#websockets).
+ngrok doesn't forward any [hop-by-hop headers](https://datatracker.ietf.org/doc/html/rfc2616#section-13.5.1) to the upstream service.
+As an exception, ngrok forwards `Connection: upgrade` headers to support [WebSockets](#websockets).
 
-For information on headers added automatically by ngrok, see
-[Upstream Headers](#upstream-headers).
+For information on headers added automatically by ngrok, see [Upstream Headers](#upstream-headers).
 
 ### Persistent connections
 
-When a connection is made to HTTP/S ngrok endpoints with HTTP/1.1, ngrok may
-choose to use persistent connections (such as HTTP keep-alive) to improve the
-performance of future requests from the same client if the client supports it.
+When a connection is made to HTTP/S ngrok endpoints with HTTP/1.1, ngrok may choose to use persistent connections (such as HTTP keep-alive) to improve the performance of future requests from the same client if the client supports it.
 
-This behavior is not guaranteed and it is not configurable.
+This behavior isn't guaranteed and it isn't configurable.
 
-See [RFC 7230](https://datatracker.ietf.org/doc/html/rfc7230#section-6.3) for
-additional details.
+See [RFC 7230](https://datatracker.ietf.org/doc/html/rfc7230#section-6.3) for additional details.
 
 ### Well known URIs
 
 #### `/.well-known/acme-challenge`
 
-ngrok takes over handling of this path of any HTTP endpoint matching a
-[Domain](/domains) with automated certificate management
-enabled. You may disable this behavior by uploading your own certificate on the
-matching Domain.
+ngrok takes over handling of this path of any HTTP endpoint matching a [Domain](/domains) with automated certificate management enabled.
+You may disable this behavior by uploading your own certificate on the matching Domain.
 
 ## TLS
 
@@ -379,39 +346,32 @@ ngrok automatically handles TLS (SSL) certificate management and termination for
 There is nothing to set up, configure, or manage.
 
 TLS connections to `https` endpoints are terminated at ngrok's cloud service.
-If you wish to terminate TLS traffic at the ngrok cloud service or in your upstream
-application, use a [TLS Endpoint](/gateway/endpoints/tls) instead.
+If you wish to terminate TLS traffic at the ngrok cloud service or in your upstream application, use a [TLS Endpoint](/gateway/endpoints/tls) instead.
 
-Consult the following documentation for additional details on how ngrok handles
-TLS termination and certificiate management:
+Consult the following documentation for additional details on how ngrok handles TLS termination and certificate management:
 
 - [TLS Certificates](/gateway/domains/tls-certificates)
 - [TLS Termination](/gateway/domains/tls-termination)
 
 ## Upstream headers
 
-ngrok adds headers to each HTTP request with information about the original
-client IP, request scheme, and request `host` header value.
+ngrok adds headers to each HTTP request with information about the original client IP, request scheme, and request `host` header value.
 
 | Header              | Description                                                                                                                                 |
 | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| `x-forwarded-for`   | The IP address of the client who initiated the request. If this header exists on the original request, ngrok will append a new value.       |
-| `x-forwarded-proto` | The scheme of the original request, either `http` or `https`. If this header exists on the original request, ngrok will append a new value. |
+| `x-forwarded-for`   | The IP address of the client who initiated the request. If this header exists on the original request, ngrok appends a new value.           |
+| `x-forwarded-proto` | The scheme of the original request, either `http` or `https`. If this header exists on the original request, ngrok appends a new value.     |
 | `x-forwarded-host`  | The header from the client's request if it existed, otherwise is set to the request's `Host` header value.                                  |
 
-Because ngrok appends values to `x-forwarded-for` and `x-forwarded-proto`, be
-sure to use the last value of the header in your application code to read the
-values injected by ngrok.
+Because ngrok appends values to `x-forwarded-for` and `x-forwarded-proto`, be sure to use the last value of the header in your application code to read the values injected by ngrok.
 
-You may remove these headers with the [Remove
-Headers](/gateway/traffic-policy/actions/remove-headers/) Traffic Policy action.
+You may remove these headers with the [Remove Headers](/gateway/traffic-policy/actions/remove-headers/) Traffic Policy action.
 
 ## Limits & timeouts
 
-[Contact Support](mailto:support@ngrok.com) if you need to configure limits and
-timeouts on connections to HTTP endpoints.
+[Contact Support](mailto:support@ngrok.com) if you need to configure limits and timeouts on connections to HTTP endpoints.
 
-#### Connection
+### Connection
 
 | Limit     | Name                | Notes                                                        |
 | --------- | ------------------- | ------------------------------------------------------------ |
@@ -419,11 +379,11 @@ timeouts on connections to HTTP endpoints.
 | 5 minutes | Server Idle Timeout | Time since data was last transmitted by the upstream service |
 | No limit  | Data transmitted    | Data transmitted by the client or upstream service           |
 
-#### TLS
+### TLS
 
 <TlsLimits />
 
-#### HTTP
+### HTTP
 
 | Limit      | Name               | Notes                                         |
 | ---------- | ------------------ | --------------------------------------------- |
@@ -439,7 +399,7 @@ timeouts on connections to HTTP endpoints.
 | No timeout | Request Header Timeout | Time to read the HTTP request header from the client |
 | No limit   | Request Body Size      |                                                      |
 
-#### HTTP response
+### HTTP response
 
 | Limit      | Name                    | Notes                                                 |
 | ---------- | ----------------------- | ----------------------------------------------------- |
@@ -450,32 +410,27 @@ timeouts on connections to HTTP endpoints.
 
 ## Errors
 
-If ngrok fails to handle an HTTP request it will set the `ngrok-error-code`
-header in the HTTP response with a [unique ngrok Error Code](/errors/)
-describing the failure.
+If ngrok fails to handle an HTTP request, it sets the `ngrok-error-code` header in the HTTP response with a [unique ngrok Error Code](/errors/) describing the failure.
 
-ngrok guarantees that the upstream service may never set the `ngrok-error-code`
-HTTP response header so you know reliably that it was set by ngrok.
+ngrok guarantees that the upstream service may never set the `ngrok-error-code` HTTP response header so you know reliably that it was set by ngrok.
 
 ngrok may return an error under the following conditions:
 
-- Your upstream service timed out or rejected the connection
-- Your upstream service returned a response that was not valid HTTP
+- Your upstream service timed out or rejected the connection.
+- Your upstream service returned a response that wasn't valid HTTP.
 - A [Traffic Policy](/traffic-policy) action rejected the request.
 - [Traffic Policy](/traffic-policy) execution encountered a runtime error.
-- ngrok encountered an internal error
+- ngrok encountered an internal error.
 
 ## API
 
-HTTP/S Endpoints can be created programmatically. Consult the documentation on
-[Endpoint APIs](/api-reference/endpoints/list.
+You can create HTTP/S Endpoints programmatically.
+Consult the documentation on [Endpoint APIs](/api-reference/endpoints/list.
 
 ## HTTP Cloud Endpoint pricing
 
-HTTP/S endpoints are available on all plans. Consult the [Endpoints
-Pricing](/gateway/endpoints/#pricing) documentation for
-billing details.
+HTTP/S endpoints are available on all plans.
+Consult the [Endpoints Pricing](/gateway/endpoints/#pricing) documentation for billing details.
 
-See [Domains pricing](/gateway/domains/#pricing) for details on
-pricing for custom domains, wildcard endpoints, and more.
+See [Domains pricing](/gateway/domains/#pricing) for details on pricing for custom domains, wildcard endpoints, and more.
 
