@@ -261,6 +261,11 @@ footer#footer a {
   }
 }
 
+/* Keep a card's title or description from ending on a lone word. */
+.card :is([data-component-part="card-title"], [data-component-part="card-content"]) {
+  text-wrap: pretty;
+}
+
 .nav-tabs-item > div.absolute.bottom-0 {
   height: 2px !important;
 }
@@ -337,22 +342,27 @@ footer#footer a {
 }
 
 /* Recolor each product section to its hue: links, icons, the active tab and
-   sidebar item, and the TOC. Mintlify reads these variables as RGB triplets.
+   sidebar item, and the TOC. The `.product-*` classes apply the same hue to
+   one block of a page, such as a product's cards on the docs home.
+   Mintlify reads these variables as RGB triplets.
    Text uses the 700 shade where 600 falls below 4.5:1 on white. Production
    serves the docs under /docs, so match both link prefixes. */
-html:has(.nav-tabs-item[data-active="true"]:is([href^="/gateway/"], [href^="/docs/gateway/"])) {
+html:has(.nav-tabs-item[data-active="true"]:is([href^="/gateway/"], [href^="/docs/gateway/"])),
+.product-gateway {
   --primary: 4 120 87;
   --primary-light: 52 211 153;
   --primary-dark: 4 120 87;
 }
 
-html:has(.nav-tabs-item[data-active="true"]:is([href^="/ai-gateway/"], [href^="/docs/ai-gateway/"])) {
+html:has(.nav-tabs-item[data-active="true"]:is([href^="/ai-gateway/"], [href^="/docs/ai-gateway/"])),
+.product-ai-gateway {
   --primary: 180 83 9;
   --primary-light: 251 191 36;
   --primary-dark: 180 83 9;
 }
 
-html:has(.nav-tabs-item[data-active="true"]:is([href^="/share-localhost/"], [href^="/docs/share-localhost/"])) {
+html:has(.nav-tabs-item[data-active="true"]:is([href^="/share-localhost/"], [href^="/docs/share-localhost/"])),
+.product-share-localhost {
   --primary: 147 51 234;
   --primary-light: 192 132 252;
   --primary-dark: 147 51 234;
@@ -471,10 +481,10 @@ html:has(.nav-tabs-item[data-active="true"]:is([href^="/share-localhost/"], [hre
 }
 
 /* Center the article itself, with the TOC to its right. Reserve space for
-   the inset sidebar on smaller desktops. Landing, wide, and mobile layouts
-   keep Mintlify's defaults. */
+   the inset sidebar on smaller desktops. Landing and mobile layouts keep
+   Mintlify's defaults. */
 @media (min-width: 64rem) {
-  #navbar.is-not-custom.is-not-center.is-not-wide ~ div:has(> #sidebar) {
+  #navbar.is-not-custom.is-not-center ~ div:has(> #sidebar) {
     --experiment-sidebar-width: 18rem;
     --experiment-article-width: 52rem;
     --experiment-content-width: 74rem;
@@ -482,8 +492,24 @@ html:has(.nav-tabs-item[data-active="true"]:is([href^="/share-localhost/"], [hre
     padding-inline: 1rem;
   }
 
-  #navbar.is-not-custom.is-not-center.is-not-wide ~ div > #sidebar {
+  #navbar.is-not-custom.is-not-center ~ div > #sidebar {
     width: var(--experiment-sidebar-width);
+  }
+
+  /* Wide pages have no TOC: center their wider article on the viewport.
+     Mintlify keeps a 3rem gap for the missing TOC to the article's right. */
+  #navbar.is-not-custom.is-wide ~ div:has(> #sidebar) > #content-container {
+    --experiment-wide-width: 54rem;
+    flex: none;
+    width: min(
+      calc(var(--experiment-wide-width) + 3rem),
+      calc(100% - var(--experiment-sidebar-width) - 2rem)
+    );
+    margin-left: max(
+      2rem,
+      calc((100% - var(--experiment-wide-width)) / 2 - var(--experiment-sidebar-width))
+    );
+    margin-right: auto;
   }
 
   #navbar.is-not-custom.is-not-center.is-not-wide ~ div:has(> #sidebar) > #content-container {
@@ -500,7 +526,7 @@ html:has(.nav-tabs-item[data-active="true"]:is([href^="/share-localhost/"], [hre
     margin-right: auto;
   }
 
-  #navbar.is-not-custom.is-not-center.is-not-wide ~ div #content-area {
+  #navbar.is-not-custom.is-not-center ~ div #content-area {
     flex: 1;
     min-width: 0;
     width: auto;
