@@ -11,11 +11,11 @@ description: Learn how to configure single sign-on for the ngrok dashboard using
 
 You can configure your account to use one or more single sign-on (SSO) identity providers (IdPs).
 Once enabled, users can use the IdP to log into your ngrok dashboard.
-You can also configure enforcement settings to require that users must use SSO to log into your ngrok account.
+You can also configure enforcement settings to require that users use SSO to log into your ngrok account.
 
 After you configure SSO, you can also enable [SCIM](#scim) to automate user provisioning of your ngrok account.
 
-Set up SSO on the [Account Settings page](https://dashboard.ngrok.com/settings) of your ngrok dashboard.
+Set up SSO in the **Single Sign-On (SSO)** section of [Settings > Auth](https://dashboard.ngrok.com/settings/auth) in your ngrok dashboard.
 
 ## Verified identity providers
 
@@ -31,42 +31,62 @@ The following table lists the identity providers that are verified to work with 
 
 ## Enforcement
 
-Your account sets an SSO Enforcement policy which controls whether users are required to log in with SSO.
+Your account sets an SSO Enforcement policy that controls whether users must log in with SSO.
 
 **Mixed Mode**: In mixed mode, users who existed on your account before you set up SSO can continue using their existing credentials to log in.
 All new users must use SSO.
 
-**SSO Enforced**: In SSO enforced mode, all users must use your SSO IdP to log in and their existing credentials no longer allow them to log into your account.
+**SSO Enforced**: In SSO enforced mode, all users must use your SSO IdP to log in, and their existing credentials no longer allow them to log into your account.
 
 Keep in mind that after you add an IdP, your account is still in Mixed Mode and users can continue to log in with their previous credentials.
-When you're confident that your SSO integration is configured correctly, you can switch to SSO Enforced mode.
-This helps you avoid inadvertently locking yourself or your users out of the account.
+Once you're confident that your SSO integration is configured correctly, you can switch to SSO Enforced mode.
+This helps you avoid accidentally locking yourself or your users out of the account.
 
 ## IdP-initiated login
 
 ngrok supports IdP-initiated login flows for SAML IdPs.
-An IdP-initiated login flow is one in which users can log into your ngrok account by clicking a link in your IdP's dashboard.
+In an IdP-initiated flow, users sign in to your ngrok account by clicking the ngrok app in your IdP's dashboard, such as the Okta or Microsoft Entra ID app launcher, instead of starting at [login.ngrok.com](https://login.ngrok.com).
 
 You can enable IdP-initiated login on a per-IdP basis.
-The OpenID Connect protocol doesn't support IdP-initiated login, so ngrok doesn't support it for IdPs you connect that way.
+In the IdP's settings under **Options**, select **IdP Initiated Auth**.
+It's selected by default for new IdPs.
+Configure your IdP's ngrok app with the **ACS URL** and **SP Entity ID** that the dashboard shows for that IdP.
+Existing SAML app configurations, including ones that point to `idp.ngrok.com`, keep working without changes.
+
+The OpenID Connect protocol doesn't support IdP-initiated login, so it isn't supported for IdPs you connect that way.
+For OpenID Connect IdPs, allow the **Redirect URI** that the dashboard shows, `https://login.ngrok.com/sso/callback`.
+The older `https://idp.ngrok.com/oauth2/callback` redirect URI no longer works.
 
 ## User provisioning
 
-When using SSO, you can configure how ngrok provisions and deprovisions users from your ngrok account.
+When you use SSO, you can configure how ngrok provisions and deprovisions users from your ngrok account.
 You can configure your account to provision users in one of three modes:
 
 - Explicitly invited by an existing member of your account
 - Just-in-time (JiT) provisioned after they successfully log in with SSO
 - Managed through your IdP's [SCIM integration](#scim)
 
-ngrok recommends that you choose either JiT or SCIM.
+ngrok recommends choosing either JiT or SCIM.
 See [User Provisioning](/iam/users/#provisioning) for more details.
 
 ## Multiple IdPs
 
 You can configure multiple IdPs to use for SSO.
 If you do, when a user tries to log in, ngrok asks them to choose which provider to use to log in.
-ngrok shows the user the description you provided when configuring the IdP in your account, so you can use it to distinguish similar providers.
+ngrok shows the user the description you provided when you configured the IdP in your account, so you can use it to distinguish similar providers.
+
+## Users in multiple accounts
+
+A user can belong to more than one ngrok account, and each account applies its own SSO settings to that user.
+Signing in through one account's IdP doesn't satisfy another account's SSO requirement.
+
+- When you sign in with SSO, ngrok signs you in to the account that owns that IdP.
+  You can also open your other accounts that don't enforce SSO.
+- When you switch to an account that enforces SSO, ngrok sends you to that account's IdP to sign in, even if you're already signed in to ngrok.
+- If your email address is connected to more than one IdP, ngrok shows a **Select an identity provider** page when you sign in with SSO.
+
+For example, say you belong to a personal account and to your company's account, which enforces SSO with Okta.
+You can sign in with your password and use the personal account, but when you open the company account, ngrok sends you to Okta.
 
 ## SCIM
 
@@ -81,13 +101,13 @@ https://api.ngrok.com/scim/v2/
 
 Your IdP authenticates to ngrok's SCIM API with [API Keys](/api/#authentication) like any other ngrok API client.
 
-If you use [API IP Restrictions](/api/#ip-restrictions) with SCIM, ensure that your IdP's SCIM client IPs are allowed.
+If you use [API IP Restrictions](/api/#ip-restrictions) with SCIM, make sure you allow your IdP's SCIM client IPs.
 
 ngrok doesn't support SCIM provisioning of users with passwords for authentication.
-For that reason, you must first configure an SSO identity provider before you can configure a SCIM integration.
+For that reason, you must configure an SSO identity provider before you can configure a SCIM integration.
 
 ngrok's SCIM implementation is limited to the operations necessary to support user provisioning and deprovisioning.
-For instance, it doesn't implement bulk operations or change password behavior, sorting, or etags.
+For example, it doesn't implement bulk operations, change password behavior, sorting, or etags.
 It doesn't support Groups.
 
 ngrok's SCIM implementation supports three properties on the User schema: `userName`, `displayName`, and `active`.

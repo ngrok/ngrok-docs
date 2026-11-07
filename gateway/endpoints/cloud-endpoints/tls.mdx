@@ -68,18 +68,25 @@ When you use end-to-end encryption, the ngrok cloud service can't see payloads t
 
 Consult the documentation on [TLS Termination Locations](/gateway/domains/tls-termination/#termination-location) for additional details.
 
-#### Example
+### Example
 
 To terminate TLS Cloud Endpoint traffic at an agent or an upstream service, you must create a Cloud Endpoint, then use the [`forward-internal`](/gateway/traffic-policy/actions/forward-internal/) action to forward traffic to an internal endpoint.
 
-1. Create a TLS Cloud Endpoint [in the dashboard](https://dashboard.ngrok.com/endpoints/new), or with the following CLI command, adding your Traffic Policy file:
+<Steps titleSize="h4">
+  <Step title="Create a TLS Cloud Endpoint">
+    Create a TLS Cloud Endpoint [in the dashboard](https://dashboard.ngrok.com/endpoints/new), or with the following CLI command, adding your Traffic Policy file:
+
 		```bash title="Command line"
 		ngrok api endpoints create \
 			--url tls://{your-domain-here}.com \
 			--traffic-policy "$(<traffic-policy.yml)"
 		```
-2. Create a Traffic Policy file to forward traffic to the internal endpoint, adding `.internal` to your domain for the URL.
-   For example, if you're using `example.ngrok.dev`, your internal endpoint URL should be `tls://example.internal`:
+  </Step>
+
+  <Step title="Create a Traffic Policy file">
+    Create a Traffic Policy file to forward traffic to the internal endpoint, adding `.internal` to your domain for the URL.
+    For example, if you're using `example.ngrok.dev`, your internal endpoint URL should be `tls://example.internal`:
+
     ```yaml title="traffic-policy.yml" mode=traffic-policy
     on_tcp_connect:
       - actions:
@@ -87,7 +94,11 @@ To terminate TLS Cloud Endpoint traffic at an agent or an upstream service, you 
             config:
               url: tls://{your-domain-here}.internal:{your-port-here}
     ```
-3. Create an internal endpoint using the same URL that your Traffic Policy references.
+  </Step>
+
+  <Step title="Create an internal endpoint">
+    Create an internal endpoint using the same URL that your Traffic Policy references.
+
     <Tabs>
       <Tab title="At the upstream">
       ```bash
@@ -106,6 +117,8 @@ To terminate TLS Cloud Endpoint traffic at an agent or an upstream service, you 
       ```
       </Tab>
     </Tabs>
+  </Step>
+</Steps>
 
 To learn more about terminating TLS at the agent, see the [Agent Endpoint TLS documentation](/gateway/endpoints/tls#termination).
 

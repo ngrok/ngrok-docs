@@ -108,7 +108,8 @@ jobs:
 
       # The step above only annotates, and can't fail the job (see its comment).
       # This one is the gate: any Vale finding, at any level, in a file the PR
-      # changes fails the check. Each file runs on its own with a timeout, since
+      # changes fails the check. It lists findings in the log without annotating
+      # them, so each finding appears once on the PR. Each file runs on its own with a timeout, since
       # one Vale process over hundreds of MDX files can stall.
       - name: Fail on Vale findings
         if: steps.changed-files.outputs.has_files == 'true'
@@ -130,8 +131,9 @@ jobs:
               continue
             fi
             if [ -n "$out" ]; then
-              # path:line:col:rule:message -> a GitHub error annotation
-              echo "$out" | sed -E 's/^([^:]+):([0-9]+):([0-9]+):([^:]+):(.*)$/::error file=\1,line=\2,col=\3,title=\4::\5/'
+              # Log only: the vale-action step already annotates each finding, and
+              # GitHub caps workflow-command annotations at 10 per step.
+              echo "$out"
               failed=1
             fi
           done < changed_files.txt
