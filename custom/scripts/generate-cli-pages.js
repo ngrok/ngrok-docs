@@ -21,7 +21,7 @@
  */
 
 const path = require("path");
-const { root, readOptional, loadData, writeOrCheck, checkProseKeys } = require("./lib/generated-docs");
+const { root, readOptional, loadData, writeOrCheck, orphanedProse } = require("./lib/generated-docs");
 
 const proseDir = path.join(root, "custom/cli/commands");
 
@@ -122,7 +122,7 @@ function main() {
   };
   for (const cmd of loadData("cli", 1)) walk(cmd);
 
-  checkProseKeys(proseDir, "", new Set(commands.map(proseKey)));
+  const orphans = orphanedProse(proseDir, "", new Set(commands.map(proseKey)));
 
   const isApi = (cmd) => cmd.full_name.startsWith("ngrok api");
   const want = new Map([
@@ -130,7 +130,7 @@ function main() {
     [path.join(root, "gateway/agent/cli-api.mdx"), API_PAGE_HEAD + pageBody(commands.filter(isApi)) + "\n"],
   ]);
 
-  writeOrCheck({ name: "CLI page", script: "generate-cli-pages", want });
+  writeOrCheck({ name: "CLI page", script: "generate-cli-pages", want, orphans });
 }
 
 main();

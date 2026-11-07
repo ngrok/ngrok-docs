@@ -23,7 +23,7 @@
 
 const fs = require("fs");
 const path = require("path");
-const { root, readOptional, loadData, writeOrCheck, checkProseKeys } = require("./lib/generated-docs");
+const { root, readOptional, loadData, writeOrCheck, orphanedProse } = require("./lib/generated-docs");
 
 const pagesDir = path.join(root, "errors");
 const listFile = path.join(root, "snippets/errors/_err_ngrok_list.mdx");
@@ -161,8 +161,7 @@ function main() {
   }
 
   const slugs = new Set(errors.map((err) => err.slug));
-  checkProseKeys(detailsDir, "err_ngrok_", slugs);
-  checkProseKeys(pageHeadsDir, "err_ngrok_", slugs);
+  const orphans = [...orphanedProse(detailsDir, "err_ngrok_", slugs), ...orphanedProse(pageHeadsDir, "err_ngrok_", slugs)];
 
   const want = new Map([[listFile, list(errors)]]);
   for (const err of errors) want.set(path.join(pagesDir, `err_ngrok_${err.slug}.mdx`), page(err));
@@ -174,7 +173,7 @@ function main() {
     .map((f) => path.join(pagesDir, f))
     .filter((f) => !want.has(f));
 
-  writeOrCheck({ name: "error page", script: "generate-error-pages", want, stale });
+  writeOrCheck({ name: "error page", script: "generate-error-pages", want, stale, orphans });
 }
 
 main();
