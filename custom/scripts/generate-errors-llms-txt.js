@@ -103,4 +103,47 @@ const index = [
 ];
 fs.writeFileSync(path.join(errorsDir, "llms.txt"), index.join("\n") + "\n");
 
-console.log(`Wrote errors/llms.txt and ${sortedGroups.length} sub-indexes covering ${total} errors.`);
+// List every error page in a hidden, searchable group of the Errors navigation.
+// Mintlify then includes the pages in its own llms.txt, the sitemap, and site
+// search without showing them in the sidebar. Only the pages array that holds
+// errors/index is rewritten, so the rest of docs.json keeps its formatting.
+// The boost below 1 keeps error pages from crowding out guides in site search
+// for general words, while a search for an error code still ranks its page first.
+const NAV_GROUP = "Error codes";
+const NAV_GROUP_SEARCH_BOOST = 0.75;
+const docsJsonPath = path.join(__dirname, "../../docs.json");
+const docsJson = fs.readFileSync(docsJsonPath, "utf8");
+
+const pagesKey = docsJson.lastIndexOf('"pages": [', docsJson.indexOf('"errors/index"'));
+if (pagesKey === -1) throw new Error('Could not find the navigation pages array with "errors/index" in docs.json');
+const arrayStart = docsJson.indexOf("[", pagesKey);
+let arrayEnd = arrayStart;
+for (let depth = 0, inString = false; ; arrayEnd++) {
+  const char = docsJson[arrayEnd];
+  if (inString) {
+    if (char === "\\") arrayEnd++;
+    else if (char === '"') inString = false;
+  } else if (char === '"') inString = true;
+  else if (char === "[") depth++;
+  else if (char === "]" && --depth === 0) break;
+}
+
+const pages = JSON.parse(docsJson.slice(arrayStart, arrayEnd + 1)).filter((page) => page.group !== NAV_GROUP);
+pages.push({
+  group: NAV_GROUP,
+  hidden: true,
+  searchable: true,
+  boost: NAV_GROUP_SEARCH_BOOST,
+  pages: sortedGroups.map((group) => ({
+    group: group.title,
+    pages: group.errors.map((error) => `errors/${error.slug}`),
+  })),
+});
+
+const indent = docsJson.slice(docsJson.lastIndexOf("\n", pagesKey) + 1, pagesKey);
+const pagesJson = JSON.stringify(pages, null, 2).replace(/\n/g, `\n${indent}`);
+fs.writeFileSync(docsJsonPath, docsJson.slice(0, arrayStart) + pagesJson + docsJson.slice(arrayEnd + 1));
+
+console.log(
+  `Wrote errors/llms.txt, ${sortedGroups.length} sub-indexes, and the "${NAV_GROUP}" navigation group covering ${total} errors.`
+);
