@@ -8,6 +8,13 @@ on:
   schedule:
     - cron: '30 10 * * *'  # 10:30 AM UTC daily (30 min after buildkite cron)
   workflow_dispatch: # Allow manual triggering
+  push:
+    branches:
+      - ngrokrock/dev-gen-changes
+
+concurrency:
+  group: auto-gen-docs-pr
+  cancel-in-progress: false
 
 jobs:
   check-and-create-pr:
@@ -29,6 +36,27 @@ jobs:
       - name: Fetch dev-gen-changes branch
         run: |
           git fetch origin ngrokrock/dev-gen-changes:ngrokrock/dev-gen-changes
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: ".nvmrc"
+
+      # The monorepo pushes data/generated/*.json. Build the pages from it on
+      # the same branch, so the PR holds both the data and the pages.
+      - name: Generate pages from monorepo data
+        run: |
+          git checkout ngrokrock/dev-gen-changes
+          if [ -f custom/scripts/generate-error-pages.js ]; then
+            node custom/scripts/generate-error-pages.js
+          fi
+          if [ -n "$(git status --porcelain)" ]; then
+            git config user.name 'ngrok-docs-bot[bot]'
+            git config user.email 'ngrok-docs-bot[bot]@users.noreply.github.com'
+            git add -A
+            git commit -m 'docs: generate pages from monorepo data'
+            git push origin HEAD:refs/heads/ngrokrock/dev-gen-changes
+          fi
+          git checkout main
 
       - name: Check for changes
         id: check
