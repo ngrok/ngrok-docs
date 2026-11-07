@@ -68,28 +68,37 @@ pnpm traffic-policy-actions
 
 The **CI Checks** GitHub Action runs `pnpm traffic-policy-actions --check`, which fails when `actions.json` disagrees with an action page or the snippets are out of date.
 
-## Error pages
+## Pages generated from monorepo data
 
-The ngrok monorepo ships facts about each error, such as its code and message, in `data/generated/errors.json`.
-This repository owns how they're presented.
-`generate-error-pages.js` reads that file and writes every `errors/err_ngrok_*.mdx` page and the `snippets/errors/_err_ngrok_list.mdx` table.
-It also removes the page of an error that's no longer in the data.
+The ngrok monorepo ships facts as JSON in `data/generated/`, and this repository owns how they're presented.
+Three scripts build pages from that data:
 
+- `generate-error-pages.js` reads `errors.json` and writes every `errors/err_ngrok_*.mdx` page and the `snippets/errors/_err_ngrok_list.mdx` table.
+- `generate-cli-pages.js` reads `cli.json` and writes `gateway/agent/cli.mdx` and `gateway/agent/cli-api.mdx`.
+- `generate-event-pages.js` reads `events.json` and writes `snippets/obs/_event-types-tables.mdx`, which `obs/events/reference.mdx` imports, and the field table of each API object it uses.
+
+Each script also removes the files of anything that's no longer in the data.
 Don't edit the generated files, because the next run overwrites them.
-To explain an error, add or edit `custom/errors/details/err_ngrok_<code>.mdx`, which goes on the page after the error message.
-`custom/errors/pages/err_ngrok_<code>.mdx` replaces the generated top of a page.
-Mintlify doesn't serve `custom/errors/`, so these files only appear on the pages they're part of.
+Add or edit prose in `custom/` instead:
+
+- `custom/errors/details/err_ngrok_<code>.mdx` explains an error, after its message.
+- `custom/errors/pages/err_ngrok_<code>.mdx` replaces the generated top of an error page.
+- `custom/cli/commands/<command>.mdx` goes after a command's description, such as `ngrok-config-add-authtoken.mdx`.
+
+Mintlify doesn't serve `custom/errors/` or `custom/cli/`, so these files only appear on the pages they're part of.
 
 Regenerate the pages:
 
 ```sh
 pnpm run generate-error-pages
+pnpm run generate-cli-pages
+pnpm run generate-event-pages
 ```
 
 To list the errors that have no explanation yet, run `pnpm run generate-error-pages --missing`.
 
-The **Auto-generate Docs PR** GitHub Action runs the script whenever the monorepo pushes to `ngrokrock/dev-gen-changes`, so the auto-generated docs PR holds both the data and the pages.
-The **CI Checks** GitHub Action runs `pnpm generate-error-pages --check`, which fails when a committed page doesn't match the data and the files in `custom/errors/`.
+The **Auto-generate Docs PR** GitHub Action runs the scripts whenever the monorepo pushes to `ngrokrock/dev-gen-changes`, so the auto-generated docs PR holds both the data and the pages.
+The **CI Checks** GitHub Action runs each script with `--check`, which fails when a committed file doesn't match the data and the prose in `custom/`.
 
 ## Errors llms.txt
 

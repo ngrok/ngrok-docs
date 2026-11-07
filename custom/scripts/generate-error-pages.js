@@ -23,15 +23,12 @@
 
 const fs = require("fs");
 const path = require("path");
+const { root, readOptional, loadData, writeOrCheck, checkProseKeys } = require("./lib/generated-docs");
 
-const root = path.join(__dirname, "../..");
-const dataFile = path.join(root, "data/generated/errors.json");
 const pagesDir = path.join(root, "errors");
 const listFile = path.join(root, "snippets/errors/_err_ngrok_list.mdx");
 const detailsDir = path.join(root, "custom/errors/details");
 const pageHeadsDir = path.join(root, "custom/errors/pages");
-
-const SUPPORTED_SCHEMA_VERSION = 1;
 
 // Go's encoding/json escapes these characters. Matching it keeps the output
 // identical to what the monorepo generated before this script existed.
@@ -103,8 +100,6 @@ const jsonLd = (err) =>
 
 const isNamed = (err) => !/^\d+$/.test(err.code);
 
-const readOptional = (file) => (fs.existsSync(file) ? fs.readFileSync(file, "utf8") : null);
-
 function pageHead(err) {
   const custom = readOptional(path.join(pageHeadsDir, `err_ngrok_${err.slug}.mdx`));
   if (custom !== null) return custom.trim();
@@ -150,43 +145,24 @@ const breakableCode = (err) => err.id.replaceAll("_", "_<wbr />");
 
 const list = (errors) =>
   `
-{/* vale off */}
-
 | Code | Message |
 |------|---------|
 ${errors.map((err) => `| [${breakableCode(err)}](/errors/err_ngrok_${err.slug}) | ${shortMessage(err)} |`).join("\n")}
-
-{/* vale on */}
 `;
 
 function main() {
-  const mode = process.argv[2];
-  const data = JSON.parse(fs.readFileSync(dataFile, "utf8"));
-  if (data.schema_version !== SUPPORTED_SCHEMA_VERSION) {
-    throw new Error(
-      `${path.relative(root, dataFile)} has schema_version ${data.schema_version}; ` +
-        `this script supports ${SUPPORTED_SCHEMA_VERSION}`,
-    );
-  }
-  const errors = data.items;
-  const slugs = new Set(errors.map((err) => err.slug));
+  const errors = loadData("errors", 1);
 
-  if (mode === "--missing") {
+  if (process.argv.includes("--missing")) {
     for (const err of errors) {
       if (!fs.existsSync(path.join(detailsDir, `err_ngrok_${err.slug}.mdx`))) console.log(err.id);
     }
     return;
   }
 
-  // Prose for a code that no longer exists would never be published.
-  for (const dir of [detailsDir, pageHeadsDir]) {
-    for (const file of fs.readdirSync(dir)) {
-      const slug = file.match(/^err_ngrok_(.+)\.mdx$/)?.[1];
-      if (!slug || !slugs.has(slug)) {
-        throw new Error(`${path.relative(root, path.join(dir, file))} does not match an error in errors.json`);
-      }
-    }
-  }
+  const slugs = new Set(errors.map((err) => err.slug));
+  checkProseKeys(detailsDir, "err_ngrok_", slugs);
+  checkProseKeys(pageHeadsDir, "err_ngrok_", slugs);
 
   const want = new Map([[listFile, list(errors)]]);
   for (const err of errors) want.set(path.join(pagesDir, `err_ngrok_${err.slug}.mdx`), page(err));
@@ -198,28 +174,7 @@ function main() {
     .map((f) => path.join(pagesDir, f))
     .filter((f) => !want.has(f));
 
-  if (mode === "--check") {
-    const wrong = [...want].filter(([file, body]) => readOptional(file) !== body).map(([file]) => file);
-    const problems = [...wrong, ...stale].map((f) => path.relative(root, f));
-    if (problems.length) {
-      console.error("These error docs files don't match data/generated/errors.json:");
-      for (const p of problems) console.error(`  ${p}`);
-      console.error("Edit custom/errors/, not the generated files, then run: pnpm run generate-error-pages");
-      process.exit(1);
-    }
-    console.log(`All ${want.size} error docs files are up to date.`);
-    return;
-  }
-
-  let written = 0;
-  for (const [file, body] of want) {
-    if (readOptional(file) !== body) {
-      fs.writeFileSync(file, body);
-      written++;
-    }
-  }
-  for (const file of stale) fs.unlinkSync(file);
-  console.log(`Wrote ${written} and removed ${stale.length} error docs files.`);
+  writeOrCheck({ name: "error page", script: "generate-error-pages", want, stale });
 }
 
 main();
