@@ -4,12 +4,12 @@ description: Reference guide for migrating from deprecated Edge modules to Traff
 ---
 
 
-## Modules to Traffic Policy Actions reference
+## Modules to Traffic Policy actions reference
 
 | Endpoint Module                    | Traffic Policy Action                                                                                                                                                  | Phase                                                                        | Notes                                   |
 | ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | --------------------------------------- |
 | `oauth`                            | [`set-vars`](/gateway/traffic-policy/actions/set-vars/), [`oauth`](/gateway/traffic-policy/actions/oauth), [`custom-response`](/gateway/traffic-policy/actions/custom-response) | [`on_http_request`](/gateway/traffic-policy/how-it-works#phases)   | Maps OAuth provider and settings.       |
-| `oidc`                             | [`oidc`](/gateway/traffic-policy/actions/oidc)                                                                                                                            | [`on_http_request`](/gateway/traffic-policy/how-it-works#phases)   | Maps OpenID Connect settings.           |
+| `oidc`                             | [`openid-connect`](/gateway/traffic-policy/actions/openid-connect)                                                                                                                  | [`on_http_request`](/gateway/traffic-policy/how-it-works#phases)   | Maps OpenID Connect settings.           |
 | `ip_policy`                        | [`restrict-ips`](/gateway/traffic-policy/actions/restrict-ips)                                                                                                            | [`on_tcp_connect`](/gateway/traffic-policy/how-it-works#phases)     | Maps allowed IPs or policies.           |
 | `mutual_tls` and `tls_termination` | [`terminate-tls`](/gateway/traffic-policy/actions/terminate-tls)                                                                                                          | [`on_tcp_connect`](/gateway/traffic-policy/how-it-works#phases)     | Maps mTLS and TLS termination settings. |
 | `request_headers`                  | [`add-headers`](/gateway/traffic-policy/actions/add-headers), [`remove-headers`](/gateway/traffic-policy/actions/remove-headers)                                             | [`on_http_request`](/gateway/traffic-policy/how-it-works#phases)   | Modify request headers.                 |
@@ -116,12 +116,12 @@ on_http_request:
 
 Leverages the following actions:
 
-- [`oidc`](/gateway/traffic-policy/actions/oidc)
+- [`openid-connect`](/gateway/traffic-policy/actions/openid-connect)
 
 ```yaml
 on_http_request:
   - actions:
-    - type: oidc
+    - type: openid-connect
       config:
         issuer_url: https://example.com
         client_id: abc
@@ -360,15 +360,15 @@ on_http_request:
 
 ### SAML authentication (`saml`)
 
-- Traffic Policy **does not currently** natively support SAML.
-- You may want to try out the [OIDC](/gateway/traffic-policy/actions/oidc) action or reach out to ngrok support.
+- The [`saml`](/gateway/traffic-policy/actions/saml/) Traffic Policy action is in early access.
+- [Request access](https://dashboard.ngrok.com/early-access), or use the [OIDC](/gateway/traffic-policy/actions/openid-connect) action if your identity provider supports it.
 
 ## ✅ Quick checklist
 
 | Module                | Traffic Policy Action                  |
 | --------------------- | -------------------------------------- |
 | OAuth                 | `set-vars`, `oauth`, `custom-response` |
-| OIDC                  | `oidc`                                 |
+| OIDC                  | `openid-connect`                       |
 | IP Policy             | `ip-restriction`                       |
 | Mutual TLS / TLS Term | `terminate-tls`                        |
 | Request Headers       | `add-headers`, `remove-headers`        |
@@ -376,9 +376,9 @@ on_http_request:
 | Compression           | `compress-response`                    |
 | Webhook Verification  | `verify-webhook`                       |
 | Circuit Breaker       | `circuit-breaker`                      |
-| SAML                  | ⚠️ (Not yet supported)                 |
+| SAML                  | `saml` (early access)                  |
 
-## 🛡️ Final Tips
+## 🛡️ Final tips
 
 - **Always** test your Traffic Policy in staging before production.
 - **Validate YAML syntax** carefully—indentation matters.

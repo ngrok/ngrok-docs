@@ -9,21 +9,22 @@ description: Reference documentation for the AgentEndpoint Kubernetes custom res
 
 ### **kind:** `AgentEndpoint`
 
-Agent Endpoints are endpoints that are only available when an agent is running. When used with the ngrok Kubernetes Operator,
-this means that the Agent Endpoints are tied to the Operator's `operator-agent` pod (which is deployed by default when installing the Operator).
-The Operator will manage, create, and delete Agent Endpoints for you according to the configuration of the `AgentEndpoint` custom resources you create.
-So long as at least one instance of the `operator-agent` pod is running, your Agent Endpoints will be available. You may occasionally notice
-the IDs of Agent Endpoints managed by the Operator change if the Operator pods restart, this will not halt traffic through your Agent Endpoints unless all of the Operator pods have stopped.
+Agent Endpoints are endpoints that are only available when an agent is running.
+When used with the ngrok Kubernetes Operator, this means that the Agent Endpoints are tied to the Operator's `operator-agent` pod (which the Operator deploys by default when you install it).
+The Operator manages, creates, and deletes Agent Endpoints for you according to the configuration of the `AgentEndpoint` custom resources you create.
+So long as at least one instance of the `operator-agent` pod is running, your Agent Endpoints are available.
+You may occasionally notice the IDs of Agent Endpoints managed by the Operator change if the Operator pods restart.
+This doesn't halt traffic through your Agent Endpoints unless all of the Operator pods have stopped.
 
-See the [ngrok agent CLI configuration page](/gateway/agent/config/v3/#endpoint-definitions), for more information about using the CLI to start Agent Endpoints outside of Kubernetes.
+See the [ngrok CLI configuration page](/gateway/agent/config/v3/#endpoint-definitions) for more information about using the CLI to start Agent Endpoints outside of Kubernetes.
 
-Note that while using `AgentEndpoint` resources, an Agent Endpoint will be created in your ngrok account for each replica of the `ngrok-operator-agent` `Deployment`. This enables high-availability when
-running the `ngrok-operator-agent` deployment at a high replica count, but will result in additional charges for your ngrok account. The lifetime of these Agent Endpoints are tied to the lifetime of the
-`ngrok-operator-agent` pods, so scaling the deployment up/down will cause the additional Agent Endpoints in your ngrok account to be created as needed and deleted when no longer needed.
+Note that while using `AgentEndpoint` resources, the Operator creates an Agent Endpoint in your ngrok account for each replica of the `ngrok-operator-agent` `Deployment`.
+This enables high availability when running the `ngrok-operator-agent` deployment at a high replica count, but results in additional charges for your ngrok account.
+The lifetime of these Agent Endpoints is tied to the lifetime of the `ngrok-operator-agent` pods, so scaling the deployment up or down creates the additional Agent Endpoints in your ngrok account as needed and deletes them when no longer needed.
 
 ## AgentEndpoint structure and types
 
-The following outlines the high level structure and typings of an `AgentEndpoint`
+The following outlines the high-level structure and typings of an `AgentEndpoint`:
 
 ```yaml
 apiVersion: ngrok.k8s.ngrok.com/v1alpha1
@@ -54,7 +55,7 @@ The following sections outline each field of the `AgentEndpoint` custom resource
 
 ### `spec`
 
-`spec` defines the desired state of the `AgentEndpoint`
+`spec` defines the desired state of the `AgentEndpoint`.
 
 **Type:** `Object`
 
@@ -67,22 +68,24 @@ The following sections outline each field of the `AgentEndpoint` custom resource
 | Field Name                                                 | Type              | Required | Default                           | Description                                                                                                              |
 | ---------------------------------------------------------- | ----------------- | -------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
 | [`spec.url`](#specurl)                                     | `string`          | yes      | none                              | The unique URL for this Agent Endpoint that defines how the endpoint is accessed                                         |
-| [`spec.upstream`](#specupstream)                           | `Object`          | yes      | none                              | The upstream that will receive traffic sent to the endpoint (unless a response is sent by a Traffic Policy action first) |
+| [`spec.upstream`](#specupstream)                           | `Object`          | yes      | none                              | The upstream that receives traffic sent to the endpoint (unless a Traffic Policy action sends a response first)          |
 | [`spec.trafficPolicy`](#spectrafficpolicy)                 | `Object`          | no       | none                              | Allows a Traffic Policy to be supplied for the endpoint                                                                  |
 | [`spec.description`](#specdescription)                     | `string`          | no       | `"Created by the ngrok-operator"` | Human-readable description for this `AgentEndpoint` to help identify/describe it                                         |
-| [`spec.metadata`](#specmetadata)                           | `string`          | no       | `"{"owned-by":"ngrok-operator"}"` | String of arbitrary data associated with the object in the ngrok API/Dashboard                                           |
+| [`spec.metadata`](#specmetadata)                           | `string`          | no       | `"{"owned-by":"ngrok-operator"}"` | String of arbitrary data associated with the object in the ngrok API/dashboard                                           |
 | [`spec.bindings`](#specbindings)                           | `[]string` (enum) | no       | none                              | List of Binding IDs to associate with the endpoint                                                                       |
 | [`spec.clientCertificateRefs`](#specclientcertificaterefs) | `[]Object`        | no       | none                              | List of client certificates to present to the upstream when performing a TLS handshake                                   |
 
 ### `spec.url`
 
-The unique URL for this Agent Endpoint. This URL defines how the endpoint is accessed.
+The unique URL for this Agent Endpoint.
+This URL defines how clients access the endpoint.
 
 **Note:** [Pooling](/gateway/endpoints/endpoint-pooling) is always enabled for `AgentEndpoint` resources.
-This means that if two (or more) endpoints share the same `spec.url` then requests will be balanced between them.
-This is not limited to endpoints within the same cluster, or endpoints of the same type. For example, an `AgentEndpoint` can be pooled with a Cloud Endpoint created in the ngrok dashboard if they share the same URL and both enable pooling.
-It is recommended to include a prefix/suffix in the URL to prevent unintended pooling. For example, if you are running a service `foo` in the namespace `bar` in two different
-Kubernetes clusters, you may want to give each one a slightly different `spec.url` that includes something such as a cluster identifier to prevent requests from being balanced between them.
+This means that if two (or more) endpoints share the same `spec.url`, then ngrok balances requests between them.
+This isn't limited to endpoints within the same cluster, or endpoints of the same type.
+For example, an `AgentEndpoint` can be pooled with a Cloud Endpoint created in the ngrok dashboard if they share the same URL and both enable pooling.
+Include a prefix or suffix in the URL to prevent unintended pooling.
+For example, if you're running a service `foo` in the namespace `bar` in two different Kubernetes clusters, you may want to give each one a slightly different `spec.url` that includes something such as a cluster identifier to prevent requests from being balanced between them.
 Unlike `AgentEndpoint` resources, the `CloudEndpoint` resource gives you the ability to configure whether pooling should be allowed or not.
 
 **Type:** `string`
@@ -94,10 +97,12 @@ Unlike `AgentEndpoint` resources, the `CloudEndpoint` resource gives you the abi
 The following formats are accepted:
 
 - **Domain**
-  - When using the domain format you are only defining the domain. The scheme and port will be inferred.
+  - When using the domain format, you're only defining the domain.
+    ngrok infers the scheme and port.
   - example: `example.org`
 - **Origin**
-  - When using the origin format you are defining the protocol, domain, and port. HTTP endpoints accept ports 80 or 443 with respective protocol.
+  - When using the origin format, you're defining the protocol, domain, and port.
+    HTTP endpoints accept ports 80 or 443 with respective protocol.
   - examples:
     - `https://example.ngrok.app`
     - `https://example.ngrok.app:443`
@@ -249,7 +254,7 @@ Human-readable description of this Agent Endpoint that can be used to help ident
 
 ### `spec.metadata`
 
-String of arbitrary data associated with the object in the ngrok API/Dashboard.
+String of arbitrary data associated with the object in the ngrok API/dashboard.
 
 **Type:** `string`
 
@@ -618,7 +623,7 @@ kubectl get agentendpoint example-agent-endpoint -o jsonpath='{.status.condition
 
 The following `AgentEndpoint`:
 
-- Accepts traffic on the URL `https://example-agent-endpoint.ngrok.io`
+- Accepts traffic on the URL `https://example-agent-endpoint.ngrok.app`
 - Sends traffic to `http://my-service.my-namespace:8080`
   - If a Traffic Policy "terminates" the request, then the traffic will not be sent to the upstream
 - Adds an inline Traffic Policy
@@ -631,7 +636,7 @@ kind: AgentEndpoint
 metadata:
   name: example-agent-endpoint
 spec:
-  url: https://example-agent-endpoint.ngrok.io
+  url: https://example-agent-endpoint.ngrok.app
   upstream:
     url: http://my-service.my-namespace:8080
   trafficPolicy:
@@ -653,7 +658,7 @@ spec:
 
 The following `AgentEndpoint`:
 
-- Accepts traffic on the URL `https://example-agent-endpoint.ngrok.io`
+- Accepts traffic on the URL `https://example-agent-endpoint.ngrok.app`
 - Sends traffic to `http://my-https-service.my-namespace:8443`
   - Includes a client certificate from the `Secret` `my-client-cert` in the `default` namespace
   - If a Traffic Policy "terminates" the request, then the traffic will not be sent to the upstream
@@ -686,7 +691,7 @@ kind: AgentEndpoint
 metadata:
   name: example-agent-endpoint
 spec:
-  url: https://example-agent-endpoint.ngrok.io
+  url: https://example-agent-endpoint.ngrok.app
   upstream:
     url: https://my-https-service.my-namespace:8443
   trafficPolicy:

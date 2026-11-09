@@ -1,0 +1,36 @@
+name: Check image sizes
+
+permissions: {}
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  check-images:
+    permissions:
+      contents: read
+      pull-requests: read
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Get added and modified images
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Only check images this PR adds or changes, so existing large images
+          # don't block unrelated PRs.
+          gh api --paginate \
+            "repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files" \
+            --jq '.[] | select(.status != "removed") | .filename' \
+            | grep -iE '\.(png|jpe?g|gif|webp|avif|svg)$' > images.txt || true
+
+      - name: Check image sizes
+        run: |
+          if [ ! -s images.txt ]; then
+            echo "No images added or modified in this PR."
+            exit 0
+          fi
+          xargs -d '\n' bash custom/scripts/check-image-sizes.sh < images.txt

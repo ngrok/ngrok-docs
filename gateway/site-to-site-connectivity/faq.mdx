@@ -36,13 +36,26 @@ You don't need to reverse-engineer your customer's network or firewall configura
 ### How do I authenticate connections to customer services?
 
 You can authorize connections from your cloud to ngrok using Traffic Policy.
-With Traffic Policy, you can authenticate connections using [IP restrictions](/gateway/traffic-policy/actions/restrict-ips/), [JWT validation](/gateway/traffic-policy/actions/jwt-validation/), [OAuth](/gateway/traffic-policy/actions/oauth/), [OpenID Connect](/gateway/traffic-policy/actions/oidc/), [SAML](/gateway/traffic-policy/actions/saml/), and more.
+With Traffic Policy, you can authenticate connections using [IP restrictions](/gateway/traffic-policy/actions/restrict-ips/), [JWT validation](/gateway/traffic-policy/actions/jwt-validation/), [OAuth](/gateway/traffic-policy/actions/oauth/), [OpenID Connect](/gateway/traffic-policy/actions/openid-connect/), [SAML](/gateway/traffic-policy/actions/saml/) (early access), and more.
 Apply these as Traffic Policy actions on your Cloud Endpoints.
 
 ### Can I scope access to specific services?
 
 Yes.
 By default, you access only the specific APIs and databases at the ports associated with your Internal Endpoints.
+
+### Does installing the agent expose my customer's whole network?
+
+No.
+The agent forwards only to the upstream addresses in its endpoint configuration.
+Scope its authtoken with [ACLs](/gateway/site-to-site-connectivity/authtoken-acls/) so it can't create other endpoints, and point your customer to the [end customer guide](/gateway/site-to-site-connectivity/end-customers/#what-should-i-confirm-before-installing-ngrok) for what to agree on before they install.
+
+### Can my customer revoke access without me?
+
+Yes.
+They can stop the agent service and block its Connect URL at their firewall.
+Agree on that procedure before deployment, and revoke the agent's authtoken on your side when they do.
+The [revocation steps](/gateway/site-to-site-connectivity/end-customers/#how-can-i-revoke-my-vendors-access) are in the end customer guide.
 
 ### Is traffic end-to-end encrypted?
 
@@ -52,9 +65,9 @@ See [TLS termination options](/gateway/domains/tls-termination/#end-to-end-encry
 
 ### Can ngrok see the traffic it forwards?
 
-No. TLS terminates at the agent or upstream service.
-In all encryption models, the ngrok agent itself cannot see the traffic it forwards.
-See the [end customer guide](/gateway/site-to-site-connectivity/end-customers#ngrok-traffic-encryption) for a full breakdown of the encryption models.
+Only when TLS terminates at ngrok's network, which is the default for HTTPS endpoints.
+If you terminate TLS at the agent or at your upstream service, ngrok's network forwards ciphertext it can't read.
+See [TLS termination options](/gateway/domains/tls-termination/#end-to-end-encryption) to choose a model.
 
 ### How do I prevent unauthorized use of ngrok in the customer's network?
 
@@ -76,7 +89,7 @@ Visit the [Trust Center](https://trust.ngrok.com/) for reports and documentation
 
 ### What happens if the agent loses its connection?
 
-The ngrok agent sends a [heartbeat](/gateway/agent/#heartbeats) every 10 seconds.
+The ngrok agent sends a [heartbeat](/gateway/agent/connectivity#heartbeats) every 10 seconds.
 If it doesn't receive a response within the tolerance window (15 seconds by default), it terminates the existing connection and automatically reconnects.
 This allows site-to-site connectivity to recover after packet loss, dynamic IP changes, or complete network outages.
 
@@ -112,17 +125,17 @@ Yes.
 ngrok is a multi-tenant application with services shared across the customer base.
 If you need a dedicated instance, [inquire about ngrok's private edition](https://ngrok.com/contact).
 
-## Deploying the Agent
+## Deploying the agent
 
 ### Where can the agent run?
 
 The ngrok agent runs on Linux, Windows, and macOS across most CPU architectures.
-It's also available as a [Docker image](https://hub.docker.com/r/ngrok/ngrok), [Kubernetes Operator](/gateway/k8s/), and [agent SDKs](/agent-sdks/) for Go, Python, JavaScript, and Rust.
+It's also available as a [Docker image](https://hub.docker.com/r/ngrok/ngrok), [Kubernetes Operator](/gateway/k8s/), and [SDKs](/agent-sdks/) for Go, Python, JavaScript, and Rust.
 
 ### Can I embed the agent in my own application?
 
 Yes.
-Use the [agent SDKs](/agent-sdks/) to embed ngrok directly in your code.
+Use the [SDKs](/agent-sdks/) to embed ngrok directly in your code.
 This is useful when your software is already running in the customer's environment, like a bring-your-own-cloud deployment.
 
 ### How do I keep the agent running?
@@ -131,13 +144,13 @@ This is useful when your software is already running in the customer's environme
 
 ### How do I update agents?
 
-ngrok releases updates through all installation channels, but updates are not automatic.
+ngrok releases updates through all installation channels, but updates aren't automatic.
 Coordinate with your customer on when and how to update based on the deployment method.
 See the [agent version support policy](/gateway/agent/version-support-policy/) for details.
 
-### Can the Agent run in a DMZ?
+### Can the agent run in a DMZ?
 
-Yes, as long as the systems in the DMZ meet the agent's [system requirements](/gateway/agent/#system-requirements) and the upstream service is also reachable from the DMZ.
+Yes, as long as the systems in the DMZ meet the agent's [system requirements](/gateway/agent/install#system-requirements) and the upstream service is also reachable from the DMZ.
 
 ## Branding and automation
 

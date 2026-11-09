@@ -29,7 +29,7 @@ Apply this skill when resolving Vale linter output or when editing docs where Va
 
 **Should fix (warnings)**
 
-- **Person**: Address the reader as "you"; avoid first-person (we, our, let's). Exceptions: "Let's Encrypt", "US". **Ignore** first-person inside bold (e.g. **My Local Webhook**)—that is UI text and must not be edited.
+- **Person**: Address the reader as "you"; avoid first-person (we, our, let's). Exceptions: "Let's Encrypt", "US". **Ignore** first-person inside bold (e.g. **My Local Webhook**)—that is UI text and must not be edited. First person is also allowed in headings and inside double-quoted search queries (e.g. `### Can I use ngrok on Starlink?`, `a "what is my IP" website`) because they mirror what readers search for—don't rewrite them.
 - **Time**: "3:00 PM" / "9:30 AM" (space, uppercase, no periods).
 - **Dates**: "Month Day, Year" (e.g. July 31, 2016).
 - **Ellipses**: Use `…` not `...`.

@@ -1,0 +1,110 @@
+#!/usr/bin/env node
+// Drop-in replacement for the mdx2vast CLI that Vale runs to read MDX.
+//
+// Upstream mdx2vast turns every JSX element into a code block, children and
+// all, and Vale skips code. That hides everything inside <Note>, <Tabs>,
+// <Steps>, and every other component. This version emits the component as a
+// plain wrapper and converts its children like any other Markdown, so Vale
+// lints them. Imports, expressions, and components without children still
+// become code, as upstream does.
+//
+// Vale finds mdx2vast on PATH, so put this directory first: `pnpm run vale`
+// and the Vale workflow both do.
+
+import { createRequire } from "node:module";
+import fs from "node:fs";
+
+// Load the MDX toolchain from mdx2vast's own dependencies, so this script needs
+// nothing beyond the mdx2vast devDependency.
+const require = createRequire(import.meta.url);
+const fromMdx2vast = createRequire(require.resolve("mdx2vast/package.json"));
+const load = (name) => import(fromMdx2vast.resolve(name));
+
+const [
+  { mdxjs },
+  { fromMarkdown },
+  { mathFromMarkdown },
+  { math },
+  { gfm },
+  { gfmFromMarkdown },
+  { mdxFromMarkdown },
+  { toHast },
+  { h },
+  { toHtml },
+] = await Promise.all([
+  load("micromark-extension-mdxjs"),
+  load("mdast-util-from-markdown"),
+  load("mdast-util-math"),
+  load("micromark-extension-math"),
+  load("micromark-extension-gfm"),
+  load("mdast-util-gfm"),
+  load("mdast-util-mdx"),
+  load("mdast-util-to-hast"),
+  load("hastscript"),
+  load("hast-util-to-html"),
+]);
+
+const mdxNodes = [
+  "mdxjsEsm",
+  "mdxFlowExpression",
+  "mdxJsxFlowElement",
+  "mdxJsxTextElement",
+  "mdxTextExpression",
+];
+
+// Elements whose content is code, not prose. <Prompt> holds text the reader
+// copies to an AI agent, written in the reader's voice ("ask me for my token"),
+// so the docs style rules don't apply to it.
+const codeElements = new Set(["code", "pre", "script", "style", "Prompt"]);
+
+function asCode(source, type) {
+  const className = `mdxNode ${type}`;
+  return source.includes("\n")
+    ? h("pre", h("code", { className }, source))
+    : h("code", { className }, source);
+}
+
+function createHandler(doc) {
+  return function handler(state, node) {
+    const source = doc.slice(node.position.start.offset, node.position.end.offset);
+
+    if (node.type === "mdxFlowExpression" && source.startsWith("{/*") && source.endsWith("*/}")) {
+      return { type: "comment", value: source.slice(3, -3) };
+    }
+
+    const isElement = node.type === "mdxJsxFlowElement" || node.type === "mdxJsxTextElement";
+    if (!isElement || node.children.length === 0 || codeElements.has(node.name)) {
+      return asCode(source, node.type);
+    }
+
+    // A lowercase name is an HTML element, so keep it: Vale scopes such as
+    // `strong` depend on it. <b> counts as bold too, so IgnoredScopes skips it
+    // the way it skips **text**. A component becomes a neutral wrapper.
+    const children = state.all(node);
+    if (node.name && node.name === node.name.toLowerCase()) {
+      return h(node.name === "b" ? "strong" : node.name, children);
+    }
+    const tag = node.type === "mdxJsxFlowElement" ? "div" : "span";
+    return h(tag, { className: `mdxNode ${node.type} ${node.name ?? "fragment"}` }, children);
+  };
+}
+
+function toValeAST(doc) {
+  const mdast = fromMarkdown(doc, {
+    extensions: [mdxjs(), math(), gfm()],
+    mdastExtensions: [mdxFromMarkdown(), mathFromMarkdown(), gfmFromMarkdown()],
+  });
+  const handler = createHandler(doc);
+  const hast = toHast(mdast, {
+    allowDangerousHtml: true,
+    passThrough: mdxNodes,
+    handlers: Object.fromEntries(mdxNodes.map((type) => [type, handler])),
+  });
+  return toHtml(hast);
+}
+
+const file = process.argv[2];
+const doc = file ? fs.readFileSync(file, "utf8") : fs.readFileSync(0, "utf8");
+// Upstream exits with an error on an empty document, which stops Vale. Some
+// snippets are empty on purpose, so treat them as having nothing to lint.
+console.log(doc.trim() === "" ? "" : toValeAST(doc));

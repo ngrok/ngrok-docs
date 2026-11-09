@@ -65,6 +65,63 @@ img {
   }
 }
 
+/* Tooltips in table cells, such as exact token counts in the AI Gateway model
+   catalog, keep the cell's own weight and color. :root outranks the theme rules above. */
+:root td .tooltip {
+  font-weight: inherit;
+  color: inherit;
+}
+
+/* MCP server examples: glossary terms in them keep the text's weight and color. */
+:root .mcp-examples .tooltip {
+  font-weight: inherit;
+  color: inherit;
+}
+
+/* The tooltip trigger is a button, which centers its text. A long value that
+   wraps, such as a model ID, must stay aligned with the rest of the column. */
+td button[data-state] {
+  text-align: start;
+}
+
+/* A model ID in a catalog table stays on one line. The table already scrolls
+   sideways, so wrapping the ID only makes it harder to read and copy. */
+td button[data-state] code {
+  white-space: nowrap;
+  word-break: normal;
+  overflow-wrap: normal;
+}
+
+/* The model ID column takes the table's spare width, so the short numeric
+   columns after it shrink to their content. */
+td:first-child:has(> button[data-state] code) {
+  width: 100%;
+}
+
+/* Mintlify gives every table cell a 150px minimum. Drop it in these tables so
+   the narrow columns can shrink. */
+table:has(td:first-child > button[data-state] code) td,
+table:has(td:first-child > button[data-state] code) th {
+  min-width: 0;
+  white-space: nowrap;
+}
+
+/* Icons in table cells, such as the model catalog's modalities, scale each glyph
+   to fit the same box so wide and narrow glyphs read as one size. */
+td .icon {
+  mask-size: contain;
+  -webkit-mask-size: contain;
+}
+
+/* An icon is its own hover target, so its tooltip drops the dotted underline. */
+td .tooltip:has(> .icon) {
+  text-decoration: none;
+}
+
+td .tooltip:has(> .icon)::after {
+  display: none;
+}
+
 /* Word wrap for code and pre elements in table cells */
 td pre,
 td code {
@@ -208,326 +265,846 @@ footer#footer a {
   height: 2px !important;
 }
 
+.docs-home-updates a {
+  display: block;
+  padding-block: 1.25rem;
+  border-bottom: 1px solid #d4d4d4;
+  text-decoration: none;
+}
+
+.docs-home-updates .docs-home-date {
+  display: block;
+  color: #666;
+  font-size: 0.8125rem;
+  margin-bottom: 0.375rem;
+}
+
+.docs-home-updates .docs-home-title {
+  color: #121212;
+  font-weight: 600;
+}
+
+.docs-home-updates a:focus-visible {
+  outline: 2px solid rgb(var(--primary));
+  outline-offset: 4px;
+}
+
+.docs-home-updates a:hover .docs-home-title {
+  text-decoration: underline;
+}
+
+.docs-home-updates p {
+  margin: 0.375rem 0 0;
+  color: #525252;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.dark .docs-home-updates .docs-home-title {
+  color: #f5f5f5;
+}
+
+.dark .docs-home-updates a {
+  border-color: #404040;
+}
+
+.dark .docs-home-updates a:focus-visible {
+  outline-color: rgb(var(--primary-light));
+}
+
+.dark .docs-home-updates .docs-home-date,
+.dark .docs-home-updates p {
+  color: #a3a3a3;
+}
+
+/* Product anchors: match the ngrok.com product tiles (a colored icon on a
+   20% tint of the same hue). The icon color lives in each SVG file. */
+.nav-anchor div:has(> img[src$="/img/icons/gateway.svg"]) {
+  background: rgb(16 185 129 / 0.2) !important;
+}
+
+.nav-anchor div:has(> img[src$="/img/icons/ai-gateway.svg"]) {
+  background: rgb(245 158 11 / 0.2) !important;
+}
+
+.nav-anchor div:has(> img[src$="/img/icons/share-localhost.svg"]) {
+  background: rgb(168 85 247 / 0.2) !important;
+}
+
+.nav-anchor img[src*="/img/icons/"] {
+  opacity: 1;
+  background: transparent !important;
+}
+
+/* Recolor each product section to its hue: links, icons, the active tab and
+   sidebar item, and the TOC. Mintlify reads these variables as RGB triplets.
+   Text uses the 700 shade where 600 falls below 4.5:1 on white. Production
+   serves the docs under /docs, so match both link prefixes. */
+html:has(.nav-tabs-item[data-active="true"]:is([href^="/gateway/"], [href^="/docs/gateway/"])) {
+  --primary: 4 120 87;
+  --primary-light: 52 211 153;
+  --primary-dark: 4 120 87;
+}
+
+html:has(.nav-tabs-item[data-active="true"]:is([href^="/ai-gateway/"], [href^="/docs/ai-gateway/"])) {
+  --primary: 180 83 9;
+  --primary-light: 251 191 36;
+  --primary-dark: 180 83 9;
+}
+
+html:has(.nav-tabs-item[data-active="true"]:is([href^="/share-localhost/"], [href^="/docs/share-localhost/"])) {
+  --primary: 147 51 234;
+  --primary-light: 192 132 252;
+  --primary-dark: 147 51 234;
+}
+
+/* Layout experiment: full-width header with Tailwind px-2 spacing. */
+#navbar > .max-w-8xl {
+  max-width: none;
+}
+
+#navbar .h-16 {
+  padding-inline: 0.5rem;
+}
+
+/* Align the compact logo with sidebar text: 16px outer inset + 16px inside
+   each navigation item. Keep the rest of the header's px-2 spacing. */
+@media (min-width: 64rem) {
+  #navbar a:has(> .nav-logo) {
+    margin-left: 1.5rem;
+  }
+}
+
+/* Split the tabs: products on the left, agent tooling and reference on the
+   right. Match the tab by its link so new tabs don't shift the split. */
+@media (min-width: 64rem) {
+  #navbar div:has(> .nav-tabs) {
+    padding-inline: 2rem 1rem;
+  }
+
+  #navbar .nav-tabs {
+    flex: 1;
+  }
+
+  #navbar .nav-tabs-item:is([href^="/for-agents"], [href^="/docs/for-agents"]) {
+    margin-left: auto;
+  }
+}
+
+/* mantle-style focus ring: a soft rounded ring around the tab label, not
+   the browser outline around the full-height tab. */
+#navbar .nav-tabs-item:focus-visible {
+  outline: none;
+}
+
+#navbar .nav-tabs-item:focus-visible::before {
+  content: "";
+  position: absolute;
+  inset: 0.625rem -0.5rem;
+  border-radius: 0.375rem;
+  box-shadow: 0 0 0 4px rgb(var(--primary) / 0.3);
+  pointer-events: none;
+}
+
+:is(html.dark, html[data-theme="dark"]) #navbar .nav-tabs-item:focus-visible::before {
+  box-shadow: 0 0 0 4px rgb(var(--primary-light) / 0.35);
+}
+
+/* Nine tabs need tighter spacing to fit on a small desktop. */
+@media (min-width: 64rem) and (max-width: 80rem) {
+  #navbar .nav-tabs {
+    column-gap: 1rem;
+  }
+}
+
+/* Mintlify renders the tabs as a second row. At wide desktop sizes, lift that
+   row into the first one: the tabs span from the logo to a fixed-width search
+   bar, and the split pushes the second group against the search bar. Below
+   this breakpoint the tabs keep their own row. */
+@media (min-width: 96rem) {
+  :root {
+    --topbar-tabs-height: 0rem !important;
+    --experiment-search-width: 9rem;
+    --experiment-actions-width: 21rem;
+  }
+
+  #navbar > .max-w-8xl {
+    position: relative;
+  }
+
+  #navbar div:has(> .nav-tabs) {
+    position: absolute;
+    top: 0;
+    left: 10rem;
+    right: calc(0.5rem + var(--experiment-actions-width) + var(--experiment-search-width) + 2.5rem);
+    height: 4rem;
+    padding-inline: 0;
+    z-index: 30;
+  }
+
+  #navbar .nav-tabs {
+    white-space: nowrap;
+  }
+
+  #navbar .h-16 > div > div:has(> a > .nav-logo) {
+    flex: 1 1 auto;
+  }
+
+  #navbar .h-16 > div > div:has(> #search-bar-entry) {
+    flex: 0 0 var(--experiment-search-width);
+  }
+
+  #navbar .h-16 > div > div:has(> nav) {
+    flex: 0 0 var(--experiment-actions-width);
+  }
+
+  #navbar .h-16 > div {
+    border-bottom: 0;
+  }
+}
+
+/* Give the search bar more room once the split has space to spare. */
+@media (min-width: 106rem) {
+  :root {
+    --experiment-search-width: 12rem;
+  }
+}
+
+/* Center the article itself, with the TOC to its right. Reserve space for
+   the inset sidebar on smaller desktops. Landing, wide, and mobile layouts
+   keep Mintlify's defaults. */
+@media (min-width: 64rem) {
+  #navbar.is-not-custom.is-not-center.is-not-wide ~ div:has(> #sidebar) {
+    --experiment-sidebar-width: 18rem;
+    --experiment-article-width: 52rem;
+    --experiment-content-width: 74rem;
+    max-width: none;
+    padding-inline: 1rem;
+  }
+
+  #navbar.is-not-custom.is-not-center.is-not-wide ~ div > #sidebar {
+    width: var(--experiment-sidebar-width);
+  }
+
+  #navbar.is-not-custom.is-not-center.is-not-wide ~ div:has(> #sidebar) > #content-container {
+    flex: none;
+    width: min(
+      var(--experiment-content-width),
+      calc(100% - var(--experiment-sidebar-width) - 2rem)
+    );
+    margin-left: clamp(
+      2rem,
+      calc((100% - var(--experiment-article-width)) / 2 - var(--experiment-sidebar-width)),
+      max(2rem, calc(100% - var(--experiment-sidebar-width) - var(--experiment-content-width)))
+    );
+    margin-right: auto;
+  }
+
+  #navbar.is-not-custom.is-not-center.is-not-wide ~ div #content-area {
+    flex: 1;
+    min-width: 0;
+    width: auto;
+    margin-inline: 0;
+    padding-inline: 0;
+  }
+
+  #navbar.is-not-custom.is-not-center.is-not-wide ~ div #content-side-layout {
+    flex: none;
+    width: 19rem;
+  }
+}
+
 /* ============================================================================
- * Ketch cookie-consent banner
+ * Cookie-consent banner
  *
- * Ported from `packages/dot-com-mon/src/ketch-overrides.css` in the
- * ngrok-private/frontend monorepo, the sheet ngrok.com and blog.ngrok.com ship.
- * That sheet reads @ngrok/mantle design tokens. This site has no mantle, so
- * every token below is the literal value mantle 0.83.4 resolves to. Any custom
- * property this block reads is also declared in this block.
+ * Styles for the banner `consent.js` renders. It is the React `ConsentBanner`
+ * in `packages/ui/src/consent/consent-banner.tsx` (ngrok-private/frontend),
+ * rebuilt from mantle's `IconButton` (ghost, neutral, xs) classes. This site
+ * has no mantle, so every token below is the literal value
+ * mantle resolves to, light and dark. Every selector starts at
+ * `.ngrok-consent`, so nothing here can touch the docs UI.
  *
- * Ketch renders its banner into the light DOM under `#lanyard_root`, so plain
- * descendant selectors reach it. Every selector starts at `#lanyard_root` so
- * nothing here can touch the docs UI.
- *
- * `!important` appears only where Ketch sets the same property itself, through
- * a `ketch-`-prefixed utility class or an inline style. Ketch's inline styles
- * carry no `!important`, so a stylesheet `!important` beats them.
+ * Dark mode keys off the `dark` class alone. Mintlify resolves the reader's
+ * system preference into that class before the page paints. A
+ * `prefers-color-scheme` query would carry the same signal twice, and it could
+ * beat the class when the reader picks the theme their OS disagrees with.
+ * `html[data-theme="dark"]` rides along because every other dark rule in this
+ * file pairs the two.
  * ========================================================================= */
 
-/*
- * Dark mode keys off the `dark` class alone. Mintlify resolves the reader's
- * system preference into that class before the page paints, so a
- * `prefers-color-scheme` query would carry the same signal twice and could beat
- * the class whenever the reader picks the theme their OS disagrees with. One
- * hook keeps the class authoritative. `html[data-theme="dark"]` rides along
- * because every other dark rule in this file pairs the two.
- */
-#lanyard_root {
-  /* mantle `background-color-popover`, `border-color-popover`, `text-color-body`. */
-  --ngrok-ketch-surface: #ffffff;
-  --ngrok-ketch-border: #d4d4d4;
-  --ngrok-ketch-text: rgb(18 18 18 / 75%);
-  /* mantle `color-sky-700`, the link color ngrok.com uses in the banner. */
-  --ngrok-ketch-link: #0069a8;
-  /* Translucent ghost fill. White reads on the dark card, black on the light one. */
-  --ngrok-ketch-action-bg: rgb(18 18 18 / 10%);
-  --ngrok-ketch-action-bg-hover: rgb(18 18 18 / 16%);
-  --ngrok-ketch-action-text: #121212;
+.ngrok-consent {
+  /* mantle `background-color-card`, `border-color-card`, `text-color-strong`. */
+  --ngrok-consent-surface: #ffffff;
+  --ngrok-consent-border: #d4d4d4;
+  --ngrok-consent-text: #121212;
+  /* mantle `bg-neutral-500/10`, the ghost hover fill. Same in both themes. */
+  --ngrok-consent-action-bg-hover: rgb(115 115 115 / 10%);
   /* `docs.json` primary. The focus ring belongs to this site, not to mantle. */
-  --ngrok-ketch-focus-ring: rgb(39 63 195 / 35%);
+  --ngrok-consent-focus-ring: rgb(0 120 196 / 35%);
+  /* mantle `shadow-lg`. */
+  --ngrok-consent-shadow:
+    0 1px 13px 0 rgb(0 0 0 / 5%),
+    0 4px 6px -4px rgb(0 0 0 / 10%),
+    0 10px 15px -3px rgb(0 0 0 / 10%);
 
-  /*
-   * Ketch's own theme API. Ketch reads these to build the styles it applies
-   * inline, so they cover the parts of the banner this sheet cannot select.
-   */
-  --k-banner-container-background-color: var(--ngrok-ketch-surface) !important;
-  --k-banner-container-cornerRadius: 14px !important;
-  --k-banner-description-text-color: var(--ngrok-ketch-text) !important;
-  --k-banner-description-link-color: var(--ngrok-ketch-link) !important;
+  position: fixed;
+  inset-inline: 0;
+  bottom: 1rem;
+  z-index: 2147483000;
+  display: flex;
+  justify-content: center;
+  padding-inline: 1rem;
+  /* The wrapper spans the viewport. Only the panel takes clicks. */
+  pointer-events: none;
 }
 
-:is(html.dark, html[data-theme="dark"]) #lanyard_root {
-  --ngrok-ketch-surface: #171717;
-  --ngrok-ketch-border: #404040;
-  --ngrok-ketch-text: rgb(255 255 255 / 70%);
-  --ngrok-ketch-link: #74d4ff;
-  --ngrok-ketch-action-bg: rgb(255 255 255 / 20%);
-  --ngrok-ketch-action-bg-hover: rgb(255 255 255 / 30%);
-  --ngrok-ketch-action-text: #ffffff;
-  --ngrok-ketch-focus-ring: rgb(105 154 252 / 35%);
+:is(html.dark, html[data-theme="dark"]) .ngrok-consent {
+  --ngrok-consent-surface: #171717;
+  --ngrok-consent-border: #404040;
+  --ngrok-consent-text: #ffffff;
+  --ngrok-consent-focus-ring: rgb(0 188 255 / 35%);
+  --ngrok-consent-shadow:
+    0 1px 13px 0 rgb(0 0 0 / 15%),
+    0 4px 6px -4px rgb(0 0 0 / 30%),
+    0 10px 15px -3px rgb(0 0 0 / 30%);
 }
 
-/*
- * Ketch ships its own font stack. Roobert and JetBrains Mono are already loaded
- * above, so the banner can match ngrok.com instead of falling back.
- */
-#lanyard_root * {
-  font-family: "Roobert", ui-sans-serif, system-ui, sans-serif !important;
-}
-
-/* ---------------------------------------------------------------------------
- * Position: a card that floats 8px above the bottom edge, centered.
- * ------------------------------------------------------------------------ */
-
-/* Ketch's outer positioning wrapper carries a hashed class starting `root`. */
-#lanyard_root [class^="root"] {
-  top: unset !important;
-  bottom: 8px !important;
-}
-
-#lanyard_root #ketch-banner {
-  padding-inline: 16px !important;
-  bottom: 8px !important;
-  /*
-   * This wrapper spans the viewport while the visible card sits centered
-   * inside it, so its transparent gutters would swallow clicks on the page
-   * behind — including the docs theme toggle. Pass clicks through here and
-   * take them back on the card.
-   */
-  pointer-events: none !important;
-}
-
-/* ---------------------------------------------------------------------------
- * The card.
- * ------------------------------------------------------------------------ */
-#lanyard_root #ketch-consent-banner {
-  pointer-events: auto !important;
-  background-color: var(--ngrok-ketch-surface) !important;
-  color: var(--ngrok-ketch-text) !important;
-  border-width: 1px !important;
-  border-style: solid !important;
-  border-color: var(--ngrok-ketch-border) !important;
-  /*
-   * 14px, not the 6px the donor sheet also declares. The donor carries both:
-   * 6px on this element, copied from the dashboard sheet, and 14px on Ketch's
-   * `--k-banner-container-cornerRadius`, which ngrok.com added on purpose.
-   * Ketch applies that variable through an inline `!important` utility, which
-   * beats a stylesheet, so 14px is what ngrok.com renders. Declaring both
-   * makes the corner independent of which mechanism a lanyard build uses.
-   */
-  border-radius: 14px !important;
-  box-shadow:
-    0 2px 13px 0 rgb(0 0 0 / 5%),
-    0 2px 4px -2px rgb(0 0 0 / 10%),
-    0 4px 6px -1px rgb(0 0 0 / 10%) !important;
-}
-
-/*
- * Compact the card. `#ketch-consent-banner` carries no padding itself — the
- * spacing lives on its inner wrappers, and current lanyard builds nest the
- * default `pt-4 px-5 pb-3` one level below the direct flex child. Flatten both
- * layers or the card renders double-padded.
- */
-#lanyard_root #ketch-consent-banner > div {
-  padding: 0.625rem 1rem !important;
-  gap: 1rem !important;
-}
-
-#lanyard_root #ketch-consent-banner > div > div {
-  padding: 0 !important;
-}
-
-#lanyard_root #ketch-consent-banner .ketch-overflow-y-auto {
-  padding-bottom: 0 !important;
-}
-
-/*
- * Ketch caps the button group at `max-w-[40%]` and `sm:max-w-[50%]`, which
- * clips the last button once the card stops stretching. `div:has(> button)`
- * finds the group however deeply a lanyard build nests it. The donor sheet
- * lifts the cap at >= 640px only; the cap squeezes the mobile group down to
- * 40% of the card and stacks all three buttons, so lift it at every width.
- */
-#lanyard_root #ketch-consent-banner div:has(> button) {
-  max-width: none !important;
-}
-
-/* ---------------------------------------------------------------------------
- * Body copy and the Privacy Policy link.
- * ------------------------------------------------------------------------ */
-#lanyard_root #ketch-consent-banner p {
-  max-width: 120ch !important;
-  color: var(--ngrok-ketch-text) !important;
-  font-size: 0.875rem !important;
-  line-height: 1.25rem !important;
-}
-
-/*
- * The link stays underlined at rest. The donor underlines on hover only, but
- * ngrok.com shows a standing underline, and an underline is the only non-color
- * cue that the text is a link.
- */
-#lanyard_root #ketch-consent-banner a {
-  cursor: pointer !important;
-  background-color: transparent !important;
-  color: var(--ngrok-ketch-link) !important;
-  text-decoration: underline !important;
-  text-underline-offset: 2px !important;
-  border-radius: 0.375rem !important;
-  outline-color: transparent !important;
-}
-
-#lanyard_root a:focus {
-  outline-color: transparent !important;
-}
-
-#lanyard_root a:focus-visible {
-  box-shadow: 0 0 0 3px var(--ngrok-ketch-focus-ring) !important;
-  outline-color: transparent !important;
-}
-
-/* ---------------------------------------------------------------------------
- * Actions.
- *
- * All three buttons share one treatment. The donor sheet lets "Accept all" and
- * "Reject all" drift to a 6px radius and a 20% fill while "View preferences"
- * keeps the pill and a 30% fill; ngrok.com shows three matched pills. The pill
- * is the donor's own base radius, so unifying here drops two overrides rather
- * than inventing a fourth style. The 20% fill wins the tie because two of the
- * three buttons already use it and it is the quieter of the two.
- * ------------------------------------------------------------------------ */
-#lanyard_root button {
-  align-items: center !important;
-  background-color: var(--ngrok-ketch-action-bg) !important;
-  background-image: none !important;
-  color: var(--ngrok-ketch-action-text) !important;
-  border-radius: calc(infinity * 1px) !important;
-  border-style: none !important;
-  border-width: 0 !important;
-  cursor: pointer !important;
-  display: inline-flex !important;
-  flex-shrink: 0 !important;
-  font-family:
-    "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
-    "Courier New", monospace !important;
-  font-size: 0.875rem !important;
-  font-weight: 500 !important;
-  /*
-   * mantle `sm` sizing. `min-height` has to repeat the height because Ketch
-   * pins buttons to 40px with its own `ketch-min-h-10` class, and a bare
-   * `height` loses to the larger `min-height` in the box model.
-   */
-  height: 1.75rem !important;
-  min-height: 1.75rem !important;
-  justify-content: center !important;
-  line-height: 1.25rem !important;
-  outline-color: transparent !important;
-  padding: 0 0.625rem !important;
-  transition-property: none !important;
-  transition-duration: 0ms !important;
-  white-space: nowrap !important;
-}
-
-#lanyard_root button:hover {
-  background-color: var(--ngrok-ketch-action-bg-hover) !important;
-}
-
-#lanyard_root button:focus {
-  outline-color: transparent !important;
-}
-
-#lanyard_root button:focus-visible {
-  box-shadow: 0 0 0 4px var(--ngrok-ketch-focus-ring) !important;
-  outline-color: transparent !important;
-}
-
-/*
- * Re-declare the three properties Ketch themes per button, at higher
- * specificity.
- *
- * Ketch builds its utilities with Tailwind's `important: '#lanyard_root'`
- * option, so a `!`-prefixed utility compiles to
- * `#lanyard_root .\!ketch-bg-\[--k-banner-buttons-primary-background-color\]`
- * — specificity (1,1,0) *and* `!important`. That outranks the (1,0,1) rule
- * above for `background-color`, `color`, and `border-radius`, the three
- * properties Ketch drives through its own theme variables. Measured on the
- * live banner: "Accept all" kept Ketch's configured `#1853db` fill, and both
- * other buttons kept `#1853db` *text* on the translucent fill — about 1.9:1
- * against the dark card, so the labels were barely readable. Ketch's other
- * button styling arrives through plain, non-`!important` utilities
- * (`ketch-min-h-10`, `ketch-px-4`), which the rule above still wins.
- *
- * The donor sheet solves this with per-label rules
- * (`button[aria-label="accept all" i]`, (1,1,1)). One `[id^=]` rule covers all
- * three banner buttons instead, and stays scoped to the banner so it cannot
- * reach the preference-center buttons.
- */
-#lanyard_root #ketch-consent-banner button[id^="ketch-banner-button"] {
-  background-color: var(--ngrok-ketch-action-bg) !important;
-  color: var(--ngrok-ketch-action-text) !important;
-  border-radius: calc(infinity * 1px) !important;
-}
-
-#lanyard_root #ketch-consent-banner button[id^="ketch-banner-button"]:hover {
-  background-color: var(--ngrok-ketch-action-bg-hover) !important;
-}
-
-/* ---------------------------------------------------------------------------
- * Desktop — Ketch flips the banner into its row layout at 640px.
- * ------------------------------------------------------------------------ */
 @media (min-width: 640px) {
-  /*
-   * Ketch's inner wrapper carries `ketch-items-start`, which top-aligns the
-   * short button group against the taller text block.
-   */
-  #lanyard_root #ketch-consent-banner > div {
-    align-items: center !important;
-  }
-
-  #lanyard_root #ketch-banner {
-    justify-content: center !important;
-  }
-
-  /*
-   * Shrink the card to its content and center it. Ketch ships `sm:w-auto` on
-   * the fixed wrapper, so without this the card stretches edge to edge.
-   */
-  #lanyard_root #ketch-consent-banner {
-    flex: 0 0 auto !important;
-    width: max-content !important;
-    max-width: 100% !important;
+  .ngrok-consent {
+    bottom: 2.5rem;
   }
 }
 
-/* ---------------------------------------------------------------------------
- * Mobile — below 640px Ketch swaps to a nested, full-width stacked template
- * that puts all three buttons on their own rows and makes the card very tall.
- * ------------------------------------------------------------------------ */
-@media (max-width: 639px) {
-  /* The card spans the viewport minus the wrapper's 16px gutters. */
-  #lanyard_root #ketch-consent-banner {
-    width: auto !important;
-    max-width: 100% !important;
-    box-sizing: border-box !important;
-  }
+/*
+ * The island. `data-state` drives the ease: 400ms in, 200ms out, and the
+ * closed pose sits below the viewport when the reader allows motion.
+ */
+.ngrok-consent-panel {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: fit-content;
+  max-width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--ngrok-consent-border);
+  border-radius: 1rem;
+  background-color: var(--ngrok-consent-surface);
+  color: var(--ngrok-consent-text);
+  box-shadow: var(--ngrok-consent-shadow);
+  transition-property: opacity, translate;
+  transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  transition-duration: 400ms;
+}
 
-  #lanyard_root #ketch-consent-banner .ketch-overflow-y-auto {
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-  }
+.ngrok-consent-panel[hidden] {
+  display: none;
+}
 
-  #lanyard_root #ketch-consent-banner div:has(> button) {
-    flex-direction: row !important;
-    flex-wrap: wrap !important;
-    justify-content: center !important;
-    gap: 0.5rem !important;
-    margin-top: 0.5rem !important;
-  }
+.ngrok-consent-panel[data-state="closed"] {
+  pointer-events: none;
+  opacity: 0;
+  transition-duration: 200ms;
+}
 
-  #lanyard_root #ketch-consent-banner div:has(> button) > button {
-    width: auto !important;
-    flex: 1 1 auto !important;
+@media (prefers-reduced-motion: no-preference) {
+  .ngrok-consent-panel[data-state="closed"] {
+    translate: 0 calc(100% + 2.5rem);
   }
+}
+
+.ngrok-consent-message {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.ngrok-consent-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+/* mantle `IconButton` with `appearance="ghost" intent="neutral" size="xs"`. */
+.ngrok-consent-icon-button {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 0.375rem;
+  background-color: transparent;
+  color: var(--ngrok-consent-text);
+  cursor: pointer;
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  text-decoration: none;
+  transition: transform 150ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.ngrok-consent-icon-button:hover {
+  background-color: var(--ngrok-consent-action-bg-hover);
+}
+
+.ngrok-consent-icon-button:active {
+  transform: scale(0.97);
+}
+
+.ngrok-consent-icon-button:focus-visible {
+  box-shadow: 0 0 0 4px var(--ngrok-consent-focus-ring);
+}
+
+/* mantle `Icon`: `size-5` inside the `size-6` box. */
+.ngrok-consent-icon-button svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+}
+
+/* Contextual menu Cursor and VS Code logos render as <img>, so match the built-in icon color here. */
+img[src$="/img/icons/cursor.svg"],
+img[src$="/img/icons/vscode.svg"] {
+  opacity: 0.5;
+}
+
+.dark img[src$="/img/icons/cursor.svg"],
+.dark img[src$="/img/icons/vscode.svg"] {
+  filter: invert(1);
+}
+
+/* ============================================================================
+ * Mantle callouts and code blocks
+ *
+ * Restyles Mintlify's callouts and code blocks to match mantle's `Alert` and
+ * `CodeBlock` (https://mantle.ngrok.com). This site has no mantle, so every
+ * token below is the literal value mantle resolves to, light and dark.
+ *
+ * Syntax colors: `docs.json` sets `styling.codeblocks.theme` to Shiki's
+ * `css-variables` theme, which Mintlify renders as `var(--mint-token-*)`.
+ * mantle highlights with the same Shiki theme, so its `--shiki-token-*` values
+ * drop straight into the `--mint-token-*` slots.
+ * ========================================================================= */
+
+:root {
+  /* mantle `--shiki-*` values, light. */
+  --mint-foreground: oklch(18.2% 0 0);
+  --mint-token-comment: oklch(18.2% 0 0 / 60%);
+  --mint-token-constant: oklch(55.5% 0.163 48.998);
+  --mint-token-string: oklch(50.8% 0.118 165.612);
+  --mint-token-string-expression: oklch(50.8% 0.118 165.612);
+  --mint-token-keyword: oklch(49.6% 0.265 301.924);
+  --mint-token-function: oklch(50% 0.134 242.749);
+  --mint-token-parameter: oklch(51.4% 0.222 16.935);
+  --mint-token-punctuation: oklch(50% 0.134 242.749);
+  --mint-token-link: oklch(50% 0.134 242.749);
+
+  /* mantle `bg-base`, `border-gray-300`, `text-gray-700`, `bg-neutral-500/15`. */
+  --mantle-code-bg: oklch(98.5% 0 0);
+  --mantle-code-border: oklch(87% 0 0);
+  --mantle-code-header-text: oklch(37.1% 0 0);
+  --mantle-code-active-tab-bg: oklch(55.6% 0 0 / 15%);
+}
+
+:is(html.dark, html[data-theme="dark"]) {
+  --mint-foreground: #fff;
+  --mint-token-comment: rgb(255 255 255 / 50%);
+  --mint-token-constant: oklch(87.9% 0.169 91.605);
+  --mint-token-string: oklch(84.5% 0.143 164.978);
+  --mint-token-string-expression: oklch(84.5% 0.143 164.978);
+  --mint-token-keyword: oklch(82.7% 0.119 306.383);
+  --mint-token-function: oklch(82.8% 0.111 230.318);
+  --mint-token-parameter: oklch(81% 0.117 11.638);
+  --mint-token-punctuation: oklch(82.8% 0.111 230.318);
+  --mint-token-link: oklch(82.8% 0.111 230.318);
+
+  --mantle-code-bg: oklch(18.2% 0 0);
+  --mantle-code-border: oklch(37.1% 0 0);
+  --mantle-code-header-text: oklch(87% 0 0);
+}
+
+/* Callouts: mantle `Alert`. Each type picks a mantle intent: its 500 shade
+   tints the border and fill, its 700 shade colors the text and icon, and its
+   900 shade colors inline code. Custom-color `<Callout>`s keep Mintlify's look. */
+.callout:is([data-callout-type="note"], [data-callout-type="info"]) {
+  /* mantle `info` (sky). */
+  --mantle-intent-500: oklch(68.5% 0.169 237.323);
+  --mantle-intent-700: oklch(50% 0.134 242.749);
+  --mantle-intent-900: oklch(39.1% 0.09 240.876);
+}
+
+.callout:is([data-callout-type="tip"], [data-callout-type="check"]) {
+  /* mantle `success` (emerald). */
+  --mantle-intent-500: oklch(69.6% 0.17 162.48);
+  --mantle-intent-700: oklch(50.8% 0.118 165.612);
+  --mantle-intent-900: oklch(37.8% 0.077 168.94);
+}
+
+.callout[data-callout-type="warning"] {
+  /* mantle `warning` (amber). */
+  --mantle-intent-500: oklch(76.9% 0.188 70.08);
+  --mantle-intent-700: oklch(55.5% 0.163 48.998);
+  --mantle-intent-900: oklch(41.4% 0.112 45.904);
+}
+
+.callout[data-callout-type="danger"] {
+  /* mantle `danger` (rose). */
+  --mantle-intent-500: oklch(64.5% 0.246 16.439);
+  --mantle-intent-700: oklch(51.4% 0.222 16.935);
+  --mantle-intent-900: oklch(41% 0.159 10.272);
+}
+
+:is(html.dark, html[data-theme="dark"]) .callout:is([data-callout-type="note"], [data-callout-type="info"]) {
+  --mantle-intent-700: oklch(82.8% 0.111 230.318);
+  --mantle-intent-900: oklch(95.1% 0.026 236.824);
+}
+
+:is(html.dark, html[data-theme="dark"]) .callout:is([data-callout-type="tip"], [data-callout-type="check"]) {
+  --mantle-intent-700: oklch(84.5% 0.143 164.978);
+  --mantle-intent-900: oklch(95% 0.052 163.051);
+}
+
+:is(html.dark, html[data-theme="dark"]) .callout[data-callout-type="warning"] {
+  --mantle-intent-700: oklch(87.9% 0.169 91.605);
+  --mantle-intent-900: oklch(96.2% 0.059 95.617);
+}
+
+:is(html.dark, html[data-theme="dark"]) .callout[data-callout-type="danger"] {
+  --mantle-intent-700: oklch(81% 0.117 11.638);
+  --mantle-intent-900: oklch(94.1% 0.03 12.58);
+}
+
+/* mantle `rounded-md border`, `border-*-500/50 bg-*-500/10`. Padding and gap
+   are mantle's `p-2.5 gap-1.5` scaled up to body-size text. */
+.callout:is([data-callout-type="note"], [data-callout-type="info"], [data-callout-type="tip"], [data-callout-type="check"], [data-callout-type="warning"], [data-callout-type="danger"]) {
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  border-radius: 0.375rem;
+  border-color: color-mix(in oklab, var(--mantle-intent-500) 50%, transparent);
+  background-color: color-mix(in oklab, var(--mantle-intent-500) 10%, transparent);
+}
+
+.callout:is([data-callout-type="note"], [data-callout-type="info"], [data-callout-type="tip"], [data-callout-type="check"], [data-callout-type="warning"], [data-callout-type="danger"]) :is([data-component-part="callout-icon"] svg, [data-component-part="callout-content"]) {
+  color: var(--mantle-intent-700);
+}
+
+/* mantle `Alert.Icon`: `size-5`, centered on the first 28px line of text. */
+.callout:is([data-callout-type="note"], [data-callout-type="info"], [data-callout-type="tip"], [data-callout-type="check"], [data-callout-type="warning"], [data-callout-type="danger"]) [data-component-part="callout-icon"] {
+  width: 1.25rem;
+  margin-top: 0.25rem;
+}
+
+.callout:is([data-callout-type="note"], [data-callout-type="info"], [data-callout-type="tip"], [data-callout-type="check"], [data-callout-type="warning"], [data-callout-type="danger"]) [data-component-part="callout-icon"] svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+/* Body text size, 16px on a 28px line, instead of mantle's `text-sm`, so
+   callouts read like the paragraphs around them. */
+.callout:is([data-callout-type="note"], [data-callout-type="info"], [data-callout-type="tip"], [data-callout-type="check"], [data-callout-type="warning"], [data-callout-type="danger"]) [data-component-part="callout-content"] {
+  font-size: 1rem;
+  line-height: 1.75rem;
+}
+
+/* Bullets follow the callout's text color instead of prose gray. Mintlify
+   draws them as a `::before` dot, not a `::marker`. */
+.callout:is([data-callout-type="note"], [data-callout-type="info"], [data-callout-type="tip"], [data-callout-type="check"], [data-callout-type="warning"], [data-callout-type="danger"]) [data-component-part="callout-content"] ul > li::before {
+  background-color: var(--mantle-intent-700);
+}
+
+/* mantle `[&_code]:bg-*-500/10 [&_code]:border-*-500/20 [&_code]:text-*-900`.
+   Mintlify forces `text-current!` on inline code, so the color needs !important. */
+.callout:is([data-callout-type="note"], [data-callout-type="info"], [data-callout-type="tip"], [data-callout-type="check"], [data-callout-type="warning"], [data-callout-type="danger"]) [data-component-part="callout-content"] code {
+  color: var(--mantle-intent-900) !important;
+  background-color: color-mix(in oklab, var(--mantle-intent-500) 10%, transparent);
+  border: 1px solid color-mix(in oklab, var(--mantle-intent-500) 20%, transparent);
+}
+
+/* Code blocks: mantle `CodeBlock`. One flat surface with a 1px border and
+   `rounded-md`; the filename header and tab bar sit on the same surface,
+   divided from the code by a border. */
+:root :is(.code-block, .code-group) {
+  --mint-background: var(--mantle-code-bg);
+  padding: 0;
+  border: 1px solid var(--mantle-code-border);
+  border-radius: 0.375rem;
+  background-color: var(--mantle-code-bg);
+}
+
+/* A code block inside a code group is drawn by the group's frame. */
+:root .code-group .code-block {
+  border: 0;
+  border-radius: 0 0 0.375rem 0.375rem;
+}
+
+.code-block [data-component-part="code-block-root"] {
+  border-radius: inherit;
+}
+
+/* mantle `text-mono`: 13px on a 20px line, `py-4 px-4`. */
+.code-block [data-component-part="code-block-root"] {
+  font-size: 0.8125rem;
+}
+
+:root .code-block pre {
+  line-height: 1.25rem;
+}
+
+.code-block [data-component-part="scroll-area-viewport"] {
+  padding: 1rem;
+}
+
+/* mantle `CodeBlock.Header`: `border-b border-gray-300 px-4 py-2 text-gray-700`. */
+.code-block [data-component-part="code-block-header"],
+.code-group [data-component-part="code-group-tab-bar"] {
+  border-bottom: 1px solid var(--mantle-code-border);
+  border-radius: 0.375rem 0.375rem 0 0;
+}
+
+.code-block [data-component-part="code-block-header"] {
+  padding-block: 0.5rem;
+  padding-inline: 1rem 0.625rem;
+}
+
+.code-block [data-component-part="code-block-header-filename"] {
+  color: var(--mantle-code-header-text);
+}
+
+/* mantle `CodeBlock.Tab`: neutral text, a filled pill for the active tab, no
+   underline. */
+.code-group [data-component-part="code-group-tab-bar"] [role="tab"] {
+  margin-block: 0.5rem;
+  color: var(--mantle-code-header-text);
+}
+
+.code-group [data-component-part="code-group-tab-bar"] [role="tab"][aria-selected="true"] {
+  color: var(--mint-foreground);
+}
+
+.code-group [data-component-part="code-group-tab-bar"] [role="tab"] > div:first-child {
+  padding-block: 0.125rem;
+  border-radius: 0.25rem;
+}
+
+.code-group [data-component-part="code-group-tab-bar"] [role="tab"][aria-selected="true"] > div:first-child {
+  background-color: var(--mantle-code-active-tab-bg);
+}
+
+/* Hover: neutral text and a faint fill, instead of Mintlify's primary blue. */
+:root .code-group [data-component-part="code-group-tab-bar"] [role="tab"]:hover > div:first-child {
+  color: var(--mint-foreground);
+}
+
+:root .code-group [data-component-part="code-group-tab-bar"] [role="tab"][aria-selected="false"]:hover > div:first-child {
+  background-color: oklch(55.6% 0 0 / 10%);
+}
+
+.code-group [data-component-part="code-group-tab-bar"] [role="tab"] > div:not(:first-child) {
+  display: none;
+}
+
+/* mantle copy button: `bg-base`, hover `bg-neutral-500/15`. */
+.code-block-copy-button button {
+  background-color: var(--mantle-code-bg) !important;
+}
+
+.code-block-copy-button button:hover {
+  background-color: var(--mantle-code-active-tab-bg) !important;
+}
+
+/* mantle `text-muted` instead of Mintlify's faint `text-gray-400`. */
+:root .code-block-copy-button svg {
+  color: var(--mint-token-comment);
+}
+
+/* ============================================================================
+ * Mantle inline code, tabs, tables, cards, and accordions
+ *
+ * Same approach as the section above: literal mantle values for `Code`,
+ * `Tabs`, `Table`, `Card`, and `Accordion`, light and dark.
+ * ========================================================================= */
+
+:root {
+  /* mantle `border-card`, `bg-card`, `border-card-muted`, `bg-base`. */
+  --mantle-card-border: oklch(87% 0 0);
+  --mantle-card-bg: #fff;
+  --mantle-card-border-muted: oklch(92.2% 0 0);
+  --mantle-base-bg: oklch(98.5% 0 0);
+  /* mantle `separator`, `text-body`, `text-muted`, `text-gray-600`. */
+  --mantle-separator: oklch(55.6% 0 0 / 20%);
+  --mantle-text-body: oklch(18.2% 0 0 / 75%);
+  --mantle-text-muted: oklch(18.2% 0 0 / 60%);
+  --mantle-text-gray-600: oklch(43.9% 0 0);
+}
+
+:is(html.dark, html[data-theme="dark"]) {
+  --mantle-card-border: oklch(37.1% 0 0);
+  --mantle-card-bg: oklch(20.5% 0 0);
+  --mantle-card-border-muted: oklch(26.9% 0 0);
+  --mantle-base-bg: oklch(18.2% 0 0);
+  --mantle-separator: oklch(70.8% 0 0 / 20%);
+  --mantle-text-body: rgb(255 255 255 / 70%);
+  --mantle-text-muted: rgb(255 255 255 / 50%);
+  --mantle-text-gray-600: oklch(70.8% 0 0);
+}
+
+/* Inline code: mantle `Code`, `rounded-md border border-gray-500/15
+   bg-gray-500/5 px-1 text-[0.8em]`. Callouts override the colors above. */
+:root .prose :not(pre) > code {
+  padding: 0 0.25rem;
+  border: 1px solid oklch(55.6% 0 0 / 15%);
+  border-radius: 0.375rem;
+  background-color: oklch(55.6% 0 0 / 5%);
+  color: var(--mint-foreground);
+  font-size: 0.8em;
+}
+
+:root .prose a > code {
+  color: inherit;
+}
+
+/* Tabs: mantle `Tabs`. Neutral labels, a 3px underline in the strong text
+   color on the active tab, and a hairline separator under the list. */
+:root [data-component-part="tabs-list"] {
+  border-color: var(--mantle-separator);
+}
+
+:root [data-component-part="tab-button"] {
+  padding-block: 0.75rem calc(0.75rem - 2px);
+  border-bottom-width: 3px;
+  color: var(--mantle-text-gray-600);
+  font-weight: 500;
+  line-height: 1.25rem;
+}
+
+:root [data-component-part="tab-button"]:hover {
+  border-color: transparent;
+  color: var(--mint-foreground);
+}
+
+:root [data-component-part="tab-button"][data-active="true"] {
+  border-color: var(--mint-foreground);
+  color: var(--mint-foreground);
+}
+
+/* Tables: mantle `Table`. A bordered `rounded-lg` frame, a tinted header row
+   with muted labels, and hairlines between rows. Body cells keep the sans
+   font; mantle's monospace cells suit data tables, not prose. */
+:root .prose table {
+  border: 1px solid var(--mantle-card-border);
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 0.5rem;
+  background-color: var(--mantle-card-bg);
+}
+
+:root .prose table th {
+  height: 2.75rem;
+  padding: 0 0.75rem;
+  border-bottom: 1px solid var(--mantle-card-border-muted);
+  background-color: var(--mantle-base-bg);
+  color: var(--mantle-text-muted);
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.25rem;
+  vertical-align: middle;
+}
+
+:root .prose table th:first-child {
+  border-top-left-radius: calc(0.5rem - 1px);
+}
+
+:root .prose table th:last-child {
+  border-top-right-radius: calc(0.5rem - 1px);
+}
+
+:root .prose table td {
+  padding: 0.75rem;
+  border-bottom: 0;
+  color: var(--mantle-text-body);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+:root .prose table tbody tr {
+  border-bottom: 0;
+}
+
+:root .prose table tbody tr + tr > td {
+  border-top: 1px solid var(--mantle-card-border-muted);
+}
+
+/* Cards: mantle `Card`, `rounded-md border border-card bg-card`, `p-6`, and a
+   `font-medium` title. Linked cards keep Mintlify's primary hover border. */
+:root .card {
+  border-color: var(--mantle-card-border);
+  border-radius: 0.375rem;
+  background-color: var(--mantle-card-bg);
+}
+
+:root .card [data-component-part="card-content-container"] {
+  padding: 1.5rem;
+}
+
+:root .card [data-component-part="card-title"] {
+  font-weight: 500;
+}
+
+/* Accordions: mantle `Accordion`. No box: hairline separators between items,
+   a `py-4 font-medium` trigger, and a muted chevron on the right. Groups and
+   standalone accordions also get a separator above and below, so they stay
+   set apart from the surrounding text. */
+:root .accordion-group {
+  border-width: 1px 0;
+  border-color: var(--mantle-separator);
+  border-radius: 0;
+}
+
+:root details.accordion {
+  border-width: 0;
+  border-radius: 0;
+  background-color: transparent;
+}
+
+:root details.accordion:not(.accordion-group > details) {
+  border-block: 1px solid var(--mantle-separator);
+}
+
+:root .accordion [data-component-part="accordion-button"] {
+  padding: 1rem 0;
+  gap: 1rem;
+  background-color: transparent;
+}
+
+:root .accordion [data-component-part="accordion-title"] {
+  color: var(--mint-foreground);
+}
+
+/* mantle draws a Phosphor `CaretDown` that flips up when open, in place of
+   Mintlify's filled caret that turns from right to down. */
+:root .accordion [data-component-part="accordion-caret-right"] {
+  order: 1;
+  background-color: var(--mantle-text-muted);
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z'/%3E%3C/svg%3E") center / contain no-repeat;
+  transition: transform 200ms ease-out;
+}
+
+:root .accordion [data-component-part="accordion-caret-right"] svg {
+  display: none;
+}
+
+:root details.accordion[open] > summary [data-component-part="accordion-caret-right"] {
+  transform: rotate(180deg);
+}
+
+:root .accordion [data-component-part="accordion-content"] {
+  padding: 0 0 1rem;
+}
+
+/* Sidebar links: mantle `rounded-md`, matching the callouts, code blocks, and
+   cards above, instead of Mintlify's `rounded-xl` highlight. */
+:root #sidebar li > a {
+  border-radius: 0.375rem;
 }

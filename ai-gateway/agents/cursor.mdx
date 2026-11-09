@@ -1,0 +1,66 @@
+---
+title: Cursor
+sidebarTitle: Cursor
+description: Point Cursor's OpenAI base URL override at the ngrok AI Gateway to chat with catalog or self-hosted models, and learn what it doesn't cover.
+---
+
+[Cursor](https://cursor.com) is a code editor with a built-in agent.
+It reaches custom models by overriding the base URL of its OpenAI provider, so the AI Gateway stands in for OpenAI.
+
+<Warning>
+This needs a paid Cursor plan.
+Free plans can only use Cursor's **Auto** model and can't select a named model, which is what a model you add yourself is.
+</Warning>
+
+## What you'll need
+
+- [Cursor](https://cursor.com/download) installed, on a paid plan.
+- An [access key](/ai-gateway/concepts/access-keys) from [app.ngrok.ai](https://app.ngrok.ai).
+
+## Point Cursor at the gateway
+
+Open **Cursor Settings**, go to **Models**, and expand **API Keys**:
+
+1. Turn on **OpenAI API Key** and paste your ngrok.ai access key.
+   The field is labeled OpenAI, but Cursor sends the key to whatever endpoint you configure below.
+2. Turn on **Override OpenAI Base URL** and enter `https://gateway.ngrok.ai/v1`.
+   Keep the `/v1` suffix: Cursor appends `/chat/completions` to whatever you enter.
+3. Select **+ Add model**, enter a model ID from the [model catalog](/ai-gateway/reference/model-catalog), such as `gpt-5.5`, and enable it.
+   Use `provider:model` to pin a provider.
+4. Select **Verify** to confirm the gateway answers.
+
+<Warning>
+The base URL override is global.
+While it's on, Cursor routes its other OpenAI-model traffic to the gateway too, which fails for models your access key can't reach.
+Turn the override off to go back to Cursor's own models.
+</Warning>
+
+## Test the connection
+
+Pick your model in the chat model selector and send a prompt:
+
+<Prompt description="Explain what a hash map is in two sentences." actions={["copy"]}>
+  Explain what a hash map is in two sentences.
+</Prompt>
+
+Confirm the request in AI Gateway [observability](/ai-gateway/observability) in [app.ngrok.ai](https://app.ngrok.ai).
+
+## What the override doesn't cover
+
+Expect chat, not the whole editor.
+Three Cursor behaviors limit how far a custom model reaches:
+
+- Tab completion always uses Cursor's built-in models. It never reaches your endpoint.
+- Agent and Edit also rely on Cursor's own models, so Cursor may refuse them while a custom API key is set and ask you to disable the key.
+- Where agent runs do work, Cursor's tool definitions over an overridden base URL aren't strictly OpenAI-shaped, so tool calls can fail against a self-hosted model even when plain chat succeeds.
+
+## Use a model you run yourself
+
+To reach a model on your own machine, register it as a [custom provider](/ai-gateway/concepts/custom-providers), then add its `provider:model` name as a model, such as `ollama:llama3.2`.
+See [Use a model you run yourself](/ai-gateway/guides/use-a-model-you-run-yourself) for the full setup.
+
+## Next steps
+
+- [Restrict providers and models](/ai-gateway/guides/restrict-providers-and-models): Scope what an access key can call
+- [Configure fallback models](/ai-gateway/guides/configure-fallback-models): Try another model when the first one fails
+- [Observability](/ai-gateway/observability): See which model served each request

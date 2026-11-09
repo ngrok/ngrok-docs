@@ -5,27 +5,28 @@ description: Use DeepSeek models through the ngrok AI Gateway.
 
 [DeepSeek](https://www.deepseek.com) provides high-performance reasoning and chat models.
 
+DeepSeek supports Chat Completions, Responses, and Anthropic Messages requests.
+
 <Note>
-Even though DeepSeek is a **built-in provider**, it still requires you to **bring your own key** because ngrok.ai inference is not available for it at this time.
+DeepSeek is a **built-in provider** you can pay for with credits, so a provider key is optional.
+Add your own DeepSeek key to bill usage to your DeepSeek account instead of your ngrok.ai credits.
 </Note>
 
 ## Setup
 
-<Steps>
-  <Step title="Create an access key">
-    Follow the [quickstart](/ai-gateway/quickstart) to create an access key in [app.ngrok.ai](https://app.ngrok.ai).
+<Steps titleSize="h3">
+  <Step title="Create an access key and add credits">
+    Follow the [quickstart](/ai-gateway/quickstart) to create an access key and purchase [credits](/ai-gateway/concepts/credits) in [app.ngrok.ai](https://app.ngrok.ai).
   </Step>
 
-  <Step title="Store your DeepSeek API key">
-    Sign up at [platform.deepseek.com](https://platform.deepseek.com) and create an API key. Then [add a provider key](/ai-gateway/guides/attaching-provider-keys#add-a-provider-key).
+  <Step title="Store your DeepSeek API key (optional)">
+    Skip this step to pay with credits.
+    To bring your own key, sign up at [platform.deepseek.com](https://platform.deepseek.com) and create an API key.
+    Then [add a provider key](/ai-gateway/guides/attaching-provider-keys#add-a-provider-key) and [create an access key configuration](/ai-gateway/guides/access-key-configurations#create-a-configuration) with a `deepseek` routing rule that uses it.
   </Step>
 
-  <Step title="Create a configuration">
-    [Create an access key configuration](/ai-gateway/guides/access-key-configurations#create-a-configuration) with a `deepseek` routing rule and allow DeepSeek in the access scope.
-  </Step>
-
-  <Step title="Assign and send requests">
-    Assign the configuration to your access key and send requests with your access key:
+  <Step title="Send requests">
+    Send requests with your access key:
 
     ```python
     from openai import OpenAI
@@ -36,16 +37,28 @@ Even though DeepSeek is a **built-in provider**, it still requires you to **brin
     )
 
     response = client.chat.completions.create(
-        model="deepseek-chat",
+        model="deepseek-flash",
         messages=[{"role": "user", "content": "Hello!"}]
     )
     ```
   </Step>
 </Steps>
 
+## Peak and off-peak pricing
+
+DeepSeek charges double its off-peak price during peak hours: 01:00–04:00 and 06:00–10:00 UTC, Monday through Friday, except Chinese public holidays.
+All other hours are off-peak.
+
+- **Pay with credits:** ngrok.ai charges DeepSeek's off-peak price at every hour, including peak hours.
+- **Your own DeepSeek key:** DeepSeek bills you directly, at its peak price during peak hours.
+
+See [DeepSeek's pricing page](https://api-docs.deepseek.com/quick_start/pricing) for current prices.
+
 ## Available models
 
 See the [model catalog](/ai-gateway/reference/model-catalog#deepseek).
+`deepseek-flash` is DeepSeek V4.1 Flash.
+DeepSeek has retired V4 Flash and serves requests for `deepseek-v4-flash` with V4.1 Flash, so use `deepseek-flash` in new code.
 
 ## Next steps
 
