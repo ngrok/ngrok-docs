@@ -37,7 +37,9 @@ jobs:
         with:
           pr-number: ${{ steps.prs.outputs.list }}
 
-      - name: Label PRs that add new pages
+      # New pages get kind/net-new; edits to existing pages get kind/enhancement.
+      # Generated PRs (meta/automated) never get kind/enhancement.
+      - name: Label PRs that add or change pages
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         env:
           PR_NUMBERS: ${{ inputs.pr-numbers }}
@@ -46,19 +48,26 @@ jobs:
             const numbers = context.payload.pull_request
               ? [context.payload.pull_request.number]
               : process.env.PR_NUMBERS.split(/\s+/).filter(Boolean).map(Number);
+            const automated = /^(ngrokrock\/dev-gen-changes$|docs\/auto-gen-|dependabot\/)/;
+            const isPage = (f) => f.filename.endsWith(".mdx") && !f.filename.startsWith("snippets/");
             for (const pull_number of numbers) {
+              const { data: pr } = await github.rest.pulls.get({ ...context.repo, pull_number });
               const files = await github.paginate(github.rest.pulls.listFiles, {
                 ...context.repo,
                 pull_number,
               });
-              const addsPage = files.some(
-                (f) => f.status === "added" && f.filename.endsWith(".mdx") && !f.filename.startsWith("snippets/"),
-              );
-              if (addsPage) {
+              const pages = files.filter(isPage);
+              const label = pages.some((f) => f.status === "added")
+                ? "kind/net-new"
+                : !automated.test(pr.head.ref) &&
+                    pages.some((f) => f.status === "modified" || f.status === "renamed")
+                  ? "kind/enhancement"
+                  : null;
+              if (label) {
                 await github.rest.issues.addLabels({
                   ...context.repo,
                   issue_number: pull_number,
-                  labels: ["kind/net-new"],
+                  labels: [label],
                 });
               }
             }

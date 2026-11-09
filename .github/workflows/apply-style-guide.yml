@@ -75,6 +75,16 @@ jobs:
             echo "has_files=false" >> $GITHUB_OUTPUT
           fi
 
+      # Read the style guide from the base branch, since PR branches can predate
+      # its latest rules. Like the file list, it is never committed.
+      - name: Fetch base style guide
+        if: steps.changed-files.outputs.has_files == 'true'
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          git fetch --depth=1 origin "$BASE_REF"
+          git show FETCH_HEAD:style-guide.mdx > .style-guide.mdx
+
       - name: Apply style guide with Claude
         if: steps.changed-files.outputs.has_files == 'true'
         uses: anthropics/claude-code-action@d70510b174a1244958df0b03166a54912811f3e6 # v1.0.264
@@ -90,17 +100,18 @@ jobs:
           prompt: |
             You are editing the prose of an ngrok documentation pull request so it follows the repo's style guide.
 
-            1. Read `style-guide.mdx` in full. It is the source of truth.
+            1. Read `.style-guide.mdx` in full. It is the current style guide from the base branch. It is the source of truth.
             2. Read `.style-guide-files.txt`. It lists the files this PR changed, one per line.
             3. Edit each listed file so its prose follows the style guide.
 
             Rules:
-            - Edit only the files listed in `.style-guide-files.txt`. Never edit `style-guide.mdx` or `.style-guide-files.txt`.
+            - Edit only the files listed in `.style-guide-files.txt`. Never edit `style-guide.mdx`, `.style-guide.mdx`, or `.style-guide-files.txt`.
             - Change prose only. Leave code blocks, inline code, frontmatter keys, import statements, JSX component names and props, URLs, and link targets as they are.
             - The frontmatter `title` and `description` values are prose, so apply the style guide to them too. The `title` must use title case, as the "Titles and headings" section requires, even when other pages in the same section don't.
             - Keep the technical meaning exactly the same. If a fix would change what the docs say, skip it.
             - Make the smallest edit that fixes each issue. Don't rewrite text that already follows the guide.
             - Put each sentence on its own line, as the style guide requires.
+            - Converting sequential instructions to `<Steps>` and `<Step>` components, as the style guide requires, is the one allowed exception to the prose-only rule.
 
       - name: Commit and push changes
         # Runs even if the Claude step failed (e.g. hit the turn cap), so finished edits aren't lost.

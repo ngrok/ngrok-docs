@@ -11,39 +11,37 @@ import TerraformContent from "/snippets/guides/terraform-content.mdx";
 
 The ngrok API provides programmatic access to all of ngrok's resources.
 
-The API is REST-ish. It follows most of the conventions of a REST API but
-diverges slightly when the REST model does not fit well.
+The API is REST-ish.
+It follows most of the conventions of a REST API but diverges slightly when the REST model doesn't fit well.
 
-The API is available at `https://api.ngrok.com`. The API listens only on
-port 443 to help avoid any accidental unencrypted requests.
+The API is available at `https://api.ngrok.com`.
+The API listens only on port 443 to help avoid any accidental unencrypted requests.
 
-The API is designed to be simple enough to be called with `curl` and HTTP
-libraries in your programming language of choice. Other ways to
-interact with the API include native API client libraries, a native CLI, and a
-Terraform Provider.
+The API is designed to be simple enough to call with `curl` and HTTP libraries in your programming language of choice.
+Other ways to interact with the API include native API client libraries, a native CLI, and a Terraform Provider.
 
-#### Other ways to interact with the API
+### Other ways to interact with the API
 
 - **[Agent API CLI](/gateway/agent/cli-api/)**: Explore and script the API via the `ngrok api` commands included in the ngrok agent.
-- **[API Client Libraries](#client-libraries)**: Idiomatic API client libraries are published for all major programming languages
-- **[Terraform Provider](#terraform-provider)**: Use ngrok's Terraform provider to manage ngrok resources
+- **[API Client Libraries](#client-libraries)**: Idiomatic API client libraries are published for all major programming languages.
+- **[Terraform Provider](#terraform-provider)**: Use ngrok's Terraform provider to manage ngrok resources.
 
-#### You may be looking for other programmatic ways to work with ngrok
+### Other programmatic ways to work with ngrok
 
-- **[Agent API](/gateway/agent/api)**: The ngrok agent has its own API if you're trying to dynamically start and stop endpoints and tunnels
-- **[SDKs](/agent-sdks/)**: If you're looking to embed ngrok agent functionality as a library in your own software
+- **[Agent API](/gateway/agent/api)**: The ngrok agent has its own API if you're trying to dynamically start and stop endpoints and tunnels.
+- **[SDKs](/agent-sdks/)**: If you're looking to embed ngrok agent functionality as a library in your own software.
 
 ## Quickstart 
 
-Start by [generating a new API key](https://dashboard.ngrok.com/api-keys) in the ngrok Dashboard.
+Start by [generating a new API key](https://dashboard.ngrok.com/api-keys) in the ngrok dashboard.
 
-##### Access the API with curl
+### Access the API with curl
 
 ```
 curl https://api.ngrok.com -H "authorization: Bearer {API Key}" -H "ngrok-version: 2"
 ```
 
-##### Access the API with the CLI
+### Access the API with the CLI
 
 ```
 ngrok config add-api-key "{API Key}"
@@ -63,28 +61,26 @@ ngrok api endpoints list
 |                       |                                       |
 | --------------------- | ------------------------------------- |
 | Base URL              | `https://api.ngrok.com`               |
-| Authentication Header | **`authorization: Bearer {API Key}`** |
+| Authentication header | **`authorization: Bearer {API Key}`** |
 
-Requests to the API must include an API key as a bearer token in the
-`Authorization` header.
+Requests to the API must include an API key as a bearer token in the `Authorization` header.
 
 - **[API Keys on the ngrok dashboard](https://dashboard.ngrok.com/api-keys)**: Provision your first API key from your ngrok dashboard.
 - **[API keys API Resource](/api-reference/apikeys/list)**: Once you have an API key, you may provision additional API keys programmatically.
 
 ## Content types 
 
-Requests to the API with a content body must set a `content-type` header of
-`application/json`. All responses returned by the API will use the
-`application/json` content type.
+Requests to the API with a content body must set a `content-type` header of `application/json`.
+All responses returned by the API use the `application/json` content type.
 
 ## Versioning and API stability 
 
-Requests to the API must set the `ngrok-version` header. The latest version is
-`2`. All other versions are deprecated.
+Requests to the API must set the `ngrok-version` header.
+The latest version is `2`.
+All other versions are deprecated.
 
-The ngrok API guarantees that breaking changes to the API will never be made
-unless the caller explicitly opts in to a newer version. The following
-non-breaking changes to the API may be made to existing versions:
+The ngrok API guarantees that it never makes breaking changes to the API unless the caller explicitly opts in to a newer version.
+The ngrok API may make the following non-breaking changes to existing versions:
 
 - The addition of new resources
 - The addition of new methods to existing resources
@@ -93,50 +89,41 @@ non-breaking changes to the API may be made to existing versions:
 
 ## Pagination 
 
-List endpoints can be paginated using the query parameters `limit` and
-`before_id`. Results are returned ordered from newest to oldest. The maximum
-value of `limit` is 100. If a limit is not specified, it will default to 100.
-If `before_id` is not specified, the first page of results will be returned.
-You can provide an explicit value for `before_id` to retrieve items created
-before the given ID. Each response to a list request will include a
-`next_page_uri` field, which will be the full URL you can request to retrieve
-the next page of results. If there are no more results, `next_page_uri` will be
-`null`.
+You can paginate list endpoints using the query parameters `limit` and `before_id`.
+Results are returned ordered from newest to oldest.
+The maximum value of `limit` is 100.
+If you don't specify a limit, it defaults to 100.
+If you don't specify `before_id`, the API returns the first page of results.
+You can provide an explicit value for `before_id` to retrieve items created before the given ID.
+Each response to a list request includes a `next_page_uri` field, which is the full URL you can request to retrieve the next page of results.
+If there are no more results, `next_page_uri` is `null`.
 
 ## Timestamps and timezones 
 
-Timestamp fields in the ngrok API are represented as strings that are returned
-in the [RFC 3339 format](https://www.ietf.org/rfc/rfc3339.txt). Timestamps
-returned by the API are in UTC time which is indicated by a `Z` at the end.
+Timestamp fields in the ngrok API are represented as strings that are returned in the [RFC 3339 format](https://www.ietf.org/rfc/rfc3339.txt).
+Timestamps returned by the API are in UTC time, which is indicated by a `Z` at the end.
 
 ## Rate limits
 
-The ngrok API enforces a limit on all accounts of 120 requests over a rolling
-60 second window. If you exceed the rate limit, ngrok will return
-[ERR_NGROK_226](/errors/err_ngrok_226) and an HTTP Status Code of 429.
+The ngrok API enforces a limit on all accounts of 120 requests over a rolling 60-second window.
+If you exceed the rate limit, ngrok returns [ERR_NGROK_226](/errors/err_ngrok_226) and an HTTP status code of 429.
 
 ## IP restrictions 
 
-All API access requires an API key, but you may also further restrict which IPs
-are permitted to make requests to the API. You may define one or more IP
-Policies to configure which CIDR blocks may manipulate the API for your
-account.
+All API access requires an API key, but you may also further restrict which IPs are permitted to make requests to the API.
+You may define one or more IP Policies to configure which CIDR blocks may manipulate the API for your account.
 
-If you use SCIM with an IdP, you may need to add the IPs of your IdP as well
-because SCIM requests to the ngrok API are subject to these IP restrictions as
-well.
+If you use SCIM with an identity provider (IdP), you may need to add the IPs of your IdP as well because SCIM requests to the ngrok API are subject to these IP restrictions.
 
-IP Restrictions can be configured manually on the ngrok dashboard or
-programmatically via API with a `type` of `api`.
+You can configure IP Restrictions manually on the ngrok dashboard or programmatically via API with a `type` of `api`.
 
 - **[IP Restrictions on your ngrok dashboard](https://dashboard.ngrok.com/ip-restrictions)**
 - **[IP Restrictions API Resource](/api-reference/iprestrictions/list/)**
 
 ## Errors
 
-It is important to provide a well-defined interface to errors
-you encounter when working with the ngrok API. Well-defined error surfaces and codes
-are what allow your software to appropriately handle error conditions.
+It's important to provide a well-defined interface to errors you encounter when working with the ngrok API.
+Well-defined error surfaces and codes are what allow your software to appropriately handle error conditions.
 
 Errors returned by the ngrok API are serialized with the following example format:
 
@@ -151,41 +138,29 @@ Errors returned by the ngrok API are serialized with the following example forma
 }
 ```
 
-Every error returned by the ngrok API includes a globally unique error code in
-the `error_code` property field. This error code is distinct for every possible
-error condition that can be encountered so your software can properly handle
-different error conditions.
+Every error returned by the ngrok API includes a globally unique error code in the `error_code` property field.
+This error code is distinct for every possible error condition so your software can properly handle different error conditions.
 
-Consult the **[Error Reference Documentation](/errors)** for the complete
-list of all error codes returned by ngrok.
+Consult the **[Error Reference Documentation](/errors)** for the complete list of all error codes returned by ngrok.
 
 ## CORS
 
-The ngrok API supports CORS ([Cross Origin Resource
-Sharing](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS)) so that you
-may initiate requests to it from Javascript running in a web browser on other
-domains.
+The ngrok API supports CORS ([Cross-Origin Resource Sharing](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS)) so that you may initiate requests to it from JavaScript running in a web browser on other domains.
 
-The response to CORS requests include the `Access-Control-Allow-Origin` and
-`Access-Control-Allow-Credentials` headers.
+The response to CORS requests includes the `Access-Control-Allow-Origin` and `Access-Control-Allow-Credentials` headers.
 
-The ngrok API identifies any request with an `OPTIONS` method and the headers
-`Origin` and `Access-Control-Request-Method` as a CORS preflight request. The API
-responds to CORS preflight requests as follows:
+The ngrok API identifies any request with an `OPTIONS` method and the headers `Origin` and `Access-Control-Request-Method` as a CORS preflight request.
+The API responds to CORS preflight requests as follows:
 
 - The API sets the `Access-Control-Allow-Origin` to match the requested `Origin`.
-- The API sets `Access-Control-Allow-Methods` to all supported methods for the
-  requested resource.
-- The API echoes back all requested header from
-  `Access-Control-Request-Headers` in `Access-Control-Allow-Headers`
-- The API responds with `Access-Control-Allow-Credentials: true` because the
-  `Authorization` header is required for accessing API resources.
-- The API sets the `Access-Control-Max-Age` header to enable the preflight
-  response to be cached for up to 10 minutes.
+- The API sets `Access-Control-Allow-Methods` to all supported methods for the requested resource.
+- The API echoes back all requested headers from `Access-Control-Request-Headers` in `Access-Control-Allow-Headers`.
+- The API responds with `Access-Control-Allow-Credentials: true` because the `Authorization` header is required for accessing API resources.
+- The API sets the `Access-Control-Max-Age` header to enable the preflight response to be cached for up to 10 minutes.
 
 ## API pricing
 
-The API is available to all ngrok users at no additional charge. You only incur
-costs if the resources provisioned by the API incur a cost.
+The API is available to all ngrok users at no additional charge.
+You only incur costs if the resources provisioned by the API incur a cost.
 
 [API IP Restrictions](#ip-restrictions) is available on the Pay-as-you-go plan.
