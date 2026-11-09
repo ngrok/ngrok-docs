@@ -128,7 +128,14 @@ ${err.message_plain}
 
 function page(err) {
   const details = readOptional(path.join(detailsDir, `err_ngrok_${err.slug}.mdx`));
-  let out = pageHead(err) + "\n";
+  // The tip goes right after the error message, so readers see it before any explanation.
+  let out = `${pageHead(err).trimEnd()}
+
+<Tip>
+Troubleshoot ${err.id} with your AI agent.
+Connect it to the [ngrok MCP server](/mcp-server), then ask what caused the error and how to fix it.
+</Tip>
+`;
   if (details !== null) out += "\n" + details;
   out += "\n";
   if (err.show_support_link) {
@@ -138,12 +145,6 @@ function page(err) {
 Email [support@ngrok.com](mailto:support@ngrok.com?subject=Help%20with%20${err.id}) and include the error code.
 `;
   }
-  out += `
-<Tip>
-Troubleshoot ${err.id} with your AI agent.
-Connect it to the [ngrok MCP server](/mcp-server), then ask what caused the error and how to fix it.
-</Tip>
-`;
   return out + "\n";
 }
 
