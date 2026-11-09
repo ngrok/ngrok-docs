@@ -138,6 +138,12 @@ function page(err) {
 Email [support@ngrok.com](mailto:support@ngrok.com?subject=Help%20with%20${err.id}) and include the error code.
 `;
   }
+  out += `
+<Tip>
+Troubleshoot ${err.id} with your AI agent.
+Connect it to the [ngrok MCP server](/mcp-server), then ask what caused the error and how to fix it.
+</Tip>
+`;
   return out + "\n";
 }
 
