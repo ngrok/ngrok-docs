@@ -61,16 +61,19 @@ export const ModelRow = ({
     );
   };
 
+  // Left-align cells like markdown tables; centered IDs stretch the tooltip underline.
+  const left = { textAlign: "left" };
+
   return (
     <tr>
-      <td>
+      <td style={left}>
         <Tooltip tip={name || id}>
           <code>{id}</code>
         </Tooltip>
       </td>
-      <td>{tokens(context)}</td>
-      <td>{tokens(output)}</td>
-      <td>
+      <td style={left}>{tokens(context)}</td>
+      <td style={left}>{tokens(output)}</td>
+      <td style={left}>
         {modalities
           .split(",")
           .map((m) => m.trim())
@@ -85,7 +88,7 @@ export const ModelRow = ({
             </span>
           ))}
       </td>
-      <td>{byok ? "Yes" : "No"}</td>
+      <td style={left}>{byok ? "Yes" : "No"}</td>
     </tr>
   );
 };
