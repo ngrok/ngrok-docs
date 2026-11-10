@@ -61,14 +61,15 @@ export const ModelRow = ({
     );
   };
 
-  // Left-align cells like markdown tables; centered IDs stretch the tooltip underline.
+  // Left-align cells like markdown tables. IDs don't wrap, because the tooltip
+  // centers wrapped lines and breaks the underline.
   const left = { textAlign: "left" };
 
   return (
     <tr>
       <td style={left}>
         <Tooltip tip={name || id}>
-          <code>{id}</code>
+          <code style={{ whiteSpace: "nowrap" }}>{id}</code>
         </Tooltip>
       </td>
       <td style={left}>{tokens(context)}</td>
