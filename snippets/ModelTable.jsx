@@ -10,10 +10,15 @@
 // byok marks a model that needs your own provider key.
 
 // The wrapper and table classes match what Mintlify renders for markdown tables,
-// so wide tables scroll sideways on narrow screens.
+// so wide tables scroll sideways on narrow screens. The inline font sizes
+// override the prose defaults (0.875rem tables, 0.75rem table code) so the
+// table matches the body text.
 export const ModelTable = ({ children }) => (
   <div className="overflow-x-auto">
-    <table className="m-0 min-w-full w-full max-w-none table [&_th]:text-left [&_td]:min-w-[150px]">
+    <table
+      style={{ fontSize: "inherit", lineHeight: "inherit" }}
+      className="m-0 min-w-full w-full max-w-none table [&_th]:text-left [&_td]:min-w-[150px]"
+    >
       <thead>
         <tr>
           <th>Model ID</th>
@@ -79,7 +84,7 @@ export const ModelRow = ({
       <td style={left}>
         <Tooltip tip={name || id}>
           <button type="button" style={idButton}>
-            <code>{id}</code>
+            <code style={{ fontSize: "0.875em" }}>{id}</code>
           </button>
         </Tooltip>
       </td>
