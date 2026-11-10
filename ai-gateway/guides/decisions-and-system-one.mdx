@@ -1,10 +1,11 @@
 ---
-title: Typed-question APIs
+title: Typed-Question APIs
 sidebarTitle: Decisions and System One
 description: Send typed questions to OpenAI Decisions and Typesafe AI System One through ngrok.ai and get back typed answers instead of chat replies.
 ---
 
-Some models don't chat. You send them some input and a list of typed questions, and they send back a typed answer to each one, such as true or false, one choice from a list, or a score.
+Some models don't chat.
+You send them some input and a list of typed questions, and they send back a typed answer to each one, such as true or false, one choice from a list, or a score.
 That's useful for routing support tickets, flagging content, or scoring urgency without parsing free-form text.
 
 ngrok.ai serves two of these APIs:
@@ -51,7 +52,9 @@ curl https://gateway.ngrok.ai/v1/decisions \
   }'
 ```
 
-The response has an `answers` array with one entry per question. A `predicate` answer has the `probability` that it's true. A `choice` answer names the `choice` it picked, with a probability for each option:
+The response has an `answers` array with one entry per question.
+A `predicate` answer has the `probability` that it's true.
+A `choice` answer names the `choice` it picked, with a probability for each option:
 
 ```json
 {
@@ -73,10 +76,12 @@ The response has an `answers` array with one entry per question. A `predicate` a
 }
 ```
 
-The gateway forwards `model`, `input`, `questions`, and `safety_identifier`. It removes any other top-level field and names it in the `Ngrok-AIG-Removed-Params` [response header](/ai-gateway/how-it-works#response-headers).
+The gateway forwards `model`, `input`, `questions`, and `safety_identifier`.
+It removes any other top-level field and names it in the `Ngrok-AIG-Removed-Params` [response header](/ai-gateway/how-it-works#response-headers).
 See [OpenAI's Decisions guide](https://developers.openai.com/api/docs/guides/decisions) for every question type and option.
 
-`"model": "ngrok/auto"` also works and always picks `gpt-6-luna`. Any other model returns [`ERR_NGROK_27226`](/ai-gateway/reference/error-codes#err_ngrok_27226), because no other model serves Decisions.
+`"model": "ngrok/auto"` also works and always picks `gpt-6-luna`.
+Any other model returns [`ERR_NGROK_27226`](/ai-gateway/reference/error-codes#err_ngrok_27226), because no other model serves Decisions.
 
 When you pay with credits, OpenAI bills a decision on input tokens only, at `gpt-6-luna`'s input rate.
 
@@ -113,7 +118,8 @@ The response maps each question ID to its answer, with a calibrated probability:
 The gateway forwards `model`, `state`, and `questions`, and removes any other top-level field.
 See the [Typesafe AI API reference](https://docs.typesafe.ai) for question types such as `choice` and `score`, and the [Typesafe AI provider page](/ai-gateway/providers/typesafeai) for setup.
 
-Name a Jev model in the request. `ngrok/auto` doesn't pick Jev models, so it returns [`ERR_NGROK_27227`](/ai-gateway/reference/error-codes#err_ngrok_27227) on this endpoint.
+Name a Jev model in the request.
+`ngrok/auto` doesn't pick Jev models, so it returns [`ERR_NGROK_27227`](/ai-gateway/reference/error-codes#err_ngrok_27227) on this endpoint.
 
 ## What's different from chat requests
 
@@ -121,8 +127,10 @@ Both APIs differ from Chat Completions and Messages in a few ways:
 
 - **No streaming**: A request with `"stream": true` returns `ERR_NGROK_27228` before reaching the provider.
 - **No fallback list**: The gateway reads only `model`, so a `models` list is removed rather than used.
-- **POST only**: Each API has a single create endpoint. Other methods and paths below it return an error.
-- **Same billing model**: Every request pays the [processing fee](/ai-gateway/concepts/credits#processing-fee). When you pay with credits, credits also cover the model cost.
+- **POST only**: Each API has a single create endpoint.
+  Other methods and paths below it return an error.
+- **Same billing model**: Every request pays the [processing fee](/ai-gateway/concepts/credits#processing-fee).
+  When you pay with credits, credits also cover the model cost.
 
 ## Next steps
 

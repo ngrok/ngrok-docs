@@ -3,11 +3,13 @@ title: Anthropic
 description: Send Claude requests through ngrok.ai, pin them to Anthropic with explicit provider routing, and upload files to reuse in later requests.
 ---
 
-This guide walks through using [Anthropic](https://anthropic.com) Claude models with the AI Gateway. Anthropic is a **built-in provider** you can pay for with credits, so you can use Claude models without an Anthropic account of your own, or bring your own key.
+This guide walks through using [Anthropic](https://anthropic.com) Claude models with the AI Gateway.
+Anthropic is a **built-in provider** you can pay for with credits, so you can use Claude models without an Anthropic account of your own, or bring your own key.
 
 ## Pay with credits (no Anthropic account)
 
-You can use Claude models without your own Anthropic account. ngrok.ai supplies the Anthropic credentials and bills the model cost to your credits.
+You can use Claude models without your own Anthropic account.
+ngrok.ai supplies the Anthropic credentials and bills the model cost to your credits.
 
 <Steps titleSize="h3">
   <Step title="Create an access key and add credits">
@@ -50,7 +52,8 @@ The gateway supports both the Anthropic Messages API (`/v1/messages`) and OpenAI
 
 ## Bring your own Anthropic key
 
-Want requests billed to your own Anthropic account instead of through credits? Store your Anthropic key once—the gateway attaches it for you on every request.
+Want requests billed to your own Anthropic account instead of through credits?
+Store your Anthropic key once—the gateway attaches it for you on every request.
 
 <Steps titleSize="h3">
   <Step title="Create an access key">
@@ -58,7 +61,8 @@ Want requests billed to your own Anthropic account instead of through credits? S
   </Step>
 
   <Step title="Add your Anthropic key">
-    [Add a provider key](/ai-gateway/guides/attaching-provider-keys#add-a-provider-key) for Anthropic. ngrok stores it encrypted, so it never has to live in your application or get shared around—and you can reuse it across as many access keys as you need.
+    [Add a provider key](/ai-gateway/guides/attaching-provider-keys#add-a-provider-key) for Anthropic.
+    ngrok stores it encrypted, so it never has to live in your application or get shared around—and you can reuse it across as many access keys as you need.
   </Step>
 
   <Step title="Route to it with a configuration">
@@ -66,7 +70,8 @@ Want requests billed to your own Anthropic account instead of through credits? S
   </Step>
 
   <Step title="Keep sending your access key">
-    Your code doesn't change. Send the same access key as before—the gateway swaps in your Anthropic key before the request leaves for Anthropic.
+    Your code doesn't change.
+    Send the same access key as before—the gateway swaps in your Anthropic key before the request leaves for Anthropic.
   </Step>
 </Steps>
 
@@ -88,17 +93,21 @@ Browse the [model catalog](/ai-gateway/reference/model-catalog#anthropic) for th
 
 The gateway removes these fields before it sends a request to Anthropic, and lists them in the `Ngrok-AIG-Removed-Params` [response header](/ai-gateway/how-it-works#response-headers):
 
-- `speed` on every Claude model. Fast mode isn't available through the gateway, so a request with `"speed": "fast"` runs and bills at standard speed.
+- `speed` on every Claude model.
+  Fast mode isn't available through the gateway, so a request with `"speed": "fast"` runs and bills at standard speed.
 - `temperature`, `top_p`, and `top_k` on the models that reject them: the Claude Fable models, Claude Opus 4.7 and later, Claude Sonnet 5 and later, and Claude Haiku 5.5.
-- `reasoning_effort` on Chat Completions requests to every Claude model. To set the effort level, send an Anthropic Messages request to `/v1/messages` with `output_config`, which the gateway forwards.
+- `reasoning_effort` on Chat Completions requests to every Claude model.
+  To set the effort level, send an Anthropic Messages request to `/v1/messages` with `output_config`, which the gateway forwards.
 
 ## Fable 5.2
 
 Claude Fable 5.2 (`claude-fable-5-2`) has a 1M-token context window, up to 128K output tokens, and always uses adaptive thinking.
 It takes text, image, and file input.
-Effort is the main control for this model, so call it with the Messages API. The gateway removes `reasoning_effort` from Chat Completions requests.
+Effort is the main control for this model, so call it with the Messages API.
+The gateway removes `reasoning_effort` from Chat Completions requests.
 
-Anthropic returns a `400` error for some Claude Fable 5.2 requests that Claude Fable 5.1 accepts, and the gateway passes the error through. Anthropic rejects a request that:
+Anthropic returns a `400` error for some Claude Fable 5.2 requests that Claude Fable 5.1 accepts, and the gateway passes the error through.
+Anthropic rejects a request that:
 
 - Forces tool use with `tool_choice`.
 - Sets `thinking` to `enabled` or `disabled`.
