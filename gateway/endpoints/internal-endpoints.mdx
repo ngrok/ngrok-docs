@@ -1,5 +1,5 @@
 ---
-title: Internal Agent Endpoints
+title: Internal Endpoints
 sidebarTitle: Internal Endpoints
 description: Learn about staging internal services and applications using internal endpoints.
 ---
@@ -20,13 +20,30 @@ Even if another user has the same internal endpoint URL as you, your traffic nev
 A common practice is to use a [public](/gateway/endpoints/public-endpoints) [Cloud Endpoint](/gateway/endpoints/cloud-endpoints/) to manage a centralized Traffic Policy, then forward traffic to one or more internal [endpoints](/gateway/endpoints/).
 See [the guide on using Cloud Endpoints with internal endpoints](/gateway/endpoints/cloud-endpoints/forwarding-and-load-balancing) to learn more.
 
-## Quickstart
+## Create an internal endpoint
+
+### Agent Endpoint
 
 Create an internal Agent Endpoint by specifying a binding of `internal` when you create an endpoint.
 
 ```bash
 ngrok http 8080 --url "https://example.internal" --binding internal
 ```
+
+### Cloud Endpoint
+
+Cloud Endpoints also support the `internal` binding.
+Specify the internal URL and a Traffic Policy when you create the endpoint.
+
+```bash
+ngrok api create \
+  --type cloud \
+  --binding internal \
+  --url "https://example.internal" \
+  --traffic-policy "$(cat traffic-policy.yml)"
+```
+
+For example, this Traffic Policy returns a response from the internal endpoint:
 
 ```yaml traffic-policy.yml
 on_http_request:
@@ -39,7 +56,7 @@ on_http_request:
           body: "Hello world!"
 ```
 
-### Forwarding
+## Forwarding
 
 Internal endpoints aren’t directly accessible.
 To send traffic to an Internal Endpoint, you must create an endpoint that uses the Traffic Policy to forward traffic using the [`forward-internal` action](/gateway/traffic-policy/actions/forward-internal/).
@@ -115,9 +132,6 @@ For additional details, see the [`forward-internal` documentation](/gateway/traf
 ## API
 
 You can manage internal endpoints programmatically.
-To get started, consult the [Endpoints API documentation](/api-reference/endpoints/list.
+To get started, consult the [Endpoints API documentation](/api-reference/endpoints/list).
 
-## Internal endpoints pricing
-
-Internal endpoints are available on the Pay-as-you-go plan.
-Consult the [Endpoints Pricing](/gateway/endpoints/#pricing) documentation for billing details.
+For endpoint limits and usage charges, see [Endpoint pricing](/pricing-limits/#endpoint-limits).
