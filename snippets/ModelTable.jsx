@@ -61,14 +61,27 @@ export const ModelRow = ({
     );
   };
 
-  // Left-align cells like markdown tables. The model ID shows its display name
-  // as a native title tooltip, which has no dotted underline.
+  // Left-align cells like markdown tables. A native <button> child becomes the
+  // tooltip trigger itself, so the ID gets no dotted underline and its wrapped
+  // lines stay left-aligned.
   const left = { textAlign: "left" };
+  const idButton = {
+    background: "none",
+    border: 0,
+    padding: 0,
+    font: "inherit",
+    textAlign: "left",
+    cursor: "default",
+  };
 
   return (
     <tr>
       <td style={left}>
-        <code title={name || id}>{id}</code>
+        <Tooltip tip={name || id}>
+          <button type="button" style={idButton}>
+            <code>{id}</code>
+          </button>
+        </Tooltip>
       </td>
       <td style={left}>{tokens(context)}</td>
       <td style={left}>{tokens(output)}</td>
