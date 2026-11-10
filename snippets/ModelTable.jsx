@@ -61,15 +61,17 @@ export const ModelRow = ({
     );
   };
 
-  // Left-align cells like markdown tables. IDs don't wrap, because the tooltip
-  // centers wrapped lines and breaks the underline.
+  // Left-align cells like markdown tables. Long IDs wrap inside an inline-block,
+  // because the tooltip otherwise centers the wrapped lines.
   const left = { textAlign: "left" };
 
   return (
     <tr>
       <td style={left}>
         <Tooltip tip={name || id}>
-          <code style={{ whiteSpace: "nowrap" }}>{id}</code>
+          <span style={{ display: "inline-block", textAlign: "left" }}>
+            <code>{id}</code>
+          </span>
         </Tooltip>
       </td>
       <td style={left}>{tokens(context)}</td>
