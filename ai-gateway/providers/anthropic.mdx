@@ -84,6 +84,27 @@ message = client.messages.create(
 
 Browse the [model catalog](/ai-gateway/reference/model-catalog#anthropic) for the full list of Claude models you can call through the gateway.
 
+## Parameters the gateway removes
+
+The gateway removes these fields before it sends a request to Anthropic, and lists them in the `Ngrok-AIG-Removed-Params` [response header](/ai-gateway/how-it-works#response-headers):
+
+- `speed` on every Claude model. Fast mode isn't available through the gateway, so a request with `"speed": "fast"` runs and bills at standard speed.
+- `temperature`, `top_p`, and `top_k` on the models that reject them: the Claude Fable models, Claude Opus 4.7 and later, Claude Sonnet 5 and later, and Claude Haiku 5.5.
+- `reasoning_effort` on Chat Completions requests to every Claude model. To set the effort level, send an Anthropic Messages request to `/v1/messages` with `output_config`, which the gateway forwards.
+
+## Fable 5.2
+
+Claude Fable 5.2 (`claude-fable-5-2`) has a 1M-token context window, up to 128K output tokens, and always uses adaptive thinking.
+It takes text, image, and file input.
+Effort is the main control for this model, so call it with the Messages API. The gateway removes `reasoning_effort` from Chat Completions requests.
+
+Anthropic returns a `400` error for some Claude Fable 5.2 requests that Claude Fable 5.1 accepts, and the gateway passes the error through. Anthropic rejects a request that:
+
+- Forces tool use with `tool_choice`.
+- Sets `thinking` to `enabled` or `disabled`.
+- Uses the `computer_20251124` tool instead of `computer_toolset_20260801`.
+- Edits the system prompt, the tools, or an earlier message, and then sends back a Claude Fable 5.2 thinking block.
+
 ## Files
 
 Anthropic also supports the [Files API](/ai-gateway/guides/files) for uploading documents and images once and referencing them by ID.
