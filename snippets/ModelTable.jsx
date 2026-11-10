@@ -61,18 +61,14 @@ export const ModelRow = ({
     );
   };
 
-  // Left-align cells like markdown tables. Long IDs wrap inside an inline-block,
-  // because the tooltip otherwise centers the wrapped lines.
+  // Left-align cells like markdown tables. The model ID shows its display name
+  // as a native title tooltip, which has no dotted underline.
   const left = { textAlign: "left" };
 
   return (
     <tr>
       <td style={left}>
-        <Tooltip tip={name || id}>
-          <span style={{ display: "inline-block", textAlign: "left" }}>
-            <code>{id}</code>
-          </span>
-        </Tooltip>
+        <code title={name || id}>{id}</code>
       </td>
       <td style={left}>{tokens(context)}</td>
       <td style={left}>{tokens(output)}</td>
