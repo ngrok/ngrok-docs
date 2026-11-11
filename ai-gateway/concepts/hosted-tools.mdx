@@ -1,0 +1,99 @@
+---
+title: Hosted Tool Billing
+sidebarTitle: Hosted tool billing
+description: See how credits pay for provider-hosted tools such as web search, code execution, and image generation, and read each tool's price from the models API.
+---
+
+Some providers run tools for the model on their own servers, such as web search, code execution, and image generation.
+When you [pay with credits](/ai-gateway/guides/pay-with-credits), credits pay for these hosted tools at the provider's price, on top of the model's token cost.
+When you [bring your own provider key](/ai-gateway/concepts/bring-your-own-keys), your provider bills the tool directly.
+
+## Supported tools
+
+The gateway prices these hosted tools when the provider and model offer them:
+
+- `web_search`, `web_fetch`, `url_context`, `image_search`, and `x_search`
+- `code_execution` and `code_interpreter`
+- `file_search`
+- `image_generation`
+- `maps`
+
+Not every model supports every tool.
+Each provider's price list sets which tools a model offers and what they cost.
+
+## How hosted tools are billed
+
+Credits pay for a hosted tool in the unit the provider bills, such as a search call, a generated image, or an hour of container time.
+Some tools also bill tokens, such as the search results a model reads or the tokens an image model uses.
+
+Some tools cost nothing beyond the model's tokens.
+Those tools have no separate rate, and their usage bills at the model's token rates.
+
+The tokens a hosted tool adds to the prompt also count toward the [processing fee](/ai-gateway/concepts/credits#processing-fee).
+
+Free allowances a provider grants, such as free container hours, don't reduce what credits pay.
+Credits pay for every hosted-tool call at the listed rate.
+
+## Find a tool's price
+
+The [List Models API](/ai-gateway/api-reference/models/list) returns each tool's rates in `providers[].pricing.rates`, next to the model's token rates.
+A hosted-tool rate has the tool name as its `type`.
+
+```bash
+curl https://api.ngrok.ai/v1/models \
+  -H "Authorization: Bearer $AI_GATEWAY_API_KEY"
+```
+
+For example, OpenAI's `gpt-4o` lists two web search rates:
+
+```json
+{
+  "currency": "USD",
+  "rates": [
+    { "type": "prompt", "unit": "token", "price": "0.0000025" },
+    { "type": "web_search", "unit": "request", "price": "0.01" },
+    {
+      "type": "web_search",
+      "unit": "request",
+      "price": "0.025",
+      "conditions": {
+        "tool_version": "web_search_preview",
+        "model_reasoning": false,
+        "content_tokens": "free"
+      }
+    }
+  ]
+}
+```
+
+Each rate is a price in `currency` per `unit`.
+Common hosted-tool units are `request`, `image`, `hour`, `gb_day`, `query`, `grounded_prompt`, and `container_session`.
+
+When a tool has more than one rate, `conditions` says which requests each rate applies to:
+
+| Condition | Meaning |
+|---|---|
+| `tool_version` | The tool version this rate applies to. |
+| `model_reasoning` | Whether this rate applies to a reasoning model. |
+| `with_tool_at_least` | Another tool, at this dated version or later, whose presence selects this rate. |
+| `content_tokens` | Whether the content the tool returns bills as tokens or is free. |
+| `model` | The second model whose tokens this rate prices, such as the image model behind `image_generation`. |
+| `tier` | The size this rate applies to, such as a container memory class. |
+| `minimum_billable` | The smallest billable quantity, such as `5m` for a container. |
+| `session_minutes` | The length of one billed session block. A partial block bills as a whole block. |
+
+A tool that bills only through the model's tokens has no rate of its own in the list.
+
+## Limits and availability
+
+If a model's price list doesn't include a hosted tool, you can't pay for that tool with credits on that model.
+The gateway rejects the request with [`ERR_NGROK_27238`](/ai-gateway/reference/error-codes#err_ngrok_27238) before it reaches the provider.
+To use the tool, remove it from the request, pick another model, or [attach your own provider key](/ai-gateway/guides/attaching-provider-keys).
+
+[Custom providers](/ai-gateway/concepts/custom-providers) don't use hosted-tool rates, because you set their pricing yourself.
+
+## Next steps
+
+- [Credits](/ai-gateway/concepts/credits): Buy credits and see what they pay for
+- [Pay with credits](/ai-gateway/guides/pay-with-credits): Call models with only an access key
+- [List Models API](/ai-gateway/api-reference/models/list): Read model and hosted-tool pricing
