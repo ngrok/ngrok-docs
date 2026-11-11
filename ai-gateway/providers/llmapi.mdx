@@ -1,0 +1,79 @@
+---
+title: LLM API
+description: Call models from many labs through LLM API in the ngrok AI Gateway, and see which you can pay for with credits and which need your own key.
+---
+
+[LLM API](https://llmapi.ai/) serves models from many labs under one API key, including Amazon Nova, Meta Llama, Mistral, Qwen, Google Gemini and Gemma, Anthropic Claude, and OpenAI GPT models.
+
+LLM API supports Chat Completions, Responses, and Anthropic Messages requests, and the Images API for its image models.
+
+<Note>
+LLM API is a **built-in provider**.
+You can pay for many of its models with credits, and the rest need your own LLM API key.
+The **Needs BYOK?** column in the [model catalog](/ai-gateway/reference/model-catalog#llm-api) shows which is which.
+</Note>
+
+## Setup
+
+<Steps titleSize="h3">
+  <Step title="Create an access key and add credits">
+    Follow the [quickstart](/ai-gateway/quickstart) to create an access key and purchase [credits](/ai-gateway/concepts/credits) in [app.ngrok.ai](https://app.ngrok.ai).
+  </Step>
+
+  <Step title="Store your LLM API key (optional)">
+    Skip this step to pay with credits for the models that support it.
+    To bring your own key, create an API key in your [LLM API](https://llmapi.ai/) account.
+    Then [add a provider key](/ai-gateway/guides/attaching-provider-keys#add-a-provider-key) and [create an access key configuration](/ai-gateway/guides/access-key-configurations#create-a-configuration) with an `llmapi` routing rule that uses it.
+  </Step>
+
+  <Step title="Send requests">
+    Send requests with your access key:
+
+    ```python
+    from openai import OpenAI
+
+    client = OpenAI(
+        base_url="https://gateway.ngrok.ai/v1",
+        api_key="ng-xxxxx-g1-xxxxx",
+    )
+
+    response = client.chat.completions.create(
+        model="amazon/nova-pro",
+        messages=[{"role": "user", "content": "Hello!"}]
+    )
+    ```
+
+    Many LLM API models are also served by their own labs.
+    Add the `llmapi:` prefix, as in `llmapi:google/gemma-4-31b-it`, to keep the request on LLM API.
+  </Step>
+</Steps>
+
+## Which models work with credits
+
+LLM API can send a request to a different upstream than the one the model names, and it bills the price of the upstream it picks.
+A model works with credits only when no upstream that LLM API might pick charges more than the catalog price.
+Models with long-prompt price tiers, separate cache-write prices, or image input priced apart from text need your own LLM API key.
+That includes every Claude model.
+
+## Request formats
+
+- **Chat Completions and Responses**: Most chat models accept Chat Completions only.
+  The OpenAI models, `xai/grok-4.7`, `meta/muse-wonder-1.0`, and `qwen/qwen3-coder-next` also accept Responses.
+- **Messages**: LLM API serves the Anthropic Messages API for Claude models only.
+- **Images**: The image models, such as `openai/gpt-image-2`, `z-ai/glm-image`, and `qwen/qwen-image-2.0`, serve the Images API at `/v1/images/generations`.
+  Some of them also serve `/v1/images/edits`.
+
+The gateway removes these fields before it sends a request to LLM API, and lists them in the `Ngrok-AIG-Removed-Params` [response header](/ai-gateway/how-it-works#response-headers):
+
+- `web_search_options` and `web_search`, because LLM API runs and bills its own web search when either is present.
+- A top-level `cache_control`.
+- `store` and `previous_response_id` on Responses requests, because LLM API doesn't store responses.
+
+## Available models
+
+See the [model catalog](/ai-gateway/reference/model-catalog#llm-api).
+
+## Next steps
+
+- [Provider keys](/ai-gateway/guides/attaching-provider-keys)
+- [Access key configurations](/ai-gateway/guides/access-key-configurations)
