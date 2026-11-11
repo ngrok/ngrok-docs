@@ -1,0 +1,89 @@
+---
+title: Liquid AI
+description: Call Liquid AI's LFM chat models and d1 decision models through the ngrok AI Gateway with ngrok.ai credits or your own Liquid AI API key.
+---
+
+[Liquid AI](https://www.liquid.ai/) builds small, fast Liquid Foundation Models (LFMs) and d1 decision models.
+
+The LFM models serve Chat Completions requests.
+The d1 models serve System One requests at `/v1/systemone`, the same API as [Typesafe AI](/ai-gateway/providers/typesafeai).
+
+<Note>
+Liquid AI is a **built-in provider** you can pay for with credits, so a provider key is optional.
+Add your own Liquid AI key to bill usage to your Liquid AI account instead of your ngrok.ai credits.
+</Note>
+
+## Setup
+
+<Steps titleSize="h3">
+  <Step title="Create an access key and add credits">
+    Follow the [quickstart](/ai-gateway/quickstart) to create an access key and purchase [credits](/ai-gateway/concepts/credits) in [app.ngrok.ai](https://app.ngrok.ai).
+  </Step>
+
+  <Step title="Store your Liquid AI API key (optional)">
+    Skip this step to pay with credits.
+    To bring your own key, create an API key in your [Liquid AI](https://www.liquid.ai/) account.
+    Then [add a provider key](/ai-gateway/guides/attaching-provider-keys#add-a-provider-key) and [create an access key configuration](/ai-gateway/guides/access-key-configurations#create-a-configuration) with a `liquid` routing rule that uses it.
+  </Step>
+
+  <Step title="Send requests">
+    Send requests with your access key:
+
+    ```python
+    from openai import OpenAI
+
+    client = OpenAI(
+        base_url="https://gateway.ngrok.ai/v1",
+        api_key="ng-xxxxx-g1-xxxxx",
+    )
+
+    response = client.chat.completions.create(
+        model="lfm3-1.7b",
+        messages=[{"role": "user", "content": "Hello!"}]
+    )
+    ```
+  </Step>
+</Steps>
+
+## Chat models
+
+- `lfm3-1.7b` and `lfm2.5-24b-a2b` take text.
+- `lfm3-vl-2b` takes text and images.
+- `lfm3-audio-2b` and `lfm3-omni-2b` take audio input and can reply with audio.
+  Set `modalities` and `audio` in the request to get an audio reply.
+
+Liquid AI returns an error for `top_p`, so the gateway removes it before it sends the request and lists it in the `Ngrok-AIG-Removed-Params` [response header](/ai-gateway/how-it-works#response-headers).
+
+## Decision models
+
+`d1`, `d1.1`, and `d1-ultra` answer typed questions instead of chatting.
+Send a `POST` request to `/v1/systemone` with a `state` and a `questions` object, as described in [Typed-question APIs](/ai-gateway/guides/decisions-and-system-one#typesafe-ai-requests), and name a d1 model:
+
+```bash
+curl https://gateway.ngrok.ai/v1/systemone \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer ng-xxxxx-g1-xxxxx" \
+  -d '{
+    "model": "d1",
+    "state": "Customer: My order arrived broken and I want a refund today.",
+    "questions": {
+      "is_urgent": {
+        "type": "noul",
+        "instructions": "Is this an urgent request?"
+      }
+    }
+  }'
+```
+
+Liquid AI also accepts an `images` field on these requests and bills each image as input tokens.
+The gateway forwards `model`, `state`, `questions`, and `images`, and removes any other top-level field.
+
+## Available models
+
+See the [model catalog](/ai-gateway/reference/model-catalog#liquid-ai).
+
+## Next steps
+
+- [Typed-question APIs](/ai-gateway/guides/decisions-and-system-one): How System One requests work
+- [Provider keys](/ai-gateway/guides/attaching-provider-keys)
+- [Access key configurations](/ai-gateway/guides/access-key-configurations)
