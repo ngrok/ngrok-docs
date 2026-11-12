@@ -80,7 +80,7 @@ const terms = [
 	{
 		titles: ["Endpoint Pooling", "Endpoint pool"],
 		meaning:
-			'When your create two ngrok endpoints with the same URL (and binding), those endpoints automatically form a "pool" and share incoming traffic.',
+			'When you create two ngrok endpoints with the same URL (and binding), those endpoints automatically form a "pool" and share incoming traffic.',
 		link: "/docs/endpoints/endpoint-pooling/",
 		pluralEnding: "s",
 	},
@@ -337,7 +337,7 @@ const terms = [
 		pluralEnding: "s",
 		link: "https://en.wikipedia.org/wiki/Transport_Layer_Security",
 		meaning:
-			"A TLS certificate (or SSL certificate) is a digital certificate that ensure your connection to a website or server is securly encrypted.",
+			"A TLS certificate (or SSL certificate) is a digital certificate that ensures your connection to a website or server is securely encrypted.",
 	},
 	{
 		titles: ["TLS Termination"],
