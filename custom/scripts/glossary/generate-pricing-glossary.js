@@ -20,7 +20,6 @@ const pricingTerms = eval(pricingTermsMatch[1]);
 // Build the MDX content
 const frontmatter = `---
 title: Pricing Glossary
-sidebarTitle: Pricing Glossary
 description: Look up what each feature and usage metric in the ngrok pricing docs means, such as online endpoints, endpoint hours, and load balancing.
 ---`;
 
