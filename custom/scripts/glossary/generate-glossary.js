@@ -26,7 +26,7 @@ description: A glossary of technical terms used in ngrok's documentation.
 
 const comment = `{/* This file is generated in the docs repo. Do not edit it directly. */}`;
 
-const intro = `The following definitions help you better understand the technical concepts related to using ngrok.`;
+const intro = `The following definitions are provided to help you better understand the technical concepts related to using ngrok.`;
 
 let glossaryContent = `${frontmatter}\n\n${comment}\n\n${intro}\n\n`;
 
