@@ -31,6 +31,7 @@ const GENERATED_NOTE =
 const CLI_PAGE_HEAD = `---
 title: ngrok Agent Command Line Interface (CLI)
 sidebarTitle: CLI
+description: Look up the usage, examples, and flags for every ngrok CLI command, including ngrok http, ngrok config, and ngrok service.
 ---
 
 ${GENERATED_NOTE}
@@ -45,6 +46,7 @@ the [ngrok CLI API page](/gateway/agent/cli-api) for convenience. For more infor
 const API_PAGE_HEAD = `---
 title: ngrok CLI API Commands
 sidebarTitle: CLI API Commands
+description: Look up the usage and flags for every ngrok api command, which manages the resources in your ngrok account from the command line.
 ---
 
 ${GENERATED_NOTE}
