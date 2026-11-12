@@ -43,7 +43,7 @@ terms.forEach(term => {
   }
   
   glossaryContent += `## ${title}\n\n`;
-  glossaryContent += `${meaning}\n\n`;
+  glossaryContent += `${meaning.replace(/([.?!]) (?=[A-Za-z])/g, "$1\n")}\n\n`;
   
   if (link) {
     glossaryContent += `[Learn More](${link})\n\n`;
