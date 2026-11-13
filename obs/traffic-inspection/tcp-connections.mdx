@@ -44,6 +44,10 @@ Turn on live mode to update both lists without refreshing the page.
 The **Open connections** list shows the TCP and TLS connections that are open right now, newest first.
 It appears above the closed connections only while at least one connection is open.
 
+ngrok reports each open connection about every 30 seconds while it moves data, and about every 30 minutes while it's idle.
+A new connection appears in the list after its first report, so a connection that closes within a few seconds appears only in the closed list.
+When a connection closes, it leaves the open list and appears in the closed list.
+
 With live mode on, the open list refreshes every 10 seconds and each **Duration** counts up.
 With live mode off, the list shows the connections that were open when it loaded.
 
@@ -60,6 +64,7 @@ It shows the running total of **Bytes In** and **Bytes Out** from the moment the
 - While the connection is open, the graph refreshes every 10 seconds.
 - After the connection closes, the graph ends at its final byte counts.
 
+ngrok updates the totals only when it reports the connection, so the lines move in steps rather than slopes.
 A connection that closed before its first report has no graph.
 If a connection has more than 2,000 reports, about 16 hours of steady traffic, the graph shows the newest 2,000.
 
@@ -71,12 +76,13 @@ If a connection has more than 2,000 reports, about 16 hours of steady traffic, t
 | ----------- | -------------------------------------------------------------- |
 | Closed      | When the connection closed.                                    |
 | Client IP   | The IP address of the client that opened the connection.      |
-| Protocol    | `tcp`, `tls`, `http`, or `https`.                              |
+| Connection  | `TCP`, or `TLS` for TLS and HTTPS endpoints.                   |
+| Requests    | How many HTTP requests ran over the connection. Select a count to see those requests. TCP and TLS endpoints show a dash. |
 | Bytes In    | Bytes received from the client.                                |
 | Bytes Out   | Bytes sent to the client.                                      |
 | ngrok Error | The [ngrok error code](/errors/reference), if the connection failed. |
 | Duration    | How long the connection stayed open.                           |
-| Endpoint    | The endpoint the client connected to.                          |
+| Endpoint    | The endpoint URL the client connected to, such as `https://app.ngrok.app:443`. |
 
 ### Open connections list
 
@@ -84,12 +90,13 @@ If a connection has more than 2,000 reports, about 16 hours of steady traffic, t
 | --------- | ------------------------------------------------------------------- |
 | Started   | When the connection opened.                                         |
 | Client IP | The IP address of the client that opened the connection.           |
-| Protocol  | `tcp` or `tls`.                                                     |
+| Connection | `TCP` or `TLS`.                                                    |
+| Requests  | A dash, because open connections are TCP and TLS only.              |
 | Bytes In  | Bytes received from the client, as of the last report.              |
 | Bytes Out | Bytes sent to the client, as of the last report.                    |
 | Status    | **Open**, and how long the connection has moved no data, if it's idle for at least a minute. |
 | Duration  | How long the connection has been open so far.                       |
-| Endpoint  | The endpoint the client connected to.                               |
+| Endpoint  | The endpoint URL the client connected to.                           |
 
 ### Detail sheet
 
@@ -100,8 +107,10 @@ The sheet has a share link, and you can step to the previous or next connection 
 
 | Field         | Description                                                |
 | ------------- | ---------------------------------------------------------- |
-| Endpoint      | The endpoint the client connected to.                      |
-| Protocol      | `tcp`, `tls`, `http`, or `https`.                          |
+| Endpoint      | The endpoint URL the client connected to.                  |
+| Connection    | `TCP`, or `TLS` for TLS and HTTPS endpoints.               |
+| TLS           | `Decrypted by ngrok`, `Forwarded encrypted`, or `Handshake failed`. TLS connections only. |
+| Requests      | A **View requests** link to the HTTP requests that ran over the connection. HTTP and HTTPS endpoints only. |
 | Outcome       | `open`, `closed` if the connection closed cleanly, or `failed`. |
 | Duration      | How long the connection stayed open, or has been open so far. |
 | Started       | When the connection opened.                                |
@@ -141,12 +150,16 @@ The **IP Intelligence** tab shows the same client IP data that HTTP requests sho
 
 ## Connections and requests
 
-Every HTTP or HTTPS request travels over a connection.
-With HTTP keep-alive or HTTP/2, one connection can carry many requests.
+Every connection in this tab is a TCP connection.
+On a TLS or HTTPS endpoint, the client wraps it in TLS, so **Connection** shows `TLS`.
 
+HTTP isn't a kind of connection.
+On an HTTP or HTTPS endpoint, ngrok reads the HTTP requests that run inside the connection.
+With HTTP keep-alive or HTTP/2, one connection can carry many requests and stay open for minutes or hours.
+
+- From a connection, select the count in the **Requests** column, or **View requests** in the detail sheet, to open the requests that used it.
 - From a request, the **Connection** tab in the request detail shows the connection the request used and links to it.
-- From an HTTP or HTTPS connection, you can open the list of requests that used it.
-- TCP and TLS connections have no requests.
+- ngrok forwards the bytes on a TCP or TLS endpoint without reading them, so those connections have no requests.
 
 ## Filter connections
 
@@ -160,7 +173,7 @@ When you enter several terms, a connection must match all of them.
 | `exact-host` | `exact-host:1.tcp.ngrok.io` | The whole endpoint host.        |
 | `port`       | `port:20123`                | The endpoint port.              |
 | `ip`         | `ip:203.0.113.7`            | The client IP.                  |
-| `proto`      | `proto:tcp,tls`             | `tcp`, `tls`, `http`, or `https`. |
+| `proto`      | `proto:tcp,tls`             | The endpoint protocol: `tcp`, `tls`, `http`, or `https`. |
 | `outcome`    | `outcome:failed`            | `closed` or `failed`.           |
 | `error`      | `error:3002`                | An ngrok error code.            |
 | `duration`   | `duration:30s`              | Connections open longer than this. |
