@@ -7,10 +7,38 @@ import YamlIndentationNote from "/snippets/shared/yaml-indentation-note.mdx";
 
 The ngrok agent supports an optional, YAML configuration file which enables you to configure advanced settings and run multiple endpoints simultaneously.
 
-The agent configuration file location depends on your system.
-You can check the location of your configuration file by running `ngrok config check` or edit the file in your terminal by running `ngrok config edit`.
-
 <YamlIndentationNote />
+
+## File location
+
+When you don't pass `--config`, the agent reads `ngrok.yml` from a default location that depends on your operating system:
+
+- Linux: `~/.config/ngrok/ngrok.yml`, or `$XDG_CONFIG_HOME/ngrok/ngrok.yml` if `XDG_CONFIG_HOME` is set
+- macOS: `~/Library/Application Support/ngrok/ngrok.yml`
+- Windows: `%LocalAppData%\ngrok\ngrok.yml`
+
+Run `ngrok config check` to validate the file and print its location, or `ngrok config edit` to open it in your editor.
+
+## Multiple configuration files
+
+Pass `--config` to load one or more files instead of the default.
+Separate paths with commas or repeat the flag:
+
+```sh
+ngrok start --all --config ~/ngrok-base.yml,./ngrok-project.yml
+```
+
+When you pass `--config`, the agent doesn't read the file at the default location.
+To include it, list its path along with your other files.
+
+The agent merges the files in the order you list them:
+
+- Scalar values, such as `agent.authtoken`, from later files override those from earlier files.
+- Lists, including `endpoints`, are replaced, not combined.
+  If two files define `endpoints`, the agent uses only the list from the later file.
+- Maps are merged by key, and the later file's value wins for a duplicate key.
+
+For more on merging, see [Config file merging](/gateway/agent/config#config-file-merging).
 
 ## Breaking changes
 
