@@ -1,7 +1,7 @@
 ---
 title: Traffic Inspector HTTP Requests
 sidebarTitle: HTTP Requests
-description: View HTTP and HTTPS requests to your ngrok endpoints in Traffic Inspector, capture full request and response bodies, and replay requests to your upstream service.
+description: View requests to your endpoints in Traffic Inspector, capture full request and response bodies, and replay requests with changes.
 ---
 
 The **HTTP** tab in [Traffic Inspector](/obs/traffic-inspection) lists the HTTP and HTTPS requests to your endpoints.
@@ -11,9 +11,34 @@ This can dramatically speed up development of webhooks or callbacks that are dif
 To see the connection a request traveled over, open the request's **Connection** tab.
 See [Connections and requests](/obs/traffic-inspection/tcp-connections#connections-and-requests).
 
+## What Traffic Inspector stores
+
+By default, Traffic Inspector stores metadata about each request and response, not their contents.
+For each request, ngrok stores:
+
+- The method, host, and path.
+  ngrok stores the URL without its query string.
+- The names of query parameters, but not their values.
+- The names of request headers, but not their values.
+  The exceptions are `User-Agent`, `Content-Type`, `Content-Encoding`, and `Accept`, which ngrok stores in full.
+- The authorization scheme, such as `Basic` or `Bearer`, but not the credentials.
+- The size of the body, but not the body.
+- The client IP address and its geolocation.
+- The identity of the user, such as their name and email address, when an [OAuth](/gateway/traffic-policy/actions/oauth/) action authenticated the request.
+
+For each response, ngrok stores the status code, the names of the response headers, the `Content-Type` and `Content-Encoding` values, and the size of the body.
+
+For example, on an OAuth callback such as `/callback?code=...&state=...`, Traffic Inspector stores the path `/callback` and the parameter names `code` and `state`, but not their values.
+It doesn't store a `POST` body that carries tokens or client secrets either.
+
+Full capture mode changes this.
+When it's on, Traffic Inspector also stores the full URL including query values, every header value, and the request and response bodies, and it doesn't redact any of them.
+
+Traffic Inspector is separate from [log exporting](/obs/events/), which sends the fields you select to a destination you configure.
+Exported HTTP logs can include values such as `http.request.headers` and `http.request.url.query`, so choose fields with care if your traffic carries secrets.
+
 ## Full capture mode
 
-By default, the ngrok Traffic Inspector only stores the metadata about each request and response.
 Full Capture mode is an opt-in setting on your ngrok account that stores the full request and response parameters, headers, and bodies for each traffic event that flows through your endpoints.
 Account admins can enable it by visiting the **Observability** section in the [ngrok Settings Page](https://dashboard.ngrok.com/settings#observability) after logging in.
 
@@ -32,8 +57,8 @@ ngrok stores this data for your account's retention period (24 hours for Free, 7
 Replaying requests lets you re-send an HTTP request upstream without directly accessing the endpoint.
 To use replay, you must activate Full Capture mode in your account.
 
-After you enable Full Capture, a replay button appears for fully captured requests in the traffic event details pane of the dashboard.
-If this button is unavailable, it likely indicates that the request occurred before Full Capture was fully activated, or the request was too large and has been truncated.
+After you enable Full Capture, a **Replay** button appears for fully captured requests in the traffic event details pane of the dashboard.
+If this button is unavailable, it likely indicates that the request occurred before Full Capture was fully activated, or the request was too large and ngrok truncated it.
 
 Replay works by resending your original unmodified request to your endpoint.
 It's subject to the policies of that endpoint at the time of replay (which could be different than the original request).
@@ -44,11 +69,11 @@ Here's a list of changes made to replayed requests:
 
 - The replayed request originates from a different IP address, so any IP restrictions may prevent the replay from reaching your upstream.
 - ngrok removes any `Connection: Keep-Alive` headers because replay doesn't support them.
-- Some request bodies might not be captured, even if they were replayed successfully.
+- ngrok might not capture some request bodies, even if the replay succeeded.
   This is particularly true for traffic events with an error status code.
 - ngrok adds a custom header `Ngrok-Replay-Original-Request-ID` that contains the ID of the original request.
   This lets you trace back to the original request if needed.
-- If the request has been truncated, you can't replay it.
+- If ngrok truncated the request, you can't replay it.
 - You can't replay the request if the HTTP method is unknown or undefined.
 - ngrok substitutes the `X-forwarded` header values with accurate values for the replay, not the original request.
 

@@ -1,0 +1,82 @@
+---
+title: Open-Weight Models
+description: Learn what open-weight means, how open-weight models behave in the ngrok AI Gateway, and which models in the catalog are open-weight.
+---
+
+An open-weight model is one whose author publishes the trained weights for anyone to download.
+You can call it through a hosted provider, like any other model, or run the same weights on your own hardware.
+
+## What open-weight means
+
+The weights are the parameters a model learns during training.
+With a closed model, such as GPT-5.5 or Claude, only the author and its partners can run the weights, so you can only reach the model through their APIs.
+With an open-weight model, the author releases the weights under a license, and any provider or person can serve them.
+
+Open-weight isn't the same as open source.
+Authors often publish the weights without the training data or training code.
+Licenses also differ: some, like Apache 2.0 and MIT, allow almost any use, while others, like the Llama Community License, add conditions.
+Check the license on the author's model card before you use a model commercially or fine-tune it.
+
+## What it means in the AI Gateway
+
+You send requests to open-weight models the same way you send them to closed models.
+Being open-weight changes where the model can run:
+
+- **More than one provider can serve it.**
+  When several providers in the [model catalog](/ai-gateway/reference/model-catalog) serve the same model, the gateway can [fail over](/ai-gateway/guides/configure-fallback-models) between them.
+  Use a `provider:model` prefix to keep requests on one provider.
+- **You can run it yourself.**
+  Serve the weights with a tool like Ollama or vLLM, then [add it as a custom provider](/ai-gateway/guides/use-a-model-you-run-yourself).
+  Your apps call it through the same gateway endpoint and access keys as your hosted models.
+- **You can mix self-hosted and hosted copies.**
+  List your own server first and a hosted provider as a fallback, so requests keep working when your server is down.
+
+For example, this request tries GPT-OSS 20B on your own Ollama server first, then on Groq:
+
+```json
+{
+  "model": "ollama:gpt-oss:20b",
+  "models": ["groq:openai/gpt-oss-20b"],
+  "messages": [{"role": "user", "content": "Hello"}]
+}
+```
+
+## Open-weight models in the catalog
+
+These models in the [model catalog](/ai-gateway/reference/model-catalog) are open-weight.
+Faster or provider-only variants, such as `-highspeed`, `-x`, `-flashx`, and `-turbo` models, and the Qwen Flash, Plus, and Max tiers, don't have published weights.
+
+| Author | Model IDs | Providers |
+|--------|-----------|-----------|
+| OpenAI | `openai/gpt-oss-120b`, `openai/gpt-oss-20b` | Groq, LLM API |
+| OpenAI | `openai/gpt-oss-safeguard-20b` | Groq |
+| Meta | `meta-llama/llama-prompt-guard-2-86m`, `meta-llama/llama-prompt-guard-2-22m` | Groq |
+| Meta | `meta-llama/llama-4-maverick-17b-instruct`, `meta-llama/llama-4-scout-17b-instruct`, `meta-llama/llama-3.3-70b-instruct`, `meta-llama/llama-3.1-70b-instruct`, `meta-llama/llama-3.1-8b-instruct` | LLM API |
+| Google | `google/gemma-4-31b-it`, `google/gemma-4-26b-a4b-it` | Google, LLM API |
+| DeepSeek | `deepseek/deepseek-v4-pro` | DeepSeek, QwenCloud, Tencent TokenHub, LLM API |
+| DeepSeek | `deepseek/deepseek-v4-flash` | DeepSeek, Tencent TokenHub, LLM API |
+| DeepSeek | `deepseek/deepseek-v4-flash-0731` | LLM API |
+| DeepSeek | `deepseek/deepseek-v4.1-flash` | QwenCloud |
+| Alibaba Qwen | `qwen/qwen3.8-2.4t-a95b` | QwenCloud |
+| Alibaba Qwen | `qwen/qwen3-235b-a22b-instruct-2507`, `qwen/qwen3-235b-a22b-fp8`, `qwen/qwen3-30b-a3b-instruct-2507`, `qwen/qwen3-coder-30b-a3b-instruct`, `qwen/qwen3-vl-30b-a3b-instruct` | LLM API |
+| Moonshot AI | `moonshotai/kimi-k3` | Moonshot AI, QwenCloud, Tencent TokenHub, LLM API |
+| Moonshot AI | `moonshotai/kimi-k2.7-code`, `moonshotai/kimi-k2.6` | Moonshot AI, Tencent TokenHub, LLM API |
+| Moonshot AI | `moonshotai/kimi-k3.1-pro` | Moonshot AI, QwenCloud, LLM API |
+| Z.ai | `z-ai/glm-5.3` | Z.ai, Mistral AI, QwenCloud, Tencent TokenHub, LLM API |
+| Z.ai | `z-ai/glm-5.2` | Z.ai, QwenCloud, Tencent TokenHub, LLM API |
+| Z.ai | `z-ai/glm-5.3-flash` | Z.ai, Tencent TokenHub, LLM API |
+| Z.ai | `z-ai/glm-5.1`, `z-ai/glm-5`, `z-ai/glm-4.7`, `z-ai/glm-4.6`, `z-ai/glm-4.5`, `z-ai/glm-4.5-air`, `z-ai/glm-image` | Z.ai, LLM API |
+| Z.ai | `z-ai/glm-4.7-flash` | Z.ai |
+| MiniMax | `minimax/minimax-m3`, `minimax/minimax-m2.7` | MiniMax, Tencent TokenHub, LLM API |
+| MiniMax | `minimax/minimax-m3.1-flash`, `minimax/minimax-m2.5` | MiniMax, LLM API |
+| MiniMax | `minimax/minimax-m2.1`, `minimax/minimax-m2` | LLM API |
+| Xiaomi | `xiaomi/mimo-v2.6-pro`, `xiaomi/mimo-v2.6-flash` | Tencent TokenHub, LLM API |
+| Tencent | `tencent/hy4`, `tencent/hy4-preview`, `tencent/hy3`, `tencent/hy-mt2-pro`, `tencent/hy-mt2-plus`, `tencent/hy-mt2-lite` | Tencent TokenHub |
+| StepFun | `stepfun/step-5-preview` | Tencent TokenHub |
+
+## Next steps
+
+- [Models](/ai-gateway/concepts/models): How the gateway names and resolves models
+- [Use a model you run yourself](/ai-gateway/guides/use-a-model-you-run-yourself): Connect Ollama, vLLM, or LM Studio
+- [Serving models at scale with vLLM](https://ngrok.com/blog/vllm): How vLLM keeps GPUs busy when it serves open-weight models
+- [Configure fallback models](/ai-gateway/guides/configure-fallback-models): Try another model when the first one fails
