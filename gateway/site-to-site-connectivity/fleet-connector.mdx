@@ -17,6 +17,9 @@ You control:
 - **The installer**, so you can ship an MSI or Linux package that fits your customers' deployment tools.
 - **The update channel**, so new builds come from your own server, signed by you.
 
+If you don't need your own brand or signature, [run the standard ngrok agent as a background service](/gateway/site-to-site-connectivity/background-service) instead.
+It's already signed by ngrok.
+
 ## What you'll need
 
 - An ngrok account.
@@ -53,7 +56,8 @@ You control:
         ```
 
         Then sign the MSI.
-        Signing is required for production: without it, Windows SmartScreen warns about an unknown publisher, and remote updates have no signature to verify against.
+        Fleet Connector is built from source, so it doesn't carry ngrok's signature.
+        If you skip this step, the MSI is unsigned: Windows SmartScreen warns about an unknown publisher, antivirus tools may flag it, and you can't turn on remote updates.
 
         ```powershell
         $cert = Get-ChildItem Cert:\CurrentUser\My -CodeSigningCert |
@@ -90,9 +94,19 @@ You control:
     </Tabs>
   </Step>
 
-  <Step title="Install the service">
-    Install the package on each target machine.
-    It runs Fleet Connector as a background service that starts on boot.
+  <Step title="Distribute and install">
+    Publish the signed installer to an HTTPS location you control, such as your own download server or object storage bucket, and share its SHA-256 checksum.
+    On Windows, use the same location as your `update_source_url` so first installs and remote updates come from one place.
+
+    Your customer's IT team, or your remote monitoring and management (RMM) tool, then delivers the installer to each target machine with the tools they already use, such as Microsoft Intune, Configuration Manager, Ansible, or an internal package repository.
+    For silent installs, have the same script write `config.yaml` with [`gen-config`](#gen-config) before it runs the installer, so the service starts with the right config.
+
+    <Note>
+    Highly restricted networks often can't download from the internet at all.
+    In that case, hand the installer and its checksum to the customer's IT team, and they import it into their internal software distribution system.
+    </Note>
+
+    The installer runs Fleet Connector as a background service that starts on boot:
 
     <Tabs>
       <Tab title="Windows">
@@ -119,7 +133,7 @@ You control:
     You can create this file in three ways, depending on who installs it and when:
 
     - **`gen-config`**: Write the file before the service first starts.
-      Use this for silent, scripted installs, such as a remote monitoring and management (RMM) tool pushing to many machines at once.
+      Use this for silent, scripted installs, such as an RMM tool pushing to many machines at once.
     - **Setup wizard**: If no `config.yaml` exists when the service starts, it opens a web form on `127.0.0.1`.
       The form walks a person through setup once, then shuts down after it writes a valid config.
     - **Hand-edit**: Edit `config.yaml` directly, or run `fleetconnect edit-config` to edit it in `$EDITOR` with validation before it saves.
