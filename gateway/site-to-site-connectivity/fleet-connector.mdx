@@ -1,0 +1,211 @@
+---
+title: Ship a Custom-Branded Agent with Fleet Connector
+sidebarTitle: Ship a Branded Agent
+description: Learn how to fork Fleet Connector to ship your own signed, branded ngrok agent as a background service on Windows and Linux.
+---
+
+When you install ngrok in your customers' networks, they see the binary, the service, and the installer on their machines.
+[Fleet Connector](https://fleet-connector.ngrok.app/) is a reference implementation, built on the [ngrok Go SDK](/agent-sdks), that you rename and sign as your own.
+You control the binary name, the code-signing certificate, the installer, and the update channel.
+
+Use Fleet Connector instead of the standard ngrok agent when:
+
+- Your customers expect software from you, not a third-party binary.
+- You need a signed installer, so Windows SmartScreen and antivirus tools trust it.
+- You want to push new builds to your fleet from your own update server.
+
+## What you'll need
+
+- An ngrok account. If you don't have one, [sign up](https://dashboard.ngrok.com/signup).
+- An [authtoken](https://dashboard.ngrok.com/authtokens) for each install, or an [API key](https://dashboard.ngrok.com/api-keys) to create one per install automatically.
+- [Go](https://go.dev/dl/) on your build machine.
+- A code-signing certificate for production Windows builds.
+
+<Steps titleSize="h2">
+  <Step title="Fork the repository">
+    [Fork the Fleet Connector repository](https://github.com/ngrok-adhoc/fleet-connector/fork) before you change anything.
+    Your service name, branding, and signing certificate live in your fork, not in the original.
+  </Step>
+
+  <Step title="Build your release">
+    Build once on your own build machine, not on every install.
+    The output is the installer you distribute to your customers.
+
+    <Tabs>
+      <Tab title="Windows">
+        Build the binary and an MSI installer with [WiX v5](https://wixtoolset.org/):
+
+        ```powershell
+        git clone https://github.com/<your-org>/fleet-connector.git
+        cd fleet-connector
+        go build -o fleetconnect.exe .\cmd\fleetconnect
+
+        dotnet tool install --global wix --version "5.*"
+        wix extension add WixToolset.Util.wixext/5.0.2
+        wix build installer\product.wxs `
+          -ext WixToolset.Util.wixext/5.0.2 -arch x64 `
+          -d FleetConnectExeSource=fleetconnect.exe `
+          -out FleetConnector.msi
+        ```
+
+        Then sign the MSI.
+        Use a certificate from a trusted certificate authority (CA) for production, and a self-signed certificate only for testing:
+
+        ```powershell
+        $cert = New-SelfSignedCertificate -Type CodeSigningCert `
+          -CertStoreLocation Cert:\CurrentUser\My -Subject "CN=Your Company"
+
+        Set-AuthenticodeSignature -FilePath FleetConnector.msi `
+          -Certificate $cert -HashAlgorithm SHA256
+
+        (Get-AuthenticodeSignature FleetConnector.msi).SignerCertificate.Thumbprint
+        ```
+
+        Save the thumbprint from the last command.
+        You need it to turn on remote updates.
+      </Tab>
+      <Tab title="Linux">
+        Build the binary and a `.deb` package with [nFPM](https://nfpm.goreleaser.com/):
+
+        ```bash
+        git clone https://github.com/<your-org>/fleet-connector.git
+        cd fleet-connector
+        GOOS=linux GOARCH=amd64 go build -o fleetconnect ./cmd/fleetconnect
+
+        go install github.com/goreleaser/nfpm/v2/cmd/nfpm@latest
+        nfpm package --config installer/linux/nfpm.yaml \
+          --packager deb --target dist/
+        ```
+
+        To build an `.rpm` package instead, use `--packager rpm`.
+      </Tab>
+    </Tabs>
+  </Step>
+
+  <Step title="Install the service">
+    Install the package on each target machine.
+    It runs Fleet Connector as a background service that starts on boot.
+
+    <Tabs>
+      <Tab title="Windows">
+        Run in PowerShell as Administrator:
+
+        ```powershell
+        msiexec /i FleetConnector.msi /quiet
+        ```
+      </Tab>
+      <Tab title="Linux">
+        ```bash
+        sudo dpkg -i fleetconnect_*.deb
+        ```
+      </Tab>
+    </Tabs>
+  </Step>
+
+  <Step title="Configure the agent">
+    Fleet Connector reads its settings from a `config.yaml` file:
+
+    - Windows: `C:\ProgramData\FleetConnector\config.yaml`
+    - Linux: `/etc/fleetconnect/config.yaml`
+
+    You can create this file in three ways, depending on who installs it and when:
+
+    - **`gen-config`**: Write the file before the service first starts.
+      Use this for silent, scripted installs, such as a remote monitoring and management (RMM) tool pushing to many machines at once.
+    - **Setup wizard**: If no `config.yaml` exists when the service starts, it opens a web form on `127.0.0.1`.
+      The form walks a person through setup once, then shuts down after it writes a valid config.
+    - **Hand-edit**: Edit `config.yaml` directly, or run `fleetconnect edit-config` to edit it in `$EDITOR` with validation before it saves.
+
+    For example, this `gen-config` command writes a full config, including remote updates:
+
+    ```bash
+    ./fleetconnect gen-config \
+      --description "store-042" \
+      --upstream localhost:8080 \
+      --authtoken "<your authtoken>" \
+      --update-source-url "https://updates.example.com/latest/fleetconnect.msi" \
+      --update-signer-thumbprint "AABBCCDDEEFF00112233445566778899AABBCCDD"
+    ```
+
+    It writes the following `config.yaml`:
+
+    ```yaml
+    schema_version: 1
+    description: store-042
+    credential:
+        provider: static
+        params:
+            authtoken: <your authtoken>
+    endpoints:
+        - upstream:
+            url: localhost:8080
+    update_source_url: https://updates.example.com/latest/fleetconnect.msi
+    update_signer_thumbprint: AABBCCDDEEFF00112233445566778899AABBCCDD
+    ```
+
+    By default, `gen-config` writes to `config.yaml` in the current directory.
+    Use `--path` to write it to the service's config location instead.
+  </Step>
+
+  <Step title="Operate the service">
+    Check, stop, and start the service, and follow its logs:
+
+    <Tabs>
+      <Tab title="Windows">
+        ```powershell
+        sc.exe query FleetConnector
+        sc.exe stop FleetConnector
+        sc.exe start FleetConnector
+
+        Get-Content `
+          C:\ProgramData\FleetConnector\logs\fleetconnect.log `
+          -Tail 20 -Wait
+        ```
+      </Tab>
+      <Tab title="Linux">
+        ```bash
+        systemctl status fleetconnect
+        systemctl stop fleetconnect
+        systemctl start fleetconnect
+
+        journalctl -u fleetconnect -f
+        ```
+      </Tab>
+    </Tabs>
+  </Step>
+</Steps>
+
+## Remote updates
+
+Remote updates are available on Windows.
+To turn them on, set both of these fields in `config.yaml`:
+
+- `update_source_url`: Where the agent downloads a new signed installer from.
+- `update_signer_thumbprint`: The thumbprint of the certificate that must have signed it.
+
+When you send an update from the ngrok dashboard or API, the agent receives it over its existing session.
+It downloads the installer and checks the signature against the pinned thumbprint before installing it.
+
+## `gen-config` flags
+
+| Flag | Description |
+| --- | --- |
+| `--description` | Human-readable description. Required. |
+| `--upstream` | Shorthand for a single endpoint, such as `localhost:8080`. |
+| `--binding` | Binding for a single endpoint: `public` (default), `internal`, or `kubernetes`. |
+| `--authtoken` | A literal value, `env:VAR`, or `file:PATH`. Omit it to create a new credential through the API. |
+| `--connect-url` | Your [custom connect URL](/gateway/site-to-site-connectivity/custom-connect-url). |
+| `--connect-ca-cert-file` | PEM CA bundle to trust for `--connect-url`. |
+| `--proxy-url` | Outbound HTTP or SOCKS proxy for the agent's own connection. |
+| `--heartbeat-interval` | Connection heartbeat interval, such as `30s`. |
+| `--heartbeat-tolerance` | How long to tolerate a missed heartbeat, such as `1m`. |
+| `--update-source-url` | Windows only. Leave it blank to turn off remote updates. |
+| `--update-signer-thumbprint` | Required when you set `--update-source-url`. |
+| `--endpoint` | Repeat for multiple endpoints, such as `"name=...,upstream.url=...,url=...,bindings=internal"`. |
+
+For the full `config.yaml` schema, see the [Fleet Connector reference](https://fleet-connector.ngrok.app/).
+
+## What's next
+
+- [Set up a custom connect URL](/gateway/site-to-site-connectivity/custom-connect-url) so your agents connect to your own hostname.
+- [Eliminate single points of failure with redundant agents](/gateway/site-to-site-connectivity/redundant-agents) to achieve high availability.
