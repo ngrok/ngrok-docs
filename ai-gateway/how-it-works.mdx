@@ -26,10 +26,11 @@ sequenceDiagram
 2. **The gateway validates the key** and loads its [access key configuration](/ai-gateway/guides/access-key-configurations)
 3. **The gateway resolves the model** from your request body
 4. **Provider credentials are selected** from the configuration's routing rules: a key ngrok.ai supplies when you pay with credits, or your stored [provider keys](/ai-gateway/guides/attaching-provider-keys)
-5. **Unsupported parameters are stripped** for the chosen model before forwarding, and listed in the `Ngrok-AIG-Removed-Params` [response header](#response-headers)
-6. **The request is forwarded** to the upstream provider
-7. **On failure, the gateway retries** with the next provider key or model candidate
-8. **The response is returned** to your app and usage is recorded
+5. **The request is translated** when the chosen model doesn't serve your SDK's API format. See [Use any model with any SDK](/ai-gateway/guides/use-any-model-with-any-sdk)
+6. **Unsupported parameters are stripped** for the chosen model before forwarding, and listed in the `Ngrok-AIG-Removed-Params` [response header](#response-headers)
+7. **The request is forwarded** to the upstream provider
+8. **On failure, the gateway retries** with the next provider key or model candidate
+9. **The response is returned** to your app, in your SDK's API format, and usage is recorded
 
 Manage keys, configurations, providers, and credits at [app.ngrok.ai](https://app.ngrok.ai).
 Your apps send traffic to `gateway.ngrok.ai`.
@@ -64,8 +65,8 @@ Provider rate-limit headers behave differently: the gateway forwards those only 
 
 ### The model header is authoritative
 
-The gateway passes the response body through byte-for-byte, unless a [Firewall](/ai-gateway/concepts/firewall) policy blocks a tool call or adds `safeguard_results`.
-The `model` or `modelVersion` field inside the body is the provider's own word and is never rewritten to name the model that served the response.
+The gateway passes the response body through byte-for-byte, unless a [Firewall](/ai-gateway/concepts/firewall) policy blocks a tool call or adds `safeguard_results`, or the gateway [translated the request](/ai-gateway/guides/use-any-model-with-any-sdk) into another API format.
+The `model` or `modelVersion` field inside the body is the provider's own word, and the gateway doesn't change it to name the model that served the response.
 On a multi-model failover the body can therefore name a different model than the header.
 Read `Ngrok-AIG-Model` when you need to know what answered.
 
