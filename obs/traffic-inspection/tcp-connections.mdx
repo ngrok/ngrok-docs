@@ -6,6 +6,7 @@ description: Find out who connected to your TCP and TLS endpoints, how much data
 
 The **TCP** tab in [Traffic Inspector](/obs/traffic-inspection), next to the **HTTP** tab, lists every TCP connection to your endpoints, including the connections that carry HTTP and HTTPS requests.
 Each row shows who connected, which endpoint they reached, how long the connection stayed open, how many bytes moved in each direction, and whether it closed cleanly or failed.
+TCP and TLS connections that are still open appear in their own list above the closed ones, with a graph of the bytes they move over time.
 
 Use it if you run TCP or TLS endpoints, such as databases, SSH, game servers, or raw TLS services.
 It also helps with HTTP and HTTPS endpoints when a problem happens below the request level, such as a TLS handshake that fails before the client sends a request.
@@ -21,7 +22,7 @@ ngrok doesn't read the bytes on a TCP or TLS endpoint, so these connections reco
    ngrok tcp 22
    ```
 
-1. Connect to the endpoint using the host and port from the agent output, then disconnect:
+1. Connect to the endpoint using the host and port from the agent output, and leave the session open:
 
    ```bash
    ssh user@<host> -p <port>
@@ -30,10 +31,37 @@ ngrok doesn't read the bytes on a TCP or TLS endpoint, so these connections reco
 1. Open [Traffic Inspector → TCP](https://dashboard.ngrok.com/traffic-inspector/connections) in the dashboard.
    You can also open the endpoint in the dashboard and select **Inspect Traffic**.
 
-1. Select the row for your connection to open its detail sheet.
+1. Your connection appears under **Open connections** within about 30 seconds.
+   Select its row to open its detail sheet and watch **Bytes over time** grow as you type.
 
-A connection appears in the list only after it closes.
-Turn on live mode to add connections to the list as they close, without refreshing the page.
+1. Disconnect from the SSH session.
+   The connection moves to **Closed connections**.
+
+Turn on live mode to update both lists without refreshing the page.
+
+## Open connections
+
+The **Open connections** list shows the TCP and TLS connections that are open right now, newest first.
+It appears above the closed connections only while at least one connection is open.
+
+With live mode on, the open list refreshes every 10 seconds and each **Duration** counts up.
+With live mode off, the list shows the connections that were open when it loaded.
+
+If more than 1,000 connections are open, the list shows the 1,000 that opened most recently.
+Add a filter to find the rest.
+
+## Bytes over time
+
+The **Overview** tab of a connection's detail sheet has a **Bytes over time** graph.
+It shows the running total of **Bytes In** and **Bytes Out** from the moment the connection opened.
+
+- A flat line means the connection moved no data in that direction.
+- A steep step shows a burst, such as a large query result or a file transfer.
+- While the connection is open, the graph refreshes every 10 seconds.
+- After the connection closes, the graph ends at its final byte counts.
+
+A connection that closed before its first report has no graph.
+If a connection has more than 2,000 reports, about 16 hours of steady traffic, the graph shows the newest 2,000.
 
 ## Connection fields
 
@@ -50,6 +78,19 @@ Turn on live mode to add connections to the list as they close, without refreshi
 | Duration    | How long the connection stayed open.                           |
 | Endpoint    | The endpoint the client connected to.                          |
 
+### Open connections list
+
+| Column    | Description                                                         |
+| --------- | ------------------------------------------------------------------- |
+| Started   | When the connection opened.                                         |
+| Client IP | The IP address of the client that opened the connection.           |
+| Protocol  | `tcp` or `tls`.                                                     |
+| Bytes In  | Bytes received from the client, as of the last report.              |
+| Bytes Out | Bytes sent to the client, as of the last report.                    |
+| Status    | **Open**, and how long the connection has moved no data, if it's idle for at least a minute. |
+| Duration  | How long the connection has been open so far.                       |
+| Endpoint  | The endpoint the client connected to.                               |
+
 ### Detail sheet
 
 Select a connection to open its detail sheet.
@@ -61,10 +102,10 @@ The sheet has a share link, and you can step to the previous or next connection 
 | ------------- | ---------------------------------------------------------- |
 | Endpoint      | The endpoint the client connected to.                      |
 | Protocol      | `tcp`, `tls`, `http`, or `https`.                          |
-| Outcome       | `closed` if the connection closed cleanly, or `failed`.    |
-| Duration      | How long the connection stayed open.                       |
+| Outcome       | `open`, `closed` if the connection closed cleanly, or `failed`. |
+| Duration      | How long the connection stayed open, or has been open so far. |
 | Started       | When the connection opened.                                |
-| Closed        | When the connection closed.                                |
+| Closed        | When the connection closed. An open connection has none.   |
 | Bytes In      | Bytes received from the client.                            |
 | Bytes Out     | Bytes sent to the client.                                  |
 | Client        | The client IP address.                                     |
@@ -74,6 +115,9 @@ The sheet has a share link, and you can step to the previous or next connection 
 | Tunnel ID     | The ID of the agent tunnel that served the connection.     |
 
 For a failed connection, **Failure Type** shows the category of failure, such as a TLS error, and **ngrok Error** shows the error code.
+For an open connection, **Outcome** also shows how long the connection has been idle.
+
+Below the fields, the [**Bytes over time**](#bytes-over-time) graph shows the bytes the connection moved.
 
 #### TLS tab
 
@@ -121,6 +165,11 @@ When you enter several terms, a connection must match all of them.
 | `error`      | `error:3002`                | An ngrok error code.            |
 | `duration`   | `duration:30s`              | Connections open longer than this. |
 
+Filters apply to open connections too, with two differences:
+
+- `outcome` and `error` match only closed connections, so the open list hides while either is set.
+- `duration` counts the time a connection has been open so far, so an open connection joins the list once it's open long enough.
+
 ## Troubleshooting
 
 ### A client can't complete a TLS handshake
@@ -140,6 +189,16 @@ When you enter several terms, a connection must match all of them.
 1. Open one of the connections.
    The error banner shows [`ERR_NGROK_3205`](/errors/err_ngrok_3205), which means `restrict-ips` blocked it.
 
+### A long-lived connection stops responding
+
+1. Find the connection under **Open connections**.
+   Filter for `ip:<client-ip>` or `exact-host:<your-tcp-host>` if the list is long.
+1. Check **Status**.
+   **idle for** shows how long the connection has moved no data in either direction.
+1. Open the connection and look at **Bytes over time**.
+   If both lines go flat at the same time, neither side sent anything after that point.
+   If only **Bytes In** keeps growing, the client is still sending but your service has stopped answering.
+
 ## Limits and availability
 
 - **Plans:** Every plan includes the TCP tab.
@@ -147,8 +206,9 @@ When you enter several terms, a connection must match all of them.
   Free accounts keep 24 hours and paid plans keep 72 hours.
   Pay-as-you-go accounts can [purchase an add-on](https://ngrok.com/pricing) for up to 90 days.
   After that, opening a connection returns [`ERR_NGROK_TRAFFIC_INSPECT_CONNECTION_NOT_FOUND`](/errors/err_ngrok_traffic_inspect_connection_not_found).
-- **Open connections:** A connection appears only after it closes.
-  A long-lived connection, such as an SSH session or a database connection pool, doesn't appear while it's still open.
+- **Open connections:** Only TCP and TLS connections appear in the open list.
+  HTTP and HTTPS connections appear only after they close.
+  An open connection appears even if it opened before your retention window, because retention counts from when a connection closes.
 - **Payloads:** TCP and TLS connections record metadata only.
 - **Permissions:** Anyone who can view requests in Traffic Inspector can view connections.
 - **Export:** To keep connections longer or send them to your own tools, use [log exporting](/obs/events) with the [`tcp_connection_closed`](/obs/events/reference#tcp-connection-closed) event.
