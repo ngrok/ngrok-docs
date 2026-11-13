@@ -1,0 +1,252 @@
+---
+title: Use Any Model with Any SDK
+description: Call any supported model from the OpenAI, Anthropic, or Google Gen AI SDK, and learn what the AI Gateway translates between API formats.
+---
+
+Each SDK speaks one API format, and each model serves only some formats.
+When the model you pick doesn't serve your SDK's format, the AI Gateway translates the request, calls the model in a format it serves, and translates the response back.
+Your code, your stream reader, and your tool loop stay the same, and you change only the model.
+
+Translation works with every access key and needs no setup.
+You pay the rates of the model that served the request.
+
+## What you'll need
+
+- An [access key](/ai-gateway/concepts/access-keys) from the [Quickstart](/ai-gateway/quickstart).
+- The Anthropic SDK for Python or TypeScript, as shown in [Anthropic SDK](/ai-gateway/sdks/anthropic#installation).
+
+## Call an OpenAI model from the Anthropic SDK
+
+OpenAI models don't serve the Anthropic Messages API, so this request goes through translation.
+
+<Steps titleSize="h3">
+  <Step title="Send the request">
+    Set the model to an OpenAI model.
+    The rest of the request is a normal Messages request.
+
+    <CodeGroup>
+    ```python Python highlight={9}
+    import anthropic
+
+    client = anthropic.Anthropic(
+        base_url="https://gateway.ngrok.ai",
+        api_key="ng-xxxxx-g1-xxxxx"  # Your access key
+    )
+
+    raw = client.messages.with_raw_response.create(
+        model="openai:gpt-5.5",
+        max_tokens=1024,
+        messages=[{"role": "user", "content": "Hello!"}]
+    )
+    message = raw.parse()
+
+    print(raw.headers.get("ngrok-aig-model"))
+    print(message.content[0].text)
+    ```
+
+    ```typescript TypeScript highlight={10}
+    import Anthropic from "@anthropic-ai/sdk";
+
+    const client = new Anthropic({
+      baseURL: "https://gateway.ngrok.ai",
+      apiKey: "ng-xxxxx-g1-xxxxx",  // Your access key
+    });
+
+    const { data: message, response } = await client.messages
+      .create({
+        model: "openai:gpt-5.5",
+        max_tokens: 1024,
+        messages: [{ role: "user", content: "Hello!" }],
+      })
+      .withResponse();
+
+    console.log(response.headers.get("ngrok-aig-model"));
+    console.log(message.content[0].type === "text" ? message.content[0].text : "");
+    ```
+    </CodeGroup>
+  </Step>
+
+  <Step title="Confirm which model answered">
+    The `Ngrok-AIG-Model` [response header](/ai-gateway/how-it-works#response-headers) names the OpenAI model that served the request.
+    The body is a Messages response, so `message.content` holds a `text` block as it does for a Claude model.
+
+    In [app.ngrok.ai](https://app.ngrok.ai), open the request in [Request details](/ai-gateway/observability/index#inspect-a-request-in-app-ngrok-ai).
+    The **Attempts** tab shows that the gateway translated the attempt from Anthropic Messages to the format the OpenAI model serves, and lists the parameters it removed.
+  </Step>
+</Steps>
+
+Streaming works the same way.
+Call `client.messages.stream(...)` with the OpenAI model, and you get Messages stream events.
+
+## Supported API formats
+
+The gateway translates between these formats in both directions:
+
+| Format | Endpoint | SDKs |
+|--------|----------|------|
+| OpenAI Chat Completions | `/v1/chat/completions` | [OpenAI SDK](/ai-gateway/sdks/openai), [Vercel AI SDK](/ai-gateway/sdks/vercel-ai-sdk), [LangChain](/ai-gateway/sdks/langchain) |
+| OpenAI Responses | `/v1/responses` | [OpenAI SDK](/ai-gateway/sdks/openai#supported-endpoints) |
+| Anthropic Messages | `/v1/messages` | [Anthropic SDK](/ai-gateway/sdks/anthropic) |
+| Gemini generateContent | `/v1beta/models/{model}:generateContent` | [Google Gen AI SDK](/ai-gateway/sdks/google) |
+
+Translation reaches every model in the [model catalog](/ai-gateway/reference/model-catalog) that serves one of these formats.
+It also reaches [models you run yourself](/ai-gateway/guides/use-a-model-you-run-yourself), through the API format you set on the custom provider.
+
+In the [List Models API](/ai-gateway/api-reference/models/list), `supported_api_formats` lists the formats a provider serves for a model directly.
+The response also shows which other formats reach the model through translation.
+
+## How the gateway picks a format
+
+The gateway decides for each model when it tries that model:
+
+1. If a provider of the model serves your SDK's format, the gateway sends the request as it is, with no translation.
+2. If no provider does, the gateway uses the first format the model serves, in this order: Anthropic Messages, Gemini generateContent, OpenAI Chat Completions, then OpenAI Responses.
+
+A provider's own format comes first because a compatibility endpoint can drop features such as reasoning signatures and cache hints.
+You can't choose the format yourself.
+
+### Fallback models
+
+The gateway checks each [fallback model](/ai-gateway/guides/configure-fallback-models) when it tries that model, so one list can mix providers and formats:
+
+```bash
+curl https://gateway.ngrok.ai/v1/messages \
+  -H "x-api-key: ng-xxxxx-g1-xxxxx" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "anthropic:claude-sonnet-4-6",
+    "models": ["openai:gpt-5.5", "google:gemini-3.6-flash"],
+    "max_tokens": 1024,
+    "messages": [{"role": "user", "content": "Hello!"}]
+  }'
+```
+
+Whichever model serves the request, the response comes back as a Messages response.
+If the gateway can't translate the request for one model, it skips that model and tries the next one.
+
+## What translates
+
+The gateway translates these parts of a request:
+
+- System prompts and instructions.
+- Text messages and multi-turn conversations.
+- Images, as a URL or as base64 data.
+- Function tools, tool calls, and tool results.
+- Web search, code execution, and remote MCP servers, as [hosted tools](#hosted-tools) describes.
+- The settings in the table that follows.
+
+It translates these parts of a response:
+
+- Text, tool calls, and reasoning.
+- Web search citations, and the code and results of code execution.
+- Streaming events.
+- Token usage.
+- Stop reasons, such as end of turn, max tokens, and tool use.
+- Provider errors.
+  The status code, error type, and retry fields stay the same, so your SDK retries as it does for a native request.
+
+This table shows the name of each translated setting in each format.
+A dash means the format has no such setting, so the gateway removes it.
+
+| Setting | Chat Completions | Responses | Messages | generateContent |
+|---------|------------------|-----------|----------|-----------------|
+| Max output tokens | `max_completion_tokens` or `max_tokens` | `max_output_tokens` | `max_tokens` | `generationConfig.maxOutputTokens` |
+| Temperature | `temperature` | `temperature` | `temperature` | `generationConfig.temperature` |
+| Top P | `top_p` | `top_p` | `top_p` | `generationConfig.topP` |
+| Top K | — | — | `top_k` | `generationConfig.topK` |
+| Stop sequences | `stop` | — | `stop_sequences` | `generationConfig.stopSequences` |
+| Seed | `seed` | — | — | `generationConfig.seed` |
+| JSON output | `response_format` | `text.format` | `output_config.format` | `generationConfig.responseMimeType` and `responseJsonSchema` |
+| Tools | `tools` | `tools` | `tools` | `tools[].functionDeclarations` |
+| Tool choice | `tool_choice` | `tool_choice` | `tool_choice` | `toolConfig.functionCallingConfig` |
+| Parallel tool calls | `parallel_tool_calls` | `parallel_tool_calls` | `tool_choice.disable_parallel_tool_use` | — |
+| Reasoning effort | `reasoning_effort` | `reasoning.effort` | `output_config.effort` | `generationConfig.thinkingConfig.thinkingLevel` |
+| Thinking budget | — | — | `thinking.budget_tokens` | `generationConfig.thinkingConfig.thinkingBudget` |
+
+### Hosted tools
+
+[Hosted tools](/ai-gateway/concepts/hosted-tools) run on the provider's servers.
+The gateway translates these hosted tools:
+
+| Tool | Chat Completions | Responses | Messages | generateContent |
+|------|------------------|-----------|----------|-----------------|
+| Web search | The provider's own search option | `web_search`, `web_search_preview` | `web_search_20250305`, `web_search_20260209` | `google_search` |
+| Code execution | — | `code_interpreter` | `code_execution` | `code_execution` |
+| Remote MCP servers | — | `mcp` | `mcp_servers` with the `mcp_toolset` tool | — |
+
+A dash means the format has no such tool, so the gateway skips a model that serves only that format.
+
+These rules apply to translated hosted tools:
+
+- **Web search on Chat Completions models**: The gateway sends the search in the form each provider takes, such as `web_search_options` for OpenAI search models and `browser_search` for Groq.
+- **Citations**: Search citations come back in your format, in buffered and streamed responses.
+- **Search options**: Hints such as `user_location` and `search_context_size` reach the target when it has a matching field.
+  Otherwise the gateway removes them.
+- **Code execution**: Your SDK gets the code the model ran and its result as typed items, not as text.
+- **MCP approval**: The Messages API has no approval step.
+  The gateway never sends an MCP tool that needs your approval to a model through the Messages API.
+- **Conversation history**: When you send earlier search results and citations back on the next turn, a model from another provider gets them as plain text.
+- **Billing**: Hosted tools bill at the rate of the tool the provider ran, not the tool your SDK named.
+
+Other hosted tools, such as file search and image generation, don't translate.
+
+## Removed and changed parameters
+
+The gateway removes or changes a parameter when the target format or model can't take it as you sent it.
+It lists every removed or changed parameter in the `Ngrok-AIG-Removed-Params` [response header](/ai-gateway/how-it-works#response-headers).
+
+Fields that only one format defines don't translate.
+For example, `frequency_penalty`, `logit_bias`, `metadata`, `service_tier`, and Gemini `safetySettings` reach only a model that serves your SDK's format.
+
+These rules change a value instead of removing it:
+
+- **Max tokens on Messages models**: The Messages API requires `max_tokens`.
+  If your request doesn't set a limit, the gateway sends the model's maximum output tokens.
+  Your account's [max output tokens](/ai-gateway/guides/account-settings) setting still applies.
+  Set your own limit if you need responses to stop at the same length on every model.
+- **Temperature on Messages models**: The gateway lowers a temperature above 1 to 1.
+  If you send both `temperature` and `top_p`, the gateway removes `top_p`.
+- **Reasoning effort**: The gateway lowers an effort level the target doesn't have, such as `max`, to `high`.
+- **Minimum output tokens on Responses models**: The gateway raises a `max_output_tokens` below 16 to 16.
+
+Reasoning settings translate in these ways:
+
+- A reasoning effort reaches every model that can reason.
+  For a model that takes only a thinking budget, such as Gemini 2.5, the gateway converts the effort to a budget and lists the parameter in the header.
+- A thinking budget reaches Claude and Gemini models.
+  OpenAI models take no budget, so the gateway removes it for an OpenAI model.
+- Reasoning blocks from an earlier turn go back only to the format that produced them, because a provider rejects another provider's reasoning signature.
+  The gateway removes them for any other format.
+
+Prompt caching markers, such as `cache_control`, reach a model only through the Messages API.
+For a model the gateway calls in another format, it removes them.
+The response stays the same, but the request can cost more, because the provider doesn't cache the prompt where you marked it.
+
+Provider-specific request headers, such as `anthropic-beta` and `OpenAI-Organization`, don't reach a model the gateway translated the request for.
+
+## When the gateway skips a model
+
+The gateway skips a model, without calling it, when it can't translate the request for that model:
+
+- The request has file, document, audio, or video input.
+  Only text and images translate.
+- The request has a hosted tool that the target format doesn't have, or that doesn't translate, such as file search.
+  See [hosted tools](#hosted-tools).
+- The request has web search and function tools together, and the model is a Gemini 2.x model, which can't combine them.
+- The request has an MCP tool that needs your approval, and the target is Messages.
+- The request points to state the provider stores, such as `previous_response_id`, `conversation`, or `background` in the Responses API.
+- The request asks for more than one choice, such as `n` greater than 1 in Chat Completions.
+- The request uses the legacy Chat Completions `functions` or `function_call` fields.
+- The last message is an assistant message that the model should continue, and the target is Chat Completions or Responses.
+- The request asks for JSON output with no schema, and the target is Messages.
+- A [Firewall](/ai-gateway/concepts/firewall) policy applies to the request, because Firewall can't check a translated response yet.
+
+If every model in the request is skipped, the gateway returns [`ERR_NGROK_27228`](/ai-gateway/reference/error-codes#err_ngrok_27228) with the reason for each model.
+To fix it, remove the field the message names, or pick a model that serves your SDK's format.
+
+## Next steps
+
+- [Configure fallback models](/ai-gateway/guides/configure-fallback-models): Try another model when the first one fails.
+- [Model catalog](/ai-gateway/reference/model-catalog): See which API formats each provider serves.
+- [How it works](/ai-gateway/how-it-works#response-headers): Read the response headers the gateway adds.
+- [Debugging](/ai-gateway/guides/debugging): Find out why a request failed.
