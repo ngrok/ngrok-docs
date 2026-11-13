@@ -245,14 +245,24 @@ The AI Gateway includes built-in support for:
 * OpenAI
 * Anthropic
 * Google
-* Groq
 * DeepSeek
+* xAI
+* Groq
+* Mistral AI
+* Moonshot AI
+* Z.ai
+* QwenCloud
+* MiniMax
+* Tencent TokenHub
+* Typesafe AI
+* Liquid AI
+* LLM API
 * OpenRouter
 * Hyperbolic
 * InceptionLabs
 * Inference.net
 
-You can also connect self-hosted or private OpenAI-compatible and Anthropic-compatible endpoints as custom providers.
+You can also connect self-hosted or private OpenAI-compatible and Anthropic-compatible endpoints, such as Ollama, vLLM, or Azure OpenAI, as [custom providers](/ai-gateway/concepts/custom-providers).
 
 See the [Model Catalog](/ai-gateway/reference/model-catalog) for the full list.
 
@@ -427,19 +437,28 @@ See [Configure fallback models](/ai-gateway/guides/configure-fallback-models).
 
 ### Can I set fallbacks on the gateway instead of in each request?
 
-Not yet.
-Fallback models are set per request, in the `models` list.
+Yes, with a [virtual model](/ai-gateway/guides/virtual-models).
+A virtual model is a name you choose, such as `chat-default`, that stands for an ordered list of up to 10 models.
+Your apps send the name as `model`, and the gateway tries each model in order until one succeeds.
 
-On the gateway side today, you can:
+```json
+{
+  "model": "chat-default",
+  "messages": [{"role": "user", "content": "Hello"}]
+}
+```
+
+To change the models or their order for every client at once, edit the virtual model in app.ngrok.ai or with the [Virtual Models API](/ai-gateway/api-reference/virtual-models/update).
+Clients don't change, redeploy, or restart.
+
+On the gateway side, you can also:
 
 * Attach multiple provider keys for the same provider, so the gateway [fails over between keys](/ai-gateway/guides/key-selection-failover) on rate limits, quota limits, or auth errors.
 * Use [access key configurations](/ai-gateway/guides/access-key-configurations) to control which providers and models each access key can reach.
 
-To change a default model for many clients without changing their code, put the `model` and `models` values in a shared client wrapper or config your apps already read.
-
 ### Can the gateway fail over to a different provider?
 
-Yes, if the request includes fallback models from different providers.
+Yes, if the request includes fallback models from different providers, or uses a [virtual model](/ai-gateway/guides/virtual-models) that lists them.
 
 For example, you can try OpenAI first and fall back to Anthropic:
 
@@ -692,6 +711,8 @@ List fallback models in preference order in the request body.
   "messages": [{"role": "user", "content": "Hello"}]
 }
 ```
+
+To set the order on the gateway instead of in each request, use a [virtual model](/ai-gateway/guides/virtual-models).
 
 For different clients or teams, create separate access keys with different configurations.
 
