@@ -1,0 +1,94 @@
+---
+title: AI Gateway Tools for the ngrok MCP Server
+sidebarTitle: AI Gateway Tools
+description: Ask your AI agent about your AI Gateway models, costs, and failed requests through the ngrok MCP server, down to every provider attempt and captured body.
+---
+
+The [ngrok MCP server](/mcp-server) includes read-only tools for the [AI Gateway](/ai-gateway/overview).
+Your AI agent can use them to compare models, break down what your inference cost, and debug a failed request without leaving your editor.
+
+These tools only read data.
+They can't change your AI Gateway configuration, access keys, or settings.
+
+## Before you start
+
+<Steps>
+	<Step title="Connect the ngrok MCP server">
+		Add `https://mcp.ngrok.com/mcp` to your AI agent and sign in.
+		See the [quickstart](/mcp-server#quickstart) for your client.
+		If you connect with a personal access token, give it the [scopes](#tools-and-scopes) for the tools you want to use.
+	</Step>
+	<Step title="Send requests through the AI Gateway">
+		The usage tools answer from your gateway traffic, so send some requests first.
+		See the [AI Gateway quickstart](/ai-gateway/quickstart).
+	</Step>
+	<Step title="Turn on request capture">
+		To read request details and captured bodies, turn on [request capture](/ai-gateway/guides/account-settings#request-capture) in **Settings > Data Retention** in app.ngrok.ai.
+		Capture applies only to requests made after you turn it on.
+		Model and usage tools work without it.
+	</Step>
+</Steps>
+
+To confirm the tools are available, ask your AI agent "Which AI Gateway tools do you have?"
+It lists the `aigw_` tools in the [table below](#tools-and-scopes).
+
+## What you can ask
+
+Your AI agent picks the tools, so the exact steps can differ.
+
+<div className="mcp-examples">
+<AccordionGroup>
+	<Accordion title="Which models support image input? Show the prices and limits for one of them">
+		The AI agent calls `aigw_list_models` to find models that accept images, then `aigw_get_model` for the one you pick.
+		You get each provider that offers the model, with its token prices, limits, and performance metrics.
+	</Accordion>
+	<Accordion title="What did AI Gateway cost over the last seven days? Break it down by provider, with daily totals">
+		The AI agent calls `aigw_usage_overview` grouped by provider.
+		You get daily cost in USD, request counts, errors, and error rates for each provider.
+		Ask for a breakdown by access key to see which app or teammate spent the most.
+	</Accordion>
+	<Accordion title="Show failed AI Gateway requests from the last hour">
+		The AI agent calls `aigw_list_usage` and filters for failures.
+		You get each request's ID, outcome, status code, tokens, and cost, newest first.
+	</Accordion>
+	<Accordion title="For that request, show what the client asked for and every provider attempt. Why did it fail over?">
+		The AI agent calls `aigw_get_request` for the model, status, attempt count, and access key, then `aigw_get_request_attempts` for each attempt.
+		You get each attempt's provider, model, outcome, retry action, timing, tokens, and cost, and an explanation of why the gateway moved on to the next attempt.
+		See [Why a request failed over](/ai-gateway/guides/why-a-request-failed-over) for how the gateway decides.
+	</Accordion>
+	<Accordion title="Read the captured client request body for that request. Continue until the end">
+		The AI agent calls `aigw_get_capture` one page at a time until it has read the whole body.
+		This works only for requests made while request capture was on.
+	</Accordion>
+</AccordionGroup>
+</div>
+
+## Tools and scopes
+
+When you sign in with OAuth, the AI agent can use every tool your role allows.
+When you connect with a [personal access token](/mcp-server#clients-without-oauth), each tool needs the scopes listed here.
+
+| Tool | Returns | Required scopes |
+| --- | --- | --- |
+| `aigw_list_models` | Models, providers, API formats, token prices, and available performance metrics. | `ai-gateway:providers:read` |
+| `aigw_get_model` | One model's provider offerings, prices, limits, and available metrics. | `ai-gateway:providers:read` |
+| `aigw_usage_overview` | Cost in USD, request counts, errors, and error rates, grouped by provider or access key. | `ai-gateway:usage:read` |
+| `aigw_list_usage` | Request usage, newest first, with request IDs, outcomes, status codes, tokens, and costs. | `ai-gateway:usage:read` |
+| `aigw_get_request` | One client request's model, status, attempt count, and access key. | `ai-gateway:usage:read`, `ai-gateway:captures:read` |
+| `aigw_get_request_attempts` | Each attempt's provider, model, outcome, retry action, timing, tokens, and cost. | `ai-gateway:usage:read`, `ai-gateway:captures:read` |
+| `aigw_get_capture` | One page of a captured request or response body. | `ai-gateway:usage:read`, `ai-gateway:captures:read` |
+
+## Limits
+
+- **Capture required for request details**: `aigw_get_request`, `aigw_get_request_attempts`, and `aigw_get_capture` need [request capture](/ai-gateway/guides/account-settings#request-capture) to be on when the request was made.
+- **Retention**: captured headers and bodies are kept for 30 days, and request metadata for 90 days.
+  See [Observability limits](/ai-gateway/observability/index#limits).
+- **Redaction**: credential headers, such as `Authorization` and `x-api-key`, are redacted in captures.
+  Prompts and completions are stored as sent, so anyone who can read captures can read them.
+
+## Related resources
+
+- [ngrok MCP server](/mcp-server): Connect your AI agent and see everything else it can do.
+- [AI Gateway observability](/ai-gateway/observability): The usage data and request details behind these tools.
+- [Request capture](/ai-gateway/guides/account-settings#request-capture): Turn capture on and see what it stores.
+- [Why a request failed over](/ai-gateway/guides/why-a-request-failed-over): How the gateway moves between attempts.
