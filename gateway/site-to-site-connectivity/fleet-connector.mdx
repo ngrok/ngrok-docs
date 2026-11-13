@@ -24,7 +24,7 @@ It's already signed by ngrok.
 
 - An ngrok account.
   If you don't have one, [sign up](https://dashboard.ngrok.com/signup).
-- An [authtoken](https://dashboard.ngrok.com/authtokens) for each install, or an [API key](https://dashboard.ngrok.com/api-keys) to create one per install automatically.
+- An [authtoken](https://dashboard.ngrok.com/authtokens) for each install.
 - [Go](https://go.dev/dl/) on your build machine.
 - For Windows, a code-signing certificate from a trusted certificate authority (CA).
 
@@ -95,15 +95,13 @@ It's already signed by ngrok.
   </Step>
 
   <Step title="Distribute and install">
-    Publish the signed installer to an HTTPS location you control, such as your own download server or object storage bucket, and share its SHA-256 checksum.
-    On Windows, use the same location as your `update_source_url` so first installs and remote updates come from one place.
-
-    Your customer's IT team, or your remote monitoring and management (RMM) tool, then delivers the installer to each target machine with the tools they already use, such as Microsoft Intune, Configuration Manager, Ansible, or an internal package repository.
-    For silent installs, have the same script write `config.yaml` with [`gen-config`](#gen-config) before it runs the installer, so the service starts with the right config.
+    Distribute the installer the same way you distribute the rest of your software.
+    The standard ngrok agent comes from ngrok's download servers, but you host this installer yourself, such as on your own download site or object storage.
+    On Windows, host it at the same URL you use for `update_source_url`, so first installs and remote updates come from one place.
 
     <Note>
-    Highly restricted networks often can't download from the internet at all.
-    In that case, hand the installer and its checksum to the customer's IT team, and they import it into their internal software distribution system.
+    Highly restricted networks often can't download from the internet.
+    In that case, give the installer to the customer's IT team, and they deploy it with their own tools, such as Microsoft Intune or an internal package repository.
     </Note>
 
     The installer runs Fleet Connector as a background service that starts on boot:
@@ -133,7 +131,7 @@ It's already signed by ngrok.
     You can create this file in three ways, depending on who installs it and when:
 
     - **`gen-config`**: Write the file before the service first starts.
-      Use this for silent, scripted installs, such as an RMM tool pushing to many machines at once.
+      Use this when a script installs and configures many machines without anyone at the keyboard.
     - **Setup wizard**: If no `config.yaml` exists when the service starts, it opens a web form on `127.0.0.1`.
       The form walks a person through setup once, then shuts down after it writes a valid config.
     - **Hand-edit**: Edit `config.yaml` directly, or run `fleetconnect edit-config` to edit it in `$EDITOR` with validation before it saves.
@@ -272,7 +270,7 @@ When you send an update from the ngrok dashboard or API, the agent receives it o
 It downloads the MSI and checks the signature against the pinned thumbprint before installing it.
 
 Remote updates aren't available on Linux, because the update process installs an MSI.
-On Linux, roll out new `.deb` or `.rpm` packages with your existing package management or RMM tools.
+On Linux, roll out new `.deb` or `.rpm` packages with your existing package management or deployment tools.
 
 ## What's next
 
