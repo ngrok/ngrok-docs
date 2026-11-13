@@ -1,16 +1,44 @@
 ---
 title: Agent Config Version 3
 sidebarTitle: Version 3
-description: Reference documentation for ngrok Agent Configuration File version 3, including breaking changes, migration guide, and endpoint definitions.
+description: Learn about version 3 of the ngrok agent configuration file, including breaking changes, migrating from v2, and endpoint definitions.
 ---
 import YamlIndentationNote from "/snippets/shared/yaml-indentation-note.mdx";
 
-The ngrok agent supports an optional, YAML configuration file which enables you to configure advanced settings and run multiple endpoints simultaneously.
-
-The agent configuration file location depends on your system.
-You can check the location of your configuration file by running `ngrok config check` or edit the file in your terminal by running `ngrok config edit`.
+The ngrok agent supports an optional YAML configuration file that enables you to configure advanced settings and run multiple endpoints simultaneously.
 
 <YamlIndentationNote />
+
+## File location
+
+When you don't pass `--config`, the agent reads `ngrok.yml` from a default location that depends on your operating system:
+
+- Linux: `~/.config/ngrok/ngrok.yml`, or `$XDG_CONFIG_HOME/ngrok/ngrok.yml` if `XDG_CONFIG_HOME` is set
+- macOS: `~/Library/Application Support/ngrok/ngrok.yml`
+- Windows: `%LocalAppData%\ngrok\ngrok.yml`
+
+Run `ngrok config check` to validate the file and print its location, or `ngrok config edit` to open it in your editor.
+
+## Multiple configuration files
+
+Pass `--config` to load one or more files instead of the default.
+Separate paths with commas or repeat the flag:
+
+```sh
+ngrok start --all --config ~/ngrok-base.yml,./ngrok-project.yml
+```
+
+When you pass `--config`, the agent doesn't read the file at the default location.
+To include it, list its path along with your other files.
+
+The agent merges the files in the order you list them:
+
+- Scalar values, such as `agent.authtoken`, from later files override those from earlier files.
+- Lists, including `endpoints`, are replaced, not combined.
+  If two files define `endpoints`, the agent uses only the list from the later file.
+- Maps are merged by key, and the later file's value wins for a duplicate key.
+
+For more on merging, see [Config file merging](/gateway/agent/config#config-file-merging).
 
 ## Breaking changes
 
@@ -160,8 +188,7 @@ These are the root certificate authorities used to validate the TLS connection t
 | ------------ | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `trusted`    | default | use only the trusted certificate root for the ngrok.com tunnel service                                                                                                      |
 | `host`       |         | use the root certificates trusted by the host's operating system. This is helpful for working with machine-in-the-middle (MITM) proxies doing deep packet inspection (DPI). |
-| other values |         | path to a certificate PEM file on disk with certificate authorities to trust                
-                                                                                |
+| other values |         | path to a certificate PEM file on disk with certificate authorities to trust                                                                                |
 
 #### `connect_interface`
 
