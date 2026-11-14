@@ -4,21 +4,27 @@ sidebarTitle: Migrate from Portkey
 description: Move your apps from Portkey to the ngrok AI Gateway by mapping provider keys, API keys, configs, and guardrails, then changing a few lines of client code.
 ---
 
-{/* DRAFT: don't merge until native Bedrock ships or the custom-provider path below is verified. Open items are marked DRAFT. */}
+{/* DRAFT: don't merge until native Bedrock ships or the custom-provider path below is verified. Open items are marked DRAFT. Before publishing, re-check the Portkey status claims in the opening (Prisma AIRS billing and console, classic product still sold with no end date) against portkey.ai and Palo Alto's announcements. */}
 
-Palo Alto Networks bought Portkey in May 2026, and Portkey is now the Prisma AIRS AI Gateway.
-The new edition runs from Strata Cloud Manager, bills in Palo Alto flex credits, and changes what some Portkey terms mean, so existing customers face a migration either way.
+If your apps call models through Portkey, you're deciding whether to follow it into Palo Alto Networks' Prisma AIRS or move your traffic somewhere else.
+Palo Alto bought Portkey in May 2026.
+The Prisma AIRS edition runs from Strata Cloud Manager and bills in Palo Alto flex credits, while the original Portkey product is still sold with no published end date.
 
-This guide moves an app that calls models through Portkey to the [ngrok AI Gateway](/ai-gateway/overview).
-You recreate your Portkey setup in app.ngrok.ai, change your client's base URL, key, and model names, and run both gateways side by side before you cut over.
-
-Most of the work is on the gateway side.
-Client code usually changes in three places: the base URL, the API key, and the `model` string.
+The [ngrok AI Gateway](/ai-gateway/overview) is a hosted gateway at `gateway.ngrok.ai` that accepts OpenAI, Anthropic, and Gemini API requests, so your apps keep the SDKs they use today.
+ngrok hosts and upgrades it, and its price is public: a processing fee of $0.05 per million tokens, paid from [credits](/ai-gateway/concepts/credits).
+Pay for OpenAI, Anthropic, Google, and other supported models with those credits, or bring your own provider key for any built-in provider.
+For agent traffic, [Firewall](/ai-gateway/concepts/firewall) checks each tool call a model returns and blocks risky ones before your agent runs them.
 
 <Note>
   The ngrok AI Gateway doesn't yet have an MCP gateway, response caching, per-key budgets, or PII redaction.
-  If your apps depend on those Portkey features, read [What doesn't move yet](#what-doesnt-move-yet) before you start.
+  If your apps depend on those Portkey features, read [What doesn't move yet](#what-doesnt-move-yet) before you decide.
 </Note>
+
+This guide moves an app that calls models through Portkey to the ngrok AI Gateway.
+You recreate your Portkey setup in app.ngrok.ai, run both gateways side by side, then cut over.
+
+Most of the work is on the gateway side.
+Client code usually changes in three places: the base URL, the API key, and the `model` string.
 
 ## What you'll need
 
@@ -44,13 +50,15 @@ Client code usually changes in three places: the base URL, the API key, and the 
       -e '"@[a-z0-9-]+/'
     ```
 
-    Note each match:
+    Each match tells you what to change:
 
-    - `api.portkey.ai`, `aigw.portkey.ai`, or `PORTKEY_GATEWAY_URL`: the base URL to replace.
-    - `portkey_ai` or `portkey-ai` imports, `Portkey(`, and `createHeaders`: Portkey SDK calls to replace with the plain OpenAI or Anthropic SDK.
-    - `x-portkey-*` headers: see [Map Portkey headers](#map-portkey-headers).
-    - `@slug/model` strings and `virtual_key` values: the providers each app calls.
-    - Checks for HTTP `246` or `446`: Portkey guardrail results that your error handling reads.
+    | Match | What to change |
+    |---|---|
+    | `api.portkey.ai`, `aigw.portkey.ai`, or `PORTKEY_GATEWAY_URL` | The base URL |
+    | `portkey_ai` or `portkey-ai` imports, `Portkey(`, and `createHeaders` | Portkey SDK calls, which become plain OpenAI or Anthropic SDK calls |
+    | `x-portkey-*` headers | See [Map Portkey headers](#map-portkey-headers) |
+    | `@slug/model` strings and `virtual_key` values | The providers each app calls, which become provider keys and `provider:model` names |
+    | Checks for HTTP `246` or `446` | Error handling that reads Portkey guardrail results |
 
     ### Export your Portkey objects
 
@@ -86,14 +94,14 @@ Client code usually changes in three places: the base URL, the API key, and the 
       -d '{
         "providerId": "openai",
         "name": "openai-prod",
-        "value": "sk-proj-..."
+        "value": "<OPENAI_API_KEY>"
       }'
     ```
 
     Name each key after its Portkey slug so you can match them up later.
 
     You don't need a provider key for every provider.
-    For OpenAI, Anthropic, Google, xAI, and [other providers that support it](/ai-gateway/reference/model-catalog#billing-and-provider-credentials), you can [pay with credits](/ai-gateway/guides/pay-with-credits) instead.
+    For OpenAI, Anthropic, Google, xAI, and [other providers that support it](/ai-gateway/reference/model-catalog#billing-and-provider-credentials), skip the provider key and [pay with credits](/ai-gateway/guides/pay-with-credits).
 
     If you used several Portkey providers for the same upstream, such as two OpenAI keys for more rate-limit headroom, add both keys.
     You order them in the next step.
@@ -136,7 +144,7 @@ Client code usually changes in three places: the base URL, the API key, and the 
                 {
                   "type": "user",
                   "keySelectionStrategy": "ordered",
-                  "keys": [{ "id": "aigpk_openai_prod" }, { "id": "aigpk_openai_backup" }]
+                  "keys": [{ "id": "<PRIMARY_PROVIDER_KEY_ID>" }, { "id": "<BACKUP_PROVIDER_KEY_ID>" }]
                 }
               ]
             }
@@ -148,8 +156,8 @@ Client code usually changes in three places: the base URL, the API key, and the 
     When the first OpenAI key hits a rate limit or an auth error, the gateway tries the second.
     See [Multi-key failover](/ai-gateway/guides/key-selection-failover).
 
-    Access key tokens start with `ng-` and are only shown once.
-    Store each one where the app reads its Portkey key today.
+    app.ngrok.ai shows each access key token once, when you create it.
+    Store each token, which starts with `ng-`, where the app reads its Portkey key today.
   </Step>
 
   <Step title="Turn fallback configs into virtual models">
@@ -182,16 +190,14 @@ Client code usually changes in three places: the base URL, the API key, and the 
     Apps then send `"model": "chat-default"`.
     To change the models later, edit the virtual model; apps don't change.
 
-    A few config fields work differently:
+    Some config fields work differently:
 
-    - **`on_status_codes` and `retry`**: the gateway fails over on rate limits, auth errors, server errors, timeouts, and connection failures, and returns other 4xx errors right away.
-      You can't change that list or the number of attempts.
-      See [what triggers failover](/ai-gateway/guides/error-handling).
-    - **A default config on an API key**: if your apps send a model like `gpt-4o` and the key's config overrides it, the apps need a new `model` value.
-      A virtual model can't share a name with a model your account can call.
-    - **`loadbalance` and `conditional` strategies**: the gateway doesn't split traffic by weight or route on metadata.
-      Pick the order you want most requests to use, or give each route its own virtual model.
-    - **Per-request configs** in `x-portkey-config`: put the fallback list in the request body's [`models` array](/ai-gateway/guides/configure-fallback-models) instead.
+    | Portkey config | In ngrok.ai |
+    |---|---|
+    | `on_status_codes` and `retry` | The gateway fails over on rate limits, auth errors, server errors, timeouts, and connection failures, and returns other 4xx errors right away. You can't change that list or the number of attempts. See [what triggers failover](/ai-gateway/guides/error-handling). |
+    | A default config on an API key that overrides `model` | Apps that send a model like `gpt-4o` need a new `model` value, because a virtual model can't share a name with a model your account can call. |
+    | `loadbalance` and `conditional` strategies | The gateway doesn't split traffic by weight or route on metadata. Pick the order you want most requests to use, or give each route its own virtual model. |
+    | Per-request configs in `x-portkey-config` | Put the fallback list in the request body's [`models` array](/ai-gateway/guides/configure-fallback-models). |
   </Step>
 
   <Step title="Recreate guardrails with Firewall">
