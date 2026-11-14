@@ -16,7 +16,7 @@ Pay for OpenAI, Anthropic, Google, and other supported models with those credits
 For agent traffic, [Firewall](/ai-gateway/concepts/firewall) checks each tool call a model returns and blocks risky ones before your agent runs them.
 
 <Note>
-  The ngrok AI Gateway doesn't yet have an MCP gateway, response caching, per-key budgets, or PII redaction.
+  The ngrok AI Gateway doesn't yet have built-in AWS Bedrock or Vertex AI providers, an MCP gateway, response caching, per-key budgets, or PII redaction.
   If your apps depend on those Portkey features, read [What doesn't move yet](#what-doesnt-move-yet) before you decide.
 </Note>
 
@@ -62,25 +62,30 @@ Client code usually changes in three places: the base URL, the API key, and the 
 
     ### Export your Portkey objects
 
-    List the objects that hold your routing and credentials with the Portkey Admin API:
+    Save the objects that hold your routing and credentials with the [Portkey Admin API](https://docs.portkey.ai/docs/api-reference/admin-api/introduction).
+    Run this once for each Portkey workspace, with an API key for that workspace:
 
     ```bash
-    curl https://api.portkey.ai/v1/configs \
-      -H "x-portkey-api-key: $PORTKEY_ADMIN_KEY"
+    for resource in configs integrations providers guardrails api-keys; do
+      curl -s "https://api.portkey.ai/v1/$resource" \
+        -H "x-portkey-api-key: $PORTKEY_API_KEY" \
+        > "portkey-$resource.json"
+    done
     ```
 
-    Save the output of these endpoints:
+    Each file maps to something you create in ngrok.ai:
 
-    | Portkey object | What it becomes in ngrok.ai |
+    | Portkey objects | What they become in ngrok.ai |
     |---|---|
-    | Integrations and AI Providers (formerly virtual keys) | [Provider keys](/ai-gateway/guides/attaching-provider-keys) |
-    | API keys, with their default config, budget, and rate limit | [Access keys](/ai-gateway/concepts/access-keys) and [access key configurations](/ai-gateway/guides/access-key-configurations) |
-    | Configs (`pc-…`) | [Virtual models](/ai-gateway/guides/virtual-models) |
-    | Guardrails (`pg-…`) | [Firewall policies](/ai-gateway/concepts/firewall), in part |
+    | Integrations and AI Providers (formerly virtual keys), in `portkey-integrations.json` and `portkey-providers.json` | [Provider keys](/ai-gateway/guides/attaching-provider-keys) |
+    | API keys, with their default config, budget, and rate limit, in `portkey-api-keys.json` | [Access keys](/ai-gateway/concepts/access-keys) and [access key configurations](/ai-gateway/guides/access-key-configurations) |
+    | Configs (`pc-…`), in `portkey-configs.json` | [Virtual models](/ai-gateway/guides/virtual-models) |
+    | Guardrails (`pg-…`), in `portkey-guardrails.json` | [Firewall policies](/ai-gateway/concepts/firewall), in part |
+
+    In `portkey-api-keys.json`, check each key's `defaults.config_id`.
+    A key with a default config routes every request through that config, even when the app's code never mentions it.
 
     If you manage Portkey with its Terraform provider, your state file already holds all of these.
-
-    {/* DRAFT: confirm the Portkey Admin API paths for integrations, providers, guardrails, and api-keys against https://docs.portkey.ai and list them here. */}
   </Step>
 
   <Step title="Add your provider keys">
@@ -110,6 +115,7 @@ Client code usually changes in three places: the base URL, the API key, and the 
 
     Connect any OpenAI- or Anthropic-compatible endpoint as a [custom provider](/ai-gateway/concepts/custom-providers).
     For Azure OpenAI, follow [the Azure OpenAI guide](/ai-gateway/custom-providers/azure-openai), with one custom provider per deployment or region.
+    AWS Bedrock and Vertex AI aren't built-in providers yet; see [What doesn't move yet](#what-doesnt-move-yet).
 
     {/* DRAFT: AWS Bedrock and Vertex AI aren't built-in providers yet. Before publishing, either link the native Bedrock provider, or verify and document a custom provider that points at Bedrock's OpenAI-compatible endpoint with a Bedrock API key, one per region. Same question for Vertex AI. */}
   </Step>
@@ -364,11 +370,37 @@ Client code usually changes in three places: the base URL, the API key, and the 
   </Step>
 
   <Step title="Run both gateways and cut over">
+    Before you move an app, send one request with its new access key and read the headers:
+
+    ```bash
+    curl -i https://gateway.ngrok.ai/v1/chat/completions \
+      -H "Authorization: Bearer $NGROK_AI_ACCESS_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "model": "chat-default",
+        "messages": [{"role": "user", "content": "Hello"}]
+      }'
+    ```
+
+    ```http
+    HTTP/2 200
+    ngrok-aig-request-id: rq_2abcDEF456
+    ngrok-aig-attempts: 1
+    ngrok-aig-model: gpt-5.1
+    ```
+
+    `ngrok-aig-model` names the model that answered, the first one in `chat-default` here, and `ngrok-aig-attempts` counts the upstream attempts the gateway made.
+    An error names what blocked the request, such as a provider the key's configuration doesn't allow; see [Error codes](/ai-gateway/reference/error-codes).
+
+    Then move traffic over:
+
     1. Point one app, or one environment of it, at ngrok.ai and leave the rest on Portkey.
     2. Check each response's `Ngrok-AIG-Model` header to confirm the model you expect answered, and `Ngrok-AIG-Removed-Params` for request fields a provider didn't accept.
     3. Compare cost and token counts on the [**Activity**](https://app.ngrok.ai/activity) page, or with the [Usage API](/ai-gateway/observability), against your Portkey logs.
     4. Move the remaining apps.
     5. Revoke the Portkey API keys once their traffic stops.
+
+    Until you revoke those keys, moving an app back to Portkey means restoring its old base URL, key, and `model` values.
 
     Log each response's `Ngrok-AIG-Request-Id` in your app.
     It's how you look up a request later; see [Why a request failed over](/ai-gateway/guides/why-a-request-failed-over).
@@ -385,7 +417,7 @@ Remove them, or replace them as follows:
 | `x-portkey-api-key` | Send your access key as `Authorization: Bearer`, or as `x-api-key` with the Anthropic SDK |
 | `x-portkey-provider`, `x-portkey-virtual-key` | The access key's configuration, plus `provider:model` in the request |
 | `x-portkey-config` | A virtual model, or the `models` array in the request body |
-| `x-portkey-trace-id`, `x-portkey-span-*` | The `Ngrok-AIG-Request-Id` response header |
+| `x-portkey-trace-id`, `x-portkey-span-*` | None. The gateway assigns each request an ID and returns it in the `Ngrok-AIG-Request-Id` response header; log it next to your own trace ID |
 | `x-portkey-metadata` | None. With [request capture](/ai-gateway/guides/account-settings#request-capture) on, the request details panel shows the headers you sent |
 | `x-portkey-cache-*` | None. See [What doesn't move yet](#what-doesnt-move-yet) |
 | `x-portkey-request-timeout` | Account-wide timeouts in [Account Settings](/ai-gateway/guides/account-settings) |
@@ -395,6 +427,7 @@ Remove them, or replace them as follows:
 
 | Portkey feature | Status in ngrok.ai | What to do meanwhile |
 |---|---|---|
+| AWS Bedrock and Vertex AI providers | Not built in | Keep Bedrock and Vertex AI routes on Portkey while you move the rest. |
 | MCP gateway and MCP registry | Not available | Keep MCP traffic where it is. To block specific MCP tools in model traffic, use a Firewall tool names rule. |
 | Simple and semantic caching | Not available | Cache in your app. |
 | Per-key budgets and rate limits | Not available | Use account-wide [token limits](/ai-gateway/guides/account-settings#token-limits) and track spend per key with the [Usage API](/ai-gateway/observability), grouped by `accessKey`. |
@@ -406,7 +439,7 @@ Remove them, or replace them as follows:
 | OpenTelemetry or log export | Pull only | Read usage events with the [Usage API](/ai-gateway/observability). |
 | Terraform provider | Not available | Script setup with the [AI Gateway API](/ai-gateway/api-reference/overview) and its [OpenAPI spec](https://api.ngrok.ai/openapi.yaml). |
 
-{/* DRAFT: re-check this table against ai-gateway/ right before publishing. Remove rows as features ship. */}
+{/* DRAFT: re-check this table against ai-gateway/ right before publishing. Remove rows as features ship. Replace the Bedrock and Vertex AI row with the native provider or a verified custom-provider setup. */}
 
 ## Next steps
 
