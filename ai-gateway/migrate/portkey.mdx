@@ -1,0 +1,450 @@
+---
+title: Migrate from Portkey to the ngrok AI Gateway
+sidebarTitle: Migrate from Portkey
+description: Move your apps from Portkey to the ngrok AI Gateway by mapping provider keys, API keys, configs, and guardrails, then changing a few lines of client code.
+---
+
+{/* DRAFT: don't merge until native Bedrock ships or the custom-provider path below is verified. Open items are marked DRAFT. Before publishing, re-check the Portkey status claims in the opening (Prisma AIRS billing and console, classic product still sold with no end date) against portkey.ai and Palo Alto's announcements. */}
+
+If your apps call models through Portkey, you're deciding whether to follow it into Palo Alto Networks' Prisma AIRS or move your traffic somewhere else.
+Palo Alto bought Portkey in May 2026.
+The Prisma AIRS edition runs from Strata Cloud Manager and bills in Palo Alto flex credits, while the original Portkey product is still sold with no published end date.
+
+The [ngrok AI Gateway](/ai-gateway/overview) is a hosted gateway at `gateway.ngrok.ai` that accepts OpenAI, Anthropic, and Gemini API requests, so your apps keep the SDKs they use today.
+ngrok hosts and upgrades it, and its price is public: a processing fee of $0.05 per million tokens, paid from [credits](/ai-gateway/concepts/credits).
+Pay for OpenAI, Anthropic, Google, and other supported models with those credits, or bring your own provider key for any built-in provider.
+For agent traffic, [Firewall](/ai-gateway/concepts/firewall) checks each tool call a model returns and blocks risky ones before your agent runs them.
+
+<Note>
+  The ngrok AI Gateway doesn't yet have built-in AWS Bedrock or Vertex AI providers, an MCP gateway, response caching, per-key budgets, or PII redaction.
+  If your apps depend on those Portkey features, read [What doesn't move yet](#what-doesnt-move-yet) before you decide.
+</Note>
+
+This guide moves an app that calls models through Portkey to the ngrok AI Gateway.
+You recreate your Portkey setup in app.ngrok.ai, run both gateways side by side, then cut over.
+
+Most of the work is on the gateway side.
+Client code usually changes in three places: the base URL, the API key, and the `model` string.
+
+## What you'll need
+
+- Your Portkey account, with an Admin API key or Workspace API key that can read configs, providers, guardrails, and API keys.
+- An ngrok.ai account at [app.ngrok.ai](https://app.ngrok.ai) with [credits](/ai-gateway/concepts/credits).
+- An [AI Gateway API key](/ai-gateway/concepts/access-keys#credentials-overview), if you want to script the setup instead of using the dashboard.
+- The source code of the apps you're moving.
+
+<Steps titleSize="h2">
+  <Step title="Inventory your Portkey setup">
+    Portkey splits its setup between your code and its dashboard.
+    A default config attached to an API key can route every request without any trace of it in your code, so check both places.
+
+    ### Search your code
+
+    Search your repositories for the strings that tie them to Portkey:
+
+    ```bash
+    rg -n --hidden \
+      -e 'portkey' -e 'PORTKEY_' -e 'x-portkey-' \
+      -e 'createHeaders' -e 'with_options\(' \
+      -e 'virtual_key' -e 'virtualKey' \
+      -e '"@[a-z0-9-]+/'
+    ```
+
+    Each match tells you what to change:
+
+    | Match | What to change |
+    |---|---|
+    | `api.portkey.ai`, `aigw.portkey.ai`, or `PORTKEY_GATEWAY_URL` | The base URL |
+    | `portkey_ai` or `portkey-ai` imports, `Portkey(`, and `createHeaders` | Portkey SDK calls, which become plain OpenAI or Anthropic SDK calls |
+    | `x-portkey-*` headers | See [Map Portkey headers](#map-portkey-headers) |
+    | `@slug/model` strings and `virtual_key` values | The providers each app calls, which become provider keys and `provider:model` names |
+    | Checks for HTTP `246` or `446` | Error handling that reads Portkey guardrail results |
+
+    ### Export your Portkey objects
+
+    Save the objects that hold your routing and credentials with the [Portkey Admin API](https://docs.portkey.ai/docs/api-reference/admin-api/introduction).
+    Run this once for each Portkey workspace, with an API key for that workspace:
+
+    ```bash
+    for resource in configs integrations providers guardrails api-keys; do
+      curl -s "https://api.portkey.ai/v1/$resource" \
+        -H "x-portkey-api-key: $PORTKEY_API_KEY" \
+        > "portkey-$resource.json"
+    done
+    ```
+
+    Each file maps to something you create in ngrok.ai:
+
+    | Portkey objects | What they become in ngrok.ai |
+    |---|---|
+    | Integrations and AI Providers (formerly virtual keys), in `portkey-integrations.json` and `portkey-providers.json` | [Provider keys](/ai-gateway/guides/attaching-provider-keys) |
+    | API keys, with their default config, budget, and rate limit, in `portkey-api-keys.json` | [Access keys](/ai-gateway/concepts/access-keys) and [access key configurations](/ai-gateway/guides/access-key-configurations) |
+    | Configs (`pc-…`), in `portkey-configs.json` | [Virtual models](/ai-gateway/guides/virtual-models) |
+    | Guardrails (`pg-…`), in `portkey-guardrails.json` | [Firewall policies](/ai-gateway/concepts/firewall), in part |
+
+    In `portkey-api-keys.json`, check each key's `defaults.config_id`.
+    A key with a default config routes every request through that config, even when the app's code never mentions it.
+
+    If you manage Portkey with its Terraform provider, your state file already holds all of these.
+  </Step>
+
+  <Step title="Add your provider keys">
+    Each Portkey AI Provider, such as `@openai-prod`, holds one provider credential.
+    Add each credential as a provider key in ngrok.ai, on the [**Providers**](https://app.ngrok.ai/providers) page or with the API:
+
+    ```bash
+    curl -X POST https://api.ngrok.ai/provider-keys \
+      -H "Authorization: Bearer $AI_GATEWAY_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "providerId": "openai",
+        "name": "openai-prod",
+        "value": "<OPENAI_API_KEY>"
+      }'
+    ```
+
+    Name each key after its Portkey slug so you can match them up later.
+
+    You don't need a provider key for every provider.
+    For OpenAI, Anthropic, Google, xAI, and [other providers that support it](/ai-gateway/reference/model-catalog#billing-and-provider-credentials), skip the provider key and [pay with credits](/ai-gateway/guides/pay-with-credits).
+
+    If you used several Portkey providers for the same upstream, such as two OpenAI keys for more rate-limit headroom, add both keys.
+    You order them in the next step.
+
+    ### Providers that aren't built in
+
+    Connect any OpenAI- or Anthropic-compatible endpoint as a [custom provider](/ai-gateway/concepts/custom-providers).
+    For Azure OpenAI, follow [the Azure OpenAI guide](/ai-gateway/custom-providers/azure-openai), with one custom provider per deployment or region.
+    AWS Bedrock and Vertex AI aren't built-in providers yet; see [What doesn't move yet](#what-doesnt-move-yet).
+
+    {/* DRAFT: AWS Bedrock and Vertex AI aren't built-in providers yet. Before publishing, either link the native Bedrock provider, or verify and document a custom provider that points at Bedrock's OpenAI-compatible endpoint with a Bedrock API key, one per region. Same question for Vertex AI. */}
+  </Step>
+
+  <Step title="Recreate your API keys">
+    In Portkey, a workspace groups API keys, providers, and configs for one team.
+    ngrok.ai has no workspace layer.
+    Give each team or app its own access key, and use an access key configuration to control what that key can call.
+
+    1. On [**Keys**](https://app.ngrok.ai/keys) → **Configurations**, create one configuration for each Portkey workspace or API key that had its own provider access.
+    2. Under **Access**, allow only the providers and models that team used.
+    3. Under **Routing**, add a rule for each provider:
+       choose **Bring your own API key** and attach the provider keys from the previous step in the order to try them, or choose **ngrok** to pay with credits.
+    4. Create one access key for each Portkey API key you're replacing, and assign its configuration.
+
+    The same configuration through the API:
+
+    ```bash
+    curl -X POST https://api.ngrok.ai/access-key-configurations \
+      -H "Authorization: Bearer $AI_GATEWAY_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "search-team",
+        "access": {
+          "providers": { "allow": ["openai", "anthropic"] }
+        },
+        "router": {
+          "rules": [
+            {
+              "provider": "openai",
+              "steps": [
+                {
+                  "type": "user",
+                  "keySelectionStrategy": "ordered",
+                  "keys": [{ "id": "<PRIMARY_PROVIDER_KEY_ID>" }, { "id": "<BACKUP_PROVIDER_KEY_ID>" }]
+                }
+              ]
+            }
+          ]
+        }
+      }'
+    ```
+
+    When the first OpenAI key hits a rate limit or an auth error, the gateway tries the second.
+    See [Multi-key failover](/ai-gateway/guides/key-selection-failover).
+
+    app.ngrok.ai shows each access key token once, when you create it.
+    Store each token, which starts with `ng-`, where the app reads its Portkey key today.
+  </Step>
+
+  <Step title="Turn fallback configs into virtual models">
+    A Portkey config with `"mode": "fallback"` becomes a [virtual model](/ai-gateway/guides/virtual-models): a name your apps send as `model`, which stands for an ordered list of models.
+
+    This Portkey config tries OpenAI, then Anthropic:
+
+    ```json Portkey config
+    {
+      "strategy": { "mode": "fallback", "on_status_codes": [429, 500, 503] },
+      "targets": [
+        { "override_params": { "model": "@openai-prod/gpt-5.1" } },
+        { "override_params": { "model": "@anthropic-prod/claude-sonnet-4-6" } }
+      ]
+    }
+    ```
+
+    Create the equivalent virtual model:
+
+    ```bash
+    curl -X POST https://api.ngrok.ai/virtual-models \
+      -H "Authorization: Bearer $AI_GATEWAY_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "chat-default",
+        "models": ["openai:gpt-5.1", "anthropic:claude-sonnet-4-6"]
+      }'
+    ```
+
+    Apps then send `"model": "chat-default"`.
+    To change the models later, edit the virtual model; apps don't change.
+
+    Some config fields work differently:
+
+    | Portkey config | In ngrok.ai |
+    |---|---|
+    | `on_status_codes` and `retry` | The gateway fails over on rate limits, auth errors, server errors, timeouts, and connection failures, and returns other 4xx errors right away. You can't change that list or the number of attempts. See [what triggers failover](/ai-gateway/guides/error-handling). |
+    | A default config on an API key that overrides `model` | Apps that send a model like `gpt-4o` need a new `model` value, because a virtual model can't share a name with a model your account can call. |
+    | `loadbalance` and `conditional` strategies | The gateway doesn't split traffic by weight or route on metadata. Pick the order you want most requests to use, or give each route its own virtual model. |
+    | Per-request configs in `x-portkey-config` | Put the fallback list in the request body's [`models` array](/ai-gateway/guides/configure-fallback-models). |
+  </Step>
+
+  <Step title="Recreate guardrails with Firewall">
+    [Firewall](/ai-gateway/concepts/firewall) checks what an app sends to a model and each tool call the model returns.
+    It covers some of what Portkey guardrails do:
+
+    | Portkey guardrail | Firewall equivalent |
+    |---|---|
+    | Regex match on input | Regex rule on request messages |
+    | Prompt injection or custom LLM check on input | Decision rule on request messages, written in plain language |
+    | Allow or deny tools in the request | Tool names rule on tool definitions |
+    | Checks on MCP tool calls | Tool names or regex rule on tool calls, such as `mcp__github__delete_*` |
+    | PII detection and redaction, output text checks, partner guardrails | None yet |
+
+    Attach a policy to the access key configuration for each team, or apply it to every key as your baseline.
+    Start in dry run mode to see what it would block on real traffic.
+    See [Guard agent tool calls with Firewall](/ai-gateway/guides/firewall-policies).
+
+    Blocks look different to your app.
+    Portkey returns HTTP `446` when a guardrail denies a request.
+    Firewall returns HTTP `200` with an assistant message that explains the block and a `safeguard_results` field, so the model or agent can continue.
+    Update any error handling that checks for `246` or `446`.
+  </Step>
+
+  <Step title="Change your client code">
+    Your apps keep their OpenAI or Anthropic SDK.
+    Change the base URL, the key, and the `model` string, and remove Portkey headers.
+
+    ### OpenAI SDK with a Portkey key
+
+    <CodeGroup>
+    ```python Before
+    import os
+    from openai import OpenAI
+
+    client = OpenAI(
+        base_url="https://api.portkey.ai/v1",
+        api_key=os.environ["PORTKEY_API_KEY"],
+    )
+
+    client.chat.completions.create(
+        model="@openai-prod/gpt-5.1",
+        messages=[{"role": "user", "content": "Hello"}],
+    )
+    ```
+
+    ```python After
+    import os
+    from openai import OpenAI
+
+    client = OpenAI(
+        base_url="https://gateway.ngrok.ai/v1",
+        api_key=os.environ["NGROK_AI_ACCESS_KEY"],
+    )
+
+    client.chat.completions.create(
+        model="openai:gpt-5.1",  # or a virtual model, such as "chat-default"
+        messages=[{"role": "user", "content": "Hello"}],
+    )
+    ```
+    </CodeGroup>
+
+    ### OpenAI SDK with createHeaders
+
+    Apps that pass Portkey settings through `createHeaders` send a provider key or a placeholder as `api_key`.
+    Replace it with your access key and drop the headers.
+
+    <CodeGroup>
+    ```typescript Before
+    import OpenAI from "openai";
+    import { PORTKEY_GATEWAY_URL, createHeaders } from "portkey-ai";
+
+    const client = new OpenAI({
+      apiKey: "unused",
+      baseURL: PORTKEY_GATEWAY_URL,
+      defaultHeaders: createHeaders({
+        apiKey: process.env.PORTKEY_API_KEY,
+        virtualKey: "openai-prod",
+        config: "pc-chat-default",
+      }),
+    });
+    ```
+
+    ```typescript After
+    import OpenAI from "openai";
+
+    const client = new OpenAI({
+      apiKey: process.env.NGROK_AI_ACCESS_KEY,
+      baseURL: "https://gateway.ngrok.ai/v1",
+    });
+    ```
+    </CodeGroup>
+
+    The routing that `virtualKey` and `config` did now lives in the access key's configuration and in the virtual model your app sends as `model`.
+
+    ### Portkey SDK
+
+    Replace `Portkey` with the OpenAI client.
+    `Portkey` accepts the same calls as the OpenAI SDK, so `client.chat.completions.create(...)` calls don't change.
+
+    <CodeGroup>
+    ```python Before
+    import os
+    from portkey_ai import Portkey
+
+    client = Portkey(
+        api_key=os.environ["PORTKEY_API_KEY"],
+        config="pc-chat-default",
+    )
+    ```
+
+    ```python After
+    import os
+    from openai import OpenAI
+
+    client = OpenAI(
+        base_url="https://gateway.ngrok.ai/v1",
+        api_key=os.environ["NGROK_AI_ACCESS_KEY"],
+    )
+    ```
+    </CodeGroup>
+
+    Calls that only exist in the Portkey SDK, such as `portkey.prompts.completions.create` and `portkey.feedback`, have no equivalent.
+
+    ### Anthropic SDK
+
+    <CodeGroup>
+    ```python Before
+    import os
+    import anthropic
+
+    client = anthropic.Anthropic(
+        base_url="https://api.portkey.ai",
+        api_key="unused",
+        default_headers={"x-portkey-api-key": os.environ["PORTKEY_API_KEY"]},
+    )
+    ```
+
+    ```python After
+    import os
+    import anthropic
+
+    client = anthropic.Anthropic(
+        base_url="https://gateway.ngrok.ai",
+        api_key=os.environ["NGROK_AI_ACCESS_KEY"],
+    )
+    ```
+    </CodeGroup>
+
+    Replace `@slug/claude-…` model names the same way as for the OpenAI SDK.
+    The Google Gen AI SDK follows the same pattern; see [Google Gen AI SDK](/ai-gateway/sdks/google).
+
+    ### Map model names
+
+    | Portkey `model` | ngrok.ai `model` |
+    |---|---|
+    | `@openai-prod/gpt-5.1` | `openai:gpt-5.1`, or `gpt-5.1` to let the gateway pick any provider that serves it |
+    | `@anthropic-prod/claude-sonnet-4-6` | `anthropic:claude-sonnet-4-6` |
+    | `@my-azure/gpt-4o` | `my-azure:gpt-4o`, where `my-azure` is your custom provider ID |
+    | `gpt-4o` routed by a config | The virtual model that replaced the config |
+
+    The gateway picks the provider key from the access key's configuration, not from the model string.
+    See [Choose a model](/ai-gateway/guides/model-selection-strategies).
+  </Step>
+
+  <Step title="Run both gateways and cut over">
+    Before you move an app, send one request with its new access key and read the headers:
+
+    ```bash
+    curl -i https://gateway.ngrok.ai/v1/chat/completions \
+      -H "Authorization: Bearer $NGROK_AI_ACCESS_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "model": "chat-default",
+        "messages": [{"role": "user", "content": "Hello"}]
+      }'
+    ```
+
+    ```http
+    HTTP/2 200
+    ngrok-aig-request-id: rq_2abcDEF456
+    ngrok-aig-attempts: 1
+    ngrok-aig-model: gpt-5.1
+    ```
+
+    `ngrok-aig-model` names the model that answered, the first one in `chat-default` here, and `ngrok-aig-attempts` counts the upstream attempts the gateway made.
+    An error names what blocked the request, such as a provider the key's configuration doesn't allow; see [Error codes](/ai-gateway/reference/error-codes).
+
+    Then move traffic over:
+
+    1. Point one app, or one environment of it, at ngrok.ai and leave the rest on Portkey.
+    2. Check each response's `Ngrok-AIG-Model` header to confirm the model you expect answered, and `Ngrok-AIG-Removed-Params` for request fields a provider didn't accept.
+    3. Compare cost and token counts on the [**Activity**](https://app.ngrok.ai/activity) page, or with the [Usage API](/ai-gateway/observability), against your Portkey logs.
+    4. Move the remaining apps.
+    5. Revoke the Portkey API keys once their traffic stops.
+
+    Until you revoke those keys, moving an app back to Portkey means restoring its old base URL, key, and `model` values.
+
+    Log each response's `Ngrok-AIG-Request-Id` in your app.
+    It's how you look up a request later; see [Why a request failed over](/ai-gateway/guides/why-a-request-failed-over).
+  </Step>
+</Steps>
+
+## Map Portkey headers
+
+ngrok.ai doesn't read `x-portkey-*` headers.
+Remove them, or replace them as follows:
+
+| Portkey header | In ngrok.ai |
+|---|---|
+| `x-portkey-api-key` | Send your access key as `Authorization: Bearer`, or as `x-api-key` with the Anthropic SDK |
+| `x-portkey-provider`, `x-portkey-virtual-key` | The access key's configuration, plus `provider:model` in the request |
+| `x-portkey-config` | A virtual model, or the `models` array in the request body |
+| `x-portkey-trace-id`, `x-portkey-span-*` | None. The gateway assigns each request an ID and returns it in the `Ngrok-AIG-Request-Id` response header; log it next to your own trace ID |
+| `x-portkey-metadata` | None. With [request capture](/ai-gateway/guides/account-settings#request-capture) on, the request details panel shows the headers you sent |
+| `x-portkey-cache-*` | None. See [What doesn't move yet](#what-doesnt-move-yet) |
+| `x-portkey-request-timeout` | Account-wide timeouts in [Account Settings](/ai-gateway/guides/account-settings) |
+| `x-portkey-forward-headers` | None |
+
+## What doesn't move yet
+
+| Portkey feature | Status in ngrok.ai | What to do meanwhile |
+|---|---|---|
+| AWS Bedrock and Vertex AI providers | Not built in | Keep Bedrock and Vertex AI routes on Portkey while you move the rest. |
+| MCP gateway and MCP registry | Not available | Keep MCP traffic where it is. To block specific MCP tools in model traffic, use a Firewall tool names rule. |
+| Simple and semantic caching | Not available | Cache in your app. |
+| Per-key budgets and rate limits | Not available | Use account-wide [token limits](/ai-gateway/guides/account-settings#token-limits) and track spend per key with the [Usage API](/ai-gateway/observability), grouped by `accessKey`. |
+| PII redaction and partner guardrails | Not available | Redact in your app before sending. |
+| Weighted load balancing and conditional routing | Not available | Use an ordered virtual model, or a separate access key per route. |
+| Workspaces and in-app roles | Not available | Use an access key and configuration per team. Dashboard sign-in supports [SSO](/iam/sso). |
+| Prompt templates | Not available | Keep prompts in your code. |
+| Realtime and batch APIs | Not available | Call the provider directly. |
+| OpenTelemetry or log export | Pull only | Read usage events with the [Usage API](/ai-gateway/observability). |
+| Terraform provider | Not available | Script setup with the [AI Gateway API](/ai-gateway/api-reference/overview) and its [OpenAPI spec](https://api.ngrok.ai/openapi.yaml). |
+
+{/* DRAFT: re-check this table against ai-gateway/ right before publishing. Remove rows as features ship. Replace the Bedrock and Vertex AI row with the native provider or a verified custom-provider setup. */}
+
+## Next steps
+
+- [Virtual models](/ai-gateway/guides/virtual-models): Change models for every app without changing code.
+- [Access key configurations](/ai-gateway/guides/access-key-configurations): Control what each key can call.
+- [Firewall](/ai-gateway/concepts/firewall): Check requests and tool calls.
+- [Handle gateway errors](/ai-gateway/guides/error-handling): Learn which failures the gateway retries.
+- [AI Gateway API](/ai-gateway/api-reference/overview): Automate the setup in this guide.
