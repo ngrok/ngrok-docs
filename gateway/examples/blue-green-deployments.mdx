@@ -55,12 +55,12 @@ You can also add an `x-deployment-version` header to requests to route requests 
               - type: set-vars
                 config:
                   vars:
-                    live: blue
-                    test: green
+                    - live: blue
+                    - test: green
 
           - expressions:
-              - "req.headers.exists_one(x, x == 'x-deployment-version')"
-              - "req.headers['x-deployment-version'].join(',') == ${vars.test}"
+              - "'x-deployment-version' in req.headers"
+              - "req.headers['x-deployment-version'].join(',') == vars.test"
             actions:
               - type: forward-internal
                 config:
@@ -92,27 +92,27 @@ You can also add an `x-deployment-version` header to requests to route requests 
                 - type: set-vars
                   config:
                     vars:
-                      live: blue
-                      test: green
+                      - live: blue
+                      - test: green
 
             - expressions:
-                - "req.path.startsWith('/api/auth')"
-                - "req.headers.exists_one(x, x == 'x-deployment-version')"
-                - "req.headers['x-deployment-version'].join(',') == ${vars.test}"
+                - "req.url.path.startsWith('/api/auth')"
+                - "'x-deployment-version' in req.headers"
+                - "req.headers['x-deployment-version'].join(',') == vars.test"
               actions:
                 - type: forward-internal
                   config:
                     url: https://auth-${vars.test}.internal
 
             - expressions:
-                - "req.path.startsWith('/api/auth')"
+                - "req.url.path.startsWith('/api/auth')"
               actions:
                 - type: forward-internal
                   config:
                     url: https://auth-${vars.live}.internal
 
             - expressions:
-                - "req.path.startsWith('/api/accounts')"
+                - "req.url.path.startsWith('/api/accounts')"
               actions:
                 - type: forward-internal
                   config:
@@ -145,8 +145,8 @@ You can also add an `x-deployment-version` header to requests to route requests 
           - type: set-vars
             config:
               vars:
-                live: green
-                test: blue
+                - live: green
+                - test: blue
     ```
 
     If you need to roll back, change the variables back to their original state.
