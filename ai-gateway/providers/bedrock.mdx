@@ -108,7 +108,7 @@ Even though Amazon Bedrock is a **built-in provider**, it still requires you to 
 ## Scope down the key's IAM policy
 
 The default `AmazonBedrockLimitedAccess` policy covers every call the gateway makes.
-If you replace it with a narrower policy, the key's IAM user needs at least these permissions for the Claude and Converse models:
+If you replace it with a narrower policy, the key's IAM user needs at least these permissions:
 
 ```json
 {
@@ -129,6 +129,14 @@ If you replace it with a narrower policy, the key's IAM user needs at least thes
         "arn:aws:bedrock:*::foundation-model/*",
         "arn:aws:bedrock:*:<ACCOUNT_ID>:inference-profile/*"
       ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "bedrock-mantle:CallWithBearerToken",
+        "bedrock-mantle:CreateInference"
+      ],
+      "Resource": "*"
     }
   ]
 }
@@ -137,7 +145,11 @@ If you replace it with a narrower policy, the key's IAM user needs at least thes
 `bedrock:CallWithBearerToken` lets the key call Bedrock as a bearer token.
 Converse requests use the same two invoke permissions as InvokeModel requests.
 An inference profile can run a request in any region of its geography, so the policy covers every region.
+The `bedrock-mantle` statement covers Gemma 4, which runs on the bedrock-mantle endpoint.
 To accept only long-term keys, add a condition on `bedrock:BearerTokenType` with the value `LONG_TERM`.
+A deny on `bedrock:CallWithBearerToken` alone doesn't block API keys on bedrock-mantle.
+To block them there too, also deny `bedrock-mantle:CallWithBearerToken`.
+See [Revoke Amazon Bedrock API keys](https://docs.aws.amazon.com/bedrock/latest/userguide/api-keys-revoke.html).
 See [Actions defined by Amazon Bedrock](https://docs.aws.amazon.com/service-authorization/latest/reference/list_bedrock.html).
 
 ## Regions
@@ -359,7 +371,7 @@ Each model takes these request formats:
 |---------|-----|
 | [`ERR_NGROK_27226`](/ai-gateway/reference/error-codes#err_ngrok_27226) | The API you called doesn't reach that model. Send Messages or InvokeModel requests to the Claude models, Chat Completions or Responses requests to Gemma 4, and Converse requests to the other models. See [Available models](#available-models). |
 | `ERR_NGROK_AI_GATEWAY_MODEL_REGION_UNSUPPORTED` | None of your Bedrock keys is in a region that serves the model. Add a key in a region that serves it. See [Regions](#regions). |
-| `403` error that names `bedrock:CallWithBearerToken` and a service control policy | A service control policy in your AWS organization denies Bedrock API keys. Ask your AWS administrator to allow `bedrock:CallWithBearerToken` for the account. |
+| `403` error that names `bedrock:CallWithBearerToken` and a service control policy | A service control policy in your AWS organization denies `bedrock:CallWithBearerToken`, which blocks API keys for the Claude and Converse models. Ask your AWS administrator to allow `bedrock:CallWithBearerToken` for the account. |
 | `403` `AccessDeniedException` that says the model isn't available or needs AWS Marketplace actions | [Turn on model access](#setup) for the model in that AWS account. After you submit the FTU form, the model can stay pending and keep returning this error, so wait and retry. The gateway doesn't try your other Bedrock keys, because keys in the same account get the same refusal. |
 
 ## Next steps
