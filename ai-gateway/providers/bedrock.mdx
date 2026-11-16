@@ -5,13 +5,14 @@ description: Call models on Amazon Bedrock through the ngrok AI Gateway with a B
 ---
 
 [Amazon Bedrock](https://aws.amazon.com/bedrock/) runs models from Anthropic, Amazon, and open-weight labs in your AWS account.
-The gateway accepts three APIs for Bedrock models:
+The gateway accepts these APIs for Bedrock models:
 
-- Anthropic Messages: send requests to `/v1/messages`. They reach Claude Haiku 4.5 through InvokeModel, streaming included.
+- Anthropic Messages: send requests to `/v1/messages`. They reach Claude Haiku 4.5, Claude Sonnet 4.6, Claude Opus 4.5, and Claude Opus 4.6 through InvokeModel, streaming included.
 - Bedrock InvokeModel: send requests to `/model/<MODEL_ID>/invoke`, or to `/model/<MODEL_ID>/invoke-with-response-stream` for a stream.
 - Bedrock Converse: send requests to `/model/<MODEL_ID>/converse`, or to `/model/<MODEL_ID>/converse-stream` for a stream.
+- OpenAI Chat Completions and Responses: send requests to `/v1/chat/completions` or `/v1/responses`. They reach [Gemma 4](#gemma-4).
 
-Chat Completions and Responses requests don't reach Bedrock models yet.
+Chat Completions and Responses requests don't reach the Claude models or the [Converse models](#available-models) yet.
 
 <Note>
 Even though Amazon Bedrock is a **built-in provider**, it still requires you to **bring your own key** because you can't pay for it with credits at this time.
@@ -30,7 +31,8 @@ Even though Amazon Bedrock is a **built-in provider**, it still requires you to 
     The identity that makes the call needs `aws-marketplace:Subscribe`, `aws-marketplace:Unsubscribe`, and `aws-marketplace:ViewSubscriptions`.
     The GPT OSS models and the Amazon, MiniMax, Mistral, Moonshot AI, Qwen, and Z.ai models don't need a subscription.
 
-    Before you call Claude Haiku 4.5, complete the Anthropic First Time Use (FTU) form.
+    Before you call a Claude model, complete the Anthropic First Time Use (FTU) form.
+    AWS requires it for Anthropic models earlier than Claude Opus 4.7, which covers every Claude model on this page.
     Open the Anthropic model in **Model catalog** in the [Amazon Bedrock console](https://console.aws.amazon.com/bedrock/) to find it.
     You submit the form once per AWS account, or once in your AWS organization's management account.
     See [Access Amazon Bedrock foundation models](https://docs.aws.amazon.com/bedrock/latest/userguide/model-access.html).
@@ -106,7 +108,7 @@ Even though Amazon Bedrock is a **built-in provider**, it still requires you to 
 ## Scope down the key's IAM policy
 
 The default `AmazonBedrockLimitedAccess` policy covers every call the gateway makes.
-If you replace it with a narrower policy, the key's IAM user needs at least these permissions:
+If you replace it with a narrower policy, the key's IAM user needs at least these permissions for the Claude and Converse models:
 
 ```json
 {
@@ -143,12 +145,15 @@ See [Actions defined by Amazon Bedrock](https://docs.aws.amazon.com/service-auth
 Each Bedrock key sends requests to one AWS region.
 A key with no region uses `us-east-1`.
 
-The key's region picks the AWS endpoint, `bedrock-runtime.<REGION>.amazonaws.com`, and the model ID the gateway sends.
+The key's region picks the AWS endpoint and the model ID the gateway sends.
+The endpoint is `bedrock-runtime.<REGION>.amazonaws.com`, or `bedrock-mantle.<REGION>.api.aws` for Gemma 4.
 The gateway sends the model's in-region ID when the model runs in that region, and the inference profile for the region's geography otherwise.
 The key's region wins over the `us.` in a model ID.
 For example, a key in `eu-west-1` sends a request for `us.anthropic.claude-haiku-4-5-20251001-v1:0` through the `eu.` inference profile.
 A model ID with a different geography prefix, such as `eu.anthropic.claude-haiku-4-5-20251001-v1:0`, uses only keys in that geography.
 
+Gemma 4 runs in-region only, with no inference profile.
+Keys in `us-east-1`, `us-east-2`, `us-west-2`, and `eu-central-1` serve it.
 GLM-4.7, GLM-5, Ministral 3B, and Qwen3 Coder 30B A3B Instruct serve `us-east-1` keys only.
 The gateway doesn't support `global.` model IDs.
 
@@ -166,7 +171,7 @@ When `AWS_BEARER_TOKEN_BEDROCK` is set, boto3 sends the bearer token even if you
 The gateway returns errors in the Bedrock error format.
 Name the model by its Bedrock model ID, such as `us.anthropic.claude-haiku-4-5-20251001-v1:0`.
 
-Send an InvokeModel request to Claude Haiku 4.5:
+Send an InvokeModel request to a Claude model:
 
 <CodeGroup>
 ```python Python
@@ -200,7 +205,7 @@ curl https://gateway.ngrok.ai/model/us.anthropic.claude-haiku-4-5-20251001-v1:0/
 ```
 </CodeGroup>
 
-Send a Converse request to any other model:
+Send a Converse request to a Converse model:
 
 <CodeGroup>
 ```python Python
@@ -283,6 +288,33 @@ for event in response["body"]:
 ```
 </CodeGroup>
 
+## Gemma 4
+
+Amazon Bedrock serves Gemma 4 through its OpenAI-compatible API.
+Send Chat Completions or Responses requests with `bedrock:google/gemma-4-31b-it` or `bedrock:google/gemma-4-26b-a4b-it`:
+
+<CodeGroup>
+```bash Chat Completions
+curl https://gateway.ngrok.ai/v1/chat/completions \
+  -H "Authorization: Bearer ng-xxxxx-g1-xxxxx" \
+  -H "Content-Type: application/json" \
+  -d '{"model": "bedrock:google/gemma-4-31b-it", "messages": [{"role": "user", "content": "Hello!"}]}'
+```
+
+```bash Responses
+curl https://gateway.ngrok.ai/v1/responses \
+  -H "Authorization: Bearer ng-xxxxx-g1-xxxxx" \
+  -H "Content-Type: application/json" \
+  -d '{"model": "bedrock:google/gemma-4-31b-it", "input": "Hello!"}'
+```
+</CodeGroup>
+
+Google and LLM API also serve Gemma 4, so the `bedrock:` prefix keeps the request on Amazon Bedrock.
+
+Bedrock keeps Responses output by default.
+The gateway sends `store: false`, so Bedrock doesn't keep it.
+The gateway removes `store` and `previous_response_id` from a Responses request to Gemma 4 and lists them in the `Ngrok-AIG-Removed-Params` [response header](/ai-gateway/how-it-works#response-headers), so a request can't continue an earlier response on Bedrock.
+
 ## Try Amazon Bedrock before Anthropic
 
 A bare Claude model ID, such as `anthropic/claude-haiku-4-5`, goes to Anthropic first.
@@ -317,14 +349,15 @@ The gateway sends Amazon Bedrock only the models in the catalog.
 
 Each model takes these request formats:
 
-- Claude Haiku 4.5: Messages and Bedrock InvokeModel.
-- Every other model: Bedrock Converse.
+- Claude Haiku 4.5, Claude Sonnet 4.6, Claude Opus 4.5, and Claude Opus 4.6: Messages and Bedrock InvokeModel.
+- Gemma 4 31B and Gemma 4 26B A4B: Chat Completions and Responses.
+- Every other model: Bedrock Converse. This page calls them the Converse models.
 
 ## Troubleshooting
 
 | Symptom | Fix |
 |---------|-----|
-| [`ERR_NGROK_27226`](/ai-gateway/reference/error-codes#err_ngrok_27226) | The API you called doesn't reach that model. Send Messages or InvokeModel requests to Claude Haiku 4.5, and Converse requests to the other models. Chat Completions and Responses requests don't reach Bedrock models. |
+| [`ERR_NGROK_27226`](/ai-gateway/reference/error-codes#err_ngrok_27226) | The API you called doesn't reach that model. Send Messages or InvokeModel requests to the Claude models, Chat Completions or Responses requests to Gemma 4, and Converse requests to the other models. See [Available models](#available-models). |
 | `ERR_NGROK_AI_GATEWAY_MODEL_REGION_UNSUPPORTED` | None of your Bedrock keys is in a region that serves the model. Add a key in a region that serves it. See [Regions](#regions). |
 | `403` error that names `bedrock:CallWithBearerToken` and a service control policy | A service control policy in your AWS organization denies Bedrock API keys. Ask your AWS administrator to allow `bedrock:CallWithBearerToken` for the account. |
 | `403` `AccessDeniedException` that says the model isn't available or needs AWS Marketplace actions | [Turn on model access](#setup) for the model in that AWS account. After you submit the FTU form, the model can stay pending and keep returning this error, so wait and retry. The gateway doesn't try your other Bedrock keys, because keys in the same account get the same refusal. |
