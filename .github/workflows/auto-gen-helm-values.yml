@@ -27,9 +27,24 @@ jobs:
           token: ${{ steps.generate-token.outputs.token }}
           ref: main
 
-      - name: Fetch and Update Helm Values
+      - name: Resolve latest Helm chart release
+        id: release
         run: |
-          HELM_VALUES_URL="https://raw.githubusercontent.com/ngrok/ngrok-operator/main/helm/ngrok-operator/values.yaml"
+          # Latest stable (non-rc) ngrok-operator chart tag, so release
+          # candidates and unreleased values on main don't show up in the docs.
+          TAG=$(git ls-remote --tags --refs https://github.com/ngrok/ngrok-operator 'refs/tags/helm-chart-ngrok-operator-*' \
+            | awk -F'refs/tags/' '{print $2}' \
+            | grep -E '^helm-chart-ngrok-operator-[0-9]+\.[0-9]+\.[0-9]+$' \
+            | sort -V | tail -n1)
+          if [ -z "$TAG" ]; then echo "No release tag found"; exit 1; fi
+          echo "Using $TAG"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Fetch and Update Helm Values
+        env:
+          OPERATOR_REF: ${{ steps.release.outputs.tag }}
+        run: |
+          HELM_VALUES_URL="https://raw.githubusercontent.com/ngrok/ngrok-operator/${OPERATOR_REF}/helm/ngrok-operator/values.yaml"
           OUTPUT_PATH="snippets/k8s/_helm-config.mdx"
           
           # Create the content with the wrapped values
