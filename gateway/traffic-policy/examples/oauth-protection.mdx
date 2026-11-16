@@ -129,26 +129,22 @@ Now that you've added auth to your endpoint, here are some optional ways to fine
 | Log a user out             | Redirect to `/ngrok/logout?auth_id=my-login`                                                                |
 | Start session from scratch | Chain logout → login: redirect to `/ngrok/logout?auth_id=my-login`, then to `/ngrok/login?auth_id=my-login` |
 
-### Traffic Policy examples:
+### Traffic Policy example
 
-This section includes two examples of how to apply these additional auth lifecycle options, depending on your Traffic Policy setup.
+This example sets session lifetimes on the `oauth` action.
 
-**What these examples do:**
+**What this example does:**
 
-- If a user visits `/ngrok/logout`, ngrok first destroys their session (built-in behavior), then your redirect action sends them straight to the login URL.
 - Any session inactive for 15 minutes or longer will auto-expire and trigger a re-login flow when the user returns.
 - After an hour (regardless of activity), users are forced to re-authenticate (`max_session_duration`).
+
+To log users out or force a new login, link to the `/ngrok/logout` and `/ngrok/login` URLs from the preceding table in your app.
+These URLs are built in, so they don't need a Traffic Policy rule.
 
 <CodeGroup>
 
 ```yaml policy.yml
 on_http_request:
-- expressions:
-  - req.url.path == '/ngrok/logout'
-  actions:
-  - type: redirect
-    config:
-      location: "/ngrok/login?auth_id=my-login"
 - actions:
   - type: oauth
     config:
@@ -161,19 +157,6 @@ on_http_request:
 ```json policy.json
 {
   "on_http_request": [
-    {
-      "expressions": [
-        "req.url.path == '/ngrok/logout'"
-      ],
-      "actions": [
-        {
-          "type": "redirect",
-          "config": {
-            "location": "/ngrok/login?auth_id=my-login"
-          }
-        }
-      ]
-    },
     {
       "actions": [
         {

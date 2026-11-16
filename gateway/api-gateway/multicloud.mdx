@@ -141,10 +141,10 @@ kubectl apply -f agentendpoints-gke.yaml --context gke
 
     ```yaml
     on_http_request:
-      actions:
-        - type: forward-internal
-          config:
-            url: https://${getReqHeader('X-Acme-Api')[0]}.internal
+      - actions:
+          - type: forward-internal
+            config:
+              url: https://${getReqHeader('X-Acme-Api')[0]}.internal
     ```
 
     This Traffic Policy will read the value of the request header for `X-Acme-Api` and route it to that corresponding internal endpoint. For example, a request sent with the header `X-Acme-Api: catalog-eks` will route to `https://catalog-eks.internal`, which is configured to point to the Catalog API in your EKS cluster. 
@@ -158,44 +158,46 @@ kubectl apply -f agentendpoints-gke.yaml --context gke
 
     ```yaml
     on_http_request:
-      actions:
-        # apply rate limiting
-        - type: rate-limit
-          config:
-            name: Only allow 10 requests per second
-            algorithm: sliding_window
-            capacity: 10
-            rate: 1s
-            bucket_key:
-              - "conn.client_ip"
-        # apply OWASP Core Rule Set on request
-        - type: owasp-crs-request
-          config:
-            on_error: halt
-        # Block specific AI Bots and IPs on blocklist categorizations with IP Intel
-        - expressions:
-            - ("com.anthropic" in conn.client_ip.categories) || 
-              ("com.openai" in conn.client_ip.categories) ||
-              ("com.perplexity" in conn.client_ip.categories) || 
-              ('tor' in conn.client_ip.categories) ||
-              ('tor.exit' in conn.client_ip.categories) ||
-              ('proxy' in conn.client_ip.categories) ||
-              ('proxy.anonymous' in conn.client_ip.categories) ||
-              ('vpn' in conn.client_ip.categories)
-          actions:
-            - type: deny
-              config:
-                status_code: 404
-        # forward traffic to internal endpoint based on header
-        - type: forward-internal
-          config:
-            url: https://${getReqHeader('X-Acme-Api')[0]}.internal
+      # apply rate limiting
+      - actions:
+          - type: rate-limit
+            config:
+              name: Only allow 600 requests per minute
+              algorithm: sliding_window
+              capacity: 600
+              rate: 60s
+              bucket_key:
+                - "conn.client_ip"
+      # apply OWASP Core Rule Set on request
+      - actions:
+          - type: owasp-crs-request
+            config:
+              on_error: halt
+      # Block specific AI Bots and IPs on blocklist categorizations with IP Intel
+      - expressions:
+          - "('com.anthropic' in conn.client_ip.categories) ||
+            ('com.openai' in conn.client_ip.categories) ||
+            ('com.perplexity' in conn.client_ip.categories) ||
+            ('tor' in conn.client_ip.categories) ||
+            ('tor.exit' in conn.client_ip.categories) ||
+            ('proxy' in conn.client_ip.categories) ||
+            ('proxy.anonymous' in conn.client_ip.categories) ||
+            ('vpn' in conn.client_ip.categories)"
+        actions:
+          - type: deny
+            config:
+              status_code: 404
+      # forward traffic to internal endpoint based on header
+      - actions:
+          - type: forward-internal
+            config:
+              url: https://${getReqHeader('X-Acme-Api')[0]}.internal
     on_http_response:
-      actions:
-        # apply OWASP Core Rule Set on response
-        - type: owasp-crs-response
-          config:
-            on_error: halt
+      # apply OWASP Core Rule Set on response
+      - actions:
+          - type: owasp-crs-response
+            config:
+              on_error: halt
     ```
   </Step>
 
