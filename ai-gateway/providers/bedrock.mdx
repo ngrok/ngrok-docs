@@ -1,0 +1,281 @@
+---
+title: Use Amazon Bedrock with the AI Gateway
+sidebarTitle: Amazon Bedrock
+description: Call models on Amazon Bedrock through the ngrok AI Gateway with a Bedrock API key from your own AWS account.
+---
+
+[Amazon Bedrock](https://aws.amazon.com/bedrock/) runs models from Anthropic, Amazon, and open-weight labs in your AWS account.
+The gateway accepts three APIs for Bedrock models:
+
+- Anthropic Messages: send requests to `/v1/messages`. They reach Claude Haiku 4.5 through InvokeModel, streaming included.
+- Bedrock InvokeModel: send requests to `/model/<MODEL_ID>/invoke`.
+- Bedrock Converse: send requests to `/model/<MODEL_ID>/converse`.
+
+Chat Completions and Responses requests don't reach Bedrock models yet.
+
+<Note>
+Even though Amazon Bedrock is a **built-in provider**, it still requires you to **bring your own key** because you can't pay for it with credits at this time.
+</Note>
+
+## Setup
+
+<Steps titleSize="h3">
+  <Step title="Create an access key">
+    Follow the [quickstart](/ai-gateway/quickstart) to create an access key in [app.ngrok.ai](https://app.ngrok.ai).
+  </Step>
+
+  <Step title="Turn on model access">
+    In commercial AWS regions, AWS turns on access to most models the first time your account calls them.
+    For a model sold through AWS Marketplace, that first call starts a Marketplace subscription, which can take up to 15 minutes.
+    The identity that makes the call needs `aws-marketplace:Subscribe`, `aws-marketplace:Unsubscribe`, and `aws-marketplace:ViewSubscriptions`.
+    The GPT OSS models and the Amazon, MiniMax, Mistral, Moonshot AI, Qwen, and Z.ai models don't need a subscription.
+
+    Before you call Claude Haiku 4.5, complete the Anthropic First Time Use (FTU) form.
+    Open the Anthropic model in **Model catalog** in the [Amazon Bedrock console](https://console.aws.amazon.com/bedrock/) to find it.
+    You submit the form once per AWS account, or once in your AWS organization's management account.
+    See [Access Amazon Bedrock foundation models](https://docs.aws.amazon.com/bedrock/latest/userguide/model-access.html).
+  </Step>
+
+  <Step title="Create a Bedrock API key">
+    In the [Amazon Bedrock console](https://console.aws.amazon.com/bedrock/), open **API keys** and choose the **Long-term API keys** tab.
+    Click **Generate long-term API keys**, choose a time in **API key expiration**, and click **Generate**.
+    AWS shows the key only once, so copy it now.
+
+    Use a long-term key.
+    A short-term key expires with your console session, after 12 hours at most, and works only in the region that made it.
+
+    AWS attaches the `AmazonBedrockLimitedAccess` managed policy to the IAM user behind the key.
+    That policy already has the permissions the gateway needs.
+    AWS recommends API keys for exploration and short-term credentials for production.
+    See [Generate Amazon Bedrock API keys](https://docs.aws.amazon.com/bedrock/latest/userguide/api-keys-generate.html).
+  </Step>
+
+  <Step title="Add the key to ngrok">
+    [Add a provider key](/ai-gateway/guides/attaching-provider-keys#add-a-provider-key) for Amazon Bedrock.
+    A key you add in the dashboard uses the `us-east-1` region.
+    To use another region, add the key with the [Provider Keys API](/ai-gateway/api-reference/provider-keys/create) and set `aws.region`:
+
+    ```bash
+    curl -X POST https://api.ngrok.ai/provider-keys \
+      -H "Authorization: Bearer $AI_GATEWAY_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"providerId": "bedrock", "name": "Bedrock eu-west-1", "value": "<BEDROCK_API_KEY>", "aws": {"region": "eu-west-1"}}'
+    ```
+
+    The API refuses a region where Bedrock doesn't run.
+    See [Regions](#regions) for how the region picks where requests go.
+  </Step>
+
+  <Step title="Create a configuration">
+    [Create an access key configuration](/ai-gateway/guides/access-key-configurations#create-a-configuration) with a `bedrock` routing rule and allow Amazon Bedrock in the access scope.
+  </Step>
+
+  <Step title="Assign and send requests">
+    Assign the configuration to your access key and send requests with your access key:
+
+    <CodeGroup>
+    ```python Python
+    import anthropic
+
+    client = anthropic.Anthropic(
+        base_url="https://gateway.ngrok.ai",
+        api_key="ng-xxxxx-g1-xxxxx",  # Access key
+    )
+
+    message = client.messages.create(
+        model="bedrock:anthropic/claude-haiku-4-5",
+        max_tokens=1024,
+        messages=[{"role": "user", "content": "Hello!"}]
+    )
+    ```
+
+    ```bash cURL
+    curl https://gateway.ngrok.ai/v1/messages \
+      -H "Content-Type: application/json" \
+      -H "x-api-key: ng-xxxxx-g1-xxxxx" \
+      -H "anthropic-version: 2023-06-01" \
+      -d '{"model": "bedrock:anthropic/claude-haiku-4-5", "max_tokens": 1024, "messages": [{"role": "user", "content": "Hello!"}]}'
+    ```
+    </CodeGroup>
+
+    The `bedrock:` prefix keeps the request on Amazon Bedrock.
+    A bare `anthropic/claude-haiku-4-5` goes to Anthropic first.
+  </Step>
+</Steps>
+
+## Scope down the key's IAM policy
+
+The default `AmazonBedrockLimitedAccess` policy covers every call the gateway makes.
+If you replace it with a narrower policy, the key's IAM user needs at least these permissions:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "bedrock:CallWithBearerToken",
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "bedrock:InvokeModel",
+        "bedrock:InvokeModelWithResponseStream"
+      ],
+      "Resource": [
+        "arn:aws:bedrock:*::foundation-model/*",
+        "arn:aws:bedrock:*:<ACCOUNT_ID>:inference-profile/*"
+      ]
+    }
+  ]
+}
+```
+
+`bedrock:CallWithBearerToken` lets the key call Bedrock as a bearer token.
+Converse requests use the same two invoke permissions as InvokeModel requests.
+An inference profile can run a request in any region of its geography, so the policy covers every region.
+To accept only long-term keys, add a condition on `bedrock:BearerTokenType` with the value `LONG_TERM`.
+See [Actions defined by Amazon Bedrock](https://docs.aws.amazon.com/service-authorization/latest/reference/list_bedrock.html).
+
+## Regions
+
+Each Bedrock key sends requests to one AWS region.
+A key with no region uses `us-east-1`.
+
+The key's region picks the AWS endpoint, `bedrock-runtime.<REGION>.amazonaws.com`, and the model ID the gateway sends.
+The gateway sends the model's in-region ID when the model runs in that region, and the inference profile for the region's geography otherwise.
+The key's region wins over the `us.` in a model ID.
+For example, a key in `eu-west-1` sends a request for `us.anthropic.claude-haiku-4-5-20251001-v1:0` through the `eu.` inference profile.
+A model ID with a different geography prefix, such as `eu.anthropic.claude-haiku-4-5-20251001-v1:0`, uses only keys in that geography.
+
+GLM-4.7, GLM-5, Ministral 3B, and Qwen3 Coder 30B A3B Instruct serve `us-east-1` keys only.
+The gateway doesn't support `global.` model IDs.
+
+When none of your keys is in a region that serves the model, the gateway returns a `400` error with `ERR_NGROK_AI_GATEWAY_MODEL_REGION_UNSUPPORTED`:
+
+```text
+No Bedrock key region serves model '<MODEL_ID>'. Key regions: <REGIONS>. Add a Bedrock key in a region that serves the model.
+```
+
+## Native Bedrock requests
+
+Point an AWS SDK at `https://gateway.ngrok.ai` and send your ngrok access key as the bearer token.
+The AWS SDKs read the bearer token from the `AWS_BEARER_TOKEN_BEDROCK` environment variable.
+When `AWS_BEARER_TOKEN_BEDROCK` is set, boto3 sends the bearer token even if your shell also sets `AWS_PROFILE`.
+The gateway returns errors in the Bedrock error format.
+Name the model by its Bedrock model ID, such as `us.anthropic.claude-haiku-4-5-20251001-v1:0`.
+
+Send an InvokeModel request to Claude Haiku 4.5:
+
+<CodeGroup>
+```python Python
+import json
+
+import boto3
+
+# export AWS_BEARER_TOKEN_BEDROCK=ng-xxxxx-g1-xxxxx
+client = boto3.client(
+    "bedrock-runtime",
+    region_name="us-east-1",  # the SDK needs a region; your ngrok key's region decides where the request goes
+    endpoint_url="https://gateway.ngrok.ai",
+)
+
+response = client.invoke_model(
+    modelId="us.anthropic.claude-haiku-4-5-20251001-v1:0",
+    body=json.dumps({
+        "anthropic_version": "bedrock-2023-05-31",
+        "max_tokens": 1024,
+        "messages": [{"role": "user", "content": "Hello!"}],
+    }),
+)
+print(json.loads(response["body"].read()))
+```
+
+```bash cURL
+curl https://gateway.ngrok.ai/model/us.anthropic.claude-haiku-4-5-20251001-v1:0/invoke \
+  -H "Authorization: Bearer ng-xxxxx-g1-xxxxx" \
+  -H "Content-Type: application/json" \
+  -d '{"anthropic_version": "bedrock-2023-05-31", "max_tokens": 1024, "messages": [{"role": "user", "content": "Hello!"}]}'
+```
+</CodeGroup>
+
+Send a Converse request to any other model:
+
+<CodeGroup>
+```python Python
+import boto3
+
+# export AWS_BEARER_TOKEN_BEDROCK=ng-xxxxx-g1-xxxxx
+client = boto3.client(
+    "bedrock-runtime",
+    region_name="us-east-1",  # the SDK needs a region; your ngrok key's region decides where the request goes
+    endpoint_url="https://gateway.ngrok.ai",
+)
+
+response = client.converse(
+    modelId="openai.gpt-oss-20b-1:0",
+    messages=[{"role": "user", "content": [{"text": "Hello!"}]}],
+)
+```
+
+```bash cURL
+curl https://gateway.ngrok.ai/model/openai.gpt-oss-20b-1:0/converse \
+  -H "Authorization: Bearer ng-xxxxx-g1-xxxxx" \
+  -H "Content-Type: application/json" \
+  -d '{"messages": [{"role": "user", "content": [{"text": "Hello!"}]}]}'
+```
+</CodeGroup>
+
+The SDK needs a region, but the region of your Bedrock key in ngrok decides where the request goes.
+
+## Try Amazon Bedrock before Anthropic
+
+A bare Claude model ID, such as `anthropic/claude-haiku-4-5`, goes to Anthropic first.
+The `bedrock:` prefix pins a request to Amazon Bedrock, with no fallback to another provider.
+
+To try Amazon Bedrock first and fall back to Anthropic, create a [virtual model](/ai-gateway/guides/virtual-models) that lists both:
+
+```bash
+curl -X POST https://api.ngrok.ai/virtual-models \
+  -H "Authorization: Bearer $AI_GATEWAY_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "claude-haiku-bedrock-first",
+    "models": [
+      "bedrock:anthropic/claude-haiku-4-5",
+      "anthropic:anthropic/claude-haiku-4-5"
+    ]
+  }'
+```
+
+Send `claude-haiku-bedrock-first` as the model in a Messages request.
+
+<Note>
+In an access key configuration, a [model rule](/ai-gateway/guides/access-key-configurations#routing-rules) names the catalog ID with the provider prefix, such as `bedrock:anthropic/claude-haiku-4-5`.
+A rule that names a Bedrock model ID, such as `us.anthropic.claude-haiku-4-5-20251001-v1:0`, doesn't match requests yet.
+</Note>
+
+## Available models
+
+See the [model catalog](/ai-gateway/reference/model-catalog#amazon-bedrock).
+The gateway sends Amazon Bedrock only the models in the catalog.
+
+Each model takes these request formats:
+
+- Claude Haiku 4.5: Messages and Bedrock InvokeModel.
+- Every other model: Bedrock Converse.
+
+## Troubleshooting
+
+| Symptom | Fix |
+|---------|-----|
+| [`ERR_NGROK_27226`](/ai-gateway/reference/error-codes#err_ngrok_27226) | The API you called doesn't reach that model. Send Messages or InvokeModel requests to Claude Haiku 4.5, and Converse requests to the other models. Chat Completions and Responses requests don't reach Bedrock models. |
+| `ERR_NGROK_AI_GATEWAY_MODEL_REGION_UNSUPPORTED` | None of your Bedrock keys is in a region that serves the model. Add a key in a region that serves it. See [Regions](#regions). |
+| `403` error that names `bedrock:CallWithBearerToken` and a service control policy | A service control policy in your AWS organization denies Bedrock API keys. Ask your AWS administrator to allow `bedrock:CallWithBearerToken` for the account. |
+| `403` `AccessDeniedException` that says the model isn't available or needs AWS Marketplace actions | [Turn on model access](#setup) for the model in that AWS account. After you submit the FTU form, the model can stay pending and keep returning this error, so wait and retry. The gateway doesn't try your other Bedrock keys, because keys in the same account get the same refusal. |
+
+## Next steps
+
+- [Provider keys](/ai-gateway/guides/attaching-provider-keys)
+- [Access key configurations](/ai-gateway/guides/access-key-configurations)
