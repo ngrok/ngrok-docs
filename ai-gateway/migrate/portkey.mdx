@@ -4,7 +4,7 @@ sidebarTitle: Migrate from Portkey
 description: Move your apps from Portkey to the ngrok AI Gateway by mapping provider keys, API keys, configs, and guardrails, then changing a few lines of client code.
 ---
 
-{/* DRAFT: don't merge until native Bedrock ships or the custom-provider path below is verified. Open items are marked DRAFT. Before publishing, re-check the Portkey status claims in the opening (Prisma AIRS billing and console, classic product still sold with no end date) against portkey.ai and Palo Alto's announcements. */}
+{/* DRAFT: don't merge until #2589 (the Amazon Bedrock provider page) merges, because this page links to /ai-gateway/providers/bedrock. Open items are marked DRAFT. Before publishing, re-check the Portkey status claims in the opening (Prisma AIRS billing and console, classic product still sold with no end date) against portkey.ai and Palo Alto's announcements. */}
 
 If your apps call models through Portkey, you're deciding whether to follow it into Palo Alto Networks' Prisma AIRS or move your traffic somewhere else.
 Palo Alto bought Portkey in May 2026.
@@ -16,8 +16,9 @@ Pay for OpenAI, Anthropic, Google, and other supported models with those credits
 For agent traffic, [Firewall](/ai-gateway/concepts/firewall) checks each tool call a model returns and blocks risky ones before your agent runs them.
 
 <Note>
-  The ngrok AI Gateway doesn't yet have built-in AWS Bedrock or Vertex AI providers, an MCP gateway, response caching, per-key budgets, or PII redaction.
-  If your apps depend on those Portkey features, read [What doesn't move yet](#what-doesnt-move-yet) before you decide.
+  The ngrok AI Gateway doesn't yet have a built-in Vertex AI provider, an MCP gateway, response caching, per-key budgets, or PII redaction.
+  It reaches Claude on Amazon Bedrock through the Anthropic and AWS SDKs, but not through OpenAI Chat Completions.
+  If your apps depend on those Portkey features, read [the list of features without an equivalent yet](#features-without-an-equivalent-yet) before you decide.
 </Note>
 
 This guide moves an app that calls models through Portkey to the ngrok AI Gateway.
@@ -111,13 +112,39 @@ Client code usually changes in three places: the base URL, the API key, and the 
     If you used several Portkey providers for the same upstream, such as two OpenAI keys for more rate-limit headroom, add both keys.
     You order them in the next step.
 
+    ### Amazon Bedrock
+
+    In Portkey, each Bedrock provider covers one AWS region, such as `@bedrock-us-east-1` and `@bedrock-us-west-2`.
+    In ngrok.ai, each Bedrock provider key covers one region, so add one key for each region you use.
+
+    ngrok.ai authenticates to Bedrock with a Bedrock API key.
+    If your Portkey Bedrock providers use IAM access keys or an assumed role, generate a long-term Bedrock API key in each AWS account first, as described in [Amazon Bedrock](/ai-gateway/providers/bedrock#setup).
+    Bedrock always uses your own key; you can't pay for it with credits.
+
+    A key you add in the dashboard uses `us-east-1`.
+    To add a key for another region, set `aws.region` with the API:
+
+    ```bash
+    curl -X POST https://api.ngrok.ai/provider-keys \
+      -H "Authorization: Bearer $AI_GATEWAY_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "providerId": "bedrock",
+        "name": "bedrock-us-west-2",
+        "value": "<BEDROCK_API_KEY>",
+        "aws": { "region": "us-west-2" }
+      }'
+    ```
+
+    A `us.` model ID from Portkey, such as `us.anthropic.claude-haiku-4-5-20251001-v1:0`, works with a key in any region, because the key's region decides where the request goes.
+    The gateway sends it to the key's region, through that geography's inference profile when the model doesn't run there, so a key in `eu-west-1` keeps the request in the EU.
+    See [Regions](/ai-gateway/providers/bedrock#regions).
+
     ### Providers that aren't built in
 
     Connect any OpenAI- or Anthropic-compatible endpoint as a [custom provider](/ai-gateway/concepts/custom-providers).
     For Azure OpenAI, follow [the Azure OpenAI guide](/ai-gateway/custom-providers/azure-openai), with one custom provider per deployment or region.
-    AWS Bedrock and Vertex AI aren't built-in providers yet; see [What doesn't move yet](#what-doesnt-move-yet).
-
-    {/* DRAFT: AWS Bedrock and Vertex AI aren't built-in providers yet. Before publishing, either link the native Bedrock provider, or verify and document a custom provider that points at Bedrock's OpenAI-compatible endpoint with a Bedrock API key, one per region. Same question for Vertex AI. */}
+    Vertex AI isn't a built-in provider yet; see [Features without an equivalent yet](#features-without-an-equivalent-yet).
   </Step>
 
   <Step title="Recreate your API keys">
@@ -161,6 +188,10 @@ Client code usually changes in three places: the base URL, the API key, and the 
 
     When the first OpenAI key hits a rate limit or an auth error, the gateway tries the second.
     See [Multi-key failover](/ai-gateway/guides/key-selection-failover).
+
+    Put your regional Bedrock keys in one `bedrock` rule the same way, in the order to try their regions.
+    A rate limit in one region moves the request to the next region's key.
+    A server error or timeout moves it to the next model instead, so list a fallback model in a virtual model if you want a regional outage to reach another provider.
 
     app.ngrok.ai shows each access key token once, when you create it.
     Store each token, which starts with `ng-`, where the app reads its Portkey key today.
@@ -356,12 +387,67 @@ Client code usually changes in three places: the base URL, the API key, and the 
     Replace `@slug/claude-…` model names the same way as for the OpenAI SDK.
     The Google Gen AI SDK follows the same pattern; see [Google Gen AI SDK](/ai-gateway/sdks/google).
 
+    ### Models on Amazon Bedrock
+
+    Portkey translates OpenAI Chat Completions requests for any Bedrock model.
+    The ngrok AI Gateway doesn't translate them for Claude or most other Bedrock models yet, so apps that reach Bedrock through the OpenAI SDK switch SDKs as well as base URLs:
+
+    | Bedrock models | Call them through ngrok.ai with | `model` |
+    |---|---|---|
+    | Claude Haiku 4.5, Sonnet 4.6, Opus 4.5, and Opus 4.6 | The Anthropic SDK (Messages), or the AWS SDK (InvokeModel) | `bedrock:anthropic/claude-haiku-4-5` in Messages, or the Bedrock model ID in InvokeModel |
+    | Gemma 4 | The OpenAI SDK (Chat Completions or Responses) | `bedrock:google/gemma-4-31b-it` |
+    | Every other Bedrock model in the catalog | The AWS SDK (Converse) | The Bedrock model ID, such as `openai.gpt-oss-20b-1:0` |
+
+    This app moves Claude Haiku 4.5 on Bedrock from the OpenAI SDK to the Anthropic SDK:
+
+    <CodeGroup>
+    ```python Before
+    import os
+    from openai import OpenAI
+
+    client = OpenAI(
+        base_url="https://api.portkey.ai/v1",
+        api_key=os.environ["PORTKEY_API_KEY"],
+    )
+
+    client.chat.completions.create(
+        model="@bedrock-us/us.anthropic.claude-haiku-4-5-20251001-v1:0",
+        max_tokens=1024,
+        messages=[{"role": "user", "content": "Hello"}],
+    )
+    ```
+
+    ```python After
+    import os
+    import anthropic
+
+    client = anthropic.Anthropic(
+        base_url="https://gateway.ngrok.ai",
+        api_key=os.environ["NGROK_AI_ACCESS_KEY"],
+    )
+
+    client.messages.create(
+        model="bedrock:anthropic/claude-haiku-4-5",
+        max_tokens=1024,
+        messages=[{"role": "user", "content": "Hello"}],
+    )
+    ```
+    </CodeGroup>
+
+    The `bedrock:` prefix keeps the request on Bedrock.
+    Without it, `anthropic/claude-haiku-4-5` goes to Anthropic first.
+    To try Bedrock first and fall back to Anthropic, list both in a virtual model; see [Try Amazon Bedrock before Anthropic](/ai-gateway/providers/bedrock#try-amazon-bedrock-before-anthropic).
+
+    For the AWS SDK, point the client's `endpoint_url` at `https://gateway.ngrok.ai` and set `AWS_BEARER_TOKEN_BEDROCK` to your access key.
+    See [Native Bedrock requests](/ai-gateway/providers/bedrock#native-bedrock-requests).
+
     ### Map model names
 
     | Portkey `model` | ngrok.ai `model` |
     |---|---|
     | `@openai-prod/gpt-5.1` | `openai:gpt-5.1`, or `gpt-5.1` to let the gateway pick any provider that serves it |
     | `@anthropic-prod/claude-sonnet-4-6` | `anthropic:claude-sonnet-4-6` |
+    | `@bedrock-us/us.anthropic.claude-haiku-4-5-20251001-v1:0` | `bedrock:anthropic/claude-haiku-4-5`, sent with the Anthropic SDK |
     | `@my-azure/gpt-4o` | `my-azure:gpt-4o`, where `my-azure` is your custom provider ID |
     | `gpt-4o` routed by a config | The virtual model that replaced the config |
 
@@ -419,15 +505,17 @@ Remove them, or replace them as follows:
 | `x-portkey-config` | A virtual model, or the `models` array in the request body |
 | `x-portkey-trace-id`, `x-portkey-span-*` | None. The gateway assigns each request an ID and returns it in the `Ngrok-AIG-Request-Id` response header; log it next to your own trace ID |
 | `x-portkey-metadata` | None. With [request capture](/ai-gateway/guides/account-settings#request-capture) on, the request details panel shows the headers you sent |
-| `x-portkey-cache-*` | None. See [What doesn't move yet](#what-doesnt-move-yet) |
+| `x-portkey-cache-*` | None. See [Features without an equivalent yet](#features-without-an-equivalent-yet) |
 | `x-portkey-request-timeout` | Account-wide timeouts in [Account Settings](/ai-gateway/guides/account-settings) |
 | `x-portkey-forward-headers` | None |
 
-## What doesn't move yet
+## Features without an equivalent yet
 
 | Portkey feature | Status in ngrok.ai | What to do meanwhile |
 |---|---|---|
-| AWS Bedrock and Vertex AI providers | Not built in | Keep Bedrock and Vertex AI routes on Portkey while you move the rest. |
+| Claude and most other Bedrock models through Chat Completions | Not yet | Call Claude with the Anthropic SDK and other Bedrock models with the AWS SDK. See [Models on Amazon Bedrock](#models-on-amazon-bedrock). |
+| Bedrock models outside the catalog, and `global.` inference profiles | Not available | Use a model from the [Amazon Bedrock catalog](/ai-gateway/reference/model-catalog#amazon-bedrock), with a regional ID such as `us.` or `eu.`. |
+| Vertex AI provider | Not built in | Call Gemini models through the built-in [Google provider](/ai-gateway/providers/google), and keep Model Garden routes on Portkey for now. |
 | MCP gateway and MCP registry | Not available | Keep MCP traffic where it is. To block specific MCP tools in model traffic, use a Firewall tool names rule. |
 | Simple and semantic caching | Not available | Cache in your app. |
 | Per-key budgets and rate limits | Not available | Use account-wide [token limits](/ai-gateway/guides/account-settings#token-limits) and track spend per key with the [Usage API](/ai-gateway/observability), grouped by `accessKey`. |
@@ -439,7 +527,7 @@ Remove them, or replace them as follows:
 | OpenTelemetry or log export | Pull only | Read usage events with the [Usage API](/ai-gateway/observability). |
 | Terraform provider | Not available | Script setup with the [AI Gateway API](/ai-gateway/api-reference/overview) and its [OpenAPI spec](https://api.ngrok.ai/openapi.yaml). |
 
-{/* DRAFT: re-check this table against ai-gateway/ right before publishing. Remove rows as features ship. Replace the Bedrock and Vertex AI row with the native provider or a verified custom-provider setup. */}
+{/* DRAFT: re-check this table against ai-gateway/ right before publishing. Remove rows as features ship. */}
 
 ## Next steps
 
