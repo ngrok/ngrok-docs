@@ -8,8 +8,8 @@ description: Call models on Amazon Bedrock through the ngrok AI Gateway with a B
 The gateway accepts three APIs for Bedrock models:
 
 - Anthropic Messages: send requests to `/v1/messages`. They reach Claude Haiku 4.5 through InvokeModel, streaming included.
-- Bedrock InvokeModel: send requests to `/model/<MODEL_ID>/invoke`.
-- Bedrock Converse: send requests to `/model/<MODEL_ID>/converse`.
+- Bedrock InvokeModel: send requests to `/model/<MODEL_ID>/invoke`, or to `/model/<MODEL_ID>/invoke-with-response-stream` for a stream.
+- Bedrock Converse: send requests to `/model/<MODEL_ID>/converse`, or to `/model/<MODEL_ID>/converse-stream` for a stream.
 
 Chat Completions and Responses requests don't reach Bedrock models yet.
 
@@ -228,6 +228,60 @@ curl https://gateway.ngrok.ai/model/openai.gpt-oss-20b-1:0/converse \
 </CodeGroup>
 
 The SDK needs a region, but the region of your Bedrock key in ngrok decides where the request goes.
+
+### Stream responses
+
+Send stream requests to `/model/<MODEL_ID>/converse-stream` or `/model/<MODEL_ID>/invoke-with-response-stream`.
+The gateway returns the stream as AWS event stream frames, which the AWS SDKs read.
+
+<CodeGroup>
+```python Converse
+import boto3
+
+# export AWS_BEARER_TOKEN_BEDROCK=ng-xxxxx-g1-xxxxx
+client = boto3.client(
+    "bedrock-runtime",
+    region_name="us-east-1",  # the SDK needs a region; your ngrok key's region decides where the request goes
+    endpoint_url="https://gateway.ngrok.ai",
+)
+
+response = client.converse_stream(
+    modelId="openai.gpt-oss-20b-1:0",
+    messages=[{"role": "user", "content": [{"text": "Hello!"}]}],
+)
+
+for event in response["stream"]:
+    if "contentBlockDelta" in event:
+        print(event["contentBlockDelta"]["delta"].get("text", ""), end="")
+```
+
+```python InvokeModel
+import json
+
+import boto3
+
+# export AWS_BEARER_TOKEN_BEDROCK=ng-xxxxx-g1-xxxxx
+client = boto3.client(
+    "bedrock-runtime",
+    region_name="us-east-1",  # the SDK needs a region; your ngrok key's region decides where the request goes
+    endpoint_url="https://gateway.ngrok.ai",
+)
+
+response = client.invoke_model_with_response_stream(
+    modelId="us.anthropic.claude-haiku-4-5-20251001-v1:0",
+    body=json.dumps({
+        "anthropic_version": "bedrock-2023-05-31",
+        "max_tokens": 1024,
+        "messages": [{"role": "user", "content": "Hello!"}],
+    }),
+)
+
+for event in response["body"]:
+    chunk = json.loads(event["chunk"]["bytes"])
+    if chunk["type"] == "content_block_delta":
+        print(chunk["delta"].get("text", ""), end="")
+```
+</CodeGroup>
 
 ## Try Amazon Bedrock before Anthropic
 
