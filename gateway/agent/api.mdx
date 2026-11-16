@@ -358,10 +358,16 @@ Dynamically creates a new endpoint on the ngrok agent.
 ## Update endpoint
 
 Updates an existing endpoint or creates a new one if it doesn't exist.
+The `name` field in the request body identifies the endpoint to update.
+The agent replaces the whole endpoint: it stops the existing endpoint and starts a new one with the configuration you send, so include every field you want to keep.
 
 ### Request
 
-`PUT/api/endpoints/:name`
+`PUT/api/endpoints`
+
+The request body uses the same fields as an endpoint in the [agent config file](/gateway/agent/config/v3/).
+It doesn't accept read-only fields from the endpoint detail response, such as `uri` or `metrics`.
+Unlike the response, which returns `traffic_policy` as a YAML string, the request body requires `traffic_policy` as a JSON object.
 
 ### Response
 
@@ -373,17 +379,30 @@ Updates an existing endpoint or creates a new one if it doesn't exist.
 
 ### Example request body
 
-```
+```json
 {
   "name": "command_line",
-  "uri": "/api/endpoints/command_line",
   "url": "https://871e40f2d4c2.ngrok.paid.lan",
   "upstream": {
     "url": "http://localhost:8000",
     "protocol": "https"
   },
   "inspect": true,
-  "traffic_policy": "on_http_request:\n - actions:\n - type: custom-response\n config:\n status_code: 200\n body: Hello, World!\n",
+  "traffic_policy": {
+    "on_http_request": [
+      {
+        "actions": [
+          {
+            "type": "custom-response",
+            "config": {
+              "status_code": 200,
+              "body": "Hello, World!"
+            }
+          }
+        ]
+      }
+    ]
+  },
   "pooling_enabled": true
 }
 ```
