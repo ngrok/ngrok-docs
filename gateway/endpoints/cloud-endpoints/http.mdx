@@ -363,10 +363,11 @@ ngrok adds headers to each HTTP request with information about the original clie
 | `x-forwarded-proto` | The scheme of the original request, either `http` or `https`. If this header exists on the original request, ngrok appends a new value.     |
 | `x-forwarded-host`  | The header from the client's request if it existed, otherwise is set to the request's `Host` header value.                                  |
 
-ngrok appends to `x-forwarded-for` and `x-forwarded-proto` instead of replacing them.
-If the client's request already includes either header, ngrok keeps the client's values and adds its own value after them.
-ngrok doesn't validate the earlier values, so a client can set them to anything.
-Use the last value of each header in your application code to read the values ngrok added.
+If a request already has an `x-forwarded-for` or `x-forwarded-proto` header, ngrok doesn't replace it.
+ngrok adds its own value after the values already in the header, so your service receives all of them, with ngrok's value last.
+For example, if a client at `198.51.100.4` sends `x-forwarded-for: 203.0.113.7`, your service receives `203.0.113.7` followed by `198.51.100.4`.
+ngrok doesn't check the values a client sends, so a client can put anything in these headers.
+To get the values ngrok set, read the last value of each header.
 
 You may remove these headers with the [Remove Headers](/gateway/traffic-policy/actions/remove-headers/) Traffic Policy action.
 
