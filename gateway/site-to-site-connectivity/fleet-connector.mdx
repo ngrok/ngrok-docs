@@ -27,7 +27,7 @@ It's already signed by ngrok.
 - An [authtoken](https://dashboard.ngrok.com/authtokens) for each install.
 - [Go](https://go.dev/dl/) on your build machine.
 - For Windows, the [.NET SDK](https://dotnet.microsoft.com/download) 6 or later on your build machine, to install WiX.
-- For Windows, a code-signing certificate from a trusted certificate authority (CA).
+- For Windows, a code-signing certificate from a trusted certificate authority (CA), or a self-signed certificate for testing.
 
 <Steps titleSize="h2">
   <Step title="Fork the repository">
@@ -64,22 +64,53 @@ It's already signed by ngrok.
         Fleet Connector is built from source, so it doesn't carry ngrok's signature.
         If you skip this step, the MSI is unsigned: Windows SmartScreen warns about an unknown publisher, antivirus tools may flag it, and you can't turn on remote updates.
 
-        ```powershell
-        $cert = Get-ChildItem Cert:\CurrentUser\My -CodeSigningCert |
-          Where-Object Subject -eq "CN=Your Company"
+        <Tabs>
+          <Tab title="CA certificate">
+            Sign the installers you ship to customers with a code-signing certificate from a trusted CA.
 
-        Set-AuthenticodeSignature -FilePath FleetConnector.msi `
-          -Certificate $cert -HashAlgorithm SHA256
+            ```powershell
+            $cert = Get-ChildItem Cert:\CurrentUser\My -CodeSigningCert |
+              Where-Object Subject -like "CN=Your Company*" |
+              Select-Object -First 1
 
-        (Get-AuthenticodeSignature FleetConnector.msi).SignerCertificate.Thumbprint
-        ```
+            Set-AuthenticodeSignature -FilePath FleetConnector.msi `
+              -Certificate $cert -HashAlgorithm SHA256 `
+              -TimestampServer "http://timestamp.digicert.com"
 
-        Save the thumbprint from the last command.
+            (Get-AuthenticodeSignature FleetConnector.msi).SignerCertificate.Thumbprint
+            ```
+
+            Replace `Your Company` with the name on your certificate.
+            The timestamp keeps the signature valid after your certificate expires.
+            If your certificate's key is on a hardware token or a cloud signing service, sign with the tool your CA provides instead, such as `signtool.exe`.
+          </Tab>
+          <Tab title="Self-signed certificate">
+            Use a self-signed certificate to test your build.
+            Windows doesn't trust it on other machines, so don't ship installers signed with it.
+
+            ```powershell
+            $cert = New-SelfSignedCertificate -Type CodeSigningCert `
+              -CertStoreLocation Cert:\CurrentUser\My -Subject "CN=Your Company"
+
+            Set-AuthenticodeSignature -FilePath FleetConnector.msi `
+              -Certificate $cert -HashAlgorithm SHA256
+
+            (Get-AuthenticodeSignature FleetConnector.msi).SignerCertificate.Thumbprint
+            ```
+
+            To test remote updates, trust the certificate on each machine you install on.
+            Remote updates only install an MSI with a valid signature.
+
+            ```powershell
+            $cert | Export-Certificate -FilePath test-signing.cer
+            Import-Certificate -FilePath test-signing.cer `
+              -CertStoreLocation Cert:\LocalMachine\Root
+            ```
+          </Tab>
+        </Tabs>
+
+        Save the thumbprint that `Get-AuthenticodeSignature` prints.
         You need it to turn on remote updates.
-
-        <Tip>
-        To test without a CA-issued certificate, create a self-signed one with `New-SelfSignedCertificate -Type CodeSigningCert -CertStoreLocation Cert:\CurrentUser\My -Subject "CN=Your Company"`.
-        </Tip>
       </Tab>
       <Tab title="Linux">
         Build the binary and a `.deb` package with [nFPM](https://nfpm.goreleaser.com/):
