@@ -24,6 +24,10 @@ See our [Contribution Guidelines](CONTRIBUTING.md) for detailed instructions on 
 1. Install project dependencies with `pnpm`: `pnpm install`
 1. Install vale, our linter: `brew install vale` ([or use their install instructions](https://vale.sh/docs/install))
 
+If you use [direnv](https://direnv.net/), run `direnv allow` instead.
+The `.envrc` file loads the Nix devshell in `flake.nix` when Nix is installed, which CI also uses.
+Without Nix, it installs Node with fnm and pnpm with corepack, then runs `pnpm install`.
+
 ## Running the site locally
 
 When using `pnpm run dev`, this site runs locally at `http://localhost:3333/`
