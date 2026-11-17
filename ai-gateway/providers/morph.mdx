@@ -1,0 +1,70 @@
+---
+title: Use Morph with the AI Gateway
+sidebarTitle: Morph
+description: Call Morph's code-apply models and open-weight GLM, Kimi, and DeepSeek models through the ngrok AI Gateway with credits or your own Morph API key.
+---
+
+[Morph](https://www.morphllm.com/) serves its Fast Apply code-edit models and open-weight models from Z.ai, Moonshot AI, and DeepSeek.
+
+Morph supports Chat Completions requests.
+
+<Note>
+Morph is a **built-in provider**.
+You can pay for every Morph model in the catalog with credits except `deepseek/deepseek-v4.1-flash-abliterated`, which needs your own Morph key.
+The **Needs BYOK?** column in the [model catalog](/ai-gateway/reference/model-catalog#morph) shows which is which.
+</Note>
+
+## Setup
+
+<Steps titleSize="h3">
+  <Step title="Create an access key and add credits">
+    Follow the [quickstart](/ai-gateway/quickstart) to create an access key and purchase [credits](/ai-gateway/concepts/credits) in [app.ngrok.ai](https://app.ngrok.ai).
+  </Step>
+
+  <Step title="Store your Morph API key (optional)">
+    Skip this step to pay with credits for the models that support it.
+    To bring your own key, create an API key in your [Morph](https://www.morphllm.com/) account.
+    Then [add a provider key](/ai-gateway/guides/attaching-provider-keys#add-a-provider-key) and [create an access key configuration](/ai-gateway/guides/access-key-configurations#create-a-configuration) with a `morph` routing rule that uses it.
+  </Step>
+
+  <Step title="Send requests">
+    Send requests with your access key:
+
+    ```python
+    from openai import OpenAI
+
+    client = OpenAI(
+        base_url="https://gateway.ngrok.ai/v1",
+        api_key="ng-xxxxx-g1-xxxxx",
+    )
+
+    response = client.chat.completions.create(
+        model="morph:z-ai/glm-5.3",
+        messages=[{"role": "user", "content": "Hello!"}]
+    )
+    ```
+
+    Other providers also serve most Morph models.
+    The `morph:` prefix keeps the request on Morph.
+  </Step>
+</Steps>
+
+## Models
+
+- `morph/morph-v3-fast` and `morph/morph-v3-large` apply code edits.
+  `morph-v3-fast` is the faster of the two, and `morph-v3-large` is the more accurate.
+- `moonshotai/kimi-k3-fast` is Kimi K3 on hardware that Morph tunes for time to first token.
+- `deepseek/deepseek-v4.1-flash-abliterated` is DeepSeek V4.1 Flash 1017 with its refusals removed.
+  Morph serves it only to accounts it approves, and returns a 403 to others.
+
+The gateway removes `service_tier` from Morph requests, so every request runs on Morph's standard tier.
+
+## Available models
+
+See the [model catalog](/ai-gateway/reference/model-catalog#morph).
+
+## Next steps
+
+- [Provider keys](/ai-gateway/guides/attaching-provider-keys)
+- [Access key configurations](/ai-gateway/guides/access-key-configurations)
+- [Open-weight models](/ai-gateway/concepts/open-weight-models)
