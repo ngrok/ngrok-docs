@@ -62,13 +62,14 @@ on_http_request:
 ## Based on authentication status
 
 This rule creates a lower rate limit for unauthenticated (likely free) users, while allowing authenticated users a higher level of capacity.
+The check only looks for an `Authorization` header; it doesn't validate the credential.
 
 <CodeGroup>
 
 ```yaml policy.yml
 on_http_request:
 - expressions:
-  - "!('Authorization' in req.headers)"
+  - "!hasReqHeader('authorization')"
   name: Unauthorized rate limiting tier
   actions:
   - type: rate-limit
@@ -80,7 +81,7 @@ on_http_request:
       bucket_key:
       - conn.client_ip
 - expressions:
-  - "('Authorization' in req.headers)"
+  - "hasReqHeader('authorization')"
   name: Authorized rate limiting tier
   actions:
   - type: rate-limit
@@ -98,7 +99,7 @@ on_http_request:
   "on_http_request": [
     {
       "expressions": [
-        "!('Authorization' in req.headers)"
+        "!hasReqHeader('authorization')"
       ],
       "name": "Unauthorized rate limiting tier",
       "actions": [
@@ -118,7 +119,7 @@ on_http_request:
     },
     {
       "expressions": [
-        "('Authorization' in req.headers)"
+        "hasReqHeader('authorization')"
       ],
       "name": "Authorized rate limiting tier",
       "actions": [
@@ -147,13 +148,18 @@ on_http_request:
 Using a naming scheme in your upstream servers with API calls using a `tier` header, you can quickly customize access to your API based on any number of pricing tiers.
 
 This rule checks for a `Tier` header in the request and applies rate limiting based on the value of that header.
+Requests with a missing or unrecognized tier get the free limit.
+
+<Warning>
+Clients can set any header they like, so only use this pattern when a trusted upstream service or proxy sets the `Tier` header and strips any value the client sent.
+</Warning>
 
 <CodeGroup>
 
 ```yaml policy.yml
 on_http_request:
 - expressions:
-  - "!('Tier' in req.headers)"
+  - "!getReqHeader('tier').exists(v, v.matches('(?i)^(bronze|silver|gold)$'))"
   name: Free rate limiting tier
   actions:
   - type: rate-limit
@@ -165,7 +171,7 @@ on_http_request:
       bucket_key:
       - conn.client_ip
 - expressions:
-  - getReqHeader('tier').exists(v, v.matches('(?i)bronze'))
+  - getReqHeader('tier').exists(v, v.matches('(?i)^bronze$'))
   name: Bronze rate limiting tier
   actions:
   - type: rate-limit
@@ -177,7 +183,7 @@ on_http_request:
       bucket_key:
       - conn.client_ip
 - expressions:
-  - getReqHeader('tier').exists(v, v.matches('(?i)silver'))
+  - getReqHeader('tier').exists(v, v.matches('(?i)^silver$'))
   name: Silver rate limiting tier
   actions:
   - type: rate-limit
@@ -189,7 +195,7 @@ on_http_request:
       bucket_key:
       - conn.client_ip
 - expressions:
-  - getReqHeader('tier').exists(v, v.matches('(?i)gold'))
+  - getReqHeader('tier').exists(v, v.matches('(?i)^gold$'))
   name: Gold rate limiting tier
   actions:
   - type: rate-limit
@@ -207,7 +213,7 @@ on_http_request:
   "on_http_request": [
     {
       "expressions": [
-        "!('Tier' in req.headers)"
+        "!getReqHeader('tier').exists(v, v.matches('(?i)^(bronze|silver|gold)$'))"
       ],
       "name": "Free rate limiting tier",
       "actions": [
@@ -227,7 +233,7 @@ on_http_request:
     },
     {
       "expressions": [
-        "getReqHeader('tier').exists(v, v.matches('(?i)bronze'))"
+        "getReqHeader('tier').exists(v, v.matches('(?i)^bronze$'))"
       ],
       "name": "Bronze rate limiting tier",
       "actions": [
@@ -247,7 +253,7 @@ on_http_request:
     },
     {
       "expressions": [
-        "getReqHeader('tier').exists(v, v.matches('(?i)silver'))"
+        "getReqHeader('tier').exists(v, v.matches('(?i)^silver$'))"
       ],
       "name": "Silver rate limiting tier",
       "actions": [
@@ -267,7 +273,7 @@ on_http_request:
     },
     {
       "expressions": [
-        "getReqHeader('tier').exists(v, v.matches('(?i)gold'))"
+        "getReqHeader('tier').exists(v, v.matches('(?i)^gold$'))"
       ],
       "name": "Gold rate limiting tier",
       "actions": [
