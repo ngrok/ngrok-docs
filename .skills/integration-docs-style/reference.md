@@ -33,7 +33,7 @@
 - **Long sentences**: Break up sentences that are too long into multiple sentences
 - **Line breaks**: Use a single blank line between: frontmatter (`---`) and components (e.g., `<Tip>`), code blocks (```) and components, and paragraphs and headings. More than one blank line in a row is not allowed.
 - **Convert "Tip:" to component**: If you see "Tip:" in plain text, convert it to a `<Tip>` component
-- **Note and Tip headings**: When a `<Note>` or `<Tip>` already has a heading (bold first line), use sentence case with a colon (e.g., **Security best practice:** or **Troubleshooting:**, not **SECURITY BEST PRACTICE** or **TROUBLESHOOTING**). Do not add a blank line between that heading and the body text that follows. Do not add a heading (e.g., **Alternative:**, **Note:**) to a Note or Tip that does not already have one.
+- **No bold intro text in callouts**: Never open a callout with bold intro text such as **Security best practice:** or **Troubleshooting:**. Most callouts need no heading, so delete it and start with the sentence. If a heading is truly needed, use the `title` attribute in sentence case (e.g., `<Tip title="Custom domains within ngrok">`).
 - **Note and Tip indentation**: Do not indent `<Note>` or `<Tip>` components (e.g. with spaces) to nest them under list items. Use the same left margin as the rest of the body so they are not visually nested under a step.
 - **File names**: Always in backticks in body content (e.g., `compose.yaml`), never in headers
 - **Addresses/URLs**: Always in backticks in body content (e.g., `localhost:8123`), never in headers
