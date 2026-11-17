@@ -1,11 +1,3 @@
-import ExplicitRegionAgentCliExample from '/snippets/examples/agent-cli/explicit-region.mdx';
-import ExplicitRegionAgentConfigExample from '/snippets/examples/agent-config/explicit-region.mdx';
-import ExplicitRegionGoSdkExample from '/snippets/examples/go-sdk/explicit-region.mdx';
-import ExplicitRegionJavascriptSdkExample from '/snippets/examples/javascript-sdk/explicit-region.mdx';
-import ExplicitRegionKubernetesExample from '/snippets/examples/k8s/explicit-region.mdx';
-import ExplicitRegionPythonSdkExample from '/snippets/examples/python-sdk/explicit-region.mdx';
-import ExplicitRegionRustSdkExample from '/snippets/examples/rust-sdk/explicit-region.mdx';
-import ExplicitRegionSshExample from '/snippets/examples/ssh/explicit-region.mdx';
 
 ## Overview
 
@@ -167,28 +159,120 @@ do so with the following configuration:
 
 <Tabs>
 	<Tab title="CLI">
-		<ExplicitRegionAgentCliExample />
+		```bash
+		ngrok config add-connect-url connect.eu.ngrok-agent.com:443
+		ngrok http 80
+		```
 	</Tab>
 	<Tab title="Agent Config">
-		<ExplicitRegionAgentConfigExample />
+		```yaml
+		version: 3
+		agent:
+		  connect_url: connect.eu.ngrok-agent.com:443
+		```
 	</Tab>
 	<Tab title="SSH Reverse Tunnel">
-		<ExplicitRegionSshExample />
+		```bash
+		ssh -R 0:localhost:80 connect.eu.ngrok-agent.com http
+		```
 	</Tab>
 	<Tab title="Go">
-		<ExplicitRegionGoSdkExample />
+		```go
+		import (
+			"context"
+			"net"
+			"os"
+
+			"golang.ngrok.com/ngrok/v2"
+		)
+
+		func ngrokListener(ctx context.Context) (net.Listener, error) {
+			agent, _ := ngrok.NewAgent(
+				ngrok.WithAuthtoken(os.Getenv("NGROK_AUTHTOKEN")),
+				ngrok.WithAgentConnectURL("connect.eu.ngrok-agent.com:443"),
+			)
+			return agent.Listen(ctx)
+		}
+		```
 	</Tab>
 	<Tab title="Javascript">
-		<ExplicitRegionJavascriptSdkExample />
+		```jsx
+		const ngrok = require("@ngrok/ngrok");
+
+		(async function () {
+			const session = await new ngrok.SessionBuilder()
+				.authtokenFromEnv()
+				.serverAddr("connect.eu.ngrok-agent.com:443")
+				.connect();
+
+			const listener = await session
+				.httpEndpoint()
+				.listenAndForward("http://localhost:8080");
+
+			console.log(`Ingress established at: ${listener.url()}`);
+		})();
+		```
+
+		Javascript SDK Docs:
+
+		- [https://ngrok.github.io/ngrok-javascript/classes/SessionBuilder.html#serveraddr](https://ngrok.github.io/ngrok-javascript/classes/SessionBuilder.html#serveraddr)
 	</Tab>
 	<Tab title="Python">
-		<ExplicitRegionPythonSdkExample />
+		```python
+		import ngrok, asyncio
+
+		async def create_listener() -> ngrok.Listener:
+		    session: ngrok.Session = (
+		        await ngrok.SessionBuilder()
+		        .authtoken_from_env()
+		        .server_addr("connect.eu.ngrok-agent.com:443")
+		        .connect()
+		    )
+
+		    return (await session.http_endpoint()
+		        .listen_and_forward("http://localhost:8080"))
+
+		listener = asyncio.run(create_listener())
+
+		print(f"Ingress established at: {listener.url()}");
+		```
+
+		Python SDK Docs:
+
+		- [https://ngrok.github.io/ngrok-python/session_builder.html#ngrok.SessionBuilder.server_addr](https://ngrok.github.io/ngrok-python/session_builder.html#ngrok.SessionBuilder.server_addr)
 	</Tab>
 	<Tab title="Rust">
-		<ExplicitRegionRustSdkExample />
+		```rust
+		use ngrok::prelude::*;
+
+		async fn listen_ngrok() -> anyhow::Result<impl Tunnel> {
+		    let sess = ngrok::Session::builder()
+		        .authtoken_from_env()
+		        .server_addr("connect.eu.ngrok-agent.com:443"),
+		        .connect()
+		        .await?;
+
+		    let tun = sess
+		        .http_endpoint()
+		        .listen()
+		        .await?;
+
+		    println!("Listening on URL: {:?}", tun.url());
+
+		    Ok(tun)
+		}
+		```
+
+		Rust Crate Docs:
+
+		- [https://docs.rs/ngrok/latest/ngrok/session/struct.SessionBuilder.html#method.server_addr](https://docs.rs/ngrok/latest/ngrok/session/struct.SessionBuilder.html#method.server_addr)
 	</Tab>
 	<Tab title="Kubernetes Controller">
-		<ExplicitRegionKubernetesExample />
+		In your Helm values.yaml file, set
+
+		```
+		serverAddr: "connect.eu.ngrok-agent.com:443"
+		```
 	</Tab>
 </Tabs>
 

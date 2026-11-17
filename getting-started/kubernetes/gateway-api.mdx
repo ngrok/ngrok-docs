@@ -6,7 +6,6 @@ description: Use ngrok with the Kubernetes Gateway API for advanced routing, pol
 
 import K8sPrereq from "/snippets/k8s/_prereq.mdx";
 import K8sSetup from "/snippets/k8s/_setup.mdx";
-import K8sGWAPI from "/snippets/k8s/_gateway-api.mdx";
 import K8sInstall from "/snippets/k8s/_install.mdx";
 import Domain from "/snippets/k8s/_domain.mdx";
 import K8sSample from "/snippets/k8s/_sample.mdx";
@@ -37,7 +36,40 @@ Find more details on the [pricing page](https://ngrok.com/pricing), or, if you'r
   <Step title="Install the ngrok Kubernetes Operator">
 
     <K8sSetup />
-    <K8sGWAPI />
+    ## Install the Gateway API custom resource definitions
+
+    You can select either the [standard or experimental](https://gateway-api.sigs.k8s.io/guides/) set of Gateway API CRDs depending on your preference.
+    Either version will work with the ngrok Kubernetes Operator.
+
+    <Tabs>
+      <Tab title="Standard">
+
+    ```bash
+    kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.4.1/standard-install.yaml
+    ```
+
+      </Tab>
+      <Tab title="Experimental">
+
+    ```
+    kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.4.1/experimental-install.yaml
+    ```
+
+      </Tab>
+    </Tabs>
+
+    After installing the Gateway API CRDs, create the following `GatewayClass` so that you can mark which Gateway API resources the ngrok Operator should handle:
+
+    ```bash
+    kubectl apply -f -<<EOF
+    apiVersion: gateway.networking.k8s.io/v1
+    kind: GatewayClass
+    metadata:
+      name: ngrok
+    spec:
+      controllerName: ngrok.com/gateway-controller
+    EOF
+    ```
     <K8sInstall />
   </Step>
 

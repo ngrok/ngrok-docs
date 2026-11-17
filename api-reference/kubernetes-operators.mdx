@@ -3,18 +3,6 @@ title: Kubernetes Operators
 description: API reference documentation for Kubernetes Operator endpoints used by the ngrok Kubernetes Operator to manage operator state.
 ---
 
-import KubernetesOperatorsCreateRequest from "/snippets/api/resources/examples/_kubernetes_operators_create_request.mdx";
-import KubernetesOperatorsCreateResponse from "/snippets/api/resources/examples/_kubernetes_operators_create_response.mdx";
-import KubernetesOperatorsUpdateRequest from "/snippets/api/resources/examples/_kubernetes_operators_update_request.mdx";
-import KubernetesOperatorsUpdateResponse from "/snippets/api/resources/examples/_kubernetes_operators_update_response.mdx";
-import KubernetesOperatorsDeleteRequest from "/snippets/api/resources/examples/_kubernetes_operators_delete_request.mdx";
-import KubernetesOperatorsDeleteResponse from "/snippets/api/resources/examples/_kubernetes_operators_delete_response.mdx";
-import KubernetesOperatorsGetRequest from "/snippets/api/resources/examples/_kubernetes_operators_get_request.mdx";
-import KubernetesOperatorsGetResponse from "/snippets/api/resources/examples/_kubernetes_operators_get_response.mdx";
-import KubernetesOperatorsListRequest from "/snippets/api/resources/examples/_kubernetes_operators_list_request.mdx";
-import KubernetesOperatorsListResponse from "/snippets/api/resources/examples/_kubernetes_operators_list_response.mdx";
-import KubernetesOperatorsGetBoundEndpointsRequest from "/snippets/api/resources/examples/_kubernetes_operators_get_bound_endpoints_request.mdx";
-import KubernetesOperatorsGetBoundEndpointsResponse from "/snippets/api/resources/examples/_kubernetes_operators_get_bound_endpoints_response.mdx";
 
 <Note>
 These endpoints aren't intended for direct use.
@@ -31,7 +19,17 @@ Create a new Kubernetes Operator
 
 POST /kubernetes_operators
 
-<KubernetesOperatorsCreateRequest />
+#### Example Request
+
+```bash
+curl \
+-X POST \
+-H "Authorization: Bearer {API_KEY}" \
+-H "Content-Type: application/json" \
+-H "Ngrok-Version: 2" \
+-d '{"deployment":{"name":"ngrok-operator","namespace":"ngrok-operator"},"description":"Example Kubernetes Operator","enabled_features":["Ingress"],"metadata":"{\"environment\": \"staging\"}","region":"global"}' \
+https://api.ngrok.com/kubernetes_operators
+```
 
 #### Parameters
 
@@ -65,7 +63,40 @@ POST /kubernetes_operators
 
 Returns a 201 response on success
 
-<KubernetesOperatorsCreateResponse />
+#### Example Response
+
+```json
+{
+  "binding": {
+    "cert": {
+      "cert": "",
+      "not_after": "0001-01-01T00:00:00Z",
+      "not_before": "0001-01-01T00:00:00Z"
+    },
+    "endpoint_selectors": null
+  },
+  "created_at": "2025-09-04T10:11:43Z",
+  "deployment": {
+    "cluster_name": "",
+    "name": "ngrok-operator",
+    "namespace": "ngrok-operator",
+    "version": ""
+  },
+  "description": "Example Kubernetes Operator",
+  "enabled_features": [
+    "ingress"
+  ],
+  "id": "k8sop_32ELIMnXLu9Qkpj1OddUYoLIHfT",
+  "metadata": "{\"environment\": \"staging\"}",
+  "principal": {
+    "id": "usr_32ELAUA7XkJHRP2DgH2JjDRLp81",
+    "uri": ""
+  },
+  "region": "global",
+  "updated_at": "2025-09-04T10:11:43Z",
+  "uri": "https://api.ngrok.com/kubernetes_operators/k8sop_32ELIMnXLu9Qkpj1OddUYoLIHfT"
+}
+```
 
 #### Fields
 
@@ -123,7 +154,17 @@ Update an existing Kubernetes Operator by ID.
 
 PATCH /kubernetes_operators/\{id\}
 
-<KubernetesOperatorsUpdateRequest />
+#### Example Request
+
+```bash
+curl \
+-X PATCH \
+-H "Authorization: Bearer {API_KEY}" \
+-H "Content-Type: application/json" \
+-H "Ngrok-Version: 2" \
+-d '{"metadata":"{\"environment\": \"production\"}"}' \
+https://api.ngrok.com/kubernetes_operators/k8sop_32ELIMnXLu9Qkpj1OddUYoLIHfT
+```
 
 #### Parameters
 
@@ -156,7 +197,41 @@ PATCH /kubernetes_operators/\{id\}
 
 Returns a 200 response on success
 
-<KubernetesOperatorsUpdateResponse />
+#### Example Response
+
+```json
+{
+  "binding": {
+    "cert": {
+      "cert": "",
+      "not_after": "0001-01-01T00:00:00Z",
+      "not_before": "0001-01-01T00:00:00Z"
+    },
+    "endpoint_selectors": null,
+    "ingress_endpoint": "connect.ngrok-endpoints.com:443"
+  },
+  "created_at": "2025-09-04T10:11:43Z",
+  "deployment": {
+    "cluster_name": "",
+    "name": "ngrok-operator",
+    "namespace": "ngrok-operator",
+    "version": ""
+  },
+  "description": "Example Kubernetes Operator",
+  "enabled_features": [
+    "ingress"
+  ],
+  "id": "k8sop_32ELIMnXLu9Qkpj1OddUYoLIHfT",
+  "metadata": "{\"environment\": \"production\"}",
+  "principal": {
+    "id": "usr_32ELAUA7XkJHRP2DgH2JjDRLp81",
+    "uri": ""
+  },
+  "region": "global",
+  "updated_at": "2025-09-04T10:11:43Z",
+  "uri": "https://api.ngrok.com/kubernetes_operators/k8sop_32ELIMnXLu9Qkpj1OddUYoLIHfT"
+}
+```
 
 #### Fields
 
@@ -214,7 +289,15 @@ Delete a Kubernetes Operator
 
 DELETE /kubernetes_operators/\{id\}
 
-<KubernetesOperatorsDeleteRequest />
+#### Example Request
+
+```bash
+curl \
+-X DELETE \
+-H "Authorization: Bearer {API_KEY}" \
+-H "Ngrok-Version: 2" \
+https://api.ngrok.com/kubernetes_operators/k8sop_32ELIMnXLu9Qkpj1OddUYoLIHfT
+```
 
 ### Response
 
@@ -228,13 +311,54 @@ Get of a Kubernetes Operator
 
 GET /kubernetes_operators/\{id\}
 
-<KubernetesOperatorsGetRequest />
+#### Example Request
+
+```bash
+curl \
+-X GET \
+-H "Authorization: Bearer {API_KEY}" \
+-H "Ngrok-Version: 2" \
+https://api.ngrok.com/kubernetes_operators/k8sop_32ELIMnXLu9Qkpj1OddUYoLIHfT
+```
 
 ### Response
 
 Returns a 200 response on success
 
-<KubernetesOperatorsGetResponse />
+#### Example Response
+
+```json
+{
+  "binding": {
+    "cert": {
+      "cert": "",
+      "not_after": "0001-01-01T00:00:00Z",
+      "not_before": "0001-01-01T00:00:00Z"
+    },
+    "endpoint_selectors": null
+  },
+  "created_at": "2025-09-04T10:11:43Z",
+  "deployment": {
+    "cluster_name": "",
+    "name": "ngrok-operator",
+    "namespace": "ngrok-operator",
+    "version": ""
+  },
+  "description": "Example Kubernetes Operator",
+  "enabled_features": [
+    "ingress"
+  ],
+  "id": "k8sop_32ELIMnXLu9Qkpj1OddUYoLIHfT",
+  "metadata": "{\"environment\": \"staging\"}",
+  "principal": {
+    "id": "usr_32ELAUA7XkJHRP2DgH2JjDRLp81",
+    "uri": ""
+  },
+  "region": "global",
+  "updated_at": "2025-09-04T10:11:43Z",
+  "uri": "https://api.ngrok.com/kubernetes_operators/k8sop_32ELIMnXLu9Qkpj1OddUYoLIHfT"
+}
+```
 
 #### Fields
 
@@ -292,13 +416,60 @@ List all Kubernetes Operators owned by this account
 
 GET /kubernetes_operators
 
-<KubernetesOperatorsListRequest />
+#### Example Request
+
+```bash
+curl \
+-X GET \
+-H "Authorization: Bearer {API_KEY}" \
+-H "Ngrok-Version: 2" \
+https://api.ngrok.com/kubernetes_operators
+```
 
 ### Response
 
 Returns a 200 response on success
 
-<KubernetesOperatorsListResponse />
+#### Example Response
+
+```json
+{
+  "next_page_uri": null,
+  "operators": [
+    {
+      "binding": {
+        "cert": {
+          "cert": "",
+          "not_after": "0001-01-01T00:00:00Z",
+          "not_before": "0001-01-01T00:00:00Z"
+        },
+        "endpoint_selectors": null
+      },
+      "created_at": "2025-09-04T10:11:43Z",
+      "deployment": {
+        "cluster_name": "",
+        "name": "ngrok-operator",
+        "namespace": "ngrok-operator",
+        "version": ""
+      },
+      "description": "Example Kubernetes Operator",
+      "enabled_features": [
+        "ingress"
+      ],
+      "id": "k8sop_32ELIMnXLu9Qkpj1OddUYoLIHfT",
+      "metadata": "{\"environment\": \"staging\"}",
+      "principal": {
+        "id": "usr_32ELAUA7XkJHRP2DgH2JjDRLp81",
+        "uri": ""
+      },
+      "region": "global",
+      "updated_at": "2025-09-04T10:11:43Z",
+      "uri": "https://api.ngrok.com/kubernetes_operators/k8sop_32ELIMnXLu9Qkpj1OddUYoLIHfT"
+    }
+  ],
+  "uri": "https://api.ngrok.com/kubernetes_operators"
+}
+```
 
 #### Fields
 
@@ -364,13 +535,29 @@ List Endpoints bound to a Kubernetes Operator
 
 GET /kubernetes_operators/\{id\}/bound_endpoints
 
-<KubernetesOperatorsGetBoundEndpointsRequest />
+#### Example Request
+
+```bash
+curl \
+-X GET \
+-H "Authorization: Bearer {API_KEY}" \
+-H "Ngrok-Version: 2" \
+https://api.ngrok.com/kubernetes_operators/k8sop_32ELIMnXLu9Qkpj1OddUYoLIHfT/bound_endpoints
+```
 
 ### Response
 
 Returns a 200 response on success
 
-<KubernetesOperatorsGetBoundEndpointsResponse />
+#### Example Response
+
+```json
+{
+  "endpoints": [],
+  "next_page_uri": null,
+  "uri": "https://api.ngrok.com/kubernetes_operators/k8sop_32ELIMnXLu9Qkpj1OddUYoLIHfT/bound_endpoints"
+}
+```
 
 #### Fields
 
