@@ -23,6 +23,40 @@ ngrok http 8080
 
 Copy the HTTPS forwarding URL from the agent console and paste it into your webhook provider's configuration (for example, Stripe, GitHub, or Twilio).
 
+### Start the endpoint from your app
+
+If your webhook handler is a Next.js or FastAPI app, a [framework library](/agent-sdks/frameworks/) opens the endpoint when your app starts.
+There's no separate agent to install or keep running in another terminal.
+
+<Tabs>
+  <Tab title="Next.js">
+    ```bash
+    npx @ngrok/nextjs dev
+    ```
+
+    The command starts `next dev`, prints the public URL, and reminds you to register it with your webhook provider.
+    See the [Next.js library](/agent-sdks/frameworks/nextjs) for setup.
+  </Tab>
+  <Tab title="FastAPI">
+    ```python title="main.py"
+    import ngrok_fastapi
+    from fastapi import FastAPI, Request
+
+    app = FastAPI()
+    ngrok_fastapi.attach(app, ngrok_fastapi.Config(port=8000))
+
+
+    @app.post("/webhooks")
+    async def webhooks(request: Request):
+        event = await request.json()
+        return {"received": True}
+    ```
+
+    Run the app with `uvicorn main:app --port 8000`, and the library prints the public URL.
+    See the [FastAPI library](/agent-sdks/frameworks/fastapi) for setup.
+  </Tab>
+</Tabs>
+
 ## Inspect webhook payloads
 
 ngrok's built-in [Traffic Inspector](/share-localhost/inspection) lets you see every webhook request in real time, including headers, body, and response.
@@ -57,9 +91,34 @@ on_http_request:
 
 Then start your endpoint with the policy file:
 
-```bash
-ngrok http 8080 --traffic-policy-file  /path/to/policy.yml
-```
+<Tabs>
+  <Tab title="Agent CLI">
+    ```bash
+    ngrok http 8080 --traffic-policy-file /path/to/policy.yml
+    ```
+  </Tab>
+  <Tab title="Next.js">
+    ```ts title="ngrok.config.ts"
+    import { readFileSync } from "node:fs";
+
+    export default {
+      trafficPolicy: readFileSync("policy.yml", "utf8"),
+    };
+    ```
+
+    Then run `npx @ngrok/nextjs dev`.
+  </Tab>
+  <Tab title="FastAPI">
+    ```python title="main.py"
+    from pathlib import Path
+
+    ngrok_fastapi.attach(app, ngrok_fastapi.Config(
+        port=8000,
+        traffic_policy=Path("policy.yml").read_text(),
+    ))
+    ```
+  </Tab>
+</Tabs>
 
 If verification succeeds, the request proceeds to the next action defined in your Traffic Policy, which in this case sends a custom HTTP response.
 If it fails, ngrok terminates the request with a `403 Forbidden` response.

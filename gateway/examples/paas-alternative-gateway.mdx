@@ -24,21 +24,57 @@ With this setup, you can:
 <Steps titleSize="h2">
   <Step title="Create endpoints for your application instances">
 
-    Start multiple [Agent Endpoints](/gateway/endpoints/agent-endpoints/) with the same URL to create an endpoint pool for automatic load balancing. Replace `$PORT` with your application ports.
+    Start multiple [Agent Endpoints](/gateway/endpoints/agent-endpoints/) with the same URL to create an endpoint pool for automatic load balancing.
+    Replace `$PORT` with your application ports.
     You can also use one of the [SDKs](/agent-sdks) or the [Kubernetes Operator](/k8s).
 
     If you only have one instance now, you can add additional replicas later for redundancy through load balancing.
 
-    ```bash
-# Instance 1
-ngrok http $PORT --url https://service.internal --pooling-enabled
+    <Tabs>
+      <Tab title="Agent CLI">
+        ```bash
+        # Instance 1
+        ngrok http $PORT --url https://service.internal --pooling-enabled
 
-# Instance 2 (optional)
-ngrok http $PORT --url https://service.internal --pooling-enabled
+        # Instance 2 (optional)
+        ngrok http $PORT --url https://service.internal --pooling-enabled
 
-# Instance 3 (optional)
-ngrok http $PORT --url https://service.internal --pooling-enabled
-```
+        # Instance 3 (optional)
+        ngrok http $PORT --url https://service.internal --pooling-enabled
+        ```
+      </Tab>
+      <Tab title="FastAPI">
+        ```python
+        ngrok_fastapi.attach(app, ngrok_fastapi.Config(
+            port=8000,
+            url="service.internal",
+            binding=ngrok_fastapi.Binding.INTERNAL,
+            pooling=True,
+        ))
+        ```
+      </Tab>
+      <Tab title="Gin">
+        ```go
+        ngrokgin.Serve(context.Background(), router, ngrokgin.Config{
+        	URL:     "service.internal",
+        	Binding: ngrokgin.BindingInternal,
+        	Pooling: true,
+        })
+        ```
+      </Tab>
+      <Tab title="Axum">
+        ```rust
+        ngrok_axum::serve(app, ngrok_axum::Config {
+            url: Some("service.internal".to_string()),
+            binding: Some(ngrok_axum::Binding::Internal),
+            pooling: true,
+            ..Default::default()
+        }).await?;
+        ```
+      </Tab>
+    </Tabs>
+
+    With a [framework library](/agent-sdks/frameworks/), each instance of your app joins the pool when it starts and leaves when it stops, with no separate agent process to run.
 
 <Tip>
 By using the same URL with `--pooling-enabled`, ngrok automatically creates an [Endpoint Pool](/gateway/endpoints/endpoint-pooling) that distributes traffic round-robin across all healthy instances with automatic failover.

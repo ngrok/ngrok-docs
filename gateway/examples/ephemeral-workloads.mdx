@@ -58,7 +58,7 @@ ngrok makes ephemeral workloads easier by letting you:
   <Step title="Add authentication to your previews">
 
     Deploy previews shouldn't be publicly accessible.
-    Use the [OAuth action](/gateway/traffic-policy/actions/oauth) to require reviewers to authenticate before accessing any preview and deny all requests from those without a `example.com` email:
+    Use the [OAuth action](/gateway/traffic-policy/actions/oauth) to require reviewers to authenticate before accessing any preview and deny all requests from those without an `example.com` email:
 
     ```yaml
     on_http_request:
@@ -145,6 +145,19 @@ ngrok makes ephemeral workloads easier by letting you:
 
     When the job finishes, the agent stops and the preview disappears.
     </Info>
+
+    <Tip>
+    If your preview app is built with FastAPI, Gin, or Axum, it can open its own internal endpoint with a [framework library](/agent-sdks/frameworks/).
+    You can then skip the **Install ngrok** and **Start ngrok tunnel** steps, and the endpoint closes when the app stops.
+    For example, with Gin, pass the PR number to the app as an environment variable:
+
+    ```go
+    ngrokgin.Serve(context.Background(), router, ngrokgin.Config{
+    	URL:     "pr-" + os.Getenv("PR_NUMBER") + ".internal",
+    	Binding: ngrokgin.BindingInternal,
+    })
+    ```
+    </Tip>
   </Step>
 
   <Step title="Try out your endpoint">
