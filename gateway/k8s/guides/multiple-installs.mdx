@@ -22,7 +22,9 @@ helm install ngrok-crds ngrok/ngrok-crds
 ```
 
 <Warning title="Never bundle CRDs with one of multiple operators">
-If one operator release includes the CRDs, all operators depend on them. Uninstalling that specific release would remove the CRDs and break every other operator. Always install CRDs separately when using multiple operators.
+If one operator release includes the CRDs, all operators depend on them.
+Uninstalling that specific release would remove the CRDs and break every other operator.
+Always install CRDs separately when using multiple operators.
 </Warning>
 
 If you already have an existing operator installation with bundled CRDs, see [Migrating CRDs to a separate chart](#migrating-crds-to-a-separate-chart) below.
@@ -52,13 +54,17 @@ helm install ngrok-operator ngrok/ngrok-operator \
 Now you can create `Ingress` objects or custom resources like `CloudEndpoint` in either namespace, and only the operator watching that namespace will reconcile them. Resources created in a namespace without a corresponding operator will not be reconciled.
 
 <Warning title="Namespace separation is required for multi-install">
-You **must** use `ingress.watchNamespace` to scope each operator to its own namespace. Using only `ingress.ingressClass.name` to separate operators is **not sufficient**.
+You **must** use `ingress.watchNamespace` to scope each operator to its own namespace.
+Using only `ingress.ingressClass.name` to separate operators is **not sufficient**.
 
-The operator creates derived custom resources (such as `CloudEndpoint` and `AgentEndpoint`) from `Ingress` objects. While `ingress.watchNamespace` limits the operator's watch scope for both `Ingress` objects and these derived resources, there is no mechanism to filter derived resource events by the `ingressClass` of the parent `Ingress` that caused them to be created. Without namespace separation, multiple operators would attempt to reconcile each other's derived resources.
+The operator creates derived custom resources (such as `CloudEndpoint` and `AgentEndpoint`) from `Ingress` objects.
+While `ingress.watchNamespace` limits the operator's watch scope for both `Ingress` objects and these derived resources, there is no mechanism to filter derived resource events by the `ingressClass` of the parent `Ingress` that caused them to be created.
+Without namespace separation, multiple operators would attempt to reconcile each other's derived resources.
 </Warning>
 
 <Tip>
-Each operator already defaults to the `ngrok` ingress class, so namespace scoping alone is sufficient to separate multiple installations. You can optionally set `ingress.ingressClass.name` to use a custom class name, but this is not required for most setups.
+Each operator already defaults to the `ngrok` ingress class, so namespace scoping alone is sufficient to separate multiple installations.
+You can optionally set `ingress.ingressClass.name` to use a custom class name, but this is not required for most setups.
 </Tip>
 
 ## Migrating CRDs to a separate chart
@@ -91,7 +97,8 @@ kubectl get crds -o name | grep ngrok | xargs -I{} kubectl get {} -o jsonpath='{
 ```
 
 <Warning title="Test in a non-production cluster first">
-This migration relies on Helm honoring the `helm.sh/resource-policy=keep` annotation on live CRD objects. Test this procedure in a non-production cluster before running it in production.
+This migration relies on Helm honoring the `helm.sh/resource-policy=keep` annotation on live CRD objects.
+Test this procedure in a non-production cluster before running it in production.
 </Warning>
 
 **Step 2:** Re-annotate the CRDs to be owned by the `ngrok-crds` release. Replace `CRDS_NAMESPACE` with the namespace where you plan to install the `ngrok-crds` release (for example, `default`):
@@ -133,7 +140,9 @@ You can now install additional operators with `installCRDs=false`.
 ### Installing without separating CRDs
 
 <Warning title="Not recommended">
-You can install a second operator with `installCRDs=false` without first migrating CRDs to a separate chart. However, this means one operator release owns the CRDs that all operators depend on. If that specific release is uninstalled, it will remove the CRDs and break every other operator.
+You can install a second operator with `installCRDs=false` without first migrating CRDs to a separate chart.
+However, this means one operator release owns the CRDs that all operators depend on.
+If that specific release is uninstalled, it will remove the CRDs and break every other operator.
 </Warning>
 
 ## Uninstalling one of multiple operators
