@@ -11,15 +11,13 @@ import RateLimitByHostHeader from "/snippets/traffic-policy/actions/rate-limit/r
 import { ConfigField } from "/snippets/ConfigTable.jsx";
 import { ConfigChildren } from "/snippets/ConfigChildren.jsx";
 
-The **Rate Limit** Traffic Policy action enables you to configure thresholds
-that restrict the throughput of traffic that successfully reaches your endpoint.
+The **Rate Limit** Traffic Policy action enables you to configure thresholds that restrict the throughput of traffic that successfully reaches your endpoint.
 
-Traffic may be limited overall or by attributes of the incoming requests.
+You can limit traffic overall or by attributes of the incoming requests.
 
 ## Configuration reference
 
-The [Traffic Policy](/gateway/traffic-policy/) configuration
-reference for this action.
+The [Traffic Policy](/gateway/traffic-policy/) configuration reference for this action.
 
 ### Supported phases
 
@@ -65,20 +63,17 @@ reference for this action.
             <ConfigEnumOption>`conn.client_ip` - The client IP address.</ConfigEnumOption>
             <ConfigEnumOption>`getReqHeader('X-Example-Header-Name')` - The value for the specified header key, if it exists.</ConfigEnumOption>
         </ConfigEnum>
-        <p>Up to ten bucket keys can be specified. For multiple buckets, the action will rate limit by each unique combination of buckets.</p>
+        <p>Up to ten bucket keys can be specified. For multiple buckets, the action rate limits by each unique combination of buckets.</p>
     </ConfigField>
 
 ## Behavior
 
 ### Determining the rate limit bucket
 
-When this action is executed, information from the incoming HTTP request is
-used to determine which rate limit bucket the request falls into. Each bucket
-is defined by specific criteria through the `bucket_key` configuration field
-such as client IP, request host, or a header value.
+When this action runs, ngrok uses information from the incoming HTTP request to determine which rate limit bucket the request falls into.
+The `bucket_key` configuration field defines each bucket by specific criteria such as client IP, request host, or a header value.
 
-If the bucket has not exceeded its capacity, the request proceeds to the next
-action in your policy configuration.
+If the bucket hasn't exceeded its capacity, the request proceeds to the next action in your policy configuration.
 
 `conn.client_ip` is the IP address of the connection to ngrok, not a value from the `X-Forwarded-For` header.
 A client can't change its `conn.client_ip` bucket by setting `X-Forwarded-For`.
@@ -86,27 +81,21 @@ To learn how ngrok appends to `X-Forwarded-For` before forwarding a request to y
 
 ## Multiple buckets
 
-If multiple `bucket_key` values are specified, the action will create a
-unique rate limit bucket for each combination of the specified keys. For
-example, if you have two `bucket_key` values, such as `req.host` and `conn.client_ip`,
-all incoming requests that have the exact same combination of `Host` header and client IP
-will be grouped into the same rate limit bucket. To rate limit separately with two different
-buckets, you can create multiple `rate-limit` actions instead.
+If you specify multiple `bucket_key` values, the action creates a unique rate limit bucket for each combination of the specified keys.
+For example, if you have two `bucket_key` values, such as `req.host` and `conn.client_ip`, all incoming requests that have the exact same combination of `Host` header and client IP are grouped into the same rate limit bucket.
+To rate limit separately with two different buckets, create multiple `rate-limit` actions instead.
 
 ### Rate limit exceeded
 
-If the identified bucket has received more events than its capacity over the
-specified duration:
+If the identified bucket has received more events than its capacity over the specified duration:
 
 1. The request is rejected with an `HTTP 429—Too Many Requests` status code.
-2. The `retry-after` header is included in the response, indicating the number
-   of seconds after which the request may be retried.
+2. The `retry-after` header is included in the response, indicating the number of seconds after which the request may be retried.
 
 ### Capacity per ingress server
 
-Currently, the `capacity` for each rate limit bucket is applied per ingress
-server. This means that each server independently tracks the number of requests
-and enforces the rate limits accordingly.
+Currently, the `capacity` for each rate limit bucket is applied per ingress server.
+This means that each server independently tracks the number of requests and enforces the rate limits accordingly.
 
 ### Non-terminating action
 
@@ -126,7 +115,7 @@ and enforces the rate limits accordingly.
 </ConfigField>
 
 <ConfigField title="actions.ngrok.rate_limit.limited" type="boolean">
-    <p>Indicates whether the request was limited by the rate limit. If  `true`, the request was rate-limited based on the configured limits for the specified bucket.</p>
+    <p>Indicates whether the request was limited by the rate limit. If `true`, the request was rate-limited based on the configured limits for the specified bucket.</p>
 </ConfigField>
 
 <ConfigField title="actions.ngrok.rate_limit.error.code" type="string">
