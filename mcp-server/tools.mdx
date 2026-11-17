@@ -1,0 +1,230 @@
+---
+title: ngrok MCP Server Tools and Scopes
+sidebarTitle: Tools and Scopes
+description: Every tool the ngrok MCP server exposes, whether it reads, changes, or deletes, and the personal access token scope each tool needs.
+---
+
+This page lists every tool the [ngrok MCP server](/mcp-server) exposes, what each one does, and the scopes it needs.
+Use it to decide what to approve on the OAuth consent screen, or which scopes to give a [personal access token](/mcp-server#clients-without-oauth).
+
+## How to read the tables
+
+The **Type** column matches the markers the server sends to your client, which [Make changes safely](/mcp-server#make-changes-safely) explains:
+
+- **Read-only**: The tool only reads data.
+- **Changes**: The tool creates or updates something in your account, or sends something on your behalf.
+- **Destructive**: The tool can delete, revoke, or break something that's in use, so your client should always ask before it runs.
+
+The **Scopes** column lists the scopes every call of the tool needs.
+If you signed in with OAuth and your token lacks one that your role allows, the server asks your client to sign in again to approve it.
+If your personal access token lacks one, the tool returns a scope error.
+A dash (—) means the tool needs no scope of its own.
+The ngrok API still checks your role and your scopes on every call, and some arguments need an extra scope.
+
+Some accounts see more tools than this page lists, such as tools for products in early access.
+
+## Account and team
+
+| Tool | Type | Scopes |
+| --- | --- | --- |
+| `platform_whoami`<br />Shows the user or service user calling, the account, the caller's role, and the plan. | Read-only | — |
+| `platform_list_team`<br />Lists users with their roles, service users, and pending invitations. | Read-only | `team:read`, `service-users:read` |
+| `platform_invite_team_member`<br />Sends an email invitation to join the account. | Changes | `ngrok:invitations:write` |
+| `platform_list_api_keys`<br />Lists API keys with their owner and status, never the key itself. | Read-only | `api-keys:read` |
+| `platform_list_authtokens`<br />Lists authtokens with their owner, ACL, and status, never the token itself. | Read-only | `credentials:read` |
+| `platform_list_ssh_keys`<br />Lists SSH public keys registered for the agentless SSH tunnel. | Read-only | `ssh-credentials:read` |
+| `platform_list_access_tokens`<br />Lists personal access tokens and when each expires or was revoked, never the token itself. | Read-only | `credentials:read` |
+| `platform_get_usage`<br />Shows what the account consumed in a window, next to what the plan includes. | Read-only | `ngrok:usage:read` |
+| `platform_get_endpoint_usage`<br />Ranks the endpoints that drove usage in a window. | Read-only | `ngrok:usage:read` |
+| `platform_get_limits`<br />Shows each plan limit, current usage, and when a limit last blocked the account. | Read-only | `ngrok:limits:read` |
+
+To revoke an authtoken, API key, or SSH key, or to cancel an invitation, the AI agent uses [`delete_resource`](#get-and-delete-any-resource).
+
+## Endpoints, agents, and traffic
+
+| Tool | Type | Scopes |
+| --- | --- | --- |
+| `gw_list_endpoints`<br />Lists endpoints with their URL, type, binding, upstream, and whether they have a Traffic Policy. | Read-only | `endpoints:read` |
+| `gw_create_cloud_endpoint`<br />Creates a Cloud Endpoint. | Changes | `endpoints:write` |
+| `gw_update_cloud_endpoint`<br />Updates a Cloud Endpoint's URL, bindings, pooling, or Traffic Policy. | Changes | `endpoints:read`, `endpoints:write` |
+| `gw_validate_traffic_policy`<br />Checks a Traffic Policy document for errors without saving it. | Read-only | — |
+| `gw_list_agents`<br />Lists connected ngrok agents with their version, deprecation deadline, OS, and region. | Read-only | `tunnel-sessions:read` |
+| `gw_list_kubernetes_operators`<br />Lists Kubernetes Operators registered to the account. | Read-only | `kubernetes-operators:read` |
+| `gw_query_traffic_inspector`<br />Finds HTTP requests in Traffic Inspector, or counts them by field or by time period. | Read-only | `events:read` |
+| `gw_get_traffic_inspector_request`<br />Shows one request in full, including headers and bodies when full capture is on. | Read-only | `events:read` |
+| `gw_query_connections`<br />Finds open and closed TCP and TLS connections, or counts them by field or by time period. | Read-only | `events:read` |
+| `gw_get_connection`<br />Shows one connection in full, including timing, bytes, TLS details, and failure. | Read-only | `events:read` |
+| `gw_get_connection_progress`<br />Shows the bytes a TCP or TLS connection moved over time. | Read-only | `events:read` |
+| `gw_list_app_users`<br />Lists people who signed in to your endpoints through an OAuth, OIDC, or SAML action. | Read-only | `app-users:read` |
+
+## Domains, addresses, and certificates
+
+| Tool | Type | Scopes |
+| --- | --- | --- |
+| `gw_list_domains`<br />Lists reserved domains with their CNAME target and certificate status. | Read-only | `domains:read` |
+| `gw_reserve_domain`<br />Reserves a domain. | Changes | `domains:write` |
+| `gw_update_domain`<br />Updates a reserved domain. | Changes | `domains:write` |
+| `gw_list_tcp_addresses`<br />Lists reserved TCP addresses. | Read-only | `tcp-addrs:read` |
+| `gw_reserve_tcp_address`<br />Reserves a TCP address. | Changes | `tcp-addrs:write` |
+| `gw_update_tcp_address`<br />Updates a reserved TCP address's description or metadata. | Changes | `tcp-addrs:write` |
+| `gw_list_tls_certificates`<br />Lists uploaded TLS certificates. | Read-only | `tls-certificates:read` |
+| `gw_list_certificate_authorities`<br />Lists certificate authorities used for mutual TLS. | Read-only | `certificate-authorities:read` |
+
+## IP policies
+
+| Tool | Type | Scopes |
+| --- | --- | --- |
+| `gw_list_ip_policies`<br />Lists IP policies. | Read-only | `ip-policies:read` |
+| `gw_list_ip_policy_rules`<br />Lists IP policy rules across every policy. | Read-only | `ip-policies:read` |
+| `gw_create_ip_policy`<br />Creates an IP policy. | Changes | `ip-policies:write` |
+| `gw_update_ip_policy`<br />Updates an IP policy's description or metadata. | Changes | `ip-policies:read`, `ip-policies:write` |
+| `gw_create_ip_policy_rule`<br />Adds a rule that allows or denies a CIDR. | Changes | `ip-policies:write` |
+| `gw_update_ip_policy_rule`<br />Updates an IP policy rule. | Changes | `ip-policies:read`, `ip-policies:write` |
+
+## Vaults and secrets
+
+Secret values never go through the chat.
+`gw_create_secret` and `gw_update_secret` send you a dashboard link where you type the value, and the dashboard checks your permissions when you save it.
+
+| Tool | Type | Scopes |
+| --- | --- | --- |
+| `gw_list_vaults`<br />Lists vaults. | Read-only | `vaults:read` |
+| `gw_list_secrets`<br />Lists secret names and metadata, never values. | Read-only | `vaults:read` |
+| `gw_create_vault`<br />Creates a vault. | Changes | `vaults:write` |
+| `gw_update_vault`<br />Updates a vault's name, description, or metadata. | Changes | `vaults:write` |
+| `gw_create_secret`<br />Sends you a dashboard link to create a secret and type its value. | Changes | `vaults:read` |
+| `gw_update_secret`<br />Updates a secret's name, description, or metadata, or sends you a link to set a new value. | Changes | — |
+
+## Log exports
+
+| Tool | Type | Scopes |
+| --- | --- | --- |
+| `gw_list_event_subscriptions`<br />Lists event subscriptions, which choose what the account exports as logs. | Read-only | `events:read` |
+| `gw_list_event_destinations`<br />Lists event destinations and their recent delivery errors, never their credentials. | Read-only | `events:read` |
+
+## Get and delete any resource
+
+Two tools work across resource types.
+The ID prefix picks the type, and the ngrok API checks the scope for that type.
+
+| Tool | Type | Scopes |
+| --- | --- | --- |
+| `get_resource`<br />Reads one object by its ID or by a dashboard URL, or an endpoint by its URL. | Read-only | — |
+| `delete_resource`<br />Deletes, revokes, or releases one object by its ID. | Destructive | — |
+
+`delete_resource` can:
+
+- Delete a Cloud Endpoint, but not an Agent Endpoint or an AI Gateway endpoint.
+- Release a reserved domain or TCP address.
+- Delete an IP policy with all its rules, or one IP policy rule.
+- Delete an empty vault, or a secret.
+- Revoke an authtoken, API key, or SSH public key.
+- Cancel a pending team invitation.
+- Revoke an AI Gateway access key, or delete an AI Gateway access config, custom provider, provider key, virtual model, or firewall policy.
+
+## Documentation
+
+These tools read the public ngrok documentation, so they need no scope.
+
+| Tool | Type | Scopes |
+| --- | --- | --- |
+| `docs_search`<br />Searches the ngrok documentation. | Read-only | — |
+| `docs_get_page`<br />Reads one documentation page. | Read-only | — |
+| `docs_get_error`<br />Looks up an `ERR_NGROK` error code. | Read-only | — |
+
+## AI Gateway
+
+For the usage, request, capture, and model tools, such as `aigw_list_usage` and `aigw_get_model`, see [AI Gateway tools](/mcp-server/ai-gateway#tools-and-scopes).
+
+The tools in this section read and change your AI Gateway setup.
+A change applies to live traffic right away.
+Access key tokens and provider API keys never go through the chat: `aigw_create_access_key`, `aigw_create_provider_key`, and `aigw_rotate_provider_key` send you an AI dashboard link where you finish the step, so they need only a read scope on the token, and the dashboard checks your permissions when you save.
+
+| Tool | Type | Scopes |
+| --- | --- | --- |
+| `aigw_list_access_configs`<br />Lists access configs, which limit the providers and models a key may use. | Read-only | `ai-gateway:access-keys:read` |
+| `aigw_get_access_config`<br />Shows one access config. | Read-only | `ai-gateway:access-keys:read` |
+| `aigw_create_access_config`<br />Creates an access config. | Changes | `ai-gateway:access-keys:write` |
+| `aigw_update_access_config`<br />Updates an access config, which changes what every key that uses it may do. | Destructive | `ai-gateway:access-keys:write` |
+| `aigw_list_access_keys`<br />Lists access keys, never their tokens. | Read-only | `ai-gateway:access-keys:read` |
+| `aigw_get_access_key`<br />Shows one access key, never its token. | Read-only | `ai-gateway:access-keys:read` |
+| `aigw_create_access_key`<br />Sends you an AI dashboard link to create an access key. | Changes | `ai-gateway:access-keys:read` |
+| `aigw_update_access_key`<br />Updates an access key. | Changes | `ai-gateway:access-keys:write` |
+| `aigw_list_providers`<br />Lists custom providers. | Read-only | `ai-gateway:providers:read` |
+| `aigw_get_provider`<br />Shows one custom provider. | Read-only | `ai-gateway:providers:read` |
+| `aigw_create_provider`<br />Creates a custom provider. | Changes | `ai-gateway:providers:write` |
+| `aigw_update_provider`<br />Updates a custom provider. | Destructive | `ai-gateway:providers:write` |
+| `aigw_list_provider_keys`<br />Lists provider keys, never their values. | Read-only | `ai-gateway:providers:read` |
+| `aigw_get_provider_key`<br />Shows one provider key, never its value. | Read-only | `ai-gateway:providers:read` |
+| `aigw_create_provider_key`<br />Sends you an AI dashboard link to add a provider key. | Changes | `ai-gateway:providers:read` |
+| `aigw_rotate_provider_key`<br />Sends you an AI dashboard link to replace a provider key's value. | Changes | `ai-gateway:providers:read` |
+| `aigw_update_provider_key`<br />Updates a provider key. | Changes | `ai-gateway:providers:write` |
+| `aigw_list_virtual_models`<br />Lists virtual models. | Read-only | `ai-gateway:virtual-models:read` |
+| `aigw_get_virtual_model`<br />Shows one virtual model and its target models. | Read-only | `ai-gateway:virtual-models:read` |
+| `aigw_create_virtual_model`<br />Creates a virtual model. | Changes | `ai-gateway:virtual-models:write` |
+| `aigw_update_virtual_model`<br />Updates a virtual model. | Destructive | `ai-gateway:virtual-models:write` |
+| `aigw_list_firewall_policies`<br />Lists firewall policies. | Read-only | `ai-gateway:settings:read` |
+| `aigw_get_firewall_policy`<br />Shows one firewall policy. | Read-only | `ai-gateway:settings:read` |
+| `aigw_create_firewall_policy`<br />Creates a firewall policy. | Changes | `ai-gateway:settings:write` |
+| `aigw_update_firewall_policy`<br />Updates a firewall policy. | Destructive | `ai-gateway:settings:write` |
+| `aigw_get_gateway_config`<br />Shows the account-wide AI Gateway settings. | Read-only | `ai-gateway:settings:read` |
+| `aigw_update_gateway_config`<br />Updates the account-wide AI Gateway settings. | Destructive | `ai-gateway:settings:write` |
+| `aigw_add_credits`<br />Gives you the AI dashboard billing page. It buys nothing. | Read-only | — |
+
+## Feedback
+
+| Tool | Type | Scopes |
+| --- | --- | --- |
+| `send_feedback`<br />Reports a missing, confusing, or broken ngrok MCP tool to ngrok. | Changes | — |
+
+## Tools by scope
+
+When you create a personal access token, give it the scopes for the tools you want your AI agent to use.
+A tool runs only when the token has every scope the tool lists.
+
+| Scope | Tools it unlocks |
+| --- | --- |
+| `endpoints:read` | `gw_list_endpoints`, `gw_update_cloud_endpoint` (with `endpoints:write`) |
+| `endpoints:write` | `gw_create_cloud_endpoint`, `gw_update_cloud_endpoint` (with `endpoints:read`) |
+| `events:read` | `gw_query_traffic_inspector`, `gw_get_traffic_inspector_request`, `gw_query_connections`, `gw_get_connection`, `gw_get_connection_progress`, `gw_list_event_subscriptions`, `gw_list_event_destinations` |
+| `tunnel-sessions:read` | `gw_list_agents` |
+| `kubernetes-operators:read` | `gw_list_kubernetes_operators` |
+| `app-users:read` | `gw_list_app_users` |
+| `domains:read` | `gw_list_domains` |
+| `domains:write` | `gw_reserve_domain`, `gw_update_domain` |
+| `tcp-addrs:read` | `gw_list_tcp_addresses` |
+| `tcp-addrs:write` | `gw_reserve_tcp_address`, `gw_update_tcp_address` |
+| `tls-certificates:read` | `gw_list_tls_certificates` |
+| `certificate-authorities:read` | `gw_list_certificate_authorities` |
+| `ip-policies:read` | `gw_list_ip_policies`, `gw_list_ip_policy_rules`, `gw_update_ip_policy` and `gw_update_ip_policy_rule` (with `ip-policies:write`) |
+| `ip-policies:write` | `gw_create_ip_policy`, `gw_create_ip_policy_rule`, `gw_update_ip_policy` and `gw_update_ip_policy_rule` (with `ip-policies:read`) |
+| `vaults:read` | `gw_list_vaults`, `gw_list_secrets`, `gw_create_secret` |
+| `vaults:write` | `gw_create_vault`, `gw_update_vault` |
+| `team:read` | `platform_list_team` (with `service-users:read`) |
+| `service-users:read` | `platform_list_team` (with `team:read`) |
+| `ngrok:invitations:write` | `platform_invite_team_member` |
+| `api-keys:read` | `platform_list_api_keys` |
+| `credentials:read` | `platform_list_authtokens`, `platform_list_access_tokens` |
+| `ssh-credentials:read` | `platform_list_ssh_keys` |
+| `ngrok:usage:read` | `platform_get_usage`, `platform_get_endpoint_usage` |
+| `ngrok:limits:read` | `platform_get_limits` |
+| `ai-gateway:usage:read` | `aigw_usage_overview`, `aigw_list_usage`, and with `ai-gateway:captures:read`: `aigw_get_request`, `aigw_get_request_attempts`, `aigw_get_capture` |
+| `ai-gateway:captures:read` | With `ai-gateway:usage:read`: `aigw_get_request`, `aigw_get_request_attempts`, `aigw_get_capture` |
+| `ai-gateway:providers:read` | `aigw_list_models`, `aigw_get_model`, `aigw_list_providers`, `aigw_get_provider`, `aigw_list_provider_keys`, `aigw_get_provider_key`, `aigw_create_provider_key`, `aigw_rotate_provider_key` |
+| `ai-gateway:providers:write` | `aigw_create_provider`, `aigw_update_provider`, `aigw_update_provider_key` |
+| `ai-gateway:access-keys:read` | `aigw_list_access_configs`, `aigw_get_access_config`, `aigw_list_access_keys`, `aigw_get_access_key`, `aigw_create_access_key` |
+| `ai-gateway:access-keys:write` | `aigw_create_access_config`, `aigw_update_access_config`, `aigw_update_access_key` |
+| `ai-gateway:virtual-models:read` | `aigw_list_virtual_models`, `aigw_get_virtual_model` |
+| `ai-gateway:virtual-models:write` | `aigw_create_virtual_model`, `aigw_update_virtual_model` |
+| `ai-gateway:settings:read` | `aigw_list_firewall_policies`, `aigw_get_firewall_policy`, `aigw_get_gateway_config` |
+| `ai-gateway:settings:write` | `aigw_create_firewall_policy`, `aigw_update_firewall_policy`, `aigw_update_gateway_config` |
+
+Some tools need no scope of their own, such as `platform_whoami`, `gw_validate_traffic_policy`, and the docs tools.
+`get_resource` and `delete_resource` need none either, but the ngrok API checks the token's scopes for the type of object they read or delete.
+
+## Related resources
+
+- [ngrok MCP server](/mcp-server): Connect your AI agent and sign in.
+- [AI Gateway tools](/mcp-server/ai-gateway): Ask about AI Gateway models, costs, and requests.
+- [Example prompts](/mcp-server/prompts): Prompts you can copy, grouped by job.
+- [Role-based access control](/iam/rbac): What your role allows the AI agent to do.
