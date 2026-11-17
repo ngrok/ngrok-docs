@@ -135,57 +135,62 @@ It's already signed by ngrok.
     </Tabs>
   </Step>
 
-  <Step title="Install the service">
-    Install the package on each target machine.
-    It runs Fleet Connector as a background service that starts on boot.
-
-    <Tabs>
-      <Tab title="Windows">
-        Run in PowerShell as Administrator:
-
-        ```powershell
-        msiexec /i FleetConnector.msi /quiet
-        ```
-      </Tab>
-      <Tab title="Linux">
-        ```bash
-        sudo dpkg -i fleetconnect_*.deb
-        ```
-      </Tab>
-    </Tabs>
-  </Step>
-
   <Step title="Configure the agent">
     Fleet Connector reads its settings from a `config.yaml` file:
 
     - Windows: `C:\ProgramData\FleetConnector\config.yaml`
     - Linux: `/etc/fleetconnect/config.yaml`
 
+    The installer starts the service right away.
+    If no `config.yaml` exists at that point, the service opens the setup wizard, so create the file before you install unless you want to use the wizard.
+
     You can create this file in three ways, depending on who installs it and when:
 
-    - **`gen-config`**: Write the file before the service first starts.
+    - **`gen-config`**: Generate the file from the command line.
       Use this when a script installs and configures many machines without anyone at the keyboard.
     - **Setup wizard**: If no `config.yaml` exists when the service starts, it opens a web form on `127.0.0.1`.
       The form walks a person through setup once, then shuts down after it writes a valid config.
     - **Hand-edit**: Edit `config.yaml` directly, or run `fleetconnect edit-config` to edit it in `$EDITOR` with validation before it saves.
+      Restart the service to apply your changes.
 
     ### gen-config
 
-    This command creates a private endpoint at `https://store-042.ngrok.direct` that forwards to `localhost:8080`, and turns on remote updates.
+    This command creates a private endpoint at `https://store-042.ngrok.direct` that forwards to `localhost:8080`.
     Only your own ngrok account can reach the endpoint.
+    On Windows, it also turns on remote updates.
 
-    ```bash
-    ./fleetconnect gen-config \
-      --description "store-042" \
-      --url https://store-042.ngrok.direct \
-      --binding internal \
-      --upstream localhost:8080 \
-      --authtoken "<your authtoken>" \
-      --update-source-url "https://updates.example.com/latest/fleetconnect.msi" \
-      --update-signer-thumbprint "AABBCCDDEEFF00112233445566778899AABBCCDD"
-    ```
+    Run it from the folder where you built Fleet Connector.
+    It writes `config.yaml` to the service's config path, so it needs Administrator rights on Windows and `sudo` on Linux.
 
-    It writes the following `config.yaml`:
+    <Tabs>
+      <Tab title="Windows">
+        Run in PowerShell as Administrator:
+
+        ```powershell
+        .\fleetconnect.exe gen-config `
+          --description "store-042" `
+          --url https://store-042.ngrok.direct `
+          --binding internal `
+          --upstream localhost:8080 `
+          --authtoken "<your authtoken>" `
+          --update-source-url "https://updates.example.com/latest/fleetconnect.msi" `
+          --update-signer-thumbprint "AABBCCDDEEFF00112233445566778899AABBCCDD"
+        ```
+      </Tab>
+      <Tab title="Linux">
+        ```bash
+        sudo ./fleetconnect gen-config \
+          --description "store-042" \
+          --url https://store-042.ngrok.direct \
+          --binding internal \
+          --upstream localhost:8080 \
+          --authtoken "<your authtoken>"
+        ```
+      </Tab>
+    </Tabs>
+
+    On Windows, it writes the following `config.yaml`.
+    The Linux file is the same without the `update_source_url` and `update_signer_thumbprint` lines.
 
     ```yaml
     schema_version: 1
@@ -204,8 +209,7 @@ It's already signed by ngrok.
     update_signer_thumbprint: AABBCCDDEEFF00112233445566778899AABBCCDD
     ```
 
-    By default, `gen-config` writes to `config.yaml` in the current directory.
-    Use `--path` to write it to the service's config location instead.
+    To configure a different machine, add `--path` to write the file somewhere else, then copy it to the config path on that machine before you install.
 
     <AccordionGroup>
       <Accordion title="gen-config flags">
@@ -218,7 +222,7 @@ It's already signed by ngrok.
         | `--binding` | Binding for a single endpoint: `public` (default), `internal`, or `kubernetes`. |
         | `--endpoint` | One endpoint, as `"name=...,upstream.url=...,url=...,bindings=..."`. Repeat for multiple endpoints. Can't be combined with `--url`, `--upstream`, or `--binding`. |
         | `--authtoken` | A literal value, `env:VAR`, or `file:PATH`. |
-        | `--path` | Where to write the config. Defaults to `config.yaml` in the current directory. |
+        | `--path` | Where to write the config. Defaults to the service's config path. |
         | `--connect-url` | Your [custom connect URL](/gateway/site-to-site-connectivity/custom-connect-url). |
         | `--connect-ca-cert-file` | PEM CA bundle to trust for `--connect-url`. |
         | `--proxy-url` | Outbound HTTP or SOCKS proxy for the agent's own connection. |
@@ -268,6 +272,27 @@ It's already signed by ngrok.
 
       </Accordion>
     </AccordionGroup>
+  </Step>
+
+  <Step title="Install the service">
+    Install the package on each target machine.
+    The installer starts Fleet Connector as a background service right away, and again on every boot.
+    If `config.yaml` is in place, the service connects. Otherwise, it opens the setup wizard.
+
+    <Tabs>
+      <Tab title="Windows">
+        Run in PowerShell as Administrator:
+
+        ```powershell
+        msiexec /i FleetConnector.msi /quiet
+        ```
+      </Tab>
+      <Tab title="Linux">
+        ```bash
+        sudo dpkg -i fleetconnect_*.deb
+        ```
+      </Tab>
+    </Tabs>
   </Step>
 
   <Step title="Operate the service">
