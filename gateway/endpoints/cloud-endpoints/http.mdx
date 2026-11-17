@@ -1,7 +1,7 @@
 ---
 title: HTTP/S Cloud Endpoints
 sidebarTitle: HTTP/S Endpoints
-description: Learn how to create and configure HTTP and HTTPS endpoints with ngrok including domain configuration, TLS, and Traffic Policies.
+description: Create and configure HTTP and HTTPS cloud endpoints with ngrok. This page covers domains, TLS, and how ngrok appends to the X-Forwarded-For header on upstream requests.
 noindex: true
 ---
 
@@ -363,7 +363,10 @@ ngrok adds headers to each HTTP request with information about the original clie
 | `x-forwarded-proto` | The scheme of the original request, either `http` or `https`. If this header exists on the original request, ngrok appends a new value.     |
 | `x-forwarded-host`  | The header from the client's request if it existed, otherwise is set to the request's `Host` header value.                                  |
 
-Because ngrok appends values to `x-forwarded-for` and `x-forwarded-proto`, be sure to use the last value of the header in your application code to read the values injected by ngrok.
+ngrok appends to `x-forwarded-for` and `x-forwarded-proto` instead of replacing them.
+If the client's request already includes either header, ngrok keeps the client's values and adds its own value after them.
+ngrok doesn't validate the earlier values, so a client can set them to anything.
+Use the last value of each header in your application code to read the values ngrok added.
 
 You may remove these headers with the [Remove Headers](/gateway/traffic-policy/actions/remove-headers/) Traffic Policy action.
 
