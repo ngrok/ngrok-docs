@@ -26,7 +26,8 @@ It's already signed by ngrok.
   If you don't have one, [sign up](https://dashboard.ngrok.com/signup).
 - An [authtoken](https://dashboard.ngrok.com/authtokens) for each install.
 - [Go](https://go.dev/dl/) on your build machine.
-- For Windows, a code-signing certificate from a trusted certificate authority (CA).
+- For Windows, the [.NET SDK](https://dotnet.microsoft.com/download) 6 or later on your build machine, to install WiX.
+- For Windows, a code-signing certificate from a trusted certificate authority (CA), or a self-signed certificate for testing.
 
 <Steps titleSize="h2">
   <Step title="Fork the repository">
@@ -43,8 +44,9 @@ It's already signed by ngrok.
         Build the binary and an MSI installer with [WiX v5](https://wixtoolset.org/):
 
         ```powershell
-        git clone https://github.com/<your-org>/fleet-connector.git
-        cd fleet-connector
+        git clone https://github.com/<your-account>/<your-fork>.git
+        cd <your-fork>
+        $env:GOARCH = "amd64"
         go build -o fleetconnect.exe .\cmd\fleetconnect
 
         dotnet tool install --global wix --version "5.*"
@@ -55,33 +57,70 @@ It's already signed by ngrok.
           -out FleetConnector.msi
         ```
 
+        Setting `GOARCH` to `amd64` builds for standard Intel and AMD PCs, even if you build on an ARM machine.
+        The installer also works on ARM PCs running Windows 11.
+
         Then sign the MSI.
         Fleet Connector is built from source, so it doesn't carry ngrok's signature.
         If you skip this step, the MSI is unsigned: Windows SmartScreen warns about an unknown publisher, antivirus tools may flag it, and you can't turn on remote updates.
 
-        ```powershell
-        $cert = Get-ChildItem Cert:\CurrentUser\My -CodeSigningCert |
-          Where-Object Subject -eq "CN=Your Company"
+        <Tabs>
+          <Tab title="CA certificate">
+            Sign the installers you ship to customers with a code-signing certificate from a trusted CA.
 
-        Set-AuthenticodeSignature -FilePath FleetConnector.msi `
-          -Certificate $cert -HashAlgorithm SHA256
+            ```powershell
+            $cert = Get-ChildItem Cert:\CurrentUser\My -CodeSigningCert |
+              Where-Object Subject -like "CN=Your Company*" |
+              Select-Object -First 1
 
-        (Get-AuthenticodeSignature FleetConnector.msi).SignerCertificate.Thumbprint
-        ```
+            Set-AuthenticodeSignature -FilePath FleetConnector.msi `
+              -Certificate $cert -HashAlgorithm SHA256 `
+              -TimestampServer "http://timestamp.digicert.com"
 
-        Save the thumbprint from the last command.
-        You need it to turn on remote updates.
+            (Get-AuthenticodeSignature FleetConnector.msi).SignerCertificate.Thumbprint
+            ```
 
-        <Tip>
-        To test without a CA-issued certificate, create a self-signed one with `New-SelfSignedCertificate -Type CodeSigningCert -CertStoreLocation Cert:\CurrentUser\My -Subject "CN=Your Company"`.
-        </Tip>
+            Save the thumbprint from the last command.
+            You need it to turn on remote updates.
+
+            Replace `Your Company` with the name on your certificate.
+            The timestamp keeps the signature valid after your certificate expires.
+            If your certificate's key is on a hardware token or a cloud signing service, sign with the tool your CA provides instead, such as `signtool.exe`.
+          </Tab>
+          <Tab title="Self-signed certificate">
+            Use a self-signed certificate to test your build.
+            Windows doesn't trust it on other machines, so don't ship installers signed with it.
+
+            ```powershell
+            $cert = New-SelfSignedCertificate -Type CodeSigningCert `
+              -CertStoreLocation Cert:\CurrentUser\My -Subject "CN=Your Company"
+
+            Set-AuthenticodeSignature -FilePath FleetConnector.msi `
+              -Certificate $cert -HashAlgorithm SHA256
+
+            (Get-AuthenticodeSignature FleetConnector.msi).SignerCertificate.Thumbprint
+            ```
+
+            Save the thumbprint from the last command.
+            You need it to turn on remote updates.
+
+            To test remote updates, trust the certificate on each machine you install on.
+            Remote updates only install an MSI with a valid signature.
+
+            ```powershell
+            $cert | Export-Certificate -FilePath test-signing.cer
+            Import-Certificate -FilePath test-signing.cer `
+              -CertStoreLocation Cert:\LocalMachine\Root
+            ```
+          </Tab>
+        </Tabs>
       </Tab>
       <Tab title="Linux">
         Build the binary and a `.deb` package with [nFPM](https://nfpm.goreleaser.com/):
 
         ```bash
-        git clone https://github.com/<your-org>/fleet-connector.git
-        cd fleet-connector
+        git clone https://github.com/<your-account>/<your-fork>.git
+        cd <your-fork>
         GOOS=linux GOARCH=amd64 go build -o fleetconnect ./cmd/fleetconnect
 
         go install github.com/goreleaser/nfpm/v2/cmd/nfpm@latest
@@ -90,26 +129,8 @@ It's already signed by ngrok.
         ```
 
         To build an `.rpm` package instead, use `--packager rpm`.
-      </Tab>
-    </Tabs>
-  </Step>
-
-  <Step title="Install the service">
-    Install the package on each target machine.
-    It runs Fleet Connector as a background service that starts on boot.
-
-    <Tabs>
-      <Tab title="Windows">
-        Run in PowerShell as Administrator:
-
-        ```powershell
-        msiexec /i FleetConnector.msi /quiet
-        ```
-      </Tab>
-      <Tab title="Linux">
-        ```bash
-        sudo dpkg -i fleetconnect_*.deb
-        ```
+        To build for ARM machines, set `GOARCH=arm64` and change `arch` in `installer/linux/nfpm.yaml` to `arm64`.
+        Build one package for each architecture you deploy to.
       </Tab>
     </Tabs>
   </Step>
@@ -122,29 +143,51 @@ It's already signed by ngrok.
 
     You can create this file in three ways, depending on who installs it and when:
 
-    - **`gen-config`**: Write the file before the service first starts.
-      Use this when a script installs and configures many machines without anyone at the keyboard.
-    - **Setup wizard**: If no `config.yaml` exists when the service starts, it opens a web form on `127.0.0.1`.
+    - **`gen-config`**: Generate a config file for each install on your build machine, then pass it to the installer.
+      Whoever runs the install needs only the installer and that file, with no setup on the target machine.
+    - **Setup wizard**: Install without a config file, and the service opens a web form on `127.0.0.1`.
       The form walks a person through setup once, then shuts down after it writes a valid config.
-    - **Hand-edit**: Edit `config.yaml` directly, or run `fleetconnect edit-config` to edit it in `$EDITOR` with validation before it saves.
+    - **Hand-edit**: After you install, edit `config.yaml` directly, or run `fleetconnect edit-config` to edit it in `$EDITOR` with validation before it saves.
+      Restart the service to apply your changes.
 
     ### gen-config
 
-    This command creates a private endpoint at `https://store-042.ngrok.direct` that forwards to `localhost:8080`, and turns on remote updates.
+    This command generates a config for a private endpoint at `https://store-042.ngrok.direct` that forwards to `localhost:8080`.
     Only your own ngrok account can reach the endpoint.
+    On Windows, it also turns on remote updates.
 
-    ```bash
-    ./fleetconnect gen-config \
-      --description "store-042" \
-      --url https://store-042.ngrok.direct \
-      --binding internal \
-      --upstream localhost:8080 \
-      --authtoken "<your authtoken>" \
-      --update-source-url "https://updates.example.com/latest/fleetconnect.msi" \
-      --update-signer-thumbprint "AABBCCDDEEFF00112233445566778899AABBCCDD"
-    ```
+    Run it on your build machine, from the folder where you built Fleet Connector.
+    `--path` names the output file, so you can generate one for each install.
 
-    It writes the following `config.yaml`:
+    <Tabs>
+      <Tab title="Windows">
+        ```powershell
+        .\fleetconnect.exe gen-config `
+          --path store-042.yaml `
+          --description "store-042" `
+          --url https://store-042.ngrok.direct `
+          --binding internal `
+          --upstream localhost:8080 `
+          --authtoken "<your authtoken>" `
+          --update-source-url "https://updates.example.com/latest/fleetconnect.msi" `
+          --update-signer-thumbprint "AABBCCDDEEFF00112233445566778899AABBCCDD"
+        ```
+      </Tab>
+      <Tab title="Linux">
+        ```bash
+        ./fleetconnect gen-config \
+          --path store-042.yaml \
+          --description "store-042" \
+          --url https://store-042.ngrok.direct \
+          --binding internal \
+          --upstream localhost:8080 \
+          --authtoken "<your authtoken>"
+        ```
+      </Tab>
+    </Tabs>
+
+    On Windows, it writes the following `store-042.yaml`.
+    The Linux file is the same without the `update_source_url` and `update_signer_thumbprint` lines.
 
     ```yaml
     schema_version: 1
@@ -162,9 +205,6 @@ It's already signed by ngrok.
     update_source_url: https://updates.example.com/latest/fleetconnect.msi
     update_signer_thumbprint: AABBCCDDEEFF00112233445566778899AABBCCDD
     ```
-
-    By default, `gen-config` writes to `config.yaml` in the current directory.
-    Use `--path` to write it to the service's config location instead.
 
     <AccordionGroup>
       <Accordion title="gen-config flags">
@@ -229,6 +269,34 @@ It's already signed by ngrok.
     </AccordionGroup>
   </Step>
 
+  <Step title="Install the service">
+    Install the package on each target machine, and pass it the config file you generated with `FLEETCONNECT_INSTALL_CONFIG`.
+    Use the file's full path.
+
+    <Tabs>
+      <Tab title="Windows">
+        Run in PowerShell as Administrator:
+
+        ```powershell
+        msiexec --% /i FleetConnector.msi /quiet FLEETCONNECT_INSTALL_CONFIG="C:\path\to\store-042.yaml"
+        ```
+
+        `--%` stops PowerShell from changing the quotes, so paths with spaces work.
+      </Tab>
+      <Tab title="Linux">
+        ```bash
+        sudo FLEETCONNECT_INSTALL_CONFIG=/path/to/store-042.yaml dpkg -i fleetconnect_*.deb
+        ```
+      </Tab>
+    </Tabs>
+
+    The installer checks the file, puts it at the service's config path, and starts Fleet Connector as a background service that also starts on every boot.
+    The service connects right away.
+    If the file is invalid, the install fails.
+
+    To use the setup wizard instead, leave out `FLEETCONNECT_INSTALL_CONFIG`.
+  </Step>
+
   <Step title="Operate the service">
     Check, stop, and start the service, and follow its logs:
 
@@ -271,4 +339,5 @@ It downloads the MSI and checks the signature against the pinned thumbprint befo
 ## What's next
 
 - [Set up a custom connect URL](/gateway/site-to-site-connectivity/custom-connect-url) so your agents connect to your own hostname.
-- [Get dedicated IPs for your agent connections](/gateway/agent/connect-url#dedicated-ips) so your customers can allowlist addresses unique to your account. [Contact ngrok](https://ngrok.com/contact) to get started.
+- [Get dedicated IPs for your agent connections](/gateway/agent/connect-url#dedicated-ips) so your customers can allowlist addresses unique to your account.
+  [Contact ngrok](https://ngrok.com/contact) to get started.
