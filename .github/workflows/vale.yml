@@ -54,12 +54,177 @@ jobs:
             > pr_files.txt
 
           # Keep markdown only, excluding generated files: Vale findings there have
-          # to be fixed at the source. The agent CLI pages and the errors, obs, and
-          # API example snippets come from the ngrok monorepo; the operator changelog
-          # and Helm values come from the auto-gen workflows in this repo.
+          # to be fixed at the source. The agent CLI pages and the errors and obs
+          # snippets come from the ngrok monorepo; the operator changelog, Helm values,
+          # and homepage changelog come from the auto-gen workflows in this repo.
           grep -E '\.(mdx|md)$' pr_files.txt \
             | grep -vE '^snippets/(errors|obs)/' \
-            | grep -vE '^snippets/k8s/_(changelog|helm-config)\.mdx$' \
+            | grep -vE '^snippets/k8s/_(changelog|helm-config)\.mdx            | grep -v '^errors/' \
+            | grep -v '^\.skills/' \
+            | grep -vE '^(gateway/)?agent/cli(-api)?\.mdx$' \
+            | grep -v '^style-guide.mdx$' \
+            > changed_files.txt || true
+
+          if [ -s changed_files.txt ]; then
+            # Build JSON array of files for vale-action's files input
+            echo "files=$(jq -R -s -c 'split("\n") | map(select(length > 0))' changed_files.txt)" >> $GITHUB_OUTPUT
+            echo "has_files=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_files=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run Vale
+        if: steps.changed-files.outputs.has_files == 'true'
+        # reviewdog exits non-zero when GitHub refuses to serve the PR's diff, which
+        # is a size failure rather than a lint one -- see the reporter note below.
+        # fail_on_error only covers findings, not this, so the step is allowed to
+        # fail without taking the job with it. Vale findings still render as check
+        # run annotations either way.
+        continue-on-error: true
+        uses: vale-cli/vale-action@v3.0.0
+        with:
+          files: ${{ steps.changed-files.outputs.files }}
+          # Reports via the Checks API rather than the PR review API. The review
+          # reporter fetches the PR's unified diff to anchor its comments, and
+          # GitHub 406s on large PRs -- there are two independent caps, 20000 diff
+          # lines and 300 changed files.
+          # This reporter avoids the fetch reviewdog makes in Run() via Diff(), which
+          # is what tripped the line cap on #2270. It does NOT avoid parsing the diff
+          # when posting, so the 300-file cap still 406s -- #2292 hit it at 353 files.
+          # Hence continue-on-error above; no reporter setting clears both.
+          reporter: github-check
+          # Report all issues in the changed files, not only newly added lines:
+          # Vale's line numbers can drift from diff positions after MDX parsing.
+          # The "Get changed files" step above already scopes Vale to the PR's own
+          # files, so diff-based filtering here would be redundant as well as
+          # size-dependent. Findings on lines inside the diff still surface inline
+          # on Files changed; the rest land in the check run summary.
+          filter_mode: nofilter
+          fail_on_error: false
+          version: 3.12.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # The step above only annotates, and can't fail the job (see its comment).
+      # This one is the gate: any Vale finding, at any level, in a file the PR
+      # changes fails the check. It lists findings in the log without annotating
+      # them, so each finding appears once on the PR. Each file runs on its own with a timeout, since
+      # one Vale process over hundreds of MDX files can stall.
+      - name: Fail on Vale findings
+        if: steps.changed-files.outputs.has_files == 'true'
+        env:
+          VALE_VERSION: 3.12.0
+          VALE_SHA256: 3f4ea05cd1f2291b660ecf11a77cbb6b544b0f3b780604ad183f63285611321b
+        run: |
+          curl -sSfL -o "$RUNNER_TEMP/vale.tar.gz" \
+            "https://github.com/vale-cli/vale/releases/download/v${VALE_VERSION}/vale_${VALE_VERSION}_Linux_64-bit.tar.gz"
+          echo "${VALE_SHA256}  $RUNNER_TEMP/vale.tar.gz" | sha256sum -c -
+          tar -xzf "$RUNNER_TEMP/vale.tar.gz" -C "$RUNNER_TEMP" vale
+
+          failed=0
+          while IFS= read -r file; do
+            if ! out=$(timeout 120 "$RUNNER_TEMP/vale" --no-exit --minAlertLevel=suggestion --output=line "$file" 2>&1); then
+              echo "::error file=$file::Vale could not lint this file"
+              echo "$out"
+              failed=1
+              continue
+            fi
+            if [ -n "$out" ]; then
+              # Log only: the vale-action step already annotates each finding, and
+              # GitHub caps workflow-command annotations at 10 per step.
+              echo "$out"
+              failed=1
+            fi
+          done < changed_files.txt
+
+          if [ "$failed" -ne 0 ]; then
+            echo "::error::Vale flagged the files above. Fix every finding before merging; run 'pnpm run vale' to check locally."
+            exit 1
+          fi
+ \
+            | grep -v '^snippets/homepage-changelog.mdx            | grep -v '^errors/' \
+            | grep -v '^\.skills/' \
+            | grep -vE '^(gateway/)?agent/cli(-api)?\.mdx$' \
+            | grep -v '^style-guide.mdx$' \
+            > changed_files.txt || true
+
+          if [ -s changed_files.txt ]; then
+            # Build JSON array of files for vale-action's files input
+            echo "files=$(jq -R -s -c 'split("\n") | map(select(length > 0))' changed_files.txt)" >> $GITHUB_OUTPUT
+            echo "has_files=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_files=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run Vale
+        if: steps.changed-files.outputs.has_files == 'true'
+        # reviewdog exits non-zero when GitHub refuses to serve the PR's diff, which
+        # is a size failure rather than a lint one -- see the reporter note below.
+        # fail_on_error only covers findings, not this, so the step is allowed to
+        # fail without taking the job with it. Vale findings still render as check
+        # run annotations either way.
+        continue-on-error: true
+        uses: vale-cli/vale-action@v3.0.0
+        with:
+          files: ${{ steps.changed-files.outputs.files }}
+          # Reports via the Checks API rather than the PR review API. The review
+          # reporter fetches the PR's unified diff to anchor its comments, and
+          # GitHub 406s on large PRs -- there are two independent caps, 20000 diff
+          # lines and 300 changed files.
+          # This reporter avoids the fetch reviewdog makes in Run() via Diff(), which
+          # is what tripped the line cap on #2270. It does NOT avoid parsing the diff
+          # when posting, so the 300-file cap still 406s -- #2292 hit it at 353 files.
+          # Hence continue-on-error above; no reporter setting clears both.
+          reporter: github-check
+          # Report all issues in the changed files, not only newly added lines:
+          # Vale's line numbers can drift from diff positions after MDX parsing.
+          # The "Get changed files" step above already scopes Vale to the PR's own
+          # files, so diff-based filtering here would be redundant as well as
+          # size-dependent. Findings on lines inside the diff still surface inline
+          # on Files changed; the rest land in the check run summary.
+          filter_mode: nofilter
+          fail_on_error: false
+          version: 3.12.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # The step above only annotates, and can't fail the job (see its comment).
+      # This one is the gate: any Vale finding, at any level, in a file the PR
+      # changes fails the check. It lists findings in the log without annotating
+      # them, so each finding appears once on the PR. Each file runs on its own with a timeout, since
+      # one Vale process over hundreds of MDX files can stall.
+      - name: Fail on Vale findings
+        if: steps.changed-files.outputs.has_files == 'true'
+        env:
+          VALE_VERSION: 3.12.0
+          VALE_SHA256: 3f4ea05cd1f2291b660ecf11a77cbb6b544b0f3b780604ad183f63285611321b
+        run: |
+          curl -sSfL -o "$RUNNER_TEMP/vale.tar.gz" \
+            "https://github.com/vale-cli/vale/releases/download/v${VALE_VERSION}/vale_${VALE_VERSION}_Linux_64-bit.tar.gz"
+          echo "${VALE_SHA256}  $RUNNER_TEMP/vale.tar.gz" | sha256sum -c -
+          tar -xzf "$RUNNER_TEMP/vale.tar.gz" -C "$RUNNER_TEMP" vale
+
+          failed=0
+          while IFS= read -r file; do
+            if ! out=$(timeout 120 "$RUNNER_TEMP/vale" --no-exit --minAlertLevel=suggestion --output=line "$file" 2>&1); then
+              echo "::error file=$file::Vale could not lint this file"
+              echo "$out"
+              failed=1
+              continue
+            fi
+            if [ -n "$out" ]; then
+              # Log only: the vale-action step already annotates each finding, and
+              # GitHub caps workflow-command annotations at 10 per step.
+              echo "$out"
+              failed=1
+            fi
+          done < changed_files.txt
+
+          if [ "$failed" -ne 0 ]; then
+            echo "::error::Vale flagged the files above. Fix every finding before merging; run 'pnpm run vale' to check locally."
+            exit 1
+          fi
+ \
             | grep -v '^errors/' \
             | grep -v '^\.skills/' \
             | grep -vE '^(gateway/)?agent/cli(-api)?\.mdx$' \
