@@ -1,0 +1,72 @@
+---
+title: Use Novita AI with the AI Gateway
+sidebarTitle: Novita AI
+description: Call open-weight DeepSeek, Qwen, Kimi, GLM, and MiniMax models on Novita AI through the ngrok AI Gateway with credits or your own Novita API key.
+---
+
+[Novita AI](https://novita.ai/) serves open-weight models from many labs, including DeepSeek, Alibaba Qwen, Moonshot AI Kimi, Z.ai GLM, MiniMax, Google Gemma, Meta Llama, Tencent Hunyuan, Xiaomi MiMo, and StepFun.
+
+Novita AI supports Chat Completions, Responses, and Anthropic Messages requests.
+Every Novita model takes Chat Completions requests, and the [model catalog](/ai-gateway/reference/model-catalog#novita-ai) lists which models also take Responses or Messages requests.
+
+<Note>
+Novita AI is a **built-in provider**.
+You can pay for most Novita models in the catalog with credits.
+Ten models need your own Novita key.
+The **Needs BYOK?** column in the [model catalog](/ai-gateway/reference/model-catalog#novita-ai) shows which is which.
+</Note>
+
+## Setup
+
+<Steps titleSize="h3">
+  <Step title="Create an access key and add credits">
+    Follow the [quickstart](/ai-gateway/quickstart) to create an access key and purchase [credits](/ai-gateway/concepts/credits) in [app.ngrok.ai](https://app.ngrok.ai).
+  </Step>
+
+  <Step title="Store your Novita API key (optional)">
+    Skip this step to pay with credits for the models that support it.
+    To bring your own key, create an API key in your [Novita AI](https://novita.ai/) account.
+    Then [add a provider key](/ai-gateway/guides/attaching-provider-keys#add-a-provider-key) and [create an access key configuration](/ai-gateway/guides/access-key-configurations#create-a-configuration) with a `novita` routing rule that uses it.
+  </Step>
+
+  <Step title="Send requests">
+    Send requests with your access key:
+
+    ```python
+    from openai import OpenAI
+
+    client = OpenAI(
+        base_url="https://gateway.ngrok.ai/v1",
+        api_key="ng-xxxxx-g1-xxxxx",
+    )
+
+    response = client.chat.completions.create(
+        model="novita:z-ai/glm-5.3",
+        messages=[{"role": "user", "content": "Hello!"}]
+    )
+    ```
+
+    Other providers also serve most Novita models.
+    The `novita:` prefix keeps the request on Novita.
+  </Step>
+</Steps>
+
+## Models that need your own key
+
+Novita bills these models in a way that the gateway can't price yet, so they need your own Novita key:
+
+- `moonshotai/kimi-k3`, `moonshotai/kimi-k3.1-pro`, and `moonshotai/kimi-k3.1-pro-highspeed` have separate prices for 5-minute and 1-hour cache writes.
+- `qwen/qwen3.8-flash` and `qwen/qwen3.8-max` have one cache-write price, but their Messages API also takes a 1-hour cache.
+- `minimax/minimax-m3` has prices that go up with prompt length.
+- `xiaomi/mimo-v2.6-flash`, `xiaomi/mimo-v2.6-pro`, and `qwen/qwen3-omni-30b-a3b-thinking` take audio input that has no published price or its own price.
+- `tencent/hy4` has a limited-time discount price.
+
+## Available models
+
+See the [model catalog](/ai-gateway/reference/model-catalog#novita-ai).
+
+## Next steps
+
+- [Provider keys](/ai-gateway/guides/attaching-provider-keys)
+- [Access key configurations](/ai-gateway/guides/access-key-configurations)
+- [Open-weight models](/ai-gateway/concepts/open-weight-models)
