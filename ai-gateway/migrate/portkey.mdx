@@ -4,7 +4,7 @@ sidebarTitle: Migrate from Portkey
 description: Move your apps from Portkey to the ngrok AI Gateway by mapping provider keys, API keys, configs, and guardrails, then changing a few lines of client code.
 ---
 
-{/* DRAFT: don't merge until #2589 (the Amazon Bedrock provider page) merges, because this page links to /ai-gateway/providers/bedrock. Open items are marked DRAFT. Before publishing, re-check the Portkey status claims in the opening (Prisma AIRS billing and console, classic product still sold with no end date) against portkey.ai and Palo Alto's announcements. */}
+{/* DRAFT: open items are marked DRAFT. Before publishing, re-check the Portkey status claims in the opening (Prisma AIRS billing and console, classic product still sold with no end date) against portkey.ai and Palo Alto's announcements. */}
 
 If your apps call models through Portkey, you're deciding whether to follow it into Palo Alto Networks' Prisma AIRS or move your traffic somewhere else.
 Palo Alto bought Portkey in May 2026.
@@ -137,7 +137,8 @@ Client code usually changes in three places: the base URL, the API key, and the 
     ```
 
     A `us.` model ID from Portkey, such as `us.anthropic.claude-haiku-4-5-20251001-v1:0`, works with a key in any region, because the key's region decides where the request goes.
-    The gateway sends it to the key's region, through that geography's inference profile when the model doesn't run there, so a key in `eu-west-1` keeps the request in the EU.
+    When the model doesn't run in that region, the gateway uses the inference profile for the region's geography.
+    A key in `eu-west-1` keeps the request in the EU.
     See [Regions](/ai-gateway/providers/bedrock#regions).
 
     ### Providers that aren't built in
@@ -191,7 +192,8 @@ Client code usually changes in three places: the base URL, the API key, and the 
 
     Put your regional Bedrock keys in one `bedrock` rule the same way, in the order to try their regions.
     A rate limit in one region moves the request to the next region's key.
-    A server error or timeout moves it to the next model instead, so list a fallback model in a virtual model if you want a regional outage to reach another provider.
+    A server error or timeout doesn't: it skips your other Bedrock keys and moves to the next model.
+    If a Portkey config fails over between Bedrock regions during an outage, list a model on another provider after the Bedrock model in a virtual model, as in [Try Amazon Bedrock before Anthropic](/ai-gateway/providers/bedrock#try-amazon-bedrock-before-anthropic).
 
     app.ngrok.ai shows each access key token once, when you create it.
     Store each token, which starts with `ng-`, where the app reads its Portkey key today.
@@ -398,7 +400,7 @@ Client code usually changes in three places: the base URL, the API key, and the 
     | Gemma 4 | The OpenAI SDK (Chat Completions or Responses) | `bedrock:google/gemma-4-31b-it` |
     | Every other Bedrock model in the catalog | The AWS SDK (Converse) | The Bedrock model ID, such as `openai.gpt-oss-20b-1:0` |
 
-    This app moves Claude Haiku 4.5 on Bedrock from the OpenAI SDK to the Anthropic SDK:
+    This example moves an app's calls to Claude Haiku 4.5 on Bedrock from the OpenAI SDK to the Anthropic SDK:
 
     <CodeGroup>
     ```python Before
@@ -411,7 +413,7 @@ Client code usually changes in three places: the base URL, the API key, and the 
     )
 
     client.chat.completions.create(
-        model="@bedrock-us/us.anthropic.claude-haiku-4-5-20251001-v1:0",
+        model="@bedrock-us-east-1/us.anthropic.claude-haiku-4-5-20251001-v1:0",
         max_tokens=1024,
         messages=[{"role": "user", "content": "Hello"}],
     )
@@ -438,7 +440,7 @@ Client code usually changes in three places: the base URL, the API key, and the 
     Without it, `anthropic/claude-haiku-4-5` goes to Anthropic first.
     To try Bedrock first and fall back to Anthropic, list both in a virtual model; see [Try Amazon Bedrock before Anthropic](/ai-gateway/providers/bedrock#try-amazon-bedrock-before-anthropic).
 
-    For the AWS SDK, point the client's `endpoint_url` at `https://gateway.ngrok.ai` and set `AWS_BEARER_TOKEN_BEDROCK` to your access key.
+    For the AWS SDK, point the client's `endpoint_url` at `https://gateway.ngrok.ai` and set `AWS_BEARER_TOKEN_BEDROCK` to your ngrok.ai access key, the token that starts with `ng-`.
     See [Native Bedrock requests](/ai-gateway/providers/bedrock#native-bedrock-requests).
 
     ### Map model names
@@ -447,7 +449,7 @@ Client code usually changes in three places: the base URL, the API key, and the 
     |---|---|
     | `@openai-prod/gpt-5.1` | `openai:gpt-5.1`, or `gpt-5.1` to let the gateway pick any provider that serves it |
     | `@anthropic-prod/claude-sonnet-4-6` | `anthropic:claude-sonnet-4-6` |
-    | `@bedrock-us/us.anthropic.claude-haiku-4-5-20251001-v1:0` | `bedrock:anthropic/claude-haiku-4-5`, sent with the Anthropic SDK |
+    | `@bedrock-us-east-1/us.anthropic.claude-haiku-4-5-20251001-v1:0` | `bedrock:anthropic/claude-haiku-4-5`, sent with the Anthropic SDK |
     | `@my-azure/gpt-4o` | `my-azure:gpt-4o`, where `my-azure` is your custom provider ID |
     | `gpt-4o` routed by a config | The virtual model that replaced the config |
 
@@ -515,6 +517,7 @@ Remove them, or replace them as follows:
 |---|---|---|
 | Claude and most other Bedrock models through Chat Completions | Not yet | Call Claude with the Anthropic SDK and other Bedrock models with the AWS SDK. See [Models on Amazon Bedrock](#models-on-amazon-bedrock). |
 | Bedrock models outside the catalog, and `global.` inference profiles | Not available | Use a model from the [Amazon Bedrock catalog](/ai-gateway/reference/model-catalog#amazon-bedrock), with a regional ID such as `us.` or `eu.`. |
+| Bedrock failover to another region on server errors and timeouts | Not available | Rate limits still move to the next region's key. For outages, list a model on another provider after the Bedrock model in a virtual model. |
 | Vertex AI provider | Not built in | Call Gemini models through the built-in [Google provider](/ai-gateway/providers/google), and keep Model Garden routes on Portkey for now. |
 | MCP gateway and MCP registry | Not available | Keep MCP traffic where it is. To block specific MCP tools in model traffic, use a Firewall tool names rule. |
 | Simple and semantic caching | Not available | Cache in your app. |
