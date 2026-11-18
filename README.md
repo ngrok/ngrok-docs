@@ -123,5 +123,3 @@ See the Mintlify docs for the nuances.
 
 For bug reports, feature requests, questions, and community support, open an issue or discussion in the [ngrok Community](https://github.com/ngrok/ngrok).
 To report a problem with the documentation, open a new [GitHub issue](https://github.com/ngrok/ngrok-docs-v2/issues).
-
-<!-- temporary: trigger Vale for PR 2619 -->
