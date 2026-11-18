@@ -394,11 +394,11 @@ Client code usually changes in three places: the base URL, the API key, and the 
     Portkey translates OpenAI Chat Completions requests for any Bedrock model.
     The ngrok AI Gateway doesn't translate them for Claude or most other Bedrock models yet, so apps that reach Bedrock through the OpenAI SDK switch SDKs as well as base URLs:
 
-    | Bedrock models | Call them through ngrok.ai with | `model` |
-    |---|---|---|
-    | Claude Haiku 4.5, Sonnet 4.6, Opus 4.5, and Opus 4.6 | The Anthropic SDK (Messages), or the AWS SDK (InvokeModel) | `bedrock:anthropic/claude-haiku-4-5` in Messages, or the Bedrock model ID in InvokeModel |
-    | Gemma 4 | The OpenAI SDK (Chat Completions or Responses) | `bedrock:google/gemma-4-31b-it` |
-    | Every other Bedrock model in the catalog | The AWS SDK (Converse) | The Bedrock model ID, such as `openai.gpt-oss-20b-1:0` |
+    | Bedrock models | Call them through ngrok.ai with |
+    |---|---|
+    | Claude Haiku 4.5, Sonnet 4.6, Opus 4.5, and Opus 4.6 | The Anthropic SDK and a model such as `bedrock:anthropic/claude-haiku-4-5`, or the AWS SDK's InvokeModel and the Bedrock model ID |
+    | Gemma 4 | The OpenAI SDK, in Chat Completions or Responses, and a model such as `bedrock:google/gemma-4-31b-it` |
+    | Every other Bedrock model in the catalog | The AWS SDK's Converse and the Bedrock model ID, such as `openai.gpt-oss-20b-1:0` |
 
     This example moves an app's calls to Claude Haiku 4.5 on Bedrock from the OpenAI SDK to the Anthropic SDK:
 
@@ -513,22 +513,22 @@ Remove them, or replace them as follows:
 
 ## Features without an equivalent yet
 
-| Portkey feature | Status in ngrok.ai | What to do meanwhile |
-|---|---|---|
-| Claude and most other Bedrock models through Chat Completions | Not yet | Call Claude with the Anthropic SDK and other Bedrock models with the AWS SDK. See [Models on Amazon Bedrock](#models-on-amazon-bedrock). |
-| Bedrock models outside the catalog, and `global.` inference profiles | Not available | Use a model from the [Amazon Bedrock catalog](/ai-gateway/reference/model-catalog#amazon-bedrock), with a regional ID such as `us.` or `eu.`. |
-| Bedrock failover to another region on server errors and timeouts | Not available | Rate limits still move to the next region's key. For outages, list a model on another provider after the Bedrock model in a virtual model. |
-| Vertex AI provider | Not built in | Call Gemini models through the built-in [Google provider](/ai-gateway/providers/google), and keep Model Garden routes on Portkey for now. |
-| MCP gateway and MCP registry | Not available | Keep MCP traffic where it is. To block specific MCP tools in model traffic, use a Firewall tool names rule. |
-| Simple and semantic caching | Not available | Cache in your app. |
-| Per-key budgets and rate limits | Not available | Use account-wide [token limits](/ai-gateway/guides/account-settings#token-limits) and track spend per key with the [Usage API](/ai-gateway/observability), grouped by `accessKey`. |
-| PII redaction and partner guardrails | Not available | Redact in your app before sending. |
-| Weighted load balancing and conditional routing | Not available | Use an ordered virtual model, or a separate access key per route. |
-| Workspaces and in-app roles | Not available | Use an access key and configuration per team. Dashboard sign-in supports [SSO](/iam/sso). |
-| Prompt templates | Not available | Keep prompts in your code. |
-| Realtime and batch APIs | Not available | Call the provider directly. |
-| OpenTelemetry or log export | Pull only | Read usage events with the [Usage API](/ai-gateway/observability). |
-| Terraform provider | Not available | Script setup with the [AI Gateway API](/ai-gateway/api-reference/overview) and its [OpenAPI spec](https://api.ngrok.ai/openapi.yaml). |
+| Portkey feature | What to do meanwhile |
+|---|---|
+| Claude and most other Bedrock models through Chat Completions | Call Claude with the Anthropic SDK and other Bedrock models with the AWS SDK. See [Models on Amazon Bedrock](#models-on-amazon-bedrock). |
+| Bedrock models outside the catalog, and `global.` inference profiles | Use a model from the [Amazon Bedrock catalog](/ai-gateway/reference/model-catalog#amazon-bedrock), with a regional ID such as `us.` or `eu.`. |
+| Bedrock failover to another region on server errors and timeouts | Rate limits still move to the next region's key. For outages, list a model on another provider after the Bedrock model in a virtual model. |
+| Vertex AI provider | Call Gemini models through the built-in [Google provider](/ai-gateway/providers/google), and keep Model Garden routes on Portkey for now. |
+| MCP gateway and MCP registry | Keep MCP traffic where it is. To block specific MCP tools in model traffic, use a Firewall tool names rule. |
+| Simple and semantic caching | Cache in your app. |
+| Per-key budgets and rate limits | Use account-wide [token limits](/ai-gateway/guides/account-settings#token-limits) and track spend per key with the [Usage API](/ai-gateway/observability), grouped by `accessKey`. |
+| PII redaction and partner guardrails | Redact in your app before sending. |
+| Weighted load balancing and conditional routing | Use an ordered virtual model, or a separate access key per route. |
+| Workspaces and in-app roles | Use an access key and configuration per team. Dashboard sign-in supports [SSO](/iam/sso). |
+| Prompt templates | Keep prompts in your code. |
+| Realtime and batch APIs | Call the provider directly. |
+| OpenTelemetry or log export | ngrok.ai has no push export. Read usage events with the [Usage API](/ai-gateway/observability). |
+| Terraform provider | Script setup with the [AI Gateway API](/ai-gateway/api-reference/overview) and its [OpenAPI spec](https://api.ngrok.ai/openapi.yaml). |
 
 {/* DRAFT: re-check this table against ai-gateway/ right before publishing. Remove rows as features ship. */}
 
