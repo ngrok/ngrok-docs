@@ -38,7 +38,7 @@ ngrok's GSLB works on top of DigitalOcean's internal load balancers for addition
 
     With the ngrok API, reserve your domain on the [`/reserved_domains` endpoint](/api-reference/reserveddomains/list) using the `NGROK_API_KEY` and `NGROK_DOMAIN` variables you exported.
 
-    Export a variable for your new domain, which will be used in following API calls.
+    Export a variable for your new domain, which you use in the following API calls.
 
     ```bash
     export NGROK_DOMAIN=<YOUR-NGROK-DOMAIN>
@@ -62,7 +62,7 @@ ngrok's GSLB works on top of DigitalOcean's internal load balancers for addition
   <Step title="Create a Cloud Endpoint">
 
     Create a `policy.yaml` file on your local workstation with the Traffic Policy for your endpoint.
-    This policy forwards all incoming requests to `https://gslb-demo.internal`, a shared internal domain that all three of your VMs' ngrok agents will connect to.
+    This policy forwards all incoming requests to `https://gslb-demo.internal`, a shared internal domain that all three of your VMs' ngrok agents connect to.
     ngrok automatically routes each request to the nearest connected agent, providing global load balancing without additional configuration.
 
     ```yaml
@@ -103,9 +103,9 @@ ngrok's GSLB works on top of DigitalOcean's internal load balancers for addition
     You can go to the [Endpoints dashboard](https://dashboard.ngrok.com/endpoints) to see your endpoint.
   </Step>
 
-  <Step title="Install the ngrok Agent and an example workload on each VM">
+  <Step title="Install the ngrok agent and an example workload on each VM">
 
-    To get some agents online and quickly see how ngrok's GSLB works, you'll use an [example API deployment](https://github.com/joelhans/ngrok-vps-gslb-demo).
+    To get some agents online and quickly see how ngrok's GSLB works, use an [example API deployment](https://github.com/joelhans/ngrok-vps-gslb-demo).
     This demo deployment has four parts:
 
     - A straightforward Go-based API with a single endpoint at `/api`, which returns a randomly generated UUID and the machine's `hostname`, which should reflect the regions of your VMs.
@@ -166,7 +166,8 @@ ngrok's GSLB works on top of DigitalOcean's internal load balancers for addition
 
     You should see each VM respond with similar frequency:
 
-    ```json skip-validation
+    {/* validate=false */}
+    ```json
     [{"id":"c46bdbd9-b588-4ffa-8018-d299d0918bbc","dc":"sydney"}]
     [{"id":"dce5a46e-15af-4479-a073-8fbc7f0097c5","dc":"nyc"}]
     [{"id":"ecc6451c-bc25-43bd-8cb6-a162f019adf3","dc":"frankfurt"}]
@@ -259,7 +260,7 @@ To route traffic by explicit weight across specific regions, such as for A/B tes
 - Frankfurt VM: `url: https://frankfurt.internal`
 
 Then create a `policy-weighted.yaml` with a Traffic Policy that uses `set-vars` to select a backend by weight on each request.
-Adjust the `weight` values as needed; the `cumulative_weights` list must be recomputed to match (each entry is the sum of all weights up to and including that index).
+Adjust the `weight` values as needed; you must recompute the `cumulative_weights` list to match (each entry is the sum of all weights up to and including that index).
 
 ```yaml
 on_http_request:
@@ -311,7 +312,7 @@ From here, you have many options for extending your use of ngrok's GSLB:
 
 - Spread the load further by deploying additional VMs in more regions and connecting each agent to `https://gslb-demo.internal`.
   ngrok automatically includes them in load balancing.
-- Add more VMs in an existing region and connect them to the same internal domain; ngrok will equally distribute traffic among all connected agents for that domain.
+- Add more VMs in an existing region and connect them to the same internal domain; ngrok distributes traffic equally among all connected agents for that domain.
 - Provision a Kubernetes cluster with the same workload and the ngrok [Kubernetes Operator](/gateway/k8s/) to load-balance between VM- and Kubernetes-based deployments of the same API or application.
 - Use the [weighted distribution](#configure-weighted-distribution) Traffic Policy for A/B tests by adjusting weights between regions.
 
