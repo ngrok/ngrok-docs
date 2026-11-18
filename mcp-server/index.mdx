@@ -264,9 +264,10 @@ For more prompts you can copy, grouped by job, see [Example prompts](/mcp-server
 
 <div className="mcp-examples">
 <AccordionGroup>
-	<Accordion title="Show me the 500s on my endpoints by hour for the last day">
-		The AI agent queries Traffic Inspector for status 500 over the last 24 hours, counted per hour in your time zone.
+	<Accordion title="Show me the HTTP 500s on my endpoints by hour for the last 24 hours, in Pacific time">
+		The AI agent queries Traffic Inspector for status 500 only over the last 24 hours, counted per hour in the time zone you named.
 		You get an hourly breakdown, plus the paths and client IPs behind the spikes.
+		To include 502, 503, and every other server error, ask for 5xx instead of 500.
 		Follow up with "Show me one of those requests" to see its headers, timing, and error detail.
 	</Accordion>
 	<Accordion title="I got an ngrok error page with request ID req_0a1b2c3d. What happened?">
@@ -274,16 +275,30 @@ For more prompts you can copy, grouped by job, see [Example prompts](/mcp-server
 		You get what failed, where it failed (ngrok, your ngrok agent, or your upstream), and how to fix it.
 		The request details include the `ERR_NGROK` code only when full capture is turned on.
 		Without full capture, paste the error code from the error page too, so the AI agent doesn't blame your app for an ngrok error.
+		Follow up with "Which connection carried that request?" to see the client, timing, bytes, TLS details, and failure of the [connection](/obs/traffic-inspection/tcp-connections#connections-and-requests) it used.
 	</Accordion>
-	<Accordion title="Rate limit /api on my Cloud Endpoint to 100 requests per minute per IP">
+	<Accordion title="Am I being rate limited? Why are my requests failing?">
+		The AI agent checks each of your plan's limits, your current usage, and when a limit last blocked your account.
+		You get any limit that's blocking you, plus how close you are to the others.
+		If no limit is blocking you, it looks for the failing requests in Traffic Inspector instead.
+	</Accordion>
+	<Accordion title="Rate limit /api and every path under /api/ on my Cloud Endpoint to 100 requests per minute per IP">
 		The AI agent reads the [`rate-limit`](/gateway/traffic-policy/actions/rate-limit) action docs, writes the policy, and validates it.
+		The rule matches `/api` and paths that start with `/api/`, such as `/api/users`, but not `/apiv2`.
+		If you mean only the exact path `/api`, say so.
 		If validation fails, it fixes the errors and validates again.
 		Then it asks to update your Cloud Endpoint's Traffic Policy.
+	</Accordion>
+	<Accordion title="Are my event destinations failing to deliver logs?">
+		The AI agent lists your event destinations with their recent delivery errors, and the event subscriptions that send to each one.
+		You get which destinations are failing, the error each one returned, and which logs you're missing as a result.
+		Tools never return a destination's credentials.
 	</Accordion>
 	<Accordion title="Who on my team has API keys? Revoke the ones that belong to people who left">
 		The AI agent joins your team with your API keys.
 		You get each key's owner, description, and status.
-		For keys whose owner is no longer on the team, it asks to revoke each one.
+		A key counts as a leaver's key only when its owner isn't in your current list of users and service users.
+		The AI agent shows you that evidence for each key and asks before it revokes one, so you can confirm the person really left.
 		Tools never return the key, token, or secret values themselves.
 	</Accordion>
 </AccordionGroup>
@@ -292,6 +307,7 @@ For more prompts you can copy, grouped by job, see [Example prompts](/mcp-server
 <Note>
 Traffic questions use [Traffic Inspector](/obs/traffic-inspection) data, so the window your AI agent can see depends on your plan's retention.
 Request headers and bodies are available only when full capture is turned on.
+The AI agent sees your current configuration and traffic, not a history of changes, so it can't tell you who changed a setting or when.
 </Note>
 
 ## Make changes safely
