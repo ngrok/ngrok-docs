@@ -102,35 +102,67 @@ def validate_block(content, is_json):
             return str(e).split("\n")[0]
     if not docs:
         return "empty document"
-    if not any(has_policy(d) for d in docs):
+    policies = []
+    for d in docs:
+        collect_policies(d, policies)
+    if not policies:
         return "no Traffic Policy found (need one of: " + ", ".join(POLICY_KEYS) + ")"
+    for policy in policies:
+        err = shape_error(policy)
+        if err:
+            return err
     return None
 
 
-def has_policy(value, depth=0):
-    """True if value holds a policy at any depth: a bare policy, an agent config
+def collect_policies(value, out, depth=0):
+    """Collect every policy in value: a bare policy, an agent config
     traffic_policy, a Kubernetes spec, or a policy encoded as a JSON/YAML string
     (API request bodies, annotations)."""
     if depth > 12 or value is None:
-        return False
+        return
     if isinstance(value, str):
         if not any(k in value for k in POLICY_KEYS):
-            return False
+            return
         try:
-            return has_policy(json.loads(value), depth + 1)
+            parsed = json.loads(value)
         except (json.JSONDecodeError, TypeError):
-            pass
-        try:
-            return has_policy(yaml.safe_load(value), depth + 1)
-        except yaml.YAMLError:
-            return False
+            try:
+                parsed = yaml.safe_load(value)
+            except yaml.YAMLError:
+                return
+        if not isinstance(parsed, str):
+            collect_policies(parsed, out, depth + 1)
+        return
     if isinstance(value, list):
-        return any(has_policy(v, depth + 1) for v in value)
+        for v in value:
+            collect_policies(v, out, depth + 1)
+        return
     if isinstance(value, dict):
         if any(k in value for k in POLICY_KEYS):
-            return True
-        return any(has_policy(v, depth + 1) for v in value.values())
-    return False
+            out.append(value)
+            return
+        for v in value.values():
+            collect_policies(v, out, depth + 1)
+
+
+def shape_error(policy):
+    """Each phase is a list of rules; each rule has an actions list; each action has a type."""
+    for phase in POLICY_KEYS:
+        rules = policy.get(phase)
+        if rules is None:
+            continue
+        if not isinstance(rules, list):
+            return f"{phase} must be a list of rules"
+        for n, rule in enumerate(rules, 1):
+            if not isinstance(rule, dict):
+                return f"{phase} rule {n} must be an object"
+            actions = rule.get("actions")
+            if not isinstance(actions, list):
+                return f"{phase} rule {n} needs an actions list"
+            for action in actions:
+                if not isinstance(action, dict) or not isinstance(action.get("type"), str):
+                    return f"{phase} rule {n} has an action without a type"
+    return None
 
 
 def main():
