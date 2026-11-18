@@ -55,7 +55,7 @@ ngrok http $FRONTEND_PORT --url https://app-dev.internal
     Make sure you change each of the following values:
 
     - `$GITHUB_OAUTH_CLIENT_ID`: Replace with your GitHub OAuth app client ID for development
-    - `$GIBHUB_OAUTH_CLIENT_SECRET`: Replace with your GitHub OAuth app secret for development
+    - `$GITHUB_OAUTH_CLIENT_SECRET`: Replace with your GitHub OAuth app secret for development
     - `$YOUR_DEV_API_KEY`: Replace with an API key for development access
     - Internal service URLs: Replace with your actual internal endpoint URLs
 
@@ -77,16 +77,16 @@ ngrok http $FRONTEND_PORT --url https://app-dev.internal
         actions:
           - type: oauth
             config:
-              provider: google
+              provider: github
               client_id: "$GITHUB_OAUTH_CLIENT_ID"
               client_secret: "$GITHUB_OAUTH_CLIENT_SECRET"
               scopes:
-                - https://www.googleapis.com/auth/userinfo.email
+                - read:user
+                - user:email
 
       # API key authentication for external tools and AI assistants
       - expressions:
           - "req.url.path.startsWith('/api')"
-          - "!hasReqHeader('authorization')"
         actions:
           - type: basic-auth
             config:
@@ -159,11 +159,12 @@ ngrok http $FRONTEND_PORT --url https://app-dev.internal
                 access-control-expose-headers: "X-Processing-Timestamp"
     ```
 
-    **What's happening here?**
+    <Info title="What's happening here?">
     On every HTTP request, the policy adds environment identification headers for tracing, enforces OAuth authentication for admin/dashboard routes, requires API key authentication for API routes accessed by external tools and AI assistants, and allows webhook testing without authentication for easy debugging.
 
     The gateway routes traffic based on URL paths—API requests go to your backend service, admin routes go to the backend with authentication headers, and everything else goes to your frontend.
     On responses, it adds development-specific headers for debugging, enables permissive CORS for local development, and timestamps responses for request tracking.
+    </Info>
   </Step>
 
   <Step title="Try out your development gateway">

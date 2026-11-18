@@ -113,6 +113,11 @@ jobs:
             - Put each sentence on its own line, as the style guide requires.
             - Convert numbered headings, such as `## 1. Do the first thing` or `## Step 1: Do the first thing`, to `<Steps>` and `<Step>` components, as the style guide requires. This is the one allowed exception to the prose-only rule. Leave numbered Markdown lists as lists.
 
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        if: ${{ !cancelled() && steps.changed-files.outputs.has_files == 'true' }}
+        with:
+          node-version-file: ".nvmrc"
+
       - name: Commit and push changes
         # Runs even if the Claude step failed (e.g. hit the turn cap), so finished edits aren't lost.
         if: ${{ !cancelled() && steps.changed-files.outputs.has_files == 'true' }}
@@ -122,6 +127,13 @@ jobs:
           git config user.name "ngrok-docs-bot[bot]"
           git config user.email "ngrok-docs-bot[bot]@users.noreply.github.com"
           git add --pathspec-from-file=.style-guide-files.txt
+          # Edited prose under custom/ feeds generated pages, so rebuild them or the
+          # generated-page checks in ci-checks fail.
+          if grep -q '^custom/' .style-guide-files.txt; then
+            node custom/scripts/generate-error-pages.js
+            node custom/scripts/generate-cli-pages.js
+            git add -u errors snippets/errors gateway/agent/cli.mdx gateway/agent/cli-api.mdx
+          fi
           if git diff --staged --quiet; then
             echo "No style changes to commit."
           else

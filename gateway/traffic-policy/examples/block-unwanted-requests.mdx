@@ -206,13 +206,11 @@ on_http_request:
 </CodeGroup>
 
 <Tip>
-
 You can expand the expression to include additional user agents by adding them to the list:
 
 ```bash
 ['ChatGPT-User', 'GPTBot', 'anthropic', 'claude']
 ```
-
 </Tip>
 
 ## How to block traffic from bots and crawlers by IP Address
@@ -343,9 +341,9 @@ on_http_request:
 
 This rule demonstrates how to prevent excessively large user uploads, like text or images, that might cause performance or availability issues for your upstream service with the following steps:
 
-1. Check if the request is `POST` or `PUT
-1. Check if the request's content is 1MB or larger.
-1. If both conditions are met, return a `400` status code with an error message.
+1. Check if the request is `POST` or `PUT`.
+1. Check if the request's `Content-Length` header is larger than 1 MB (1,000,000 bytes).
+1. If both conditions are met, return a `413` status code with an error message.
 
 <CodeGroup>
 
@@ -354,11 +352,11 @@ on_http_request:
   - name: Block large POST/PUT requests.
     expressions:
       - req.method == 'POST' || req.method == 'PUT'
-      - req.content_length >= 1000
+      - req.content_length > 1000000
     actions:
       - type: custom-response
         config:
-          status_code: 400
+          status_code: 413
           body: "Error: You can't upload content larger than 1MB."
 ```
 
@@ -369,13 +367,13 @@ on_http_request:
       "name": "Block large POST/PUT requests.",
       "expressions": [
         "req.method == 'POST' || req.method == 'PUT'",
-        "req.content_length >= 1000"
+        "req.content_length > 1000000"
       ],
       "actions": [
         {
           "type": "custom-response",
           "config": {
-            "status_code": 400,
+            "status_code": 413,
             "body": "Error: You can't upload content larger than 1MB."
           }
         }
