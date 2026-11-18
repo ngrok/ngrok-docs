@@ -4,20 +4,7 @@ description: Reference documentation for action variables provided by Traffic Po
 ---
 
 import VariablesActionDescription from "/snippets/traffic-policy/common/action-variables-description.mdx";
-import AddHeaders from "/snippets/traffic-policy/actions/add-headers/variables.mdx";
-import BasicAuth from "/snippets/traffic-policy/actions/basic-auth/variables.mdx";
-import CompressResponse from "/snippets/traffic-policy/actions/compress-response/variables.mdx";
-import JwtValidation from "/snippets/traffic-policy/actions/jwt-validation/variables.mdx";
-import Log from "/snippets/traffic-policy/actions/log/variables.mdx";
-import OAuth from "/snippets/traffic-policy/actions/oauth/variables.mdx";
-import OIDC from "/snippets/traffic-policy/actions/oidc/variables.mdx";
-import RateLimit from "/snippets/traffic-policy/actions/rate-limit/variables.mdx";
-import Redirect from "/snippets/traffic-policy/actions/redirect/variables.mdx";
-import RemoveHeaders from "/snippets/traffic-policy/actions/remove-headers/variables.mdx";
-import RestrictIPs from "/snippets/traffic-policy/actions/restrict-ips/variables.mdx";
-import UrlRewrite from "/snippets/traffic-policy/actions/url-rewrite/variables.mdx";
-import VerifyWebhook from "/snippets/traffic-policy/actions/verify-webhook/variables.mdx";
-import HTTPRequest from "/snippets/traffic-policy/actions/http-request/variables.mdx";
+import { Config, ConfigField, ConfigChildren, ConfigEnum, ConfigEnumOption } from "/snippets/ConfigTable.jsx";
 
 
 
@@ -27,56 +14,467 @@ import HTTPRequest from "/snippets/traffic-policy/actions/http-request/variables
 
 ## Add headers
 
-<AddHeaders />
+<Config>
+	<ConfigField title="actions.ngrok.add_headers.headers_added" type="object">
+		<p>Map of headers that were added by the action.</p>
+	</ConfigField>
+</Config>
 
 ## Basic auth
 
-<BasicAuth />
+<Config>
+    <ConfigField title="actions.ngrok.basic_auth.credentials.presented" type="bool" required={false}>
+        <p>Whether there were Basic Auth credentials presented in the Authorization header.</p>
+    </ConfigField>
+
+    <ConfigField title="actions.ngrok.basic_auth.credentials.username" type="string" required={false}>
+        <p>The username of the credentials presented.</p>
+    </ConfigField>
+
+    <ConfigField title="actions.ngrok.basic_auth.credentials.authorized" type="bool" required={false}>
+        <p>Whether the presented basic auth credentials were authorized for this request.</p>
+    </ConfigField>
+
+</Config>
 
 ## Compress response
 
-<CompressResponse />
+<Config>
+	<ConfigField title="actions.ngrok.compress.already_compressed" type="boolean">
+		<p>
+			Indicates whether the body was already compressed before the action was
+			applied. Returns <code>true</code> if no further compression was
+			performed.
+		</p>
+	</ConfigField>
+	<ConfigField title="actions.ngrok.compress.negotiated_algorithm" type="string">
+		<p>
+			The compression algorithm selected and applied by the action, based on the
+			client's request and action configuration.
+		</p>
+	</ConfigField>
+</Config>
 
 ## HTTP request
 
-<HTTPRequest />
+<Config>
+	<ConfigField title="actions.ngrok.http_request.error.code" type="string">
+	</ConfigField>
+	<ConfigField title="actions.ngrok.http_request.error.message" type="string">
+		<p>
+			Message for an error that occurred during the invocation of an action.
+		</p>
+	</ConfigField>
+	<ConfigField title="actions.ngrok.http_request.attempts" type="array of objects">
+	  <p>
+		  A list of HTTP responses for each request attempt.
+		</p>
+	  <ConfigChildren>
+		  <ConfigField title="attempts[i].resolved_ip" type="string">
+			  <p>
+			    The IP address of the host returning the response.
+		    </p>	  
+			</ConfigField>
+		  <ConfigField title="attempts[i].response_header" type="object">
+			  <p>
+				  A map of HTTP response headers.
+		    </p>	  
+			</ConfigField>
+		  <ConfigField title="attempts[i].response_status_code" type="int">
+			  <p>
+			    The HTTP Status code for the response attempt.
+		    </p>	  
+			</ConfigField>
+		  <ConfigField title="attempts[i].response_time_ms" type="string">
+			  <p>
+				  Time it took to receive the response.
+		    </p>	  
+			</ConfigField>
+		</ConfigChildren>
+	</ConfigField>
+	<ConfigField title="actions.ngrok.http_request.req" type="object">
+	  <p>
+		  The HTTP request.
+		</p>
+	  <ConfigChildren>
+		  <ConfigField title="req.method" type="string">
+		    <p>
+			    The HTTP method of the request.
+			  </p>
+			</ConfigField>
+		  <ConfigField title="req.header" type="object">
+			  <p>
+				  A map of HTTP request headers.
+		    </p>	  
+			</ConfigField>
+		  <ConfigField title="req.url" type="string">
+			  <p>
+				  The request url.
+		    </p>	  
+			</ConfigField>
+		  <ConfigField title="req.body" type="string">
+			  <p>
+				  The request body.
+		    </p>	  
+			</ConfigField>
+		</ConfigChildren>
+	</ConfigField>
+	<ConfigField title="actions.ngrok.http_request.res" type="object">
+	  <p>
+		  The last attempted HTTP response. Unlike `actions.ngrok.attempts[i]` this variable also contains the response body.
+		</p>
+	  <ConfigChildren>
+		  <ConfigField title="res.resolved_ip" type="string">
+			  <p>
+			    The IP address of the host returning the response.
+		    </p>	  
+			</ConfigField>
+		  <ConfigField title="res.header" type="object">
+			  <p>
+				  A map of HTTP response headers.
+		    </p>	  
+			</ConfigField>
+		  <ConfigField title="res.status_code" type="int">
+			  <p>
+			    The HTTP Status code for the response.
+		    </p>	  
+			</ConfigField>
+		  <ConfigField title="res.time_ms" type="string">
+			  <p>
+				  Time it took to receive the response.
+		    </p>	  
+			</ConfigField>
+		  <ConfigField title="res.body" type="string">
+			  <p>
+				  The response body
+		    </p>	  
+			</ConfigField>
+	  </ConfigChildren>
+	</ConfigField>
+</Config>
 
 ## JWT validation
 
-<JwtValidation />
+<Config>
+	<ConfigField
+		title="actions.ngrok.jwt_validation.tokens"
+		type="array of objects"
+	>
+		<p>The list of JSON Web Tokens (JWTs) processed by the action.</p>
+		<ConfigChildren>
+			<ConfigField title="tokens[i].header" type="object">
+				<p>
+					The header portion of the JWT, parsed into a key-value map containing
+					metadata about the token.
+				</p>
+			</ConfigField>
+			<ConfigField title="tokens[i].location" type="string">
+				<p>
+					The part of the HTTP request where the JWT was located (for example,{" "}
+					<code>header</code>, <code>body</code>).
+				</p>
+			</ConfigField>
+			<ConfigField title="tokens[i].location_property" type="string">
+				<p>
+					The specific header or body field that contained the JWT (for example,{" "}
+					<code>"Authorization"</code>).
+				</p>
+			</ConfigField>
+			<ConfigField title="tokens[i].payload" type="object">
+				<p>
+					The payload portion of the JWT, parsed into a key-value map
+					representing the claims.
+				</p>
+			</ConfigField>
+			<ConfigField title="tokens[i].signature" type="string">
+				<p>
+					The signature portion of the JWT, encoded in base64, used for
+					verifying token integrity.
+				</p>
+			</ConfigField>
+			<ConfigField title="tokens[i].verified" type="boolean">
+				<p>
+					Indicates whether the token passed verification. Returns{" "}
+					<code>true</code> if verified successfully.
+				</p>
+			</ConfigField>
+		</ConfigChildren>
+	</ConfigField>
+	<ConfigField title="actions.ngrok.jwt_validation.error.code" type="string">
+		<p>
+			A machine-readable code describing an error that occurred during the
+			action's execution.
+		</p>
+	</ConfigField>
+	<ConfigField title="actions.ngrok.jwt_validation.error.message" type="string">
+		<p>
+			A human-readable message providing details about an error that occurred
+			during the action's execution.
+		</p>
+	</ConfigField>
+</Config>
 
 ## Log
 
-<Log />
+<Config>
+	<ConfigField title="actions.ngrok.log.metadata" type="object">
+		<p>
+			A key-value map containing metadata that was logged during the action.
+			Each key represents a metadata attribute, and the value provides its
+			corresponding details.
+		</p>
+	</ConfigField>
+</Config>
 
 ## OAuth
 
-<OAuth />
+<Config>
+	<ConfigField title="actions.ngrok.oauth.error" type="object">
+		<ConfigChildren>
+			<ConfigField title="actions.ngrok.oauth.error.code" type="string">
+				<p>Code for an error that occurred during the invocation of an action.</p>
+			</ConfigField>
+			<ConfigField title="actions.ngrok.oauth.error.message" type="string">
+				<p>
+					Message for an error that occurred during the invocation of an action.
+				</p>
+			</ConfigField>
+		</ConfigChildren>
+	</ConfigField>
+	<ConfigField title="actions.ngrok.oauth.identity" type="object">
+		<ConfigChildren>
+			<ConfigField title="actions.ngrok.oauth.identity.id" type="string">
+				<p>Unique identifier for the ngrok Identity entity</p>
+			</ConfigField>
+			<ConfigField title="actions.ngrok.oauth.identity.email" type="string">
+				<p>Email address of the authorized user from the provider.</p>
+			</ConfigField>
+			<ConfigField title="actions.ngrok.oauth.identity.name" type="string">
+				<p>Name for the authorized user from the provider.</p>
+			</ConfigField>
+			<ConfigField
+				title="actions.ngrok.oauth.identity.provider_user_id"
+				type="string"
+			>
+				<p>Identifier for the authorized user from the provider.</p>
+			</ConfigField>
+			<ConfigField
+				title="actions.ngrok.oauth.identity.current_provider_session_id"
+				type="string"
+			>
+				<p>The current Identity session identifier for this request.</p>
+			</ConfigField>
+		</ConfigChildren>
+	</ConfigField>
+	<ConfigField title="actions.ngrok.oauth" type="object">
+		<ConfigChildren>
+			<ConfigField title="actions.ngrok.oauth.access_token" type="string">
+				<p>The access token from the provider.</p>
+			</ConfigField>
+			<ConfigField title="actions.ngrok.oauth.refresh_token" type="string">
+				<p>The refresh token from the provider.</p>
+			</ConfigField>
+			<ConfigField title="actions.ngrok.oauth.expires_at" type="string">
+				<p>Timestamp when the current session will expire.</p>
+			</ConfigField>
+			<ConfigField title="actions.ngrok.oauth.session_timed_out" type="boolean">
+				<p>Returns true when the session timed out.</p>
+			</ConfigField>
+			<ConfigField
+				title="actions.ngrok.oauth.session_max_duration_reached"
+				type="boolean"
+			>
+				<p>Returns true when the current session reached the max duration.</p>
+			</ConfigField>
+			<ConfigField title="actions.ngrok.oauth.userinfo_refreshed" type="boolean">
+				<p>Returns true when ngrok updates the user information on the identity.</p>
+			</ConfigField>
+		</ConfigChildren>
+	</ConfigField>
+</Config>
 
 ## OpenID Connect (OIDC)
 
-<OIDC />
+<Config>
+	<ConfigField title="actions.ngrok.oidc.error" type="object">
+		<ConfigChildren>
+			<ConfigField title="actions.ngrok.oidc.error.code" type="string">
+				<p>Code for an error that occurred during the invocation of an action.</p>
+			</ConfigField>
+			<ConfigField title="actions.ngrok.oidc.error.message" type="string">
+				<p>
+					Message for an error that occurred during the invocation of an action.
+				</p>
+			</ConfigField>
+		</ConfigChildren>
+	</ConfigField>
+	<ConfigField title="actions.ngrok.oidc.identity" type="object">
+		<ConfigChildren>
+			<ConfigField title="actions.ngrok.oidc.identity.id" type="string">
+				<p>Unique identifier for the ngrok Identity entity</p>
+			</ConfigField>
+			<ConfigField title="actions.ngrok.oidc.identity.email" type="string">
+				<p>Email address of the authorized user from the provider.</p>
+			</ConfigField>
+			<ConfigField title="actions.ngrok.oidc.identity.name" type="string">
+				<p>Name for the authorized user from the provider.</p>
+			</ConfigField>
+			<ConfigField
+				title="actions.ngrok.oidc.identity.provider_user_id"
+				type="string"
+			>
+				<p>Identifier for the authorized user from the provider.</p>
+			</ConfigField>
+			<ConfigField
+				title="actions.ngrok.oidc.identity.current_session_id"
+				type="string"
+			>
+				<p>The current Identity session identifier for this request.</p>
+			</ConfigField>
+		</ConfigChildren>
+	</ConfigField>
+	<ConfigField title="actions.ngrok.oidc" type="object">
+		<ConfigChildren>
+			<ConfigField title="actions.ngrok.oidc.identity_token" type="string">
+				<p>The identity token from the provider for the current user.</p>
+			</ConfigField>
+			<ConfigField title="actions.ngrok.oidc.access_token" type="string">
+				<p>The access token from the provider.</p>
+			</ConfigField>
+			<ConfigField title="actions.ngrok.oidc.refresh_token" type="string">
+				<p>The refresh token from the provider.</p>
+			</ConfigField>
+			<ConfigField title="actions.ngrok.oidc.expires_at" type="string">
+				<p>Timestamp when the current session will expire.</p>
+			</ConfigField>
+			<ConfigField title="actions.ngrok.oidc.session_timed_out" type="boolean">
+				<p>Returns true when the session timed out.</p>
+			</ConfigField>
+			<ConfigField
+				title="actions.ngrok.oidc.session_max_duration_reached"
+				type="boolean"
+			>
+				<p>Returns true when the current session reached the max duration.</p>
+			</ConfigField>
+			<ConfigField title="actions.ngrok.oidc.userinfo_refreshed" type="boolean">
+				<p>Returns true when ngrok updates the user information on the identity.</p>
+			</ConfigField>
+		</ConfigChildren>
+	</ConfigField>
+</Config>
 
 ## Rate limit
 
-<RateLimit />
+<Config>
+    <ConfigField title="actions.ngrok.rate_limit.bucket_key" type="string">
+        <p>The key used for bucketing requests. This is the key used to group and track requests in the rate-limiting process, ensuring that the same bucket is subject to the rate limit across multiple requests.</p>
+    </ConfigField>
+
+    <ConfigField title="actions.ngrok.rate_limit.limited" type="boolean">
+        <p>Indicates whether the request was limited by the rate limit. If  `true`, the request was rate-limited based on the configured limits for the specified bucket.</p>
+    </ConfigField>
+
+    <ConfigField title="actions.ngrok.rate_limit.error.code" type="string">
+        <p>A machine-readable code describing an error that occurred during the action's execution.</p>
+    </ConfigField>
+
+    <ConfigField title="actions.ngrok.rate_limit.error.message" type="string">
+        <p>A human-readable message providing details about an error that occurred during the action's execution.</p>
+    </ConfigField>
+
+</Config>
 
 ## Redirect
 
-<Redirect />
+<Config>
+    <ConfigField title="actions.ngrok.redirect.matches" type="array of strings">
+        <p>A list of elements that were matched during redirection. These represent the request components (for example, path or query parameters) that triggered the action and resulted in the redirect.</p>
+    </ConfigField>
+
+    <ConfigField title="actions.ngrok.redirect.url" type="string">
+        <p>The URL to which the traffic was redirected. This is the destination URL returned as part of the redirect response after the action was executed.</p>
+    </ConfigField>
+
+    <ConfigField title="actions.ngrok.redirect.error.code" type="string">
+        <p>A machine-readable code describing an error that occurred during the action's execution.</p>
+    </ConfigField>
+
+    <ConfigField title="actions.ngrok.redirect.error.message" type="string">
+        <p>A human-readable message providing details about an error that occurred during the action's execution.</p>
+    </ConfigField>
+
+</Config>
 
 ## Remove headers
 
-<RemoveHeaders />
+<Config>
+	<ConfigField
+		title="actions.ngrok.remove_headers.headers_removed"
+		type="array of strings"
+	>
+		<p>A list of headers that were successfully removed by the action.</p>
+	</ConfigField>
+</Config>
 
 ## Restrict IPs
 
-<RestrictIPs />
+<Config>
+    <ConfigField title="actions.ngrok.restrict_ips.action" type="string">
+        <p>The action taken for this request.</p>
+        <ConfigEnum label="Possible values">
+            <ConfigEnumOption>`allow` - If the request was permitted.</ConfigEnumOption>
+            <ConfigEnumOption>`deny` - If the request was denied.</ConfigEnumOption>
+        </ConfigEnum>
+    </ConfigField>
+
+    <ConfigField title="actions.ngrok.restrict_ips.matched_cidr" type="string">
+        <p>The CIDR block that matched the incoming client's IP address. If no match was found, this value will be empty.</p>
+    </ConfigField>
+
+    <ConfigField title="actions.ngrok.restrict_ips.error.code" type="string">
+        <p>A machine-readable code describing an error that occurred during the action's execution.</p>
+    </ConfigField>
+
+    <ConfigField title="actions.ngrok.restrict_ips.error.message" type="string">
+        <p>A human-readable message providing details about an error that occurred during the action's execution.</p>
+    </ConfigField>
+
+</Config>
 
 ## URL rewrite
 
-<UrlRewrite />
+<Config>
+    <ConfigField title="actions.ngrok.url_rewrite.matches" type="array of strings">
+        <p>List of elements that matched the URL before the rewrite action was applied. These can be specific parts of the URL, such as the domain, path, or query parameters, that were matched based on the action configuration.</p>
+    </ConfigField>
+
+    <ConfigField title="actions.ngrok.url_rewrite.url" type="string">
+        <p>The final URL after the rewrite action has been applied. This is the new URL to which the original request is redirected after the specified modifications have been made.</p>
+    </ConfigField>
+
+    <ConfigField title="actions.ngrok.url_rewrite.error.code" type="string">
+        <p>A machine-readable code describing an error that occurred during the action's execution.</p>
+    </ConfigField>
+
+    <ConfigField title="actions.ngrok.url_rewrite.error.message" type="string">
+        <p>A human-readable message providing details about an error that occurred during the action's execution.</p>
+    </ConfigField>
+
+</Config>
 
 ## Verify webhook
 
-<VerifyWebhook />
+<Config>
+    <ConfigField title="actions.ngrok.verify_webhook.verified" type="bool">
+        <p>Indicates whether or not the request was successfully verified.</p>
+    </ConfigField>
+
+    <ConfigField title="actions.ngrok.verify_webhook.error.code" type="string">
+        <p>Code for an error that occurred during the invocation of an action.</p>
+    </ConfigField>
+
+    <ConfigField title="actions.ngrok.verify_webhook.error.message" type="string">
+        <p>Message for an error that occurred during the invocation of an action.</p>
+    </ConfigField>
+
+</Config>

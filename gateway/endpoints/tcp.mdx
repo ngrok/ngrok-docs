@@ -5,34 +5,8 @@ description: Learn how to create and configure TCP endpoints with ngrok for rout
 ---
 
 import RandomAgentCliExample from '/snippets/examples/agent-cli/tcp-random.mdx';
-import RandomGoSdkExample from '/snippets/examples/go-sdk/tcp-random.mdx';
-import RandomJavascriptSdkExample from '/snippets/examples/javascript-sdk/tcp-random.mdx';
-import RandomKubernetesExample from '/snippets/examples/k8s/tcp-random.mdx';
-import RandomPythonSdkExample from '/snippets/examples/python-sdk/tcp-random.mdx';
-import RandomRustSdkExample from '/snippets/examples/rust-sdk/tcp-random.mdx';
 import RandomSshExample from '/snippets/examples/ssh/tcp-random.mdx';
-import FixedAgentCliExample from '/snippets/examples/agent-cli/tcp-fixed.mdx';
-import FixedGoSdkExample from '/snippets/examples/go-sdk/tcp-fixed.mdx';
-import FixedJavascriptSdkExample from '/snippets/examples/javascript-sdk/tcp-fixed.mdx';
-import FixedKubernetesExample from '/snippets/examples/k8s/tcp-fixed.mdx';
-import FixedPythonSdkExample from '/snippets/examples/python-sdk/tcp-fixed.mdx';
-import FixedRustSdkExample from '/snippets/examples/rust-sdk/tcp-fixed.mdx';
 import FixedSshExample from '/snippets/examples/ssh/tcp-fixed.mdx';
-import NonLocalAgentCliExample from '/snippets/examples/agent-cli/tcp-nonlocal.mdx';
-import NonLocalGoSdkExample from '/snippets/examples/go-sdk/tcp-nonlocal.mdx';
-import NonLocalJavascriptSdkExample from '/snippets/examples/javascript-sdk/tcp-nonlocal.mdx';
-import NonLocalKubernetesExample from '/snippets/examples/k8s/tcp-nonlocal.mdx';
-import NonLocalPythonSdkExample from '/snippets/examples/python-sdk/tcp-nonlocal.mdx';
-import NonLocalRustSdkExample from '/snippets/examples/rust-sdk/tcp-nonlocal.mdx';
-import NonLocalSshExample from '/snippets/examples/ssh/tcp-nonlocal.mdx';
-import ProxyProtoAgentCliExample from '/snippets/examples/agent-cli/tcp-proxyproto.mdx';
-import ProxyProtoAgentConfigExample from '/snippets/examples/agent-config/tcp-proxyproto.mdx';
-import ProxyProtoGoSdkExample from '/snippets/examples/go-sdk/tcp-proxyproto.mdx';
-import ProxyProtoJavascriptSdkExample from '/snippets/examples/javascript-sdk/tcp-proxyproto.mdx';
-import ProxyProtoKubernetesExample from '/snippets/examples/k8s/tcp-proxyproto.mdx';
-import ProxyProtoPythonSdkExample from '/snippets/examples/python-sdk/tcp-proxyproto.mdx';
-import ProxyProtoRustSdkExample from '/snippets/examples/rust-sdk/tcp-proxyproto.mdx';
-import ProxyProtoSshExample from '/snippets/examples/ssh/tcp-proxyproto.mdx';
 
 TCP endpoints enable you to deliver any network service with a TCP-based protocol.
 They're commonly used to create connectivity for:
@@ -71,19 +45,89 @@ This example creates a TCP endpoint on a randomly assigned URL—for example, `t
     	</Tip>
     </Tab>
     <Tab title="Go">
-    	<RandomGoSdkExample />
+    	```go
+    	import (
+    		"context"
+    		"net"
+
+    		"golang.ngrok.com/ngrok/v2"
+    	)
+
+    	func ngrokListener(ctx context.Context) (net.Listener, error) {
+    		return ngrok.Listen(ctx,
+    			ngrok.WithURL("tcp://"),
+    		)
+    	}
+    	```
+
+    	- [https://pkg.go.dev/golang.ngrok.com/ngrok/v2#WithURL](https://pkg.go.dev/golang.ngrok.com/ngrok/v2#WithURL)
     </Tab>
     <Tab title="Javascript">
-    	<RandomJavascriptSdkExample />
+    	```jsx
+    	const ngrok = require("@ngrok/ngrok");
+
+    	(async function () {
+    		const listener = await ngrok.forward({
+    			addr: 8080,
+    			authtoken_from_env: true,
+    			proto: "tcp",
+    		});
+
+    		console.log(`Ingress established at: ${listener.url()}`);
+    	})();
+    	```
+
+    	Javascript SDK Docs
+
+    	- [https://ngrok.github.io/ngrok-javascript/classes/TcpListenerBuilder.html](https://ngrok.github.io/ngrok-javascript/classes/TcpListenerBuilder.html)
+    	- [https://ngrok.github.io/ngrok-javascript/classes/Session.html#tcpEndpoint](https://ngrok.github.io/ngrok-javascript/classes/Session.html#tcpEndpoint)
+    	- [https://ngrok.github.io/ngrok-javascript/interfaces/Config.html#proto](https://ngrok.github.io/ngrok-javascript/interfaces/Config.html#proto)
     </Tab>
     <Tab title="Python">
-    	<RandomPythonSdkExample />
+    	```python
+    	import ngrok
+
+    	listener = ngrok.forward("localhost:8080", authtoken_from_env=True,
+    	    proto="tcp")
+
+    	print(f"Ingress established at: {listener.url()}");
+    	```
+
+    	Python SDK Docs:
+
+    	- [https://ngrok.github.io/ngrok-python/module.html#ngrok.connect](https://ngrok.github.io/ngrok-python/module.html#ngrok.connect)
+    	- [https://ngrok.github.io/ngrok-python/tcp_listener_builder.html#ngrok.TcpListenerBuilder.listen_and_forward](https://ngrok.github.io/ngrok-python/tcp_listener_builder.html#ngrok.TcpListenerBuilder.listen_and_forward)
     </Tab>
     <Tab title="Rust">
-    	<RandomRustSdkExample />
+    	```rust
+    	use ngrok::prelude::*;
+
+    	async fn listen_ngrok() -> anyhow::Result<impl Tunnel> {
+    	    let sess = ngrok::Session::builder()
+    	        .authtoken_from_env()
+    	        .connect()
+    	        .await?;
+
+    	    let tun = sess
+    	        .tcp_endpoint()
+    	        .listen()
+    	        .await?;
+
+    	    println!("Listening on URL: {:?}", tun.url());
+
+    	    Ok(tun)
+    	}
+    	```
+
+    	Rust Crate Docs
+
+    	- [https://docs.rs/ngrok/latest/ngrok/session/struct.Session.html#method.tcp_endpoint](https://docs.rs/ngrok/latest/ngrok/session/struct.Session.html#method.tcp_endpoint)
+    	- [https://docs.rs/ngrok/latest/ngrok/config/struct.TcpTunnelBuilder.html](https://docs.rs/ngrok/latest/ngrok/config/struct.TcpTunnelBuilder.html)
     </Tab>
     <Tab title="Kubernetes Controller">
-    	<RandomKubernetesExample />
+    	<Info>
+    	TCP endpoints are not supported via the ngrok Kubernetes Operator.
+    	</Info>
     </Tab>
 
 </Tabs>
@@ -111,7 +155,9 @@ After you create a TCP Address, specify the address (for example, `1.tcp.eu.ngro
 
 <Tabs>
 	<Tab title="CLI">
-		<FixedAgentCliExample />
+		```bash
+		ngrok tcp 3389 --url tcp://1.tcp.eu.ngrok.io:12345
+		```
 	</Tab>
 	<Tab title="Agent Config">
 		<FixedAgentConfigExample />
@@ -120,19 +166,88 @@ After you create a TCP Address, specify the address (for example, `1.tcp.eu.ngro
 		<FixedSshExample />
 	</Tab>
 	<Tab title="Go">
-		<FixedGoSdkExample />
+		```go
+		import (
+			"context"
+			"net"
+
+			"golang.ngrok.com/ngrok/v2"
+		)
+
+		func ngrokListener(ctx context.Context) (net.Listener, error) {
+			return ngrok.Listen(ctx,
+				ngrok.WithURL("tcp://1.tcp.ngrok.io:12345"),
+			)
+		}
+		```
 	</Tab>
 	<Tab title="Javascript">
-		<FixedJavascriptSdkExample />
+		```jsx
+		const ngrok = require("@ngrok/ngrok");
+
+		(async function () {
+			const listener = await ngrok.forward({
+				addr: 8080,
+				authtoken_from_env: true,
+				proto: "tcp",
+				remote_addr: "1.tcp.eu.ngrok.io:12345",
+			});
+
+			console.log(`Ingress established at: ${listener.url()}`);
+		})();
+		```
+
+		Javascript SDK Docs:
+
+		- [https://ngrok.github.io/ngrok-javascript/interfaces/Config.html#remote_addr](https://ngrok.github.io/ngrok-javascript/interfaces/Config.html#remote_addr)
+		- [https://ngrok.github.io/ngrok-javascript/classes/TcpListenerBuilder.html#remoteAddr](https://ngrok.github.io/ngrok-javascript/classes/TcpListenerBuilder.html#remoteAddr)
 	</Tab>
 	<Tab title="Python">
-		<FixedPythonSdkExample />
+		```python
+		import ngrok
+
+		listener = ngrok.forward("localhost:8080", authtoken_from_env=True,
+		    proto="tcp",
+		    remote_addr="1.tcp.eu.ngrok.io:12345")
+
+		print(f"Ingress established at: {listener.url()}");
+		```
+
+		Python SDK Docs:
+
+		- [https://ngrok.github.io/ngrok-python/tcp_listener_builder.html#ngrok.TcpListenerBuilder.remote_addr](https://ngrok.github.io/ngrok-python/tcp_listener_builder.html#ngrok.TcpListenerBuilder.remote_addr)
+		- [https://ngrok.github.io/ngrok-python/index.html#full-configuration](https://ngrok.github.io/ngrok-python/index.html#full-configuration)
 	</Tab>
 	<Tab title="Rust">
-		<FixedRustSdkExample />
+		```rust
+		use ngrok::prelude::*;
+
+		async fn listen_ngrok() -> anyhow::Result<impl Tunnel> {
+		    let sess = ngrok::Session::builder()
+		        .authtoken_from_env()
+		        .connect()
+		        .await?;
+
+		    let tun = sess
+		        .tcp_endpoint()
+		        .remote_addr("1.tcp.eu.ngrok.io:12345")
+		        .listen()
+		        .await?;
+
+		    println!("Listening on URL: {:?}", tun.url());
+
+		    Ok(tun)
+		}
+		```
+
+		Rust Crate Docs:
+
+		- [https://docs.rs/ngrok/latest/ngrok/config/struct.TcpTunnelBuilder.html#method.remote_addr](https://docs.rs/ngrok/latest/ngrok/config/struct.TcpTunnelBuilder.html#method.remote_addr)
 	</Tab>
 	<Tab title="Kubernetes Controller">
-		<FixedKubernetesExample />
+		<Info>
+		TCP endpoints are not supported via the ngrok Kubernetes Operator.
+		</Info>
 	</Tab>
 </Tabs>
 
@@ -182,28 +297,99 @@ For example, to forward traffic to a Postgres server running on your network at 
 
 <Tabs>
 	<Tab title="CLI">
-		<NonLocalAgentCliExample />
+		```bash
+		ngrok tcp 192.168.1.2:5432
+		```
 	</Tab>
 	<Tab title="Agent Config">
 		<NonLocalAgentConfigExample />
 	</Tab>
 	<Tab title="SSH Reverse Tunnel">
-		<NonLocalSshExample />
+		```bash
+		ssh -R 0:192.168.1.2:5432 v2@connect.ngrok-agent.com tcp
+		```
 	</Tab>
 	<Tab title="Go">
-		<NonLocalGoSdkExample />
+		```go
+		import (
+			"context"
+
+			"golang.ngrok.com/ngrok/v2"
+		)
+
+		func ngrokForwarder(ctx context.Context) (ngrok.EndpointForwarder, error) {
+			return ngrok.Forward(ctx,
+				ngrok.WithUpstream("tcp://192.168.1.2:3306"),
+				ngrok.WithURL("tcp://"),
+			)
+		}
+		```
+
+		- [https://pkg.go.dev/golang.ngrok.com/ngrok/v2#WithUpstream](https://pkg.go.dev/golang.ngrok.com/ngrok/v2#WithUpstream)
 	</Tab>
 	<Tab title="Javascript">
-		<NonLocalJavascriptSdkExample />
+		```jsx
+		const ngrok = require("@ngrok/ngrok");
+
+		(async function () {
+			const listener = await ngrok.forward({
+				addr: "192.168.1.2:5432",
+				authtoken_from_env: true,
+				proto: "tcp",
+			});
+
+			console.log(`Ingress established at: ${listener.url()}`);
+		})();
+		```
+
+		Javascript SDK Docs:
+
+		- [https://ngrok.github.io/ngrok-javascript/interfaces/Config.html#addr](https://ngrok.github.io/ngrok-javascript/interfaces/Config.html#addr)
+		- [https://ngrok.github.io/ngrok-javascript/classes/TcpListenerBuilder.html#listenAndForward](https://ngrok.github.io/ngrok-javascript/classes/TcpListenerBuilder.html#listenAndForward)
 	</Tab>
 	<Tab title="Python">
-		<NonLocalPythonSdkExample />
+		```python
+		import ngrok
+
+		listener = ngrok.forward("192.168.1.2:5432", authtoken_from_env=True,
+		    proto="tcp")
+
+		print(f"Ingress established at: {listener.url()}");
+		```
+
+		Python SDK Docs:
+
+		- [https://ngrok.github.io/ngrok-python/module.html#ngrok.connect](https://ngrok.github.io/ngrok-python/module.html#ngrok.connect)
+		- [https://ngrok.github.io/ngrok-python/tcp_listener_builder.html#ngrok.TcpListenerBuilder.listen_and_forward](https://ngrok.github.io/ngrok-python/tcp_listener_builder.html#ngrok.TcpListenerBuilder.listen_and_forward)
 	</Tab>
 	<Tab title="Rust">
-		<NonLocalRustSdkExample />
+		```rust
+		use ngrok::prelude::*;
+		use ngrok::tunnel;
+		use ngrok::forwarder::Forwarder;
+		use url::Url;
+
+		async fn forward_ngrok() -> Result<Forwarder<tunnel::TcpTunnel>, Error> {
+		    let sess = ngrok::Session::builder()
+		        .authtoken_from_env()
+		        .connect()
+		        .await?;
+		    sess
+		        .tcp_endpoint()
+		        .listen_and_forward(Url::parse("tcp://127.0.0.1:8090")?)
+		        .await
+		        .map_err(Into::into)
+		}
+		```
+
+		Rust Crate Docs:
+
+		- [https://docs.rs/ngrok/0.14.0-pre.13/ngrok/config/struct.TcpTunnelBuilder.html#method.listen_and_forward](https://docs.rs/ngrok/0.14.0-pre.13/ngrok/config/struct.TcpTunnelBuilder.html#method.listen_and_forward)
 	</Tab>
 	<Tab title="Kubernetes Controller">
-		<NonLocalKubernetesExample />
+		<Info>
+		TCP endpoints are not supported via the ngrok Kubernetes Operator.
+		</Info>
 	</Tab>
 </Tabs>
 
@@ -215,28 +401,112 @@ You need to configure your upstream service to handle the PROXY protocol header.
 
 <Tabs>
 	<Tab title="CLI">
-		<ProxyProtoAgentCliExample />
+		```bash
+		ngrok tcp 22 --upstream-proxy-protocol=2
+		```
 	</Tab>
 	<Tab title="Agent Config">
-		<ProxyProtoAgentConfigExample />
+		```yaml
+		version: 3
+		endpoints:
+		  - name: example
+		    url: tcp://1.tcp.ngrok.io:12345
+		    upstream:
+		      url: 22
+		      proxy_protocol: 2
+		```
 	</Tab>
 	<Tab title="SSH Reverse Tunnel">
-		<ProxyProtoSshExample />
+		<Info>
+		PROXY proto is not support via SSH.
+		</Info>
 	</Tab>
 	<Tab title="Go">
-		<ProxyProtoGoSdkExample />
+		```go
+		import (
+			"context"
+			"net"
+
+			"golang.ngrok.com/ngrok/v2"
+		)
+
+		func ngrokListener(ctx context.Context) (net.Listener, error) {
+			return ngrok.Forward(ctx,
+				ngrok.WithUpstream("tcp://localhost:8080",
+					ngrok.WithUpstreamProxyProto(ngrok.ProxyProtoV2),
+				),
+				ngrok.WithURL("tcp://"),
+			)
+		}
+		```
 	</Tab>
 	<Tab title="Javascript">
-		<ProxyProtoJavascriptSdkExample />
+		```jsx
+		const ngrok = require("@ngrok/ngrok");
+
+		(async function () {
+			const listener = await ngrok.forward({
+				addr: 8080,
+				authtoken_from_env: true,
+				proto: "tcp",
+				proxy_proto: "2",
+			});
+
+			console.log(`Ingress established at: ${listener.url()}`);
+		})();
+		```
+
+		Javascript SDK Docs:
+
+		- [https://ngrok.github.io/ngrok-javascript/interfaces/Config.html#proxy_proto](https://ngrok.github.io/ngrok-javascript/interfaces/Config.html#proxy_proto)
+		- [https://ngrok.github.io/ngrok-javascript/classes/TcpListenerBuilder.html#proxyProto](https://ngrok.github.io/ngrok-javascript/classes/TcpListenerBuilder.html#proxyProto)
 	</Tab>
 	<Tab title="Python">
-		<ProxyProtoPythonSdkExample />
+		```python
+		import ngrok
+
+		listener = ngrok.forward("localhost:8080", authtoken_from_env=True,
+		    proto="tcp",
+		    proxy_proto="2")
+
+		print(f"Ingress established at: {listener.url()}");
+		```
+
+		Python SDK Docs:
+
+		- [https://ngrok.github.io/ngrok-python/tcp_listener_builder.html#ngrok.TcpListenerBuilder.proxy_proto](https://ngrok.github.io/ngrok-python/tcp_listener_builder.html#ngrok.TcpListenerBuilder.proxy_proto)
+		- [https://ngrok.github.io/ngrok-python/index.html#full-configuration](https://ngrok.github.io/ngrok-python/index.html#full-configuration)
 	</Tab>
 	<Tab title="Rust">
-		<ProxyProtoRustSdkExample />
+		```rust
+		use ngrok::prelude::*;
+
+		async fn listen_ngrok() -> anyhow::Result<impl Tunnel> {
+		    let sess = ngrok::Session::builder()
+		        .authtoken_from_env()
+		        .connect()
+		        .await?;
+
+		    let tun = sess
+		        .tcp_endpoint()
+		        .proxy_proto(ProxyProto::V2)
+		        .listen()
+		        .await?;
+
+		    println!("Listening on URL: {:?}", tun.url());
+
+		    Ok(tun)
+		}
+		```
+
+		Rust Crate Docs:
+
+		- [https://docs.rs/ngrok/latest/ngrok/config/struct.TcpTunnelBuilder.html#method.proxy_proto](https://docs.rs/ngrok/latest/ngrok/config/struct.TcpTunnelBuilder.html#method.proxy_proto)
 	</Tab>
 	<Tab title="Kubernetes Controller">
-		<ProxyProtoKubernetesExample />
+		<Info>
+		TCP endpoints are not supported via the ngrok Kubernetes Operator.
+		</Info>
 	</Tab>
 </Tabs>
 
