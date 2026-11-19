@@ -32,7 +32,22 @@ jobs:
           node-version: '24'
           check-latest: true
 
+      - name: Resolve latest operator release
+        id: release
+        run: |
+          # Latest stable (non-rc) operator image tag, so release candidates
+          # and unreleased changes on main don't show up in the docs.
+          TAG=$(git ls-remote --tags --refs https://github.com/ngrok/ngrok-operator 'refs/tags/ngrok-operator-*' \
+            | awk -F'refs/tags/' '{print $2}' \
+            | grep -E '^ngrok-operator-[0-9]+\.[0-9]+\.[0-9]+$' \
+            | sort -V | tail -n1)
+          if [ -z "$TAG" ]; then echo "No release tag found"; exit 1; fi
+          echo "Using $TAG"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
       - name: Fetch and Update Changelog
+        env:
+          OPERATOR_REF: ${{ steps.release.outputs.tag }}
         run: node custom/scripts/fetch-k8s-changelog.js
 
       - name: Check for changes
