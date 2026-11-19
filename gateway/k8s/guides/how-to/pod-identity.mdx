@@ -37,19 +37,19 @@ These variables are only populated for connections to endpoints with a `kubernet
 
 Only annotations prefixed with `k8s.ngrok.com/` are included in `conn.k8s.pod.metadata.annotations`. Annotations without this prefix are not surfaced. The combined size of all included annotations is subject to a 1024-byte cumulative limit. If this limit is exceeded, `conn.k8s.pod.metadata.error_code` will be set to `ERR_NGROK_28000` and a truncated annotation map being returned.
 
-To use an annotation in a Traffic Policy expression, add the `k8s.ngrok.com/` prefix to it in your pod spec:
+To use an annotation in a Traffic Policy expression, add the `ngrok.com/` prefix to it in your pod spec:
 
 ```yaml
 metadata:
   annotations:
-    k8s.ngrok.com/tenant-id: "tenant-abc"
-    k8s.ngrok.com/environment: "production"
+    ngrok.com/tenant-id: "tenant-abc"
+    ngrok.com/environment: "production"
 ```
 
 You can then reference the annotation in a Traffic Policy expression:
 
 ```
-conn.k8s.pod.metadata.annotations["k8s.ngrok.com/tenant-id"] == "tenant-abc"
+conn.k8s.pod.metadata.annotations["ngrok.com/tenant-id"] == "tenant-abc"
 ```
 
 ## Handling errors
@@ -116,7 +116,7 @@ Only allow connections originating from pods in the `payments` namespace.
 <Tabs>
   <Tab title="Agent Endpoints">
 ```yaml
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+apiVersion: ngrok.com/v1
 kind: AgentEndpoint
 metadata:
   name: example-agent-endpoint
@@ -143,7 +143,7 @@ spec:
   </Tab>
   <Tab title="Cloud Endpoints">
 ```yaml
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+apiVersion: ngrok.com/v1
 kind: CloudEndpoint
 metadata:
   name: example-cloud-endpoint
@@ -152,7 +152,7 @@ spec:
   bindings:
     - kubernetes
   trafficPolicy:
-    policy:
+    inline:
       on_tcp_connect:
         - expressions:
             - conn.k8s.pod.metadata.error_code != ""
@@ -175,7 +175,7 @@ spec:
 Allowlist two specific pods by name and deny all others.
 
 ```yaml
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+apiVersion: ngrok.com/v1
 kind: CloudEndpoint
 metadata:
   name: example-cloud-endpoint
@@ -184,7 +184,7 @@ spec:
   bindings:
     - kubernetes
   trafficPolicy:
-    policy:
+    inline:
       on_tcp_connect:
         - expressions:
             - conn.k8s.pod.metadata.error_code != ""
@@ -202,10 +202,10 @@ spec:
 
 ### Enforce access using a pod annotation
 
-Only allow connections from pods that have the `k8s.ngrok.com/environment: production` annotation.
+Only allow connections from pods that have the `ngrok.com/environment: production` annotation.
 
 ```yaml
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+apiVersion: ngrok.com/v1
 kind: CloudEndpoint
 metadata:
   name: example-cloud-endpoint
@@ -214,14 +214,14 @@ spec:
   bindings:
     - kubernetes
   trafficPolicy:
-    policy:
+    inline:
       on_tcp_connect:
         - expressions:
             - conn.k8s.pod.metadata.error_code != ""
           actions:
             - type: deny
         - expressions:
-            - conn.k8s.pod.metadata.annotations["k8s.ngrok.com/environment"] != "production"
+            - conn.k8s.pod.metadata.annotations["ngrok.com/environment"] != "production"
           actions:
             - type: deny
         - actions:
@@ -235,7 +235,7 @@ spec:
 Deny any connection whose pod namespace does not match the endpoint's own namespace. This is a common pattern for multi-tenant clusters where each tenant runs in a dedicated namespace.
 
 ```yaml
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+apiVersion: ngrok.com/v1
 kind: CloudEndpoint
 metadata:
   name: webapp-tenant1
@@ -245,7 +245,7 @@ spec:
   bindings:
     - kubernetes
   trafficPolicy:
-    policy:
+    inline:
       on_tcp_connect:
         - expressions:
             - conn.k8s.pod.metadata.error_code != ""

@@ -37,7 +37,7 @@ Check out the [deny request Traffic Policy action](/gateway/traffic-policy/actio
 <Tabs>
   <Tab title="AgentEndpoint">
 ```yaml
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+apiVersion: ngrok.com/v1
 kind: AgentEndpoint
 metadata:
   name: example-agent-endpoint
@@ -58,14 +58,14 @@ spec:
 </Tab>
 <Tab title="CloudEndpoint">
 ```yaml
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+apiVersion: ngrok.com/v1
 kind: CloudEndpoint
 metadata:
   name: example-cloud-endpoint
 spec:
   url: https://example-hostname.ngrok.app
   trafficPolicy:
-    policy:
+    inline:
       on_http_request:
         - expressions:
             - conn.client_ip.geo.location.is_eu == false
@@ -79,11 +79,11 @@ spec:
 💡 `Ingress` resources do not natively support request denial configuration, but they can be extended using a Traffic Policy.
 
 <Steps titleSize="h3">
-  <Step title="Create an NgrokTrafficPolicy">
+  <Step title="Create a TrafficPolicy">
 
     ```yaml
-    apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-    kind: NgrokTrafficPolicy
+    apiVersion: ngrok.com/v1
+    kind: TrafficPolicy
     metadata:
       name: example-tp
       namespace: default
@@ -99,14 +99,14 @@ spec:
     ```
   </Step>
 
-  <Step title="Use the NgrokTrafficPolicy on an Ingress">
+  <Step title="Use the TrafficPolicy on an Ingress">
 
     ```yaml
     apiVersion: networking.k8s.io/v1
     kind: Ingress
     metadata:
       annotations:
-        k8s.ngrok.com/traffic-policy: example-tp
+        ngrok.com/traffic-policy: example-tp
       name: example-ingress
       namespace: default
     spec:
@@ -130,11 +130,11 @@ spec:
 💡 Gateway API resources do not natively support request denial configuration, but they can be extended using a Traffic Policy.
 
 <Steps titleSize="h3">
-  <Step title="Create an NgrokTrafficPolicy">
+  <Step title="Create a TrafficPolicy">
 
     ```yaml
-    apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-    kind: NgrokTrafficPolicy
+    apiVersion: ngrok.com/v1
+    kind: TrafficPolicy
     metadata:
       name: example-tp
       namespace: default
@@ -150,9 +150,9 @@ spec:
     ```
   </Step>
 
-  <Step title="Use the NgrokTrafficPolicy on a Gateway">
+  <Step title="Use the TrafficPolicy on a Gateway">
 
-    The following example showcases supplying the `NgrokTrafficPolicy` on a `Gateway` resource. All requests to the `Gateway` will run the Traffic Policy.
+    The following example showcases supplying the `TrafficPolicy` on a `Gateway` resource. All requests to the `Gateway` will run the Traffic Policy.
     If you prefer, `NgrokTrafficPolicy` can also be used on the route level by using an `externalRef` filter on an `HTTPRoute`. See the [using Gateway API guide](/gateway/k8s/guides/using-gwapi) for examples.
 
     ```yaml
@@ -162,7 +162,7 @@ spec:
       name: example-gateway
       namespace: default
       annotations:
-        k8s.ngrok.com/traffic-policy: example-tp
+        ngrok.com/traffic-policy: example-tp
     spec:
       gatewayClassName: ngrok
       listeners:

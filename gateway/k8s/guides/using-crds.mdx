@@ -1,7 +1,7 @@
 ---
 title: Using ngrok Custom Resources
 sidebarTitle: Using CRDs
-description: These examples show how to configure the AgentEndpoint, CloudEndpoint, and NgrokTrafficPolicy custom resources in the ngrok Kubernetes Operator.
+description: These examples show how to configure the AgentEndpoint, CloudEndpoint, and TrafficPolicy custom resources in the ngrok Kubernetes Operator.
 ---
 
 The following sections offer a brief guide on how using each of ngrok's custom resources work.
@@ -23,7 +23,7 @@ See the [AgentEndpoint Reference](/gateway/k8s/crds/agentendpoint) for more deta
 The following example will create a publicly accessible `AgentEndpoint` that forwards traffic to a `Service` in the Kubernetes cluster.
 
 ```yaml
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+apiVersion: ngrok.com/v1
 kind: AgentEndpoint
 metadata:
   name: example-agent-endpoint
@@ -38,7 +38,7 @@ spec:
 The following example showcases an `AgentEndpoint` with in-line Traffic Policy configuration
 
 ```yaml
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+apiVersion: ngrok.com/v1
 kind: AgentEndpoint
 metadata:
   name: example-agent-endpoint
@@ -61,13 +61,13 @@ spec:
             status_code: 200
 ```
 
-### `AgentEndpoint` with referenced `NgrokTrafficPolicy`
+### `AgentEndpoint` with referenced `TrafficPolicy`
 
-The following example showcases an `AgentEndpoint` with Traffic Policy configuration from a referenced `NgrokTrafficPolicy` resource.
+The following example showcases an `AgentEndpoint` with Traffic Policy configuration from a referenced `TrafficPolicy` resource.
 
 ```yaml
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-kind: NgrokTrafficPolicy
+apiVersion: ngrok.com/v1
+kind: TrafficPolicy
 metadata:
   name: example-tp
   namespace: default
@@ -85,7 +85,7 @@ spec:
             content-type: text/plain
           status_code: 200
 ---
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+apiVersion: ngrok.com/v1
 kind: AgentEndpoint
 metadata:
   name: example-agent-endpoint
@@ -107,7 +107,7 @@ If you would like to enforce mutual TLS, you can reference `Secret` objects that
 - The `namespace` field is optional, and when not supplied, the namespace of the `AgentEndpoint` will be used.
 
 ```yaml
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+apiVersion: ngrok.com/v1
 kind: AgentEndpoint
 metadata:
   name: example-agent-endpoint
@@ -127,7 +127,7 @@ You can create an endpoint with an `http://` scheme as the public URL and still 
 The following Agent Endpoint accepts cleartext HTTP connections at http://example-http-domain.ngrok.app, and forwards to the kubernetes service `https://example-service.default` on port `443` over HTTPS.
 
 ```yaml
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+apiVersion: ngrok.com/v1
 kind: AgentEndpoint
 metadata:
   name: example-agent-endpoint
@@ -159,14 +159,14 @@ See the [CloudEndpoint Reference](/gateway/k8s/crds/cloudendpoint) for more deta
 The following example showcases an `CloudEndpoint` with in-line Traffic Policy configuration
 
 ```yaml
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+apiVersion: ngrok.com/v1
 kind: CloudEndpoint
 metadata:
   name: example-cloud-endpoint
 spec:
   url: https://example-cloud-endpoint.ngrok.app
   trafficPolicy:
-    policy:
+    inline:
       on_http_request:
       - name: example-rule
         actions:
@@ -178,13 +178,13 @@ spec:
             status_code: 200
 ```
 
-### `CloudEndpoint` with referenced `NgrokTrafficPolicy`
+### `CloudEndpoint` with referenced `TrafficPolicy`
 
-The following example showcases an `CloudEndpoint` with Traffic Policy configuration from a referenced `NgrokTrafficPolicy` resource.
+The following example showcases an `CloudEndpoint` with Traffic Policy configuration from a referenced `TrafficPolicy` resource.
 
 ```yaml
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-kind: NgrokTrafficPolicy
+apiVersion: ngrok.com/v1
+kind: TrafficPolicy
 metadata:
   name: static-response
   namespace: default
@@ -200,7 +200,7 @@ spec:
             content-type: text/plain
           status_code: 200
 ---
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+apiVersion: ngrok.com/v1
 kind: CloudEndpoint
 metadata:
   name: example-cloud-endpoint
@@ -213,22 +213,22 @@ spec:
 
 For a more in-depth guide on using `CloudEndpoints` to forward requests to other endpoints using the `forward-internal` action, see the [request routing guide](/gateway/k8s/guides/how-to/request-routing)
 
-## Using `NgrokTrafficPolicy`
+## Using `TrafficPolicy`
 
-`NgrokTrafficPolicy` allows you to specify a [Traffic Policy](/gateway/traffic-policy/) configuration to be used on one or more `Ingress`, `Gateway`, `CloudEndpoint`, or `AgentEndpoint` resources.
+`TrafficPolicy` allows you to specify a [Traffic Policy](/gateway/traffic-policy/) configuration to be used on one or more `Ingress`, `Gateway`, `CloudEndpoint`, or `AgentEndpoint` resources.
 
-On their own, `NgrokTrafficPolicy` resources do not do anything unless attached to a `CloudEndpoint`, `Ingress`, or other resource.
+On their own, `TrafficPolicy` resources do not do anything unless attached to a `CloudEndpoint`, `Ingress`, or other resource.
 
 The `CloudEndpoint` and `AgentEndpoint` custom resources allow you to choose whether you would like to supply Traffic Policy configuration in-line or as a reference to an `NgrokTrafficPolicy` resource.
-This makes it easy to create common `NgrokTrafficPolicy` resources and reuse them on multiple different resources.
+This makes it easy to create common `TrafficPolicy` resources and reuse them on multiple different resources.
 
-`Ingress` and Gateway API resources have several methods of accepting `NgrokTrafficPolicy` resources outlined in the [using ingresses](/gateway/k8s/guides/using-ingresses) and [using Gateway API](/gateway/k8s/guides/using-gwapi) pages.
+`Ingress` and Gateway API resources have several methods of accepting `TrafficPolicy` resources outlined in the [using ingresses](/gateway/k8s/guides/using-ingresses) and [using Gateway API](/gateway/k8s/guides/using-gwapi) pages.
 
 The following example showcases creating an `NgrokTrafficPolicy` resource that will return a custom response when the `?debug=true` query parameter is sent with the request.
 
 ```yaml
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-kind: NgrokTrafficPolicy
+apiVersion: ngrok.com/v1
+kind: TrafficPolicy
 metadata:
   name: example-ngroktrafficpolicy
   namespace: default
@@ -247,7 +247,7 @@ spec:
           status_code: 200
 ```
 
-See the [NgrokTrafficPolicy Reference](/gateway/k8s/crds/ngroktrafficpolicy) for more detailed information about `NgrokTrafficPolicy` structure and fields.
+See the [TrafficPolicy Reference](/gateway/k8s/crds/ngroktrafficpolicy) for more detailed information about `TrafficPolicy` structure and fields.
 
 ## Using `Domain`, `AgentEndpoint`, `BoundEndpoint`, and `KubernetesOperator`
 
@@ -275,5 +275,5 @@ You can use `kubectl describe` on any of them to check their status and conditio
 
 Edges are a deprecated custom resource that are not documented as they will be removed soon, so you should not start using Edges or create any new ones now.
 For those who have installed an early release of the Operator and created any `HTTPSEdge` resources, they can be rewritten as `CloudEndpoint` and/or `AgentEndpoint` custom resources.
-The same is true of the `NgrokModuleSet` resources that were the precursor to `NgrokTrafficPolicy`.
+The same is true of the `NgrokModuleSet` resources that were the precursor to `TrafficPolicy`.
 Edges will be completely removed prior to the 1.0 release of the ngrok Kubernetes Operator.
