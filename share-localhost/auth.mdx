@@ -1,10 +1,9 @@
 ---
-title: Authentication
+title: Add Authentication to Your Local App
 sidebarTitle: Authentication
-description: Add authentication to your ngrok endpoints to control who can access your locally shared applications.
+description: Make visitors sign in before they reach your local app with the OAuth action, and allow only the specific users you choose.
 ---
 
-import BasicOAuthExample from "/snippets/traffic-policy/actions/oauth/examples/basic-example.mdx";
 
 ngrok makes it easy to add authentication to any endpoint without modifying your application code.
 Using [Traffic Policy](/gateway/traffic-policy/), you can require visitors to authenticate before they can access your local app.
@@ -14,7 +13,54 @@ Using [Traffic Policy](/gateway/traffic-policy/), you can require visitors to au
 The quickest way to protect your endpoint is with the [OAuth Traffic Policy action](/gateway/traffic-policy/actions/oauth/).
 Add the following to your Traffic Policy configuration to require Google authentication:
 
-<BasicOAuthExample />
+### Using a managed provider
+
+The following [Traffic Policy](/gateway/traffic-policy/)
+configuration will provide your app with a google authentication step.
+
+<CodeGroup>
+```yaml policy.yml
+on_http_request:
+  - actions:
+      - type: oauth
+        config:
+          provider: google
+  - expressions:
+      - "!actions.ngrok.oauth.identity.email.endsWith('@acme.com')"
+    actions:
+      - type: deny
+```
+
+```json policy.json
+{
+  "on_http_request": [
+    {
+      "actions": [
+        {
+          "type": "oauth",
+          "config": {
+            "provider": "google"
+          }
+        }
+      ]
+    },
+    {
+      "expressions": [
+        "!actions.ngrok.oauth.identity.email.endsWith('@acme.com')"
+      ],
+      "actions": [
+        {
+          "type": "deny"
+        }
+      ]
+    }
+  ]
+}
+```
+</CodeGroup>
+
+The `provider` value can be replaced with any of the [Supported Providers](/gateway/traffic-policy/actions/oauth/#supported-providers) that have an
+a managed app available.
 
 <Note>
 This example uses a managed Google OAuth application owned by ngrok.

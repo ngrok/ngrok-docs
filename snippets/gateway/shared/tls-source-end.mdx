@@ -23,22 +23,6 @@ import AtUpstreamKubernetesExample from '/snippets/examples/k8s/tls-terminate-at
 import AtUpstreamPythonSdkExample from '/snippets/examples/python-sdk/tls-terminate-at-upstream.mdx';
 import AtUpstreamRustSdkExample from '/snippets/examples/rust-sdk/tls-terminate-at-upstream.mdx';
 import AtUpstreamSshExample from '/snippets/examples/ssh/tls-terminate-at-upstream.mdx';
-import ReencryptUpstreamAgentCliExample from '/snippets/examples/agent-cli/tls-reencrypt-upstream.mdx';
-import ReencryptUpstreamAgentConfigExample from '/snippets/examples/agent-config/tls-reencrypt-upstream.mdx';
-import ReencryptUpstreamGoSdkExample from '/snippets/examples/go-sdk/tls-reencrypt-upstream.mdx';
-import ReencryptUpstreamJavascriptSdkExample from '/snippets/examples/javascript-sdk/tls-reencrypt-upstream.mdx';
-import ReencryptUpstreamKubernetesExample from '/snippets/examples/k8s/tls-reencrypt-upstream.mdx';
-import ReencryptUpstreamPythonSdkExample from '/snippets/examples/python-sdk/tls-reencrypt-upstream.mdx';
-import ReencryptUpstreamRustSdkExample from '/snippets/examples/rust-sdk/tls-reencrypt-upstream.mdx';
-import ReencryptUpstreamSshExample from '/snippets/examples/ssh/tls-reencrypt-upstream.mdx';
-import ProxyProtoAgentCliExample from '/snippets/examples/agent-cli/tls-proxyproto.mdx';
-import ProxyProtoAgentConfigExample from '/snippets/examples/agent-config/tls-proxyproto.mdx';
-import ProxyProtoGoSdkExample from '/snippets/examples/go-sdk/tls-proxyproto.mdx';
-import ProxyProtoJavascriptSdkExample from '/snippets/examples/javascript-sdk/tls-proxyproto.mdx';
-import ProxyProtoKubernetesExample from '/snippets/examples/k8s/tls-proxyproto.mdx';
-import ProxyProtoPythonSdkExample from '/snippets/examples/python-sdk/tls-proxyproto.mdx';
-import ProxyProtoRustSdkExample from '/snippets/examples/rust-sdk/tls-proxyproto.mdx';
-import ProxyProtoSshExample from '/snippets/examples/ssh/tls-proxyproto.mdx';
 
 ## URLs
 
@@ -201,28 +185,111 @@ agent supports this behavior by using the non-standard `tls://` scheme syntax.
 
 <Tabs>
 <Tab title="CLI">
-<ReencryptUpstreamAgentCliExample />
+```bash
+ngrok tls tls://localhost:443 --traffic-policy-file traffic-policy.yml
+```
+
+```yaml traffic-policy.yml
+on_tcp_connect:
+  - actions:
+      - type: terminate-tls
+```
 </Tab>
 <Tab title="Agent Config">
-<ReencryptUpstreamAgentConfigExample />
+```yaml
+version: 3
+endpoints:
+  - name: example
+    url: tls://example.ngrok.app
+    upstream:
+      url: tls://localhost:443
+    traffic_policy:
+      on_tcp_connect:
+        - actions:
+            - type: terminate-tls
+```
 </Tab>
 <Tab title="SSH Reverse Tunnel">
-<ReencryptUpstreamSshExample />
+<Info>
+Re-encrypting the connection to your upstream service with TLS is not supported via SSH.
+</Info>
 </Tab>
 <Tab title="Go">
-<ReencryptUpstreamGoSdkExample />
+```go
+import (
+	"context"
+	"crypto/tls"
+
+	"golang.ngrok.com/ngrok/v2"
+)
+
+func ngrokListener(ctx context.Context) (ngrok.EndpointForwarder, error) {
+	// TLS config is optional - can be nil for default settings
+	tlsConfig := &tls.Config{
+		// Add your upstream TLS configuration here
+	}
+
+	return ngrok.Forward(ctx,
+		ngrok.WithUpstream("tls://localhost:8443",
+			ngrok.WithUpstreamTLSClientConfig(tlsConfig),
+		),
+	)
+}
+```
 </Tab>
 <Tab title="Javascript">
-<ReencryptUpstreamJavascriptSdkExample />
+```jsx
+const ngrok = require("@ngrok/ngrok");
+
+(async function () {
+	const listener = await ngrok.forward({
+		addr: "tls://localhost:443",
+		authtoken_from_env: true,
+		proto: "tls",
+		crt: "",
+		key: "",
+	});
+
+	console.log(`Ingress established at: ${listener.url()}`);
+})();
+```
+
+An empty certificate and key will default to the ngrok edge's automatically provisioned keypair. The upstream certificate of `localhost:443` will be validated by a filepath specified in the `SSL_CERT_FILE` environment variable (for example, `SSL_CERT_FILE=/path/to/ca.crt`), or falling back to the host OS installed trusted certificate authorities.
+
+Javascript SDK Docs:
+
+- [https://ngrok.github.io/ngrok-javascript/classes/TlsListenerBuilder.html](https://ngrok.github.io/ngrok-javascript/classes/TlsListenerBuilder.html)
+- [https://ngrok.github.io/ngrok-javascript/classes/Session.html#tlsEndpoint](https://ngrok.github.io/ngrok-javascript/classes/Session.html#tlsEndpoint)
+- [https://ngrok.github.io/ngrok-javascript/interfaces/Config.html#addr](https://ngrok.github.io/ngrok-javascript/interfaces/Config.html#addr)
 </Tab>
 <Tab title="Python">
-<ReencryptUpstreamPythonSdkExample />
+```python
+import ngrok
+
+listener = ngrok.forward("tls://localhost:443", authtoken_from_env=True,
+    proto="tls"
+    crt=bytearray(),
+    key=bytearray())
+
+print(f"Ingress established at: {listener.url()}");
+```
+
+An empty certificate and key will default to the ngrok edge's automatically provisioned keypair. The upstream certificate of `localhost:443` will be validated by a filepath specified in the `SSL_CERT_FILE` environment variable (for example, `SSL_CERT_FILE=/path/to/ca.crt`), or falling back to the host OS installed trusted certificate authorities.
+
+Python SDK Docs:
+
+- [https://ngrok.github.io/ngrok-python/module.html#ngrok.connect](https://ngrok.github.io/ngrok-python/module.html#ngrok.connect)
+- [https://ngrok.github.io/ngrok-python/index.html#full-configuration](https://ngrok.github.io/ngrok-python/index.html#full-configuration)
 </Tab>
 <Tab title="Rust">
-<ReencryptUpstreamRustSdkExample />
+<Info>
+Re-encrypting the connection to your upstream service with TLS is not yet supported in the Rust SDK.
+</Info>
 </Tab>
 <Tab title="Kubernetes Controller">
-<ReencryptUpstreamKubernetesExample />
+<Info>
+TLS endpoints are not supported by the ngrok Kubernetes Operator.
+</Info>
 </Tab>
 </Tabs>
 
@@ -235,28 +302,116 @@ the original client IP address to your upstream service.
 
 <Tabs>
 	<Tab title="CLI">
-		<ProxyProtoAgentCliExample />
+		```bash
+		ngrok tls 443 --upstream-proxy-protocol=2
+		```
 	</Tab>
 	<Tab title="Agent Config">
-		<ProxyProtoAgentConfigExample />
+		```yaml
+		version: 3
+		endpoints:
+		  - name: example
+		    url: tls://example.ngrok.app
+		    upstream:
+		      url: 443
+		      proxy_protocol: 2
+		```
 	</Tab>
 	<Tab title="SSH Reverse Tunnel">
-		<ProxyProtoSshExample />
+		<Info>
+		PROXY proto is not support via SSH.
+		</Info>
 	</Tab>
 	<Tab title="Go">
-		<ProxyProtoGoSdkExample />
+		```go
+		import (
+			"context"
+			"net"
+
+			"golang.ngrok.com/ngrok/v2"
+		)
+
+		func ngrokListener(ctx context.Context) (net.Listener, error) {
+			return ngrok.Forward(ctx,
+				ngrok.WithUpstream("tls://localhost:8443",
+					ngrok.WithUpstreamProxyProto(ngrok.ProxyProtoV2),
+				),
+				ngrok.WithURL("tls://"),
+			)
+		}
+		```
+
+		Go Package Docs:
+
+		- [https://pkg.go.dev/golang.ngrok.com/ngrok/v2#WithUpstreamProxyProto](https://pkg.go.dev/golang.ngrok.com/ngrok/v2#WithUpstreamProxyProto)
 	</Tab>
 	<Tab title="Javascript">
-		<ProxyProtoJavascriptSdkExample />
+		```jsx
+		const ngrok = require("@ngrok/ngrok");
+
+		(async function () {
+			const listener = await ngrok.forward({
+				addr: 8080,
+				authtoken_from_env: true,
+				proto: "tls",
+				proxy_proto: "2",
+			});
+
+			console.log(`Ingress established at: ${listener.url()}`);
+		})();
+		```
+
+		Javascript SDK Docs:
+
+		- [https://ngrok.github.io/ngrok-javascript/interfaces/Config.html#proxy_proto](https://ngrok.github.io/ngrok-javascript/interfaces/Config.html#proxy_proto)
+		- [https://ngrok.github.io/ngrok-javascript/classes/TlsListenerBuilder.html#proxyProto](https://ngrok.github.io/ngrok-javascript/classes/TlsListenerBuilder.html#proxyProto)
 	</Tab>
 	<Tab title="Python">
-		<ProxyProtoPythonSdkExample />
+		```python
+		import ngrok
+
+		listener = ngrok.forward("localhost:8080", authtoken_from_env=True,
+		    proto="tls",
+		    proxy_proto="2")
+
+		print(f"Ingress established at: {listener.url()}");
+		```
+
+		Python SDK Docs:
+
+		- [https://ngrok.github.io/ngrok-python/tls_listener_builder.html#ngrok.TlsListenerBuilder.proxy_proto](https://ngrok.github.io/ngrok-python/tls_listener_builder.html#ngrok.TlsListenerBuilder.proxy_proto)
+		- [https://ngrok.github.io/ngrok-python/index.html#full-configuration](https://ngrok.github.io/ngrok-python/index.html#full-configuration)
 	</Tab>
 	<Tab title="Rust">
-		<ProxyProtoRustSdkExample />
+		```rust
+		use ngrok::prelude::*;
+
+		async fn listen_ngrok() -> anyhow::Result<impl Tunnel> {
+		    let sess = ngrok::Session::builder()
+		        .authtoken_from_env()
+		        .connect()
+		        .await?;
+
+		    let tun = sess
+		        .tls_endpoint()
+		        .proxy_proto(ProxyProto::V2)
+		        .listen()
+		        .await?;
+
+		    println!("Listening on URL: {:?}", tun.url());
+
+		    Ok(tun)
+		}
+		```
+
+		Rust Crate Docs:
+
+		- [https://docs.rs/ngrok/latest/ngrok/config/struct.TlsTunnelBuilder.html#method.proxy_proto](https://docs.rs/ngrok/latest/ngrok/config/struct.TlsTunnelBuilder.html#method.proxy_proto)
 	</Tab>
 	<Tab title="Kubernetes Controller">
-		<ProxyProtoKubernetesExample />
+		<Info>
+		TLS endpoints are not supported via the ngrok Kubernetes Operator.
+		</Info>
 	</Tab>
 </Tabs>
 
@@ -271,10 +426,8 @@ details on compatible clients.
 
 ### STARTTLS
 
-Protocols that begin in plain text and upgrade to TLS via a mechanism like
-STARTTLS in SMTP, IMAP, and so on aren't supported. If you need to support
-connections which upgrade to TLS, use a [TCP
-Endpoint](/gateway/endpoints/tcp/).
+Protocols that begin in plain text and then upgrade to TLS, such as SMTP or IMAP with STARTTLS, aren't supported.
+If you need to support connections that upgrade to TLS, use a [TCP Endpoint](/gateway/endpoints/tcp/).
 
 ## Observability
 
@@ -291,7 +444,7 @@ system](/obs/). The following events are published for log exporting:
 | ------------------------------------------------------------------------ | ------------------------------------------------------------ |
 | [tcp_connection_closed.v0](/obs/events/reference/#tcp-connection-closed) | Published when a TCP connection to a TCP endpoint completes. |
 
-## Limits & timeouts
+## Limits and timeouts
 
 [Contact Support](mailto:support@ngrok.com) if you need to configure limits and
 timeouts on connections to TLS endpoints.

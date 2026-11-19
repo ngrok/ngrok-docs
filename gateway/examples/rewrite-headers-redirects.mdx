@@ -1,7 +1,7 @@
 ---
 title: Intercept and Rewrite Headers in HTTP Redirect Responses
 sidebarTitle: Intercept and Rewrite Headers
-description: By routing to internal services and editing headers, you can manipulate traffic in ways that allow you to seamlessly access customer networks and upstream services despite their network topology.
+description: Rewrite redirect headers from services in a customer network, so redirects to internal hostnames still work through ngrok.
 ---
 
 import ReserveDomain from "/snippets/gateway/_reserve-domain.mdx";
@@ -60,7 +60,7 @@ With ngrok, you can use the [`url-rewrite` action](/gateway/traffic-policy/actio
           - type: set-vars
             config:
               vars:
-                orig: "${url.parse(res.location).path}"
+                - orig: "${url.parse(res.location).path}"
           - type: remove-headers
             config:
               headers:
@@ -71,10 +71,12 @@ With ngrok, you can use the [`url-rewrite` action](/gateway/traffic-policy/actio
                 Location: "$NGROK_DOMAIN/${vars.orig}"
     ```
 
-    **What's happening here?** First, this policy rewrites the `Host` header on all requests to `127.0.0.1` so that your customer's upstream service recognizes the request as coming from the same local network, not through ngrok, then forwards the request to the internal Agent Endpoint you created in the first step.
+    <Info title="What's happening here?">
+    First, this policy rewrites the `Host` header on all requests to `127.0.0.1` so that your customer's upstream service recognizes the request as coming from the same local network, not through ngrok, then forwards the request to the internal Agent Endpoint you created in the first step.
 
     During the HTTP response, the policy then checks whether the status code is `302`, which indicates content has moved.
     If the status code is `302`, then the policy saves the existing path to a variable, removes the `Location` header, and writes a new `Location` header by building a new URL based on `$NGROK_URL` and the original path.
+    </Info>
   </Step>
 </Steps>
 

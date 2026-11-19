@@ -68,12 +68,47 @@ pnpm traffic-policy-actions
 
 The **CI Checks** GitHub Action runs `pnpm traffic-policy-actions --check`, which fails when `actions.json` disagrees with an action page or the snippets are out of date.
 
+## Pages generated from monorepo data
+
+The ngrok monorepo ships facts as JSON in `data/generated/`, and this repository owns how they're presented.
+Three scripts build pages from that data:
+
+- `generate-error-pages.js` reads `errors.json` and writes every `errors/err_ngrok_*.mdx` page and the `snippets/errors/_err_ngrok_list.mdx` table.
+- `generate-cli-pages.js` reads `cli.json` and writes `gateway/agent/cli.mdx` and `gateway/agent/cli-api.mdx`.
+- `generate-event-pages.js` reads `events.json` and writes `snippets/obs/_event-types-tables.mdx`, which `obs/events/reference.mdx` imports, and the field table of each API object it uses.
+
+Each script also removes the files of anything that's no longer in the data.
+Don't edit the generated files, because the next run overwrites them.
+Add or edit prose in `custom/` instead:
+
+- `custom/errors/details/err_ngrok_<code>.mdx` explains an error, after its message.
+- `custom/errors/pages/err_ngrok_<code>.mdx` replaces the generated top of an error page.
+- `custom/cli/commands/<command>.mdx` goes after a command's description, such as `ngrok-config-add-authtoken.mdx`.
+
+Mintlify doesn't serve `custom/errors/` or `custom/cli/`, so these files only appear on the pages they're part of.
+
+Regenerate the pages:
+
+```sh
+pnpm run generate-error-pages
+pnpm run generate-cli-pages
+pnpm run generate-event-pages
+```
+
+To list the errors that have no explanation yet, run `pnpm run generate-error-pages --missing`.
+
+The **Auto-generate Docs PR** GitHub Action runs the scripts whenever the monorepo pushes to `ngrokrock/dev-gen-changes`, so the auto-generated docs PR holds both the data and the pages.
+The **CI Checks** GitHub Action runs each script with `--check`, which fails when a committed file doesn't match the data and the prose in `custom/`.
+
 ## Errors llms.txt
 
 Mintlify's generated `llms.txt` only lists pages in the navigation, so it doesn't include the individual `errors/err_ngrok_*` pages.
 `generate-errors-llms-txt.js` reads those pages' frontmatter and writes `errors/llms.txt`, which links to one sub-index per error code range at `errors/llms/<range>/llms.txt`.
 Mintlify serves these as static files, such as `https://ngrok.com/docs/errors/llms.txt`.
 Every file must be named `llms.txt`: Mintlify only serves other `.txt` files on Enterprise plans.
+It also lists every error page in a hidden, searchable `Error codes` group under the Errors navigation in `docs.json`.
+The pages stay out of the sidebar, but Mintlify includes them in its generated `llms.txt`, `sitemap.xml`, site search, and AI assistant.
+The script rewrites that group on every run, so don't edit it by hand.
 
 Run locally:
 
@@ -83,3 +118,18 @@ pnpm run generate-errors-llms
 
 The **Update errors llms.txt** GitHub Action runs on PRs that change `errors/**` or the script, including the auto-generated docs PRs.
 It commits the regenerated files to the same PR branch when they change, the same way as the homepage changelog action.
+
+## Docs llms.txt
+
+The root `llms.txt` replaces the one Mintlify generates, and it's written by hand.
+It links to Mintlify's generated `/_llms/` indexes for Gateway, AI Gateway, Integrations, and Reference.
+Mintlify gives the Start, Share Localhost, For AI Agents, and Pricing tabs no index.
+`llms.txt` lists the Start, For AI Agents, and Pricing pages itself, and links to `share-localhost/llms.txt`, a hand-written index of the Share Localhost pages.
+
+`check-llms-txt.js` fails when a page in one of those tabs isn't linked from `llms.txt`, from an index in this repo it links to, or from a tab Mintlify indexes.
+It also fails when one of those files links to a docs page that doesn't exist or is marked `noindex` or `hidden`.
+The **CI Checks** GitHub Action runs it on every push. Run it locally:
+
+```sh
+pnpm check-llms-txt
+```

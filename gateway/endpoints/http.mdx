@@ -5,12 +5,6 @@ description: Learn how to create and configure HTTP and HTTPS endpoints with ngr
 ---
 
 import StaticDomainAgentCliExample from '/snippets/examples/agent-cli/http-static-domain.mdx';
-import StaticDomainAgentConfigExample from '/snippets/examples/agent-config/http-static-domain.mdx';
-import StaticDomainGoSdkExample from '/snippets/examples/go-sdk/http-static-domain.mdx';
-import StaticDomainJavascriptSdkExample from '/snippets/examples/javascript-sdk/http-static-domain.mdx';
-import StaticDomainKubernetesExample from '/snippets/examples/k8s/http-static-domain.mdx';
-import StaticDomainPythonSdkExample from '/snippets/examples/python-sdk/http-static-domain.mdx';
-import StaticDomainRustSdkExample from '/snippets/examples/rust-sdk/http-static-domain.mdx';
 import StaticDomainSshExample from '/snippets/examples/ssh/http-static-domain.mdx';
 import HttpStart from "/snippets/gateway/shared/http-start-source.mdx"
 import HttpEnd from "/snippets/gateway/shared/http-end-source.mdx"
@@ -27,25 +21,116 @@ For first-time setup, start with the [Agent CLI Quickstart](/gateway/endpoints/a
 		<StaticDomainAgentCliExample />
 	</Tab>
 	<Tab title="Agent Config">
-		<StaticDomainAgentConfigExample />
+		```yaml
+		version: 3
+		endpoints:
+		  - name: example
+		    url: https://example.ngrok.app
+		    upstream:
+		      url: 8080
+		```
 	</Tab>
 	<Tab title="SSH Reverse Tunnel">
 		<StaticDomainSshExample />
 	</Tab>
 	<Tab title="Go">
-		<StaticDomainGoSdkExample />
+		```go
+		import (
+			"context"
+			"net"
+
+			"golang.ngrok.com/ngrok/v2"
+		)
+
+		func ngrokListener(ctx context.Context) (net.Listener, error) {
+			return ngrok.Forward(ctx,
+				ngrok.WithUpstream("http://localhost:8080"),
+				ngrok.WithURL("https://example.ngrok.app"),
+			)
+		}
+		```
 	</Tab>
 	<Tab title="Javascript">
-		<StaticDomainJavascriptSdkExample />
+		```jsx
+		const ngrok = require("@ngrok/ngrok");
+
+		(async function () {
+			const listener = await ngrok.forward({
+				addr: 8080,
+				authtoken_from_env: true,
+				domain: "example.ngrok.app",
+			});
+
+			console.log(`Ingress established at: ${listener.url()}`);
+		})();
+		```
+
+		Javascript SDK Docs:
+
+		- [https://ngrok.github.io/ngrok-javascript/interfaces/Config.html#domain](https://ngrok.github.io/ngrok-javascript/interfaces/Config.html#domain)
+		- [https://ngrok.github.io/ngrok-javascript/classes/HttpListenerBuilder.html#domain](https://ngrok.github.io/ngrok-javascript/classes/HttpListenerBuilder.html#domain)
 	</Tab>
 	<Tab title="Python">
-		<StaticDomainPythonSdkExample />
+		```python
+		import ngrok
+
+		listener = ngrok.forward("localhost:8080", authtoken_from_env=True,
+		    domain="example.ngrok.app")
+
+		print(f"Ingress established at: {listener.url()}");
+		```
+
+		Python SDK Docs:
+
+		- [https://ngrok.github.io/ngrok-python/http_listener_builder.html#ngrok.HttpListenerBuilder.domain](https://ngrok.github.io/ngrok-python/http_listener_builder.html#ngrok.HttpListenerBuilder.domain)
+		- [https://ngrok.github.io/ngrok-python/index.html#full-configuration](https://ngrok.github.io/ngrok-python/index.html#full-configuration)
 	</Tab>
 	<Tab title="Rust">
-		<StaticDomainRustSdkExample />
+		```rust
+		use ngrok::prelude::*;
+
+		async fn listen_ngrok() -> anyhow::Result<impl Tunnel> {
+		    let sess = ngrok::Session::builder()
+		        .authtoken_from_env()
+		        .connect()
+		        .await?;
+
+		    let tun = sess
+		        .http_endpoint()
+		        .domain("example.ngrok.app")
+		        .listen()
+		        .await?;
+
+		    println!("Listening on URL: {:?}", tun.url());
+
+		    Ok(tun)
+		}
+		```
+
+		Rust Crate Docs:
+
+		- [https://docs.rs/ngrok/latest/ngrok/config/struct.HttpTunnelBuilder.html#method.domain](https://docs.rs/ngrok/latest/ngrok/config/struct.HttpTunnelBuilder.html#method.domain)
 	</Tab>
 	<Tab title="Kubernetes Controller">
-		<StaticDomainKubernetesExample />
+		```yaml
+		apiVersion: networking.k8s.io/v1
+		kind: Ingress
+		metadata:
+		  name: example-ingress
+		spec:
+		  ingressClassName: ngrok
+		  rules:
+		    - host: example.ngrok.app
+		      http:
+		        paths:
+		          - path: /
+		            pathType: Prefix
+		            backend:
+		              service:
+		                name: example-service
+		                port:
+		                  number: 80
+		```
 	</Tab>
 </Tabs>
 

@@ -1,7 +1,7 @@
 ---
 title: Restrict IPs Action
 sidebarTitle: Restrict IPs
-description: Allow or deny traffic based on the source IP address of connections to your ngrok endpoints.
+description: Block or allow connections to your endpoint by IP with the restrict-ips action, using CIDR lists or existing IP Policies.
 ---
 
 import ActionVariablesDescription from "/snippets/traffic-policy/common/action-variables-description.mdx";
@@ -163,7 +163,7 @@ This configuration ensures that the [IP Policies](/api-reference/ippolicies/list
 #### Example request
 
 If the request comes from an allowed IP, the response proceeds as normal.
-If the request comes from a denied IP, you receive an HTTP `403` response:
+If the request comes from a denied IP, you'll receive an HTTP `403` response:
 
 ```bash
 $ telnet 5.tcp.ngrok.io 22984
@@ -173,7 +173,74 @@ Connected to 5.tcp.ngrok.io.
 Connection closed by foreign host.
 ```
 
-snippets/traffic-policy/actions/restrict-ips/tcp/examples/3-testing-traffic
+### Test restricting IPs
+
+The following [Traffic Policy](/gateway/traffic-policy/) configuration demonstrates how to test restricting IPs using the [`log`](/gateway/traffic-policy/actions/log/) action with the `restrict-ips` action and [IP Policies](/api-reference/ippolicies/list).
+
+#### Example Traffic Policy document
+
+<CodeGroup>
+```yaml policy.yml {5,8-14}
+on_tcp_connect:
+  - actions:
+      - type: restrict-ips
+        config:
+          enforce: false
+          ip_policies:
+            - ipp_1yjqdrIBwgciY2I9zH2EelgBbJF
+      - type: log
+        config:
+          metadata:
+            message: Restrict IPs action would be ${actions.ngrok.restrict_ips.action} for ${conn.client_ip}.
+            matched_cidr: ${actions.ngrok.restrict_ips.matched_cidr}
+            error_code: ${actions.ngrok.restrict_ips.error.code}
+            error_message: ${actions.ngrok.restrict_ips.error.message}
+```
+
+```json policy.json {8,14-24}
+{
+  "on_tcp_connect": [
+    {
+      "actions": [
+        {
+          "type": "restrict-ips",
+          "config": {
+            "enforce": false,
+            "ip_policies": [
+              "ipp_1yjqdrIBwgciY2I9zH2EelgBbJF"
+            ]
+          }
+        },
+        {
+          "type": "log",
+          "config": {
+            "metadata": {
+              "message": "Restrict IPs action would be ${actions.ngrok.restrict_ips.action} for ${conn.client_ip}.",
+              "matched_cidr": "${actions.ngrok.restrict_ips.matched_cidr}",
+              "error_code": "${actions.ngrok.restrict_ips.error.code}",
+              "error_message": "${actions.ngrok.restrict_ips.error.message}"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+</CodeGroup>
+
+This configuration tests the incoming client IP against the specified [IP Policy](/api-reference/ippolicies/list) `ipp_1yjqdrIBwgciY2I9zH2EelgBbJF` without enforcing it, then logs the result using the [`log`](/gateway/traffic-policy/actions/log/) action.
+
+#### Example request
+
+ngrok allows the following connection and logs an event:
+
+```bash
+$ telnet 5.tcp.ngrok.io 22984
+
+Trying...
+Connected to 5.tcp.ngrok.io.
+```
 
 ## Examples `on_http_request`
 
@@ -225,7 +292,7 @@ This configuration ensures that only requests from the IP `1.1.1.1` are allowed,
 #### Example request
 
 If the request comes from an allowed IP, the response proceeds as normal.
-If the request comes from a denied IP, you receive an HTTP `403` response:
+If the request comes from a denied IP, you'll receive an HTTP `403` response:
 
 ```bash
 $ curl -i https://example.ngrok.app
@@ -278,7 +345,7 @@ This configuration ensures that the [IP Policies](/api-reference/ippolicies/list
 #### Example request
 
 If the request comes from an allowed IP, the response proceeds as normal.
-If the request comes from a denied IP, you receive an HTTP `403` response:
+If the request comes from a denied IP, you'll receive an HTTP `403` response:
 
 ```bash
 $ curl -i https://example.ngrok.app

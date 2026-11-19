@@ -1,7 +1,7 @@
 ---
 title: Azure Active Directory B2C SSO (SAML)
 sidebarTitle: Azure AD B2C (SAML)
-description: Use Microsoft Azure AD B2C to secure access to ngrok endpoints with single sign-on.
+description: Make visitors sign in with Microsoft Azure AD B2C before they reach your ngrok endpoints, using a SAML app and a Traffic Policy.
 ---
 
 import Disclaimer from "/snippets/integrations/_endpoint-sso-disclaimer.mdx";
@@ -23,19 +23,20 @@ By integrating Azure AD B2C with ngrok, you can:
 <Steps titleSize="h2">
   <Step title="Configure ngrok">
 
-    <Warning>
-    The SAML Traffic Policy action is in [early access](/gateway/traffic-policy/actions/saml/).
-    [Request access](https://dashboard.ngrok.com/early-access) to configure SAML via Traffic Policy.
-    </Warning>
+    <Info>
+    The [SAML Traffic Policy action](/gateway/traffic-policy/actions/saml/) isn't generally available yet.
+    </Info>
 
     Once you have early access, create a `policy.yaml` file with the following content.
     Leave `YOUR_IDP_METADATA_XML` as a placeholder for now; you replace it with the metadata XML from Azure AD B2C in a later step.
+    The `auth_id` value names this SAML configuration and must not be empty.
 
     ```yaml
     on_http_request:
       - actions:
           - type: saml
             config:
+              auth_id: azure-saml
               idp_metadata: 'YOUR_IDP_METADATA_XML'
     ```
 
@@ -76,9 +77,9 @@ By integrating Azure AD B2C with ngrok, you can:
 
   <Step title="Test the integration">
 
-    <Tip>
+    <Note>
     This step assumes you have an app running locally (for example, at `localhost:3000`) with the ngrok agent installed.
-    </Tip>
+    </Note>
 
     Run: `ngrok http 3000 --traffic-policy-file policy.yaml --url YOUR_DOMAIN`
 

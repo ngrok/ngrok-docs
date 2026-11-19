@@ -1,6 +1,6 @@
 ---
 title: ngrok MCP Server Example Prompts
-sidebarTitle: Example prompts
+sidebarTitle: Example Prompts
 description: Copy prompts to send your AI agent through the ngrok MCP server, grouped by job, from checking what's online to writing Traffic Policy rules.
 ---
 
@@ -27,7 +27,8 @@ To keep changing that page, see [Build a page, then change it](#build-a-page-the
 ## Understand what's running
 
 These prompts cover what's connected right now, plus your reserved domains and certificates.
-Swap in the [error code](/errors) you got, or paste the request ID from an ngrok error page instead.
+Swap in the [error code](/errors) you got.
+If the ngrok error page also shows a request ID, paste both.
 
 <PromptList prompts={[
 	"What's online right now?",
@@ -35,6 +36,7 @@ Swap in the [error code](/errors) you got, or paste the request ID from an ngrok
 	"Which agent version is each device running?",
 	"Which of my TLS certificates expire this month?",
 	"Why does my custom domain show TLS errors?",
+	"Are my event destinations failing to deliver logs?",
 	"I got ERR_NGROK_8012 when I opened my ngrok URL. What's wrong, and how do I fix it?",
 ]} />
 
@@ -43,10 +45,11 @@ Swap in the [error code](/errors) you got, or paste the request ID from an ngrok
 These prompts read [Traffic Inspector](/obs/traffic-inspection), including [TCP connections](/obs/traffic-inspection/tcp-connections).
 How far back your AI agent can look depends on your plan's retention.
 Narrow any prompt to a host, path, status code, method, or client IP, and ask for counts by hour, by day, or by country.
+Say 500 for HTTP 500 only, or 5xx for every server error, and name a time zone when you ask for counts by hour or day.
 
 <PromptList prompts={[
 	"Which of my URLs got the most HTTP traffic?",
-	"Are any of my endpoints on fire? Show me 500s by hour for the last day.",
+	"Are any of my endpoints on fire? Show me 5xx errors by hour for the last 24 hours, in Pacific time.",
 	"Which of my endpoints are throwing 502s or 503s, and why?",
 	"Which countries send me the most traffic?",
 	"Who connects to my TCP endpoint, and how long do they stay?",
@@ -58,6 +61,9 @@ The AI agent writes [Traffic Policy](/gateway/traffic-policy), checks it with th
 The MCP server can't write to your ngrok agent's config file, but a coding agent can edit that file itself.
 Swap in your own paths, limits, and countries, or another [OAuth provider](/gateway/traffic-policy/actions/oauth), such as GitHub or Microsoft.
 See [Traffic Policy actions](/gateway/traffic-policy/actions) for everything a rule can do.
+When you name a path such as `/login`, say whether you mean only that path or every path under `/login/` too.
+An [IP policy](/gateway/traffic-policy/concepts/ip-policies) can apply to several endpoints, so a rule you add to one blocks the IP on all of them.
+To block an IP on one endpoint only, say which endpoint.
 
 <PromptList prompts={[
 	"Write a rule that rate-limits my busiest path to 100 requests a minute.",
@@ -74,11 +80,12 @@ See [Traffic Policy actions](/gateway/traffic-policy/actions) for everything a r
 The AI agent can create and change Cloud Endpoints, reserved domains, TCP addresses, vaults, and secrets.
 Swap in your own domain, and name the service or vault you mean.
 It asks before it deletes anything, and it can confirm that a secret exists but can't read it back.
+A reserved address with no online endpoint may still belong to an ngrok agent that's offline right now, so check each one before you approve a release.
 
 <PromptList prompts={[
 	"Set up api.example.com as a Cloud Endpoint that forwards to my internal service.",
 	"Store my Stripe webhook secret in a vault and verify webhooks with it.",
-	"Release the TCP addresses that no endpoint uses.",
+	"List the TCP addresses that no online endpoint uses, then release the ones I confirm.",
 ]} />
 
 ## Check your account
@@ -94,6 +101,19 @@ The AI agent sees each credential's description, owner, and dates, but never the
 	"Who's on my team, and which API keys does each person own?",
 	"Which of my API keys are more than a year old, and who owns them?",
 	"Revoke the authtoken on my old laptop.",
+]} />
+
+## Analyze AI Gateway usage
+
+These prompts use the [AI Gateway tools](/mcp-server/ai-gateway).
+Request details and captured bodies need [request capture](/ai-gateway/guides/account-settings#request-capture) turned on.
+
+<PromptList prompts={[
+	"Which models support image input? Show the prices and limits for one of them.",
+	"What did AI Gateway cost over the last seven days? Break it down by provider, with daily totals.",
+	"Show failed AI Gateway requests from the last hour.",
+	"For that request, show what the client asked for and every provider attempt. Why did it fail over?",
+	"Read the captured client request body for that request. Continue until the end.",
 ]} />
 
 ## Send feedback

@@ -80,7 +80,7 @@ const terms = [
 	{
 		titles: ["Endpoint Pooling", "Endpoint pool"],
 		meaning:
-			'When your create two ngrok endpoints with the same URL (and binding), those endpoints automatically form a "pool" and share incoming traffic.',
+			'When you create two ngrok endpoints with the same URL (and binding), those endpoints automatically form a "pool" and share incoming traffic.',
 		link: "/docs/endpoints/endpoint-pooling/",
 		pluralEnding: "s",
 	},
@@ -149,7 +149,7 @@ const terms = [
 	{
 		titles: ["JIT provisioning"],
 		meaning:
-			"Just-In-Time Single Sign-On Provisioning is a user account provisioning method that automatically creates (or updates) user accounts at the time of login via Single Sign-On, rather than pre-creating all user accounts in advance.",
+			"Just-in-time (JIT) single sign-on provisioning is a user account provisioning method that automatically creates (or updates) user accounts at the time of login through single sign-on, rather than pre-creating all user accounts in advance.",
 		link: "https://en.wikipedia.org/wiki/System_for_Cross-domain_Identity_Management",
 	},
 	{
@@ -311,7 +311,7 @@ const terms = [
 		titles: ["SSO"],
 		caseSensitive: true,
 		meaning:
-			"SSO (Single Sign-On) is an authentication method that allows users to log in once and gain access to multiple related applications or systems without re-entering credentials.",
+			"SSO (single sign-on) is an authentication method that allows users to log in once and gain access to multiple related applications or systems without re-entering credentials.",
 		link: "https://en.wikipedia.org/wiki/Single_sign-on",
 	},
 	{
@@ -337,7 +337,7 @@ const terms = [
 		pluralEnding: "s",
 		link: "https://en.wikipedia.org/wiki/Transport_Layer_Security",
 		meaning:
-			"A TLS certificate (or SSL certificate) is a digital certificate that ensure your connection to a website or server is securly encrypted.",
+			"A TLS certificate (or SSL certificate) is a digital certificate that ensures your connection to a website or server is securely encrypted.",
 	},
 	{
 		titles: ["TLS Termination"],

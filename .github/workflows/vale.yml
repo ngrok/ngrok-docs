@@ -54,12 +54,13 @@ jobs:
             > pr_files.txt
 
           # Keep markdown only, excluding generated files: Vale findings there have
-          # to be fixed at the source. The agent CLI pages and the errors, obs, and
-          # API example snippets come from the ngrok monorepo; the operator changelog
-          # and Helm values come from the auto-gen workflows in this repo.
+          # to be fixed at the source. The agent CLI pages and the errors and obs
+          # snippets come from the ngrok monorepo; the operator changelog, Helm values,
+          # and homepage changelog come from the auto-gen workflows in this repo.
           grep -E '\.(mdx|md)$' pr_files.txt \
-            | grep -vE '^snippets/(api|errors|obs)/' \
+            | grep -vE '^snippets/(errors|obs)/' \
             | grep -vE '^snippets/k8s/_(changelog|helm-config)\.mdx$' \
+            | grep -v '^snippets/homepage-changelog.mdx$' \
             | grep -v '^errors/' \
             | grep -v '^\.skills/' \
             | grep -vE '^(gateway/)?agent/cli(-api)?\.mdx$' \
@@ -106,7 +107,31 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # The step above only annotates, and can't fail the job (see its comment).
+      # reviewdog creates a "vale" check run, then PATCHes it about a second later
+      # to finish it. That PATCH sometimes 404s on the run it just created, and
+      # reviewdog doesn't retry, so the check stays "in progress" on the PR forever.
+      # Finish any run it left open. Only the app that created a check run can
+      # update it, so this has to use this job's GITHUB_TOKEN.
+      - name: Close a Vale check run that reviewdog left open
+        if: always() && steps.changed-files.outputs.has_files == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          ids=$(gh api "repos/$REPO/commits/$HEAD_SHA/check-runs?check_name=vale&per_page=100" \
+            --jq '.check_runs[] | select(.status != "completed") | .id')
+          for id in $ids; do
+            echo "Closing check run $id"
+            gh api -X PATCH "repos/$REPO/check-runs/$id" \
+              -f status=completed \
+              -f conclusion=neutral \
+              -f 'output[title]=Vale' \
+              -f 'output[summary]=reviewdog could not finish this check. The Fail on Vale findings step has the results.' \
+              > /dev/null
+          done
+
+      # The Run Vale step only annotates, and can't fail the job (see its comment).
       # This one is the gate: any Vale finding, at any level, in a file the PR
       # changes fails the check. It lists findings in the log without annotating
       # them, so each finding appears once on the PR. Each file runs on its own with a timeout, since

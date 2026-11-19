@@ -1,7 +1,7 @@
 ---
-title: Kubernetes ingress to services hosted on EKS
+title: Kubernetes Ingress to Services Hosted on EKS
 sidebarTitle: EKS
-description: Learn how to get started running the ngrok Kubernetes Operator on AWS EKS.
+description: Install the ngrok Kubernetes Operator on an AWS EKS cluster, put a sample app online, and protect it with Traffic Policy.
 ---
 
 This guide explains how to run the ngrok Kubernetes Operator on AWS EKS to add secure ingress to your services.
@@ -101,7 +101,7 @@ kubectl apply -f ngrok-manifest.yaml
 ```
 
 <Note>
-**Troubleshooting:** If you get an error when applying the manifest, double-check that you've updated the `NGROK_DOMAIN` value and try again.
+If you get an error when applying the manifest, double-check that you've updated the `NGROK_DOMAIN` value and try again.
 </Note>
 
 Open your reserved domain (for example, `https://NGROK_DOMAIN`) in a browser to confirm the tinyllama app is accessible from the internet.
@@ -119,7 +119,7 @@ Edit your `ngrok-manifest.yaml` file with the following, leaving the `Service` a
 Note the new `annotations` field and the `NgrokTrafficPolicy` CR.
 
 ```yaml
-...
+# ...
 ---
 # Configuration for ngrok's Kubernetes Operator
 apiVersion: networking.k8s.io/v1
@@ -152,9 +152,10 @@ metadata:
 spec:
   policy:
     on_http_request:
-      - type: oauth
-        config:
-          provider: google
+      - actions:
+          - type: oauth
+            config:
+              provider: google
 ```
 
 Re-apply your `ngrok-manifest.yaml` configuration:
@@ -179,9 +180,10 @@ metadata:
 spec:
   policy:
     on_http_request:
-      - type: oauth
-        config:
-          provider: google
+      - actions:
+          - type: oauth
+            config:
+              provider: google
       - expressions:
           - "!actions.ngrok.oauth.identity.email.endsWith('@example.com')"
         actions:

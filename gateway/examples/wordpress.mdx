@@ -1,7 +1,7 @@
 ---
 title: Accelerate and Secure Your WordPress Installation
 sidebarTitle: Secure Wordpress Installations
-description: ngrok improves your existing Wordpress installation by managing your TLS certificates, accelerating your blog on the global load balancer, and protecting it from DDoS attacks.
+description: Put a WordPress site behind ngrok for managed TLS certificates and DDoS protection, and restrict access to its admin dashboard.
 ---
 
 import ReserveDomain from "/snippets/gateway/_reserve-domain.mdx";
@@ -35,7 +35,9 @@ ngrok improves your existing Wordpress installation by:
                 host: localhost
     ```
 
-    **What's happening here?** This policy rewrites the `Host` header of every HTTP request to `localhost` so that Wordpress accepts the requests.
+    <Info title="What's happening here?">
+    This policy rewrites the `Host` header of every HTTP request to `localhost` so that Wordpress accepts the requests.
+    </Info>
   </Step>
 
   <Step title="Start your Wordpress endpoint">
@@ -61,7 +63,7 @@ Edit your `wordpress.yaml` file with the following policy, replacing `$YOUR_IP`.
 ```yaml
 on_http_request:
   - expressions:
-      - "req.url.includes('/wp-admin')"
+      - "req.url.path.contains('/wp-admin')"
     actions:
       - type: restrict-ips
         config:
@@ -76,8 +78,11 @@ on_http_request:
             host: localhost
 ```
 
-**What's happening here?** This policy first checks whether an HTTP request's URL contains the `/wp-admin` path. If it does, then it applies the `restrict-ips` action to allow only the addresses you explicitly added.
+<Info title="What's happening here?">
+This policy first checks whether an HTTP request's URL contains the `/wp-admin` path.
+If it does, then it applies the `restrict-ips` action to allow only the addresses you explicitly added.
 Then, as before, the policy rewrites the `Host` header of every HTTP request to `localhost` so that Wordpress accepts the requests.
+</Info>
 
 Finally, restart your ngrok agent to apply the new policy.
 
