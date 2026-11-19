@@ -10,6 +10,11 @@ description: Look up every field of the IPPolicy custom resource, which allows o
 
 ### **kind:** `IPPolicy`
 
+<Warning title="ingress.k8s.ngrok.com/v1alpha1 IPPolicy is deprecated">
+    `ngrok.com/v1` `IPPolicy` replaces the deprecated `ingress.k8s.ngrok.com/v1alpha1` `IPPolicy`. Only `spec.metadata` and `spec.rules[].metadata` changed (now maps of strings). Keep the same name and namespace when you migrate.
+    Migrate before 1.0. See the [0.25 upgrade guide](https://github.com/ngrok/ngrok-operator/blob/main/docs/upgrading-to-0.25.md).
+</Warning>
+
 IP Policies define rules that allow or deny traffic based on the source IP of connections to your ngrok endpoints.
 These policies can be attached to endpoints via Traffic Policy configurations to control access based on IP addresses and CIDR ranges.
 
@@ -29,13 +34,13 @@ metadata:
   name: <string>
   namespace: <string>
 spec:
-  description: <string>       # optional, default: ""
-  metadata: <string>          # optional, default: "{"owned-by":"kubernetes-ingress-controller"}"
-  rules: <[]Object>           # required
-  - action: <string>          # required, enum: "allow" | "deny"
-    cidr: <string>            # required
-    description: <string>     # optional
-    metadata: <string>        # optional
+  description: <string>           # optional, default: "Created by ngrok-operator"
+  metadata: <map[string]string>   # optional, default: {"owned-by": "ngrok-operator"}
+  rules: <[]Object>               # optional
+  - action: <string>              # required, enum: "allow" | "deny"
+    cidr: <string>                # required
+    description: <string>         # optional, default: "Created by ngrok-operator"
+    metadata: <map[string]string> # optional, default: {"owned-by": "ngrok-operator"}
 ```
 
 ## IPPolicy fields
@@ -54,11 +59,11 @@ The following sections outline each field of the `IPPolicy` custom resource, whe
 
 **Fields:**
 
-| Field Name                             | Type       | Required | Default                                         | Description                                                                    |
-| -------------------------------------- | ---------- | -------- | ----------------------------------------------- | ------------------------------------------------------------------------------ |
-| [`spec.description`](#specdescription) | `string`   | no       | `""`                                            | Human-readable description for this `IPPolicy` to help identify/describe it    |
-| [`spec.metadata`](#specmetadata)       | `string`   | no       | `"{"owned-by":"kubernetes-ingress-controller"}"` | String of arbitrary data associated with the object in the ngrok API/dashboard |
-| [`spec.rules`](#specrules)             | `[]Object` | yes      | none                                            | List of rules that define which IPs/CIDR ranges to allow or deny              |
+| Field Name                             | Type                | Required | Default                          | Description                                                                    |
+| -------------------------------------- | ------------------- | -------- | -------------------------------- | ------------------------------------------------------------------------------ |
+| [`spec.description`](#specdescription) | `string`            | no       | `"Created by ngrok-operator"`    | Human-readable description for this `IPPolicy` to help identify/describe it    |
+| [`spec.metadata`](#specmetadata)       | `map[string]string` | no       | `{"owned-by": "ngrok-operator"}` | Arbitrary key/value data associated with the object in the ngrok API/dashboard |
+| [`spec.rules`](#specrules)             | `[]Object`          | no       | none                             | List of rules that define which IPs/CIDR ranges to allow or deny               |
 
 ### `spec.description`
 
@@ -68,17 +73,18 @@ Human-readable description of this IP Policy that can be used to help identify/d
 
 **Required:** no
 
-**Default:** `""`
+**Default:** `"Created by ngrok-operator"`
 
 ### `spec.metadata`
 
-String of arbitrary data associated with the object in the ngrok API/dashboard.
+Arbitrary key/value data associated with the object in the ngrok API/dashboard.
+Values must be strings.
 
-**Type:** `string`
+**Type:** `map[string]string`
 
 **Required:** no
 
-**Default:** `"{"owned-by":"kubernetes-ingress-controller"}"`
+**Default:** `{"owned-by": "ngrok-operator"}`
 
 ### `spec.rules`
 
@@ -87,18 +93,18 @@ Each rule is evaluated independently, and the most specific matching rule applie
 
 **Type:** `[]Object`
 
-**Required:** yes
+**Required:** no
 
 **Default:** none
 
 **Fields:**
 
-| Field Name                                      | Type            | Required | Default | Description                                                                    |
-| ----------------------------------------------- | --------------- | -------- | ------- | ------------------------------------------------------------------------------ |
-| [`spec.rules[].action`](#specrulesaction)       | `string` (enum) | yes      | none    | Whether to allow or deny traffic from the specified CIDR range                 |
-| [`spec.rules[].cidr`](#specrulescidr)           | `string`        | yes      | none    | IP address or CIDR range to match against                                      |
-| [`spec.rules[].description`](#specrulesdescription) | `string`    | no       | `""`    | Human-readable description for this rule                                       |
-| [`spec.rules[].metadata`](#specrulesmetadata)   | `string`        | no       | none    | String of arbitrary data associated with the rule in the ngrok API/dashboard   |
+| Field Name                                          | Type                | Required | Default                          | Description                                                                  |
+| --------------------------------------------------- | ------------------- | -------- | -------------------------------- | ---------------------------------------------------------------------------- |
+| [`spec.rules[].action`](#specrulesaction)           | `string` (enum)     | yes      | none                             | Whether to allow or deny traffic from the specified CIDR range               |
+| [`spec.rules[].cidr`](#specrulescidr)               | `string`            | yes      | none                             | IP address or CIDR range to match against                                    |
+| [`spec.rules[].description`](#specrulesdescription) | `string`            | no       | `"Created by ngrok-operator"`    | Human-readable description for this rule                                     |
+| [`spec.rules[].metadata`](#specrulesmetadata)       | `map[string]string` | no       | `{"owned-by": "ngrok-operator"}` | Arbitrary key/value data associated with the rule in the ngrok API/dashboard |
 
 ### `spec.rules[].action`
 
@@ -131,26 +137,34 @@ This must be a valid IPv4 or IPv6 CIDR notation.
 ### `spec.rules[].description`
 
 Human-readable description of this rule that can be used to help identify/describe it.
+Maximum 255 characters.
 
 **Type:** `string`
 
 **Required:** no
 
-**Default:** `""`
+**Default:** `"Created by ngrok-operator"`
 
 ### `spec.rules[].metadata`
 
-String of arbitrary data associated with this rule in the ngrok API/dashboard.
+Arbitrary key/value data associated with this rule in the ngrok API/dashboard.
+Values must be strings.
 
-**Type:** `string`
+**Type:** `map[string]string`
 
 **Required:** no
 
-**Default:** none
+**Default:** `{"owned-by": "ngrok-operator"}`
 
 ## Status fields
 
 The `IPPolicy` resource includes status information that reflects the current state of the policy in the ngrok system.
+
+### `status.observedGeneration`
+
+The most recent `metadata.generation` the Operator observed. When it matches `metadata.generation`, the status reflects the latest spec.
+
+**Type:** `int64`
 
 ### `status.id`
 
@@ -159,20 +173,6 @@ The ngrok API ID for this IP Policy resource.
 **Type:** `string`
 
 **Example:** `ipp_34iZT0muBP3kpcAXxGjM4uFlgDK`
-
-### `status.rules`
-
-Array of rules with their ngrok API IDs. Each rule status includes the rule ID, CIDR, and action that was configured.
-
-**Type:** `[]Object`
-
-**Example:**
-```yaml
-rules:
-- id: ipr_34iZT1AbCdEfGhIjKlMnOpQrStU
-  cidr: 162.236.158.182/32
-  action: allow
-```
 
 ### `status.conditions`
 
@@ -244,7 +244,7 @@ conditions:
   observedGeneration: 1
 ```
 
-##### `RulesConfigured`
+##### `IPPolicyRulesConfigured`
 
 Indicates whether all rules have been successfully configured for the IP Policy.
 
@@ -263,7 +263,7 @@ Indicates whether all rules have been successfully configured for the IP Policy.
 **Example:**
 ```yaml
 conditions:
-- type: RulesConfigured
+- type: IPPolicyRulesConfigured
   status: "True"
   reason: IPPolicyRulesConfigured
   message: "All rules configured for IP Policy"
@@ -278,10 +278,6 @@ conditions:
 ```yaml
 status:
   id: ipp_34iZT0muBP3kpcAXxGjM4uFlgDK
-  rules:
-  - id: ipr_34iZT1AbCdEfGhIjKlMnOpQrStU
-    cidr: 162.236.158.182/32
-    action: allow
   conditions:
   - type: IPPolicyCreated
     status: "True"
@@ -289,7 +285,7 @@ status:
     message: "IP Policy successfully created"
     lastTransitionTime: "2025-10-29T00:39:16Z"
     observedGeneration: 1
-  - type: RulesConfigured
+  - type: IPPolicyRulesConfigured
     status: "True"
     reason: IPPolicyRulesConfigured
     message: "All rules configured for IP Policy"
@@ -314,7 +310,7 @@ status:
     message: "Failed to create IP Policy: invalid CIDR notation in rule"
     lastTransitionTime: "2025-10-29T00:39:15Z"
     observedGeneration: 1
-  - type: RulesConfigured
+  - type: IPPolicyRulesConfigured
     status: "False"
     reason: IPPolicyInvalidCIDR
     message: "Invalid CIDR range: 192.168.1.0/42 (prefix length must be between 0 and 32 for IPv4)"
@@ -334,20 +330,18 @@ You can check the status of an IP Policy using kubectl:
 
 ```bash
 # Check if IP Policy is ready
-kubectl get ippolicy whitelist-specific-ip -o jsonpath='{.status.conditions[?(@.type=="Ready")]}'
+kubectl get ippolicies.ngrok.com whitelist-specific-ip -o jsonpath='{.status.conditions[?(@.type=="Ready")]}'
 
 # Watch for IP Policy to become ready
-kubectl wait --for=condition=Ready ippolicy/whitelist-specific-ip --timeout=60s
+kubectl wait --for=condition=Ready ippolicies.ngrok.com/whitelist-specific-ip --timeout=60s
 
 # Get all IP Policies with their ready status
-kubectl get ippolicies -A -o custom-columns=\
+kubectl get ippolicies.ngrok.com -A -o custom-columns=\
 NAME:.metadata.name,\
 NAMESPACE:.metadata.namespace,\
+ID:.status.id,\
 READY:.status.conditions[?(@.type==\'Ready\')].status,\
 REASON:.status.conditions[?(@.type==\'Ready\')].reason
-
-# View all rules and their IDs
-kubectl get ippolicy whitelist-specific-ip -o jsonpath='{.status.rules[*]}'
 ```
 
 ## Example IPPolicies

@@ -10,6 +10,11 @@ description: Reference documentation for the Domain Kubernetes custom resource f
 
 ### **kind:** `Domain`
 
+<Warning title="ingress.k8s.ngrok.com/v1alpha1 Domain is deprecated">
+    `ngrok.com/v1` `Domain` replaces the deprecated `ingress.k8s.ngrok.com/v1alpha1` `Domain`. Only `spec.metadata` changed (now a map of strings).
+    The Operator migrates the Domains it created; migrate your own before 1.1, and upgrade through both 0.25 and 1.0. See the [0.25 upgrade guide](https://github.com/ngrok/ngrok-operator/blob/main/docs/upgrading-to-0.25.md).
+</Warning>
+
 Domains define the hostnames that should be reserved for your ngrok endpoints.
 They are automatically created by the controller based on the `Ingress`, `Gateway`, `CloudEndpoint` and `AgentEndpoint` custom resources you create.
 Standard ngrok subdomains will automatically be created and reserved for you.
@@ -18,7 +23,7 @@ See the [custom domain](/gateway/k8s/guides/custom-domain) guide for more detail
 
 If you delete all the `Ingress`/`Gateway`/`CloudEndpoint`/`AgentEndpoint` objects for a particular host, as a safety precaution, the Operator does _NOT_ delete the domains and thus does not unregister them.
 This ensures you don't lose domains while modifying or recreating ingress objects.
-You can still manually delete a domain CRD via `kubectl delete domain <name>` if you want to unregister it.
+You can still manually delete a `Domain` resource via `kubectl delete domains.ngrok.com <name>`. Its `spec.reclaimPolicy` controls whether the reservation is released in ngrok.
 
 ## Domain structure and types
 
@@ -31,10 +36,12 @@ metadata:
   name: <string>
   namespace: <string>
 spec:
-  description: <string>       # optional, default: "Created by the ngrok-operator"
-  metadata: <string>          # optional, default: "{"owned-by":"ngrok-operator"}"
-  domain: <string>            # required
-  region: <string>            # required
+  description: <string>         # optional, default: "Created by ngrok-operator"
+  metadata: <map[string]string> # optional, default: {"owned-by": "ngrok-operator"}
+  domain: <string>              # required, immutable
+  resolvesTo:                   # optional
+  - value: <string>             # required
+  reclaimPolicy: <string>       # optional, default: "Delete"
 ```
 
 ## Domain fields
@@ -53,12 +60,13 @@ The following sections outline each field of the `Domain` custom resource, wheth
 
 **Fields:**
 
-| Field Name                             | Type            | Required | Default                           | Description                                                                    |
-| -------------------------------------- | --------------- | -------- | --------------------------------- | ------------------------------------------------------------------------------ |
-| [`spec.description`](#specdescription) | `string`        | no       | `"Created by the ngrok-operator"` | Human-readable description for this `Domain` to help identify/describe it      |
-| [`spec.metadata`](#specmetadata)       | `string`        | no       | `"{"owned-by":"ngrok-operator"}"` | String of arbitrary data associated with the object in the ngrok API/dashboard |
-| [`spec.domain`](#specdomain)           | `string`        | yes      | none                              | The domain name to reserve                                                     |
-| [`spec.region`](#specregion)           | `string` (enum) | no       | none                              | (Deprecated) The region in which to reserve the domain                         |
+| Field Name                                 | Type                | Required | Default                           | Description                                                                         |
+| ------------------------------------------ | ------------------- | -------- | --------------------------------- | ----------------------------------------------------------------------------------- |
+| [`spec.description`](#specdescription)     | `string`            | no       | `"Created by ngrok-operator"`     | Human-readable description for this `Domain` to help identify/describe it           |
+| [`spec.metadata`](#specmetadata)           | `map[string]string` | no       | `{"owned-by": "ngrok-operator"}`  | Arbitrary key/value data associated with the object in the ngrok API/dashboard      |
+| [`spec.domain`](#specdomain)               | `string`            | yes      | none                              | The domain name to reserve                                                          |
+| [`spec.resolvesTo`](#specresolvesto)       | `[]Object`          | no       | none                              | The list of resolving targets for the domain                                        |
+| [`spec.reclaimPolicy`](#specreclaimpolicy) | `string` (enum)     | no       | `"Delete"`                        | Whether to release the reservation in ngrok when the `Domain` is deleted            |
 
 ### `spec.description`
 
@@ -68,50 +76,66 @@ Human-readable description of this domain that can be used to help identify/desc
 
 **Required:** no
 
-**Default:** `"Created by the ngrok-operator"`
+**Default:** `"Created by ngrok-operator"`
 
 ### `spec.metadata`
 
-String of arbitrary data associated with the object in the ngrok API/dashboard.
+Arbitrary key/value data associated with the object in the ngrok API/dashboard.
+Values must be strings.
 
-**Type:** `string`
+**Type:** `map[string]string`
 
 **Required:** no
 
-**Default:** `"{"owned-by":"ngrok-operator"}"`
+**Default:** `{"owned-by": "ngrok-operator"}`
 
 ### `spec.domain`
 
 The domain name to reserve. example: `example-domain.ngrok.app`
 
+This field is immutable. Reserved domains cannot be renamed through the ngrok API, so changing `spec.domain` on an existing `Domain` is rejected.
+To reserve a different domain, create a new `Domain` resource.
+
 **Type:** `string`
+
+**Required:** yes
+
+**Default:** none
+
+### `spec.resolvesTo`
+
+The list of resolving targets for the domain.
+Each entry has a single required `value` field: a point-of-presence alias.
+
+**Type:** `[]Object`
 
 **Required:** no
 
 **Default:** none
 
-### `spec.region`
+### `spec.reclaimPolicy`
 
-The region in which to reserve domains
-
-With the launch of the ngrok Global Network domains traffic is now handled globally.
-Note that agents may still connect to specific regions.
-
-<Warning>
-`spec.region` is deprecated.
-</Warning>
+The policy to apply to the reservation in ngrok when the `Domain` is deleted.
+`Delete` releases the reservation, and `Retain` keeps it in your ngrok account.
+The Operator sets this on the `Domain` resources it creates from the `ngrok.features.domains.defaultReclaimPolicy` Helm value.
 
 **Type:** `string (enum)`
 
 **Required:** no
 
-**Default:** `"global"`
+**Default:** `"Delete"`
 
-**Allowed Values:** `"au"`, `"eu"`, `"ap"`, `"us"`, `"jp"`, `"in"`, `"sa"`, `"global"`
+**Allowed Values:** `"Delete"`, `"Retain"`
 
 ## Status fields
 
 The `Domain` resource includes status information that reflects the current state of the domain in the ngrok system.
+
+### `status.observedGeneration`
+
+The most recent `metadata.generation` the Operator observed. When it matches `metadata.generation`, the status reflects the latest spec.
+
+**Type:** `int64`
 
 ### `status.id`
 
@@ -123,19 +147,36 @@ The ngrok API ID for this domain.
 
 ### `status.domain`
 
-The actual domain string that was reserved.
+The hostname this `Domain` represents.
+This is the reserved domain, or this `Domain`'s own hostname when it's covered by a wildcard reservation.
 
 **Type:** `string`
 
 **Example:** `example-domain.ngrok.app`
 
-### `status.region`
+### `status.coveredByWildcardDomain`
 
-The ngrok region where the domain is available.
+The wildcard reservation that already serves this hostname, for example `*.example.com` for `a.example.com`.
+When set, the Operator doesn't reserve the hostname because the wildcard already covers it, and `status.id` stays empty.
 
-**Type:** `string`
+**Type:** `Object`
 
-**Example:** `global`
+**Fields:**
+- `id` - The ngrok API ID of the wildcard reservation
+- `domain` - The wildcard domain name
+
+**Example:**
+```yaml
+coveredByWildcardDomain:
+  id: rd_347Xxo1moBQ5AgBmI3a9CFgcCrk
+  domain: "*.example.com"
+```
+
+### `status.resolvesTo`
+
+The list of resolving targets for the domain.
+
+**Type:** `[]Object`
 
 ### `status.cnameTarget`
 
@@ -144,6 +185,41 @@ The CNAME target for custom domains. This field is only populated for custom (no
 **Type:** `string`
 
 **Example:** `exampledata.otherdata.ngrok-cname.com`
+
+### `status.acmeChallengeCNAMETarget`
+
+The CNAME target for the ACME challenge. This field is only populated for wildcard domains.
+
+**Type:** `string`
+
+### `status.certificate`
+
+Information about the TLS certificate for the domain.
+
+**Type:** `Object`
+
+**Fields:**
+- `id` - The certificate ID
+
+### `status.certificateManagementPolicy`
+
+The certificate management configuration for the domain.
+
+**Type:** `Object`
+
+**Fields:**
+- `authority` - The certificate authority, for example `letsencrypt`
+- `privateKeyType` - The private key type, for example `ecdsa`
+
+### `status.certificateManagementStatus`
+
+The certificate management status for the domain.
+
+**Type:** `Object`
+
+**Fields:**
+- `renewsAt` - When the certificate will be renewed
+- `provisioningJob` - The current provisioning job, with `errorCode`, `message`, `startedAt`, and `retriesAt` fields
 
 ### `status.conditions`
 
@@ -174,6 +250,7 @@ Indicates whether the domain is fully operational and ready to use for endpoints
 | Reason | Status | Meaning |
 |--------|--------|---------|
 | `DomainActive` | `True` | Domain is successfully reserved and ready to use |
+| `CoveredByWildcardDomain` | `True` | Domain is ready to use because a wildcard reservation covers it |
 | `DomainInvalid` | `False` | Domain format or configuration is invalid |
 | `DomainCreationFailed` | `False` | Failed to reserve the domain in ngrok |
 | `ProvisioningError` | `False` | Error provisioning custom domain (DNS/certificate issues) |
@@ -194,7 +271,7 @@ conditions:
 Indicates whether the domain was successfully reserved in the ngrok API.
 
 **Status Values:**
-- `True` - Domain was successfully reserved
+- `True` - Domain was successfully reserved, or is covered by a wildcard reservation
 - `False` - Failed to reserve domain
 
 **Reasons:**
@@ -202,6 +279,7 @@ Indicates whether the domain was successfully reserved in the ngrok API.
 | Reason | Status | Meaning |
 |--------|--------|---------|
 | `DomainCreated` | `True` | Domain successfully reserved |
+| `CoveredByWildcardDomain` | `True` | Reservation skipped because a wildcard reservation already covers the domain |
 | `DomainCreationFailed` | `False` | API call to reserve domain failed |
 | `DomainInvalid` | `False` | Domain name or format is invalid |
 
@@ -285,31 +363,6 @@ conditions:
   observedGeneration: 1
 ```
 
-##### `Progressing`
-
-Indicates whether the domain is actively being provisioned (typically for custom domains).
-
-**Status Values:**
-- `True` - Domain is currently being provisioned
-- `False` - Domain is not in a provisioning state
-
-**Reasons:**
-
-| Reason | Status | Meaning |
-|--------|--------|---------|
-| `Provisioning` | `True` | Domain provisioning is in progress |
-
-**Example:**
-```yaml
-conditions:
-- type: Progressing
-  status: "True"
-  reason: Provisioning
-  message: "Domain provisioning in progress"
-  lastTransitionTime: "2025-10-29T00:39:15Z"
-  observedGeneration: 1
-```
-
 ## Status examples
 
 ### Successfully reserved ngrok subdomain
@@ -378,19 +431,42 @@ status:
     observedGeneration: 1
 ```
 
+### Domain covered by a wildcard reservation
+
+```yaml
+status:
+  domain: a.example.com
+  coveredByWildcardDomain:
+    id: rd_347Xxo1moBQ5AgBmI3a9CFgcCrk
+    domain: "*.example.com"
+  conditions:
+  - type: DomainCreated
+    status: "True"
+    reason: CoveredByWildcardDomain
+    message: "Reservation skipped: already covered by wildcard domain *.example.com"
+    lastTransitionTime: "2025-10-29T00:39:15Z"
+    observedGeneration: 1
+  - type: Ready
+    status: "True"
+    reason: CoveredByWildcardDomain
+    message: "Domain ready for use (covered by wildcard domain *.example.com)"
+    lastTransitionTime: "2025-10-29T00:39:15Z"
+    observedGeneration: 1
+```
+
 ## Checking domain status
 
 You can check the status of a domain using kubectl:
 
 ```bash
 # Check if domain is ready
-kubectl get domain example-domain -o jsonpath='{.status.conditions[?(@.type=="Ready")]}'
+kubectl get domains.ngrok.com example-domain -o jsonpath='{.status.conditions[?(@.type=="Ready")]}'
 
 # Watch for domain to become ready
-kubectl wait --for=condition=Ready domain/example-domain --timeout=60s
+kubectl wait --for=condition=Ready domains.ngrok.com/example-domain --timeout=60s
 
 # Get all domains with their ready status
-kubectl get domains -A -o custom-columns=\
+kubectl get domains.ngrok.com -A -o custom-columns=\
 NAME:.metadata.name,\
 DOMAIN:.status.domain,\
 READY:.status.conditions[?(@.type==\'Ready\')].status,\
@@ -406,7 +482,9 @@ metadata:
   name: example-domain
   namespace: default
 spec:
-  description: Created by kubernetes-ingress-controller
+  description: Created by ngrok-operator
   domain: example-domain.ngrok.app
-  metadata: '{"owned-by":"kubernetes-gateway-api"}'
+  metadata:
+    owned-by: ngrok-operator
+  reclaimPolicy: Retain
 ```

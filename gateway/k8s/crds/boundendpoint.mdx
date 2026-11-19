@@ -21,12 +21,12 @@ sending requests to the projected `Service` that was created for the endpoint.
 In-practice, this enables you to do things such as create a Kubernetes bound endpoint for a service in one cluster, and project it as a `Service` into one or more other clusters
 running the ngrok Operator. Doing so allows for cross-cluster networking without needing to expose your services to the public internet.
 
-The ngrok Operator does not do this by default, and you will need to enable the feature with the `bindings.enabled` helm value to create the Pods/Deployment from the Operator that enable this feature.
+The ngrok Operator does not do this by default, and you will need to enable the feature with the `ngrok.features.bindings.enabled` helm value to create the Pods/Deployment from the Operator that enable this feature.
 
 The `BoundEndpoint` resources are automatically created/updated/deleted in response to `CloudEndpoint` and `AgentEndpoint` resources with `spec.bindings: \["kubernetes"\]` and
 any endpoints created from the ngrok CLI, API, and dashboard with a binding type of "kubernetes".
 
-The ngrok Operator includes a container argument `--bindings-endpoint-selectors` (helm value `bindings.endpointSelectors`) that will limit the endpoints that can be bound to
+The ngrok Operator includes a container argument `--features-bindings-endpoint-selectors` (helm value `ngrok.features.bindings.endpointSelectors`) that will limit the endpoints that can be bound to
 the cluster that this Operator is running in. Unless this is configured, by default all Kubernetes bound endpoints will be projected into the cluster when the bindings feature is enabled.
 
 For more information about Kubernetes bound endpoints, you can reference the [Kubernetes endpoints](/gateway/endpoints/kubernetes-endpoints) page.
@@ -51,12 +51,12 @@ metadata:
   namespace: <string>
 spec:
   endpointURL: <string>                # required
-  scheme: <string>                     # required
+  scheme: <string>                     # required, default: "https"
   port: <uint16>                       # required
   target:                              # required
     service: <string>                  # required
     namespace: <string>                # required
-    protocol: <string>                 # required
+    protocol: <string>                 # required, default: "TCP"
     port: <int32>                      # required
     metadata:                          # optional
       labels: <map[string]string>      # optional
@@ -82,7 +82,7 @@ The following sections outline each field of the `BoundEndpoint` custom resource
 | Field Name                             | Type            | Required | Default | Description                                                                                             |
 | -------------------------------------- | --------------- | -------- | ------- | ------------------------------------------------------------------------------------------------------- |
 | [`spec.endpointURL`](#specendpointurl) | `string`        | yes      | none    | The unique identifier representing the BoundEndpoint, format: `<scheme>://<service>.<namespace>:<port>` |
-| [`spec.scheme`](#specscheme)           | `string` (enum) | yes      | none    | Describes how the data packets are framed by the pod forwarders mTLS connection                         |
+| [`spec.scheme`](#specscheme)           | `string` (enum) | yes      | `https` | Describes how the data packets are framed by the pod forwarders mTLS connection                         |
 | [`spec.port`](#specport)               | `uint16`        | yes      | none    | The Service port this Endpoint uses internally to communicate with its Upstream Service                 |
 | [`spec.target`](#spectarget)           | `Object`        | yes      | none    | The target Service that this Endpoint projects                                                          |
 
@@ -106,7 +106,7 @@ Scheme is a user-defined field for endpoints that describe how the data packets 
 
 **Required:** yes
 
-**Default:** none
+**Default:** `https`
 
 **Allowed Values:** `tcp`, `http`, `https`, `tls`
 
@@ -136,7 +136,7 @@ The target Service that this Endpoint projects
 | ----------------------------------------------- | --------------- | -------- | ------- | ------------------------------------------------------------------------ |
 | [`spec.target.service`](#spectargetservice)     | `string`        | yes      | none    | The name of the Service that this Endpoint projects                      |
 | [`spec.target.namespace`](#spectargetnamespace) | `string`        | yes      | none    | The destination Namespace for the Service this Endpoint projects         |
-| [`spec.target.protocol`](#spectargetprotocol)   | `string` (enum) | yes      | none    | The Service protocol this Endpoint uses                                  |
+| [`spec.target.protocol`](#spectargetprotocol)   | `string` (enum) | yes      | `TCP`   | The Service protocol this Endpoint uses                                  |
 | [`spec.target.port`](#spectargetport)           | `int32`         | yes      | none    | The Service targetPort this Endpoint's Target Service uses for requests  |
 | [`spec.target.metadata`](#spectargetmetadata)   | `Object`        | no       | none    | Annotations and labels to be added to the Service this Endpoint projects |
 
@@ -168,7 +168,7 @@ The Service protocol this Endpoint uses. Currently, only `TCP` is supported.
 
 **Required:** yes
 
-**Default:** none
+**Default:** `TCP`
 
 **Allowed Values:** `TCP`
 
@@ -223,6 +223,12 @@ A map of string keys and values that will be added to the projected Service's `m
 ## Status fields
 
 The `BoundEndpoint` resource includes status information that reflects the current state of the bound endpoint projection into the cluster.
+
+### `status.observedGeneration`
+
+The most recent `metadata.generation` the Operator observed. When it matches `metadata.generation`, the status reflects the latest spec.
+
+**Type:** `int64`
 
 ### `status.hashedName`
 
@@ -320,6 +326,9 @@ Indicates whether the bound endpoint is fully operational and ready for use.
 |--------|--------|---------|
 | `BoundEndpointReady` | `True` | Bound endpoint is successfully configured and ready |
 | `ServiceCreationFailed` | `False` | Failed to create the target or upstream service |
+| `ServicesNotCreated` | `False` | The target and upstream services haven't been created yet |
+| `ConnectivityNotVerified` | `False` | Connectivity to the upstream service hasn't been verified |
+| `ConnectivityFailed` | `False` | Failed to connect to the upstream service |
 
 **Example:**
 ```yaml
@@ -371,6 +380,7 @@ Indicates whether connectivity to the upstream service was successfully verified
 | Reason | Status | Meaning |
 |--------|--------|---------|
 | `ConnectivityVerified` | `True` | Successfully connected to upstream service |
+| `ConnectivityFailed` | `False` | Failed to connect to the upstream service |
 
 **Example:**
 ```yaml
@@ -455,7 +465,7 @@ kubectl get boundendpoint <name> -n ngrok-operator -o jsonpath='{.status.conditi
 kubectl wait --for=condition=Ready boundendpoint/<name> -n ngrok-operator --timeout=60s
 
 # Get all bound endpoints with their ready status
-kubectl get boundendpoints -A -o custom-columns=\
+kubectl get boundendpoints.bindings.k8s.ngrok.com -A -o custom-columns=\
 NAME:.metadata.name,\
 NAMESPACE:.metadata.namespace,\
 ENDPOINTS:.status.endpointsSummary,\

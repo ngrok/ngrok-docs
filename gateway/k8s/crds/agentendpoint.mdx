@@ -10,6 +10,11 @@ description: Reference documentation for the AgentEndpoint Kubernetes custom res
 
 ### **kind:** `AgentEndpoint`
 
+<Warning title="ngrok.k8s.ngrok.com/v1alpha1 AgentEndpoint is deprecated">
+    `ngrok.com/v1` `AgentEndpoint` replaces the deprecated `ngrok.k8s.ngrok.com/v1alpha1` `AgentEndpoint`. Only `spec.metadata` changed (now a map of strings). Keep the same name and namespace when you migrate.
+    Migrate before 1.0: a legacy `AgentEndpoint` goes offline once 1.0 is running. See the [0.25 upgrade guide](https://github.com/ngrok/ngrok-operator/blob/main/docs/upgrading-to-0.25.md).
+</Warning>
+
 Agent Endpoints are endpoints that are only available when an agent is running.
 When used with the ngrok Kubernetes Operator, this means that the Agent Endpoints are tied to the Operator's `operator-agent` pod (which the Operator deploys by default when you install it).
 The Operator manages, creates, and deletes Agent Endpoints for you according to the configuration of the `AgentEndpoint` custom resources you create.
@@ -34,20 +39,28 @@ metadata:
   name: <string>
   namespace: <string>
 spec:
-  url: <string>               # required
-  upstream:                   # required
-    url: <string>             # required
-  trafficPolicy:              # optional
-    targetRef:                # optional, one of inline or targetRef must be supplied
-      name: <string>          # required
-    inline:                   # optional, one of inline or targetRef must be supplied
+  url: <string>                   # required
+  upstream:                       # required
+    url: <string>                 # required
+    protocol: <string>            # optional, enum: "http1" | "http2"
+    proxyProtocolVersion: <string> # optional, enum: "1" | "2"
+  trafficPolicy:                  # optional
+    targetRef:                    # optional, exactly one of inline or targetRef must be supplied
+      name: <string>              # required
+    inline:                       # optional, exactly one of inline or targetRef must be supplied
       <Traffic Policy config>
-  description: <string>       # optional, default: "Created by the ngrok-operator"
-  metadata: <string>          # optional, default: "{"owned-by":"ngrok-operator"}"
-  bindings: <[]string>        # optional
-  clientCertificateRefs:      # optional
-  - name: <string>            # required
-    namespace: <string>       # optional
+  description: <string>           # optional, default: "Created by the ngrok-operator"
+  metadata: <map[string]string>   # optional, default: {"owned-by": "ngrok-operator"}
+  bindings: <[]string>            # optional
+  clientCertificateRefs:          # optional
+  - name: <string>                # required
+  tlsTermination:                 # optional, requires a tls:// spec.url
+    serverCertificateRef:         # required
+      name: <string>              # required
+    mutualTLS:                    # optional
+      clientCAsRef:               # required
+        name: <string>            # required
+      mode: <string>              # optional, default: "require"
 ```
 
 ## AgentEndpoint fields
@@ -72,9 +85,10 @@ The following sections outline each field of the `AgentEndpoint` custom resource
 | [`spec.upstream`](#specupstream)                           | `Object`          | yes      | none                              | The upstream that receives traffic sent to the endpoint (unless a Traffic Policy action sends a response first)          |
 | [`spec.trafficPolicy`](#spectrafficpolicy)                 | `Object`          | no       | none                              | Allows a Traffic Policy to be supplied for the endpoint                                                                  |
 | [`spec.description`](#specdescription)                     | `string`          | no       | `"Created by the ngrok-operator"` | Human-readable description for this `AgentEndpoint` to help identify/describe it                                         |
-| [`spec.metadata`](#specmetadata)                           | `string`          | no       | `"{"owned-by":"ngrok-operator"}"` | String of arbitrary data associated with the object in the ngrok API/dashboard                                           |
+| [`spec.metadata`](#specmetadata)                           | `map[string]string` | no     | `{"owned-by": "ngrok-operator"}`  | Arbitrary key/value data associated with the object in the ngrok API/dashboard                                           |
 | [`spec.bindings`](#specbindings)                           | `[]string` (enum) | no       | none                              | List of Binding IDs to associate with the endpoint                                                                       |
 | [`spec.clientCertificateRefs`](#specclientcertificaterefs) | `[]Object`        | no       | none                              | List of client certificates to present to the upstream when performing a TLS handshake                                   |
+| [`spec.tlsTermination`](#spectlstermination)               | `Object`          | no       | none                              | Terminates TLS in the agent instead of at the ngrok edge                                                                 |
 
 ### `spec.url`
 
@@ -140,6 +154,7 @@ Configures the upstream for the `AgentEndpoint` that should receive traffic sent
 | ------------------------------------------------- | --------------- | -------- | ------- | ------------------------------------------------------------------------ |
 | [`spec.upstream.url`](#specupstreamurl)           | `string`        | yes      | none    | The local or remote address that incoming traffic should be forwarded to |
 | [`spec.upstream.protocol`](#specupstreamprotocol) | `string` (enum) | no       | `http1` | The protocol to use when connecting to the upstream                      |
+| [`spec.upstream.proxyProtocolVersion`](#specupstreamproxyprotocolversion) | `string` (enum) | no | none | The PROXY protocol version to use with the upstream |
 
 ### `spec.upstream.url`
 
@@ -194,10 +209,22 @@ with prior knowledge (defaulting to `http1`).
 
 **Allowed Values:** `http1`,`http2`
 
+### `spec.upstream.proxyProtocolVersion`
+
+Optionally specifies the version of the PROXY protocol to use if the upstream requires it.
+
+**Type:** `string` (enum)
+
+**Required:** no
+
+**Default:** none
+
+**Allowed Values:** `"1"`, `"2"`
+
 ### `spec.trafficPolicy`
 
 `spec.trafficPolicy` allows for an ngrok Traffic Policy to be used for this `AgentEndpoint`. It may be supplied inline or via a reference to
-an `NgrokTrafficPolicy` custom resource in the same namespace as the `AgentEndpoint`.
+a `TrafficPolicy` custom resource in the same namespace as the `AgentEndpoint`.
 
 - If `spec.trafficPolicy` is configured, then one of `spec.trafficPolicy.inline` or `spec.trafficPolicy.targetRef` must be supplied
 - It is invalid to supply both `spec.trafficPolicy.inline` and `spec.trafficPolicy.targetRef`
@@ -215,7 +242,7 @@ For more information about writing ngrok Traffic Policies, refer to the [Traffic
 | Field Name                                                    | Type              | Required | Default | Description                                                                                       |
 | ------------------------------------------------------------- | ----------------- | -------- | ------- | ------------------------------------------------------------------------------------------------- |
 | [`spec.trafficPolicy.inline`](#spectrafficpolicyinline)       | `json.RawMessage` | no       | none    | Inline Traffic Policy configuration for this `AgentEndpoint`                                      |
-| [`spec.trafficPolicy.targetRef`](#spectrafficpolicytargetref) | `Object`          | no       | none    | Reference to an `NgrokTrafficPolicy` custom resource in the same namespace as the `AgentEndpoint` |
+| [`spec.trafficPolicy.targetRef`](#spectrafficpolicytargetref) | `Object`          | no       | none    | Reference to a `TrafficPolicy` custom resource in the same namespace as the `AgentEndpoint`       |
 
 ### `spec.trafficPolicy.inline`
 
@@ -230,7 +257,7 @@ For more information about writing ngrok Traffic Policies, refer to the [Traffic
 
 ### `spec.trafficPolicy.targetRef`
 
-Allows you to supply a Traffic Policy for this `AgentEndpoint` as a reference to an `NgrokTrafficPolicy` custom resource in the same namespace as the `AgentEndpoint`. An example has been included below.
+Allows you to supply a Traffic Policy for this `AgentEndpoint` as a reference to a `TrafficPolicy` custom resource in the same namespace as the `AgentEndpoint`. An example has been included below.
 For more information about writing ngrok Traffic Policies, refer to the [Traffic Policy section](/gateway/traffic-policy/).
 
 **Type:** `Object`
@@ -243,7 +270,7 @@ For more information about writing ngrok Traffic Policies, refer to the [Traffic
 
 | Field Name                          | Type     | Required | Default | Description                                                                                  |
 | ----------------------------------- | -------- | -------- | ------- | -------------------------------------------------------------------------------------------- |
-| `spec.trafficPolicy.targetRef.name` | `string` | yes      | none    | Name of an `NgrokTrafficPolicy` custom resource in the same namespace as the `AgentEndpoint` |
+| `spec.trafficPolicy.targetRef.name` | `string` | yes      | none    | Name of a `TrafficPolicy` custom resource in the same namespace as the `AgentEndpoint`       |
 
 ### `spec.description`
 
@@ -257,19 +284,20 @@ Human-readable description of this Agent Endpoint that can be used to help ident
 
 ### `spec.metadata`
 
-String of arbitrary data associated with the object in the ngrok API/dashboard.
+Arbitrary key/value data associated with the object in the ngrok API/dashboard.
+Values must be strings.
 
-**Type:** `string`
+**Type:** `map[string]string`
 
 **Required:** no
 
-**Default:** `"{"owned-by":"ngrok-operator"}"`
+**Default:** `{"owned-by": "ngrok-operator"}`
 
 ### `spec.bindings`
 
-List of Binding IDs to associate with the endpoint
+List of Binding IDs to associate with the endpoint. The ngrok API currently supports a single binding per endpoint, so the list can hold at most one item.
 
-**Type:** `string` (enum)
+**Type:** `[]string` (enum)
 
 **Required:** no
 
@@ -292,11 +320,7 @@ List of Binding IDs to associate with the endpoint
 List of references to secrets that contain client certificates to present to the upstream when performing a TLS handshake. These will be ignored if the upstream is not using TLS.
 For example, if the `spec.upstream.url` is `http://service.default:80` then the `clientCertificateRefs` will not be used.
 
-The secrets are expected to contain the data in the keys `tls.crt` and `tls.key`.
-
-The `namespace` field is optional, and when not supplied, the namespace of the `AgentEndpoint` will be used.
-
-When the `spec.upstream.url` has an `https://` scheme, the client certificates will have no effect because no TLS is being used when connecting to the upstream.
+The secrets are expected to contain the data in the keys `tls.crt` and `tls.key`, and must be in the same namespace as the `AgentEndpoint`.
 
 **Type:** `[]Object`
 
@@ -306,14 +330,41 @@ When the `spec.upstream.url` has an `https://` scheme, the client certificates w
 
 **Fields:**
 
-| Field Name                             | Type     | Required | Default | Description                                                                                                                                |
-| -------------------------------------- | -------- | -------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| `spec.clientCertificateRefs.name`      | `string` | yes      | none    | Name of a `Secret` resource to pull the client certificate data from                                                                       |
-| `spec.clientCertificateRefs.namespace` | `string` | no       | none    | Namespace of a `Secret` resource to pull the client certificate data from. When not supplied, the namespace of the `AgentEndpoint` is used |
+| Field Name                        | Type     | Required | Default | Description                                                                                         |
+| --------------------------------- | -------- | -------- | ------- | --------------------------------------------------------------------------------------------------- |
+| `spec.clientCertificateRefs.name` | `string` | yes      | none    | Name of a `Secret` in the same namespace as the `AgentEndpoint` to pull the client certificate from |
+
+### `spec.tlsTermination`
+
+Configures the agent to terminate TLS in-cluster for incoming traffic ("zero-knowledge TLS").
+When set, ngrok's edge routes the encrypted stream to the agent based on SNI, and the TLS handshake completes between the client and the agent using the referenced server certificate.
+The agent then forwards plaintext, or re-establishes TLS depending on `spec.upstream.url`, to the upstream.
+
+Requires `spec.url` to be a `tls://` URL. You can't combine it with the `terminate-tls` Traffic Policy action, which terminates TLS at the edge.
+
+**Type:** `Object`
+
+**Required:** no
+
+**Default:** none
+
+**Fields:**
+
+| Field Name                                             | Type            | Required | Default   | Description                                                                                                                        |
+| ------------------------------------------------------ | --------------- | -------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `spec.tlsTermination.serverCertificateRef.name`        | `string`        | yes      | none      | Name of a `kubernetes.io/tls` `Secret` in the same namespace as the `AgentEndpoint` with the server certificate (`tls.crt`) and key (`tls.key`) |
+| `spec.tlsTermination.mutualTLS.clientCAsRef.name`      | `string`        | yes      | none      | Name of a `Secret` in the same namespace as the `AgentEndpoint` whose `ca.crt` key holds the PEM-encoded CAs trusted to sign client certificates. Required when `mutualTLS` is set |
+| `spec.tlsTermination.mutualTLS.mode`                   | `string` (enum) | no       | `require` | `require` rejects the handshake without a valid client certificate; `request` requests one but doesn't require it                  |
 
 ## Status fields
 
 The `AgentEndpoint` resource includes status information that reflects the current state of the Agent Endpoint in the ngrok system.
+
+### `status.observedGeneration`
+
+The most recent `metadata.generation` the Operator observed. When it matches `metadata.generation`, the status reflects the latest spec.
+
+**Type:** `int64`
 
 ### `status.assignedURL`
 
@@ -332,7 +383,7 @@ Indicates which Traffic Policy is attached to the endpoint.
 **Possible Values:**
 - `inline` - Endpoint uses an inline Traffic Policy
 - `none` - No Traffic Policy is attached
-- `<policy-name>` - Name of the referenced NgrokTrafficPolicy resource
+- `<policy-name>` - Name of the referenced `TrafficPolicy` resource
 
 **Example:** `inline`
 
@@ -599,13 +650,13 @@ You can check the status of an Agent Endpoint using kubectl:
 
 ```bash
 # Check if Agent Endpoint is ready
-kubectl get agentendpoint example-agent-endpoint -o jsonpath='{.status.conditions[?(@.type=="Ready")]}'
+kubectl get agentendpoints.ngrok.com example-agent-endpoint -o jsonpath='{.status.conditions[?(@.type=="Ready")]}'
 
 # Watch for Agent Endpoint to become ready
-kubectl wait --for=condition=Ready agentendpoint/example-agent-endpoint --timeout=60s
+kubectl wait --for=condition=Ready agentendpoints.ngrok.com/example-agent-endpoint --timeout=60s
 
 # Get all Agent Endpoints with their ready status
-kubectl get agentendpoints -A -o custom-columns=\
+kubectl get agentendpoints.ngrok.com -A -o custom-columns=\
 NAME:.metadata.name,\
 NAMESPACE:.metadata.namespace,\
 URL:.status.assignedURL,\
@@ -614,10 +665,10 @@ READY:.status.conditions[?(@.type==\'Ready\')].status,\
 REASON:.status.conditions[?(@.type==\'Ready\')].reason
 
 # Check domain readiness for an Agent Endpoint
-kubectl get agentendpoint example-agent-endpoint -o jsonpath='{.status.conditions[?(@.type=="DomainReady")]}'
+kubectl get agentendpoints.ngrok.com example-agent-endpoint -o jsonpath='{.status.conditions[?(@.type=="DomainReady")]}'
 
 # Check Traffic Policy status
-kubectl get agentendpoint example-agent-endpoint -o jsonpath='{.status.conditions[?(@.type=="TrafficPolicyApplied")]}'
+kubectl get agentendpoints.ngrok.com example-agent-endpoint -o jsonpath='{.status.conditions[?(@.type=="TrafficPolicyApplied")]}'
 ```
 
 ## Example AgentEndpoints
@@ -663,7 +714,7 @@ The following `AgentEndpoint`:
 
 - Accepts traffic on the URL `https://example-agent-endpoint.ngrok.app`
 - Sends traffic to `http://my-https-service.my-namespace:8443`
-  - Includes a client certificate from the `Secret` `my-client-cert` in the `default` namespace
+  - Includes a client certificate from the `Secret` `my-client-cert` in the same namespace
   - If a Traffic Policy "terminates" the request, then the traffic will not be sent to the upstream
 - Adds a reference to a Traffic Policy that
   - If the request URL contains `?debug=true` query parameter, then the Traffic Policy will "terminate" the request and
@@ -702,5 +753,4 @@ spec:
       name: example-tp
   clientCertificateRefs:
   - name: my-client-cert
-    namespace: default
 ```
