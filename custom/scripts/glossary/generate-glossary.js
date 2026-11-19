@@ -21,7 +21,6 @@ const terms = eval(termsMatch[1]);
 const frontmatter = `---
 title: Glossary of Terms
 sidebarTitle: Glossary
-description: A glossary of technical terms used in ngrok's documentation.
 ---`;
 
 const comment = `{/* This file is generated in the docs repo. Do not edit it directly. */}`;

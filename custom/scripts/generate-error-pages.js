@@ -109,7 +109,6 @@ function pageHead(err) {
   return `---
 mode: wide
 title: ${goJson(title(err))}
-description: ${goJson(description(err))}
 keywords: [${keywords.join(", ")}]
 ---
 

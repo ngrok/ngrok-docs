@@ -85,13 +85,12 @@ To add `/example/page1.mdx` to the Gateway sidebar:
 
 ## Metadata and frontmatter
 
-When you add a title and description to a page's frontmatter, it's automatically added to the metadata.
+When you add a title to a page's frontmatter, it's automatically added to the metadata. Don't add a `description` field.
 
 ```md
 ---
 title: Example
 sidebarTitle: Example in sidebar
-description: Example description
 ---
 ```
 
