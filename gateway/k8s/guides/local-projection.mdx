@@ -22,7 +22,7 @@ This means:
 
 ## Prerequisites
 
-- An ngrok account with an [API key](https://dashboard.ngrok.com/api-keys) and [authtoken](https://dashboard.ngrok.com/get-started/your-authtoken)
+- An ngrok account with an [access token](https://dashboard.ngrok.com/access-tokens) saved as the `NGROK_ACCESS_TOKEN` environment variable
 - The [ngrok CLI](/gateway/agent/cli/) installed on your local machine
 - A local service running on a port you want to expose
 - Access to a remote Kubernetes cluster
@@ -36,9 +36,8 @@ This means:
     helm install ngrok-operator ngrok/ngrok-operator \
       --namespace ngrok-operator \
       --create-namespace \
-      --set bindings.enabled=true \
-      --set credentials.apiKey=$NGROK_API_KEY \
-      --set credentials.authtoken=$NGROK_AUTHTOKEN
+      --set ngrok.features.bindings.enabled=true \
+      --set ngrok.credentials.accessToken=$NGROK_ACCESS_TOKEN
     ```
 
     Create a namespace for your projected services:
@@ -56,7 +55,7 @@ This means:
     helm upgrade ngrok-operator ngrok/ngrok-operator \
       --namespace ngrok-operator \
       --reuse-values \
-      --set 'bindings.endpointSelectors={endpoint.url.contains(".staging")}'
+      --set 'ngrok.features.bindings.endpointSelectors={endpoint.url.contains(".staging")}'
     ```
 
     See [Restrict Kubernetes bound endpoints](/gateway/k8s/guides/bindings/#restrict-kubernetes-bound-endpoints) for more details.

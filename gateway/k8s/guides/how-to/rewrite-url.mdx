@@ -454,9 +454,29 @@ Check out the [URL rewrite Traffic Policy action](/gateway/traffic-policy/action
 </Steps>
 </Tab>
 <Tab title="Gateway API">
-✅ Gateway API natively supports URL rewriting, and this feature is fully supported by the ngrok Kubernetes Operator.
+💡 Gateway API's URLRewrite filter can't rewrite the port, but you can use a TrafficPolicy.
+Check out the [URL rewrite Traffic Policy action](/gateway/traffic-policy/actions/url-rewrite/) page for more details about how it functions and the parameters it accepts.
 
 <Steps titleSize="h3">
+  <Step title="Create a TrafficPolicy">
+
+    ```yaml
+    apiVersion: ngrok.com/v1
+    kind: TrafficPolicy
+    metadata:
+      name: example-tp
+      namespace: default
+    spec:
+      policy:
+        on_http_request:
+          - actions:
+              - type: url-rewrite
+                config:
+                  from: :8080
+                  to: :9090
+    ```
+  </Step>
+
   <Step title="Create a Gateway">
 
     If you already have a `Gateway` you can use that instead
@@ -477,7 +497,7 @@ Check out the [URL rewrite Traffic Policy action](/gateway/traffic-policy/action
     ```
   </Step>
 
-  <Step title="Create an HTTPRoute with a URLRewrite Filter">
+  <Step title="Use the TrafficPolicy on an HTTPRoute">
 
     ```yaml
     apiVersion: gateway.networking.k8s.io/v1
@@ -499,9 +519,14 @@ Check out the [URL rewrite Traffic Policy action](/gateway/traffic-policy/action
             type: PathPrefix
             value: /example
         filters:
-        - type: URLRewrite
-          urlRewrite:
-            port: 9090
+        - type: ExtensionRef
+          extensionRef:
+            group: ngrok.com
+            kind: TrafficPolicy
+            name: example-tp
+        backendRefs:
+        - name: example-service
+          port: 80
     ```
   </Step>
 </Steps>

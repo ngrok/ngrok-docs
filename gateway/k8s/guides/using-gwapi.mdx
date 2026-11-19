@@ -16,10 +16,13 @@ Request mirror filters are not yet supported with the ngrok Kubernetes Operator.
 
 ## How does the ngrok Operator use Gateway API?
 
-The ngrok Kubernetes Operator consumes Gateway API resources and translates them into the native ngrok `CloudEndpoint` and `AgentEndpoint` custom resources.
-Each hostname from the listeners on the `Gateway` resources you configure will cause the Operator to create a `CloudEndpoint` for the listener's hostname.
-Each unique upstream service you reference using `HTTPRoute` resources will cause the Operator to create an `AgentEndpoint` with an `internal` binding so that it is not accessible directly on the internet.
-The Operator then generates ngrok [Traffic Policy](/gateway/traffic-policy/) configuration on those `CloudEndpoint` to perform all the routing and actions specified in your Gateway API configuration and route to the internal `AgentEndpoint` resources that handle forwarding traffic to your upstream services.
+The ngrok Kubernetes Operator consumes Gateway API resources and translates them into the native ngrok `AgentEndpoint` and `CloudEndpoint` custom resources.
+The [`ngrok.com/mapping-strategy` annotation](/gateway/k8s/guides/annotations) on the `Gateway` controls which ones it creates:
+
+- `endpoints` (default): each hostname is served by a public `AgentEndpoint` for one upstream `Service` that no other hostname uses; other upstreams get internal `AgentEndpoints`. If no upstream is unique to the hostname, it falls back to `endpoints-verbose`.
+- `endpoints-verbose`: each hostname gets a `CloudEndpoint`, and each unique upstream `Service` gets an internal `AgentEndpoint`.
+
+The Operator puts the routing in [Traffic Policy](/gateway/traffic-policy/) on the public endpoint.
 When you create/update/delete Gateway API resources, the Operator will automatically handle creating/updating/deleting the `CloudEndpoint` and `AgentEndpoint` resources as needed.
 
 ## Using `TrafficPolicy` with Gateway API resources
@@ -30,12 +33,12 @@ that are not natively supported by the Gateway API that you would like to use. T
 
 ### Using `TrafficPolicy` on `Gateways`
 
-You can supply an `NgrokTrafficPolicy` custom resource on your `Gateway` resources using an annotation.
+You can supply a `TrafficPolicy` custom resource on your `Gateway` resources using an annotation.
 When configured this way, the rules from your Traffic Policy will run for all requests matching any of the hostnames from the listeners on your `Gateway`.
 The Traffic Policy may "terminate" the request by sending back a response or forwarding the request to another endpoint using the `forward-internal` action, but if this happens then the request will not be processed further and will not be routed using any configuration from any matching `HTTPRoutes`.
 This is most commonly done to enforce policy across an entire `Gateway` such as enforcing authentication or manipulating headers where you do not care which `HTTPRoute` the request matches.
 
-The following example showcases using a `Gateway` with an `NgrokTrafficPolicy` supplied via annotation.
+The following example showcases using a `Gateway` with a `TrafficPolicy` supplied via annotation.
 The `TrafficPolicy` must be in the same namespace as the `Gateway`
 
 ```yaml
@@ -72,11 +75,11 @@ spec:
 
 ### Use `TrafficPolicy` on `HTTPRoutes`
 
-You can also use `NgrokTrafficPolicy` on `HTTPRoute` resources as an external ref filter if you have Traffic Policies that should only be run for certain routes.
+You can also use `TrafficPolicy` on `HTTPRoute` resources as an `ExtensionRef` filter if you have Traffic Policies that should only be run for certain routes.
 
-The following example showcases using an `HTTPRoute` with an `NgrokTrafficPolicy` filter.
+The following example showcases using an `HTTPRoute` with a `TrafficPolicy` filter.
 They can also be used at the backend filter level which is useful if you have more than one upstream service in a group and you would like to run different Traffic Policy configurations depending on which backend was selected.
-The `NgrokTrafficPolicy` must be in the same namespace as the `Gateway`.
+The `TrafficPolicy` must be in the same namespace as the `HTTPRoute`.
 While redundant, this example showcases both methods.
 
 ```yaml

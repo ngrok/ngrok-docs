@@ -1,16 +1,19 @@
 ---
 title: How the ngrok Operator Uses Ingresses
 sidebarTitle: Using Ingresses
-description: Attach an NgrokTrafficPolicy to an Ingress, avoid Ingress conflicts, and see how the Operator turns each Ingress host into a CloudEndpoint.
+description: Attach a TrafficPolicy to an Ingress, avoid Ingress conflicts, and see how the Operator turns each Ingress host into ngrok endpoints.
 ---
 
 ## How the ngrok Operator uses Ingresses
 
-The ngrok Kubernetes Operator consumes `Ingress` resources and translates them into the native ngrok `CloudEndpoint` and `AgentEndpoint` custom resources.
-Each hostname from the `Ingress` resources you configure will cause the Operator to create a `CloudEndpoint` for the hostname.
-Each unique upstream service you reference using `HTTPRoute` resources will cause the Operator to create an `AgentEndpoint` with an `internal` binding so that it is not accessible directly on the internet.
-The Operator then generates ngrok [Traffic Policy](/gateway/traffic-policy/) configuration on those `CloudEndpoint` to perform all the routing and actions specified in your Gateway API configuration and route to the internal `AgentEndpoint` resources that handle forwarding traffic to your upstream services.
-When you create/update/delete Gateway API resources, the Operator will automatically handle creating/updating/deleting the `CloudEndpoint` and `AgentEndpoint` resources as needed.
+The ngrok Kubernetes Operator consumes `Ingress` resources and translates them into the native ngrok `AgentEndpoint` and `CloudEndpoint` custom resources.
+The [`ngrok.com/mapping-strategy` annotation](/gateway/k8s/guides/annotations) controls which ones it creates:
+
+- `endpoints` (default): each hostname is served by a public `AgentEndpoint` for one upstream `Service` that no other hostname uses; other upstreams get internal `AgentEndpoints`. If no upstream is unique to the hostname, it falls back to `endpoints-verbose`.
+- `endpoints-verbose`: each hostname gets a `CloudEndpoint`, and each unique upstream `Service` gets an internal `AgentEndpoint`.
+
+The Operator puts the routing in [Traffic Policy](/gateway/traffic-policy/) on the public endpoint.
+When you create/update/delete `Ingress` resources, the Operator will automatically handle creating/updating/deleting the `AgentEndpoint` and `CloudEndpoint` resources as needed.
 
 ## Fan-out versus multiple
 
@@ -102,12 +105,12 @@ To extend the functionality of `Ingress` resources, you have the option of combi
   - When used this way, the rules from these Traffic Policies are executed after any Traffic Policy rules from an annotation `TrafficPolicy` (if supplied) and only if the request matches the `Ingress` rule.
     Since the `TrafficPolicy` is used in-place of a `Service` it is expected that the `TrafficPolicy` will "terminate" the request either by sending back the response on its own, or forwarding to another endpoint using the `forward-internal` action.
 - As the default backend
-  - You may use an `NgrokTrafficPolicy` as the default backend of your `Ingress`. The rules from the Traffic Policy will only be executed if the request does not match any of your other `Ingress` rules.
+  - You may use a `TrafficPolicy` as the default backend of your `Ingress`. The rules from the Traffic Policy will only be executed if the request does not match any of your other `Ingress` rules.
   - Since the `TrafficPolicy` is used in-place of a `Service` it is expected that the `TrafficPolicy` will "terminate" the request either by sending back the response on its own, or forwarding to another endpoint using the `forward-internal` action.
 
 You can use one or multiple of the above options depending on your use-case and preferences.
 
-The following example shows how you can supply an `NgrokTrafficPolicy` to an `Ingress` using an annotation.
+The following example shows how you can supply a `TrafficPolicy` to an `Ingress` using an annotation.
 It must be in the same namespace as the `Ingress`.
 
 ```yaml
@@ -115,7 +118,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   annotations:
-    k8s.ngrok.com/traffic-policy: my-ngroktrafficpolicy
+    ngrok.com/traffic-policy: my-trafficpolicy
   name: example-ingress
   namespace: default
 spec:
@@ -133,7 +136,7 @@ spec:
                   number: 80
 ```
 
-The following example shows how you can supply an `NgrokTrafficPolicy` to an `Ingress` as the backend for a specific rule.
+The following example shows how you can supply a `TrafficPolicy` to an `Ingress` as the backend for a specific rule.
 It must be in the same namespace as the `Ingress`.
 
 ```yaml
@@ -154,10 +157,10 @@ spec:
               resource:
                 apiGroup: ngrok.com
                 kind: TrafficPolicy
-                name: my-ngroktrafficpolicy
+                name: my-trafficpolicy
 ```
 
-The following example shows how you can supply an `NgrokTrafficPolicy` to an `Ingress` as the default backend.
+The following example shows how you can supply a `TrafficPolicy` to an `Ingress` as the default backend.
 It must be in the same namespace as the `Ingress`.
 
 ```yaml
@@ -172,7 +175,7 @@ spec:
     resource:
       apiGroup: ngrok.com
       kind: TrafficPolicy
-      name: my-ngroktrafficpolicy
+      name: my-trafficpolicy
   rules:
     - host: example-ingress.ngrok.app
       http:
@@ -224,7 +227,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   annotations:
-    k8s.ngrok.com/traffic-policy: my-ngroktrafficpolicy
+    ngrok.com/traffic-policy: my-trafficpolicy
     ngrok.com/pooling-enabled: "true"
   name: example-ingress
   namespace: default

@@ -20,7 +20,7 @@ Similarly, any endpoint attempting to create an endpoint that does not enable po
 
 Within the Kubernetes Operator, `AgentEndpoint` resources are currently **Always Pooled**.
 This means that if you create the same `AgentEndpoint` in two different Kubernetes clusters, or with a URL shared by any other type of endpoint that has pooling enabled, then they will all be part of the same pool.
-When the Kubernetes Operator creates `AgentEndpoint` resources for you by translating `Ingress` and Gateway API resources, it will prefix the generated `AgentEndpoint` URL with a special hash to avoid unintended pooling.
+When the Kubernetes Operator creates `AgentEndpoint` resources for you by translating `Ingress` and Gateway API resources, it will prefix the generated internal `AgentEndpoint` URL with a special hash to avoid unintended pooling.
 
 ## Endpoint Pooling with `CloudEndpoints`
 
@@ -51,13 +51,15 @@ metadata:
 spec:
   poolingEnabled: true
   url: https://example-cloud-endpoint.ngrok.app
-  trafficPolicyName: static-response
+  trafficPolicy:
+    targetRef:
+      name: static-response
 ```
 
 ## Endpoint Pooling with `Ingresses`
 
 If you are using `Ingress` resources with the Operator, you can enable endpoint pooling for an `Ingress` using the `ngrok.com/pooling-enabled: "true"` annotation.
-The following will create an `Ingress` that creates a `CloudEndpoint` with pooling enabled. Any other endpoint created with the same URL and pooling enabled will be pooled with the `CloudEndpoint` that this `Ingress` creates.
+The endpoint this creates for the hostname is pooled: a `CloudEndpoint` with pooling enabled or, with the default `endpoints` mapping strategy, usually a public `AgentEndpoint`, which is always pooled. Other endpoints with the same URL and pooling enabled join the pool.
 
 ```yaml
 apiVersion: networking.k8s.io/v1
@@ -87,8 +89,8 @@ See the [using Ingresses guide](/gateway/k8s/guides/using-ingresses) for more in
 
 ## Endpoint Pooling with Gateway API
 
-If you are using Gateway API for configuration, you can enable pooling using the using the `k8s.ngrok.com/pooling-enabled: "true"` annotation on `Gateway` resources.
-The following will create a `CloudEndpoint` with pooling enabled. Any other endpoint created with the same URL and pooling enabled will be pooled with the `CloudEndpoint`.
+If you are using Gateway API for configuration, you can enable pooling using the `ngrok.com/pooling-enabled: "true"` annotation on `Gateway` resources.
+The endpoint the following `Gateway` creates for each hostname is pooled: a `CloudEndpoint` with pooling enabled or, with the default `endpoints` mapping strategy, usually a public `AgentEndpoint`, which is always pooled. Other endpoints with the same URL and pooling enabled join the pool.
 
 ```yaml
 apiVersion: gateway.networking.k8s.io/v1

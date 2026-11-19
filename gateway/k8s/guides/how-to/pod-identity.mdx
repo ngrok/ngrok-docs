@@ -16,7 +16,7 @@ Use cases include:
 
 ## Requirements
 
-- ngrok Kubernetes Operator version **0.22.1 or later**. See [Updates & Upgrades](/gateway/k8s/installation/update) for instructions on upgrading.
+- ngrok Kubernetes Operator Helm chart **0.22.1 or later** (0.24 or later for the `ngrok.com/` annotation prefix). See [Updates & Upgrades](/gateway/k8s/installation/update) for instructions on upgrading.
 
 ## Available pod identity variables
 
@@ -27,7 +27,7 @@ The following variables are available in Traffic Policy expressions on connectio
 | `conn.k8s.pod.id` | The unique identifier (UID) of the originating pod. | 36 bytes |
 | `conn.k8s.pod.metadata.name` | The name of the originating pod. | 255 bytes |
 | `conn.k8s.pod.metadata.namespace` | The namespace the originating pod belongs to. | 63 bytes |
-| `conn.k8s.pod.metadata.annotations` | A map of pod annotations prefixed with `k8s.ngrok.com/`. See [Annotations](#annotations) below. | 1024 bytes |
+| `conn.k8s.pod.metadata.annotations` | A map of pod annotations prefixed with `ngrok.com/` (or the legacy `k8s.ngrok.com/`). See [Annotations](#annotations) below. | 1024 bytes |
 | `conn.k8s.pod.metadata.error_code` | An error code set when pod identity could not be resolved. See [Handling errors](#handling-errors) below. | N/A |
 | `conn.k8s.pod.metadata.error_message` | A human-readable error message providing additional detail when `conn.k8s.pod.metadata.error_code` is set. | N/A |
 
@@ -35,7 +35,7 @@ These variables are only populated for connections to endpoints with a `kubernet
 
 ### Annotations
 
-Only annotations prefixed with `k8s.ngrok.com/` are included in `conn.k8s.pod.metadata.annotations`. Annotations without this prefix are not surfaced. The combined size of all included annotations is subject to a 1024-byte cumulative limit. If this limit is exceeded, `conn.k8s.pod.metadata.error_code` will be set to `ERR_NGROK_28000` and a truncated annotation map being returned.
+Only annotations prefixed with `ngrok.com/` (or the legacy `k8s.ngrok.com/`, until 1.0) are included. The combined size of all included annotations is subject to a 1024-byte cumulative limit. If this limit is exceeded, `conn.k8s.pod.metadata.error_code` will be set to `ERR_NGROK_28000` and a truncated annotation map being returned.
 
 To use an annotation in a Traffic Policy expression, add the `ngrok.com/` prefix to it in your pod spec:
 
