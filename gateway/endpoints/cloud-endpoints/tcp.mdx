@@ -5,13 +5,15 @@ description: Create Cloud Endpoints for raw TCP traffic using a TCP Address and 
 noindex: true
 ---
 
-This page covers what is specific to TCP Cloud Endpoints.
-For TCP URL formats, authentication, observability, limits, and errors shared with Agent Endpoints, see the [TCP Agent Endpoint reference](/gateway/endpoints/tcp).
+A TCP Cloud Endpoint accepts raw TCP traffic at a fixed address and stays online until you delete it.
+It behaves like a [TCP Agent Endpoint](/gateway/endpoints/tcp), except that its Traffic Policy decides where traffic goes instead of an agent.
 
 ## Create a TCP Cloud Endpoint
 
-Follow the [Cloud Endpoints Quickstart](/getting-started/cloud-endpoints-quickstart) for the dashboard and API workflow.
-For a public TCP endpoint, first reserve a [TCP Address](/gateway/domains/tcp-addresses/), then create the Cloud Endpoint with that address and a Traffic Policy:
+A public TCP Cloud Endpoint needs a reserved [TCP Address](/gateway/domains/tcp-addresses/), which gives it a fixed hostname and port such as `1.tcp.ngrok.io:12345`.
+Endpoints on the `internal` or `kubernetes` binding don't need one.
+
+After you reserve an address, create the endpoint with that address and a Traffic Policy:
 
 ```bash title="Command line"
 ngrok api endpoints create \
@@ -19,40 +21,21 @@ ngrok api endpoints create \
   --traffic-policy "$(<traffic-policy.yml)"
 ```
 
+The [Cloud Endpoints Quickstart](/getting-started/cloud-endpoints-quickstart) walks through the same steps in the dashboard.
+
 ## Traffic Policy
 
 Every Cloud Endpoint requires a [Traffic Policy](/gateway/traffic-policy/) to handle incoming traffic.
-For TCP endpoints, available authentication actions include [IP Restriction](/gateway/traffic-policy/actions/restrict-ips/) and [Mutual TLS](/gateway/traffic-policy/actions/terminate-tls/).
+For TCP endpoints, you can restrict access with [IP Restriction](/gateway/traffic-policy/actions/restrict-ips/) or [Mutual TLS](/gateway/traffic-policy/actions/terminate-tls/).
 
-## URLs
+## Pricing
 
-See the [TCP Agent Endpoint reference](/gateway/endpoints/tcp#urls) for TCP URL formats.
-Public TCP Cloud Endpoints require a reserved [TCP Address](/gateway/domains/tcp-addresses/).
+TCP Cloud Endpoints are billed as [endpoint usage](/pricing-limits/#endpoint-limits), and each reserved address is billed as a [TCP Address](/gateway/domains/tcp-addresses/#pricing).
 
-### Static URLs
+## Learn more
 
-See [TCP Address reservations](/gateway/domains/tcp-addresses/) for fixed public addresses.
+TCP Cloud Endpoints share the rest of their behavior with TCP Agent Endpoints:
 
-### Custom domains
-
-See [custom domains for TCP endpoints](/gateway/endpoints/tcp#custom-domains).
-
-## Observability
-
-See [TCP endpoint observability](/gateway/endpoints/tcp#observability).
-
-## Limits and timeouts
-
-See [TCP endpoint limits and timeouts](/gateway/endpoints/tcp#limits-and-timeouts).
-
-## Errors
-
-See [TCP endpoint error handling](/gateway/endpoints/tcp#errors).
-
-## API
-
-See the [Endpoints API reference](/api-reference/endpoints/list).
-
-## TCP Cloud Endpoint pricing
-
-See [TCP Addresses pricing](/gateway/domains/tcp-addresses/#pricing) for fixed address pricing and [Endpoint pricing](/pricing-limits/#endpoint-limits) for usage charges.
+- [URL formats](/gateway/endpoints/tcp#urls) and [custom domains](/gateway/endpoints/tcp#custom-domains)
+- [Observability](/gateway/endpoints/tcp#observability), [limits and timeouts](/gateway/endpoints/tcp#limits-and-timeouts), and [errors](/gateway/endpoints/tcp#errors)
+- The [Endpoints API reference](/api-reference/endpoints/list)

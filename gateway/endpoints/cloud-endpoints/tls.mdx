@@ -5,29 +5,22 @@ description: Learn the URL, Traffic Policy, and TLS termination requirements for
 noindex: true
 ---
 
-This page covers what is specific to TLS Cloud Endpoints.
-For TLS behavior, client compatibility, limits, observability, and examples shared with Agent Endpoints, see the [TLS Agent Endpoint reference](/gateway/endpoints/tls).
+A TLS Cloud Endpoint accepts encrypted TLS traffic and stays online until you delete it.
+It behaves like a [TLS Agent Endpoint](/gateway/endpoints/tls), except that its Traffic Policy decides where traffic goes instead of an agent.
 
 ## Create a TLS Cloud Endpoint
 
-Follow the [Cloud Endpoints Quickstart](/getting-started/cloud-endpoints-quickstart) to create an endpoint in the dashboard or API.
-Use a `tls://` URL and attach a Traffic Policy.
+Follow the [Cloud Endpoints Quickstart](/getting-started/cloud-endpoints-quickstart) to create an endpoint in the dashboard or with the API.
+Use a `tls://` URL and attach a Traffic Policy:
 
-For example, create one with the API and a reserved domain:
-
-```bash
+```bash title="Command line"
 ngrok api endpoints create \
   --url tls://{your-domain-here}.ngrok.app \
   --traffic-policy "$(<traffic-policy.yml)"
 ```
 
-## URLs
-
 See [TLS Agent Endpoint URLs](/gateway/endpoints/tls#urls) for the URL format and [Public Endpoint URLs](/gateway/endpoints/public-endpoints/#https-tls) for domain requirements.
-
-## Bindings
-
-TLS Cloud Endpoints support `public` and `internal` bindings, but not the `kubernetes` binding.
+TLS Cloud Endpoints support the `public` and `internal` bindings, but not the `kubernetes` binding.
 
 ## Traffic Policy
 
@@ -38,37 +31,21 @@ For public TLS endpoints, the available authentication actions are [IP Restricti
 
 The ngrok cloud service can terminate TLS before applying the Cloud Endpoint's Traffic Policy.
 To keep traffic encrypted from the ngrok network to your service, forward it to an internal Agent Endpoint that terminates TLS at the agent or upstream.
+Zero-knowledge TLS is available on the Pay-as-you-go plan.
 
 See [TLS termination locations](/gateway/domains/tls-termination/#termination-location) for the available termination points and [end-to-end encryption](/gateway/domains/tls-termination/#end-to-end-encryption) for the setup requirements.
 
-Zero-knowledge TLS is available on the Pay-as-you-go plan.
-
-## Certificates
-
 When ngrok terminates TLS, it selects and manages the certificate for the endpoint's domain.
-For certificate selection and management, see [TLS certificates](/gateway/domains/tls-certificates/).
-For custom and wildcard domain pricing, see [Domains pricing](/gateway/domains/#pricing).
+See [TLS certificates](/gateway/domains/tls-certificates/) for how ngrok selects certificates and how to bring your own.
 
-## Compatible clients
+## Pricing
 
-See [SNI and STARTTLS compatibility](/gateway/endpoints/tls#compatible-clients).
+TLS Cloud Endpoints are billed as [endpoint usage](/pricing-limits/#endpoint-limits), and custom and wildcard domains are billed as [domains](/gateway/domains/#pricing).
 
-## Observability
+## Learn more
 
-See [TLS endpoint observability](/gateway/endpoints/tls#observability).
+TLS Cloud Endpoints share the rest of their behavior with TLS Agent Endpoints:
 
-## Limits and timeouts
-
-See [TLS endpoint limits and timeouts](/gateway/endpoints/tls#limits-and-timeouts).
-
-## Errors
-
-See [TLS endpoint error handling](/gateway/endpoints/tls#errors).
-
-## API
-
-See the [Endpoints API reference](/api-reference/endpoints/list).
-
-## TLS Cloud Endpoint pricing
-
-See [Endpoint pricing](/pricing-limits/#endpoint-limits) and [Domains pricing](/gateway/domains/#pricing).
+- [SNI and STARTTLS client compatibility](/gateway/endpoints/tls#compatible-clients)
+- [Observability](/gateway/endpoints/tls#observability), [limits and timeouts](/gateway/endpoints/tls#limits-and-timeouts), and [errors](/gateway/endpoints/tls#errors)
+- The [Endpoints API reference](/api-reference/endpoints/list)
