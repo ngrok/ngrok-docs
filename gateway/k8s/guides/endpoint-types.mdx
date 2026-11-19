@@ -135,17 +135,15 @@ See [the bindings page](/gateway/k8s/guides/bindings) for more information about
     name: tcp-cloud-endpoint
   spec:
     url: tcp://example-tcp-domain.ngrok.app
-    bindings: 
+    bindings:
     - public
-  trafficPolicy:
-    policy:
-      on_http_request: 
-      - actions: 
-        - type: forward-internal
-          config:
-            url: tcp://example-service.internal:8000
-    bindings: 
-    - public
+    trafficPolicy:
+      policy:
+        on_tcp_connect:
+        - actions:
+          - type: forward-internal
+            config:
+              url: tcp://example-service.internal:8000
 	```
 	</Tab>
 </Tabs>
@@ -161,7 +159,7 @@ For TLS endpoints, ngrok doesn't terminate the TLS connection by default, and it
 <Tabs>
 	<Tab title="AgentEndpoint">
 	```yaml
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
   kind: AgentEndpoint
   metadata:
     name: tls-agent-endpoint
@@ -186,13 +184,11 @@ apiVersion: ngrok.k8s.ngrok.com/v1alpha1
     - public
     trafficPolicy:
       policy:
-        on_http_request:
+        on_tcp_connect:
         - actions:
           - type: forward-internal
             config:
               url: tls://example-service.internal:9000
-    bindings:
-    - public
 	```
 	</Tab>
 </Tabs>

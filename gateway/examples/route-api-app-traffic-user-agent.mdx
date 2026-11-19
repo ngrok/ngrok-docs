@@ -104,20 +104,22 @@ This way, your users can hit the same hostname, authenticate themselves, and get
             config:
               url: https://web-service.internal
 
-      - expressions:
-          # In all other situations, use `custom-response` to respond with a generaic unauthorized error
+      # In all other situations, use `custom-response` to respond with a generic unauthorized error
+      - actions:
           - type: "custom-response"
             config:
               status_code: 403
     ```
 
-    **What's happening here?** In the first section, this policy checks whether the request's user agent comes from an API user, then applies the `jwt-validation` action.
+    <Info title="What's happening here?">
+    In the first section, this policy checks whether the request's user agent comes from an API user, then applies the `jwt-validation` action.
     If the request has the appropriate `Authorization: Bearer …` header, then ngrok forwards it to your API service.
 
     In the second section, it then checks whether the user agent is from a human/browser, then asks them to authenticate with Google's OAuth.
     If the account they sign in to matches `$YOUR_EMAIL_DOMAIN`, then ngrok forwards it to your web app service.
 
     In all other cases, the policy returns a `403 Forbidden` response because the request was not properly authenticated.
+    </Info>
   </Step>
 
   <Step title="Try out your endpoint">
