@@ -4,17 +4,17 @@ description: Call any supported model from the OpenAI, Anthropic, Google Gen AI,
 ---
 
 Each SDK speaks one API format, and each model serves only some formats.
-When the model you pick doesn't serve your SDK's format, the AI Gateway translates the request, calls the model in a format it serves, and translates the response back.
+When the model you pick doesn't serve your SDK's format, the AI Gateway translates the request if it can, calls the model in a format it serves, and translates the response back.
 Your code, your stream reader, and your tool loop stay the same, and you change only the model.
 
 Translation works with every access key and needs no setup.
 You pay the rates of the model that served the request, and translation adds no fee.
 
 <Info>
-Translation is a quick way to reach many models from one SDK, but API formats don't match feature for feature.
+Translation is a quick way to reach many models from one SDK, but API formats don't always match feature for feature.
 When the target format has no place for a field or a tool, the gateway removes it or skips the model, as the rest of this page describes.
 For the best compatibility with a model's features, call it from the SDK for the model's own API format.
-The gateway sends that request to the provider as it is, with no translation.
+The gateway translates only when it has to, and sends a request to the provider as it is whenever the model serves your SDK's format.
 </Info>
 
 ## What you'll need
@@ -215,7 +215,7 @@ Other hosted tools, such as file search, image generation, URL context, Bash, th
 ## Removed and changed parameters
 
 The gateway removes or changes a parameter when the target format or model can't take it as you sent it.
-It lists each parameter it removed or changed in the `Ngrok-AIG-Removed-Params` [response header](/ai-gateway/how-it-works#response-headers).
+It lists each parameter it removed or changed in the `Ngrok-AIG-Removed-Params` [response header](/ai-gateway/how-it-works#response-headers), and in the **Attempts** tab of [Request details](/ai-gateway/observability/index#inspect-a-request-in-app-ngrok-ai).
 The header doesn't list a value the gateway adds, such as `max_tokens` for a Messages model.
 
 Fields that only one format defines don't translate.
