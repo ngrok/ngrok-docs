@@ -84,7 +84,7 @@ In this guide, walk through setting up remote access to the systems in a single 
 
     Enable applications in your cluster to connect to the remote services. To do this, install the ngrok Kubernetes Operator into your cluster. The Operator will create v1.Service objects that your apps can connect to for access to the remote services in your customer's network.
 
-    First, create a separate Service User with an associated authtoken **and** API key specifically for the Operator.
+    First, create a separate Service User with an associated [access token](https://dashboard.ngrok.com/access-tokens) specifically for the Operator, and save it as the `NGROK_ACCESS_TOKEN` environment variable.
 
     Then install the Operator:
 
@@ -92,10 +92,9 @@ In this guide, walk through setting up remote access to the systems in a single 
     helm install ngrok-operator ngrok/ngrok-operator \
     --namespace ngrok-operator \
     --create-namespace \
-    --set description="acme ngrok Operator" \
-    --set bindings.enabled=true \
-    --set credentials.apiKey=$NGROK_API_KEY \ # api key created for the Operator
-    --set credentials.authtoken=$NGROK_AUTHTOKEN # authtoken created for the Operator
+    --set ngrok.description="acme ngrok Operator" \
+    --set ngrok.features.bindings.enabled=true \
+    --set ngrok.credentials.accessToken=$NGROK_ACCESS_TOKEN
     ```
 
     Lastly, create a namespace for your customer fleet where the Service objects in the next step will be created.
