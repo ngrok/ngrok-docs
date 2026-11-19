@@ -140,7 +140,7 @@ The gateway translates these parts of a request:
 - System prompts and instructions.
 - Text messages and multi-turn conversations.
 - Images.
-  Gemini and Converse models take only base64 image data, not an image URL.
+  Converse models take only base64 image data, not an image URL.
 - Function tools, tool calls, and tool results.
 - Web search, code execution, and remote MCP servers, as [hosted tools](#hosted-tools) describes.
 - The settings in the table that follows.
@@ -228,9 +228,10 @@ These rules add or change a value:
   If your request doesn't set a limit, the gateway sends the model's maximum output tokens.
   Your account's [max output tokens](/ai-gateway/guides/account-settings) setting still applies.
   Set your own limit if you need responses to stop at the same length on every model.
-- **Temperature on Messages models**: The gateway lowers a temperature above 1 to 1.
+- **Sampling settings on Messages models**: The gateway lowers a temperature above 1 to 1.
   If you send both `temperature` and `top_p`, the gateway removes `top_p`.
-  Claude models refuse `temperature` while thinking is on, so the gateway removes it when your request sets a thinking budget.
+  Claude models refuse `temperature` and `top_k` while thinking is on, and need a `top_p` of 0.95 or more.
+  So when a thinking budget or a reasoning effort turns on thinking, the gateway removes `temperature` and `top_k`, and raises a `top_p` below 0.95 to 0.95.
 - **Thinking budget on Messages models**: Messages counts thinking inside `max_tokens`.
   When your budget is larger than the output limit, the gateway lowers the budget so the model still has room to answer.
 - **Reasoning effort**: The gateway lowers an effort level the target doesn't have, such as `max`, to `high`.
@@ -264,12 +265,15 @@ The gateway skips a model, without calling it, when it can't translate the reque
 
 - The request has file, document, audio, or video input.
   Only text and images translate.
-- The request has an image URL, and the target is a Gemini or Converse model.
+- The request has an image URL, and the target is a Converse model.
   Send the image as base64 data instead.
 - The request has a hosted tool that the target format doesn't have, or that doesn't translate.
   See [hosted tools](#hosted-tools).
+- The request sets `max_uses` for web search, and the target is a Gemini, Groq, or Z.ai model.
+- The request has web search with JSON output, and the target is a Claude model.
 - The request has web search with function tools or JSON output, and the target is a Gemini 2.x or earlier model.
-- The request has code execution with function tools, JSON output, or `tool_choice`, and the target is a Gemini model.
+- The request has code execution with function tools or `tool_choice`, and the target is a Gemini model.
+- The request has code execution with JSON output, and the target is a Gemini 2.x or earlier model.
 - The request points to state the provider stores, such as `previous_response_id`, `conversation`, `prompt`, or `background: true` in the Responses API.
   Send the full conversation instead.
 - The request asks for more than one answer, such as `n` or `candidateCount` greater than 1.
