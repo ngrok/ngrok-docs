@@ -38,12 +38,12 @@ Find more details on the [pricing page](https://ngrok.com/pricing), or, if you'r
     ### Install the Operator
 
     Install the Operator into the default `ngrok-operator` namespace.
-    You can change this depending in the commands blow based on your cluster configuration, but by default, the Operator works with `Gateway` and routing resources in all namespaces.
+    You can change this in the commands below based on your cluster configuration, but by default, the Operator works with `Gateway` and routing resources in all namespaces.
 
     You can choose between passing your credentials directly with Helm or creating a Kubernetes `Secret` resource that you pass to the Helm chart.
     The simple method only takes one command, but with the secure method, you:
 
-    - Prevent anyone with `kubectl` access to the cluster from viewing your API key and authtoken with `helm get values`.
+    - Prevent anyone with `kubectl` access to the cluster from viewing your access token with `helm get values`.
     - Integrate more cleanly with infrastructure as code (IaC) tools and processes.
 
     <Tabs>
@@ -53,34 +53,22 @@ Find more details on the [pricing page](https://ngrok.com/pricing), or, if you'r
     helm install ngrok-operator ngrok/ngrok-operator \
     --namespace ngrok-operator \
     --create-namespace \
-    --set credentials.apiKey=$NGROK_API_KEY \
-    --set credentials.authtoken=$NGROK_AUTHTOKEN \
-    --set bindings.enabled=true
+    --set ngrok.credentials.accessToken=$NGROK_ACCESS_TOKEN \
+    --set ngrok.features.bindings.enabled=true
     ```
 
         </Tab>
         <Tab title="More secure">
 
-    First, prepare new environment variables.
+    Create the namespace and a `Secret` resource with your access token.
+    The Operator reads one key per component, and both keys can hold the same token.
 
     ```bash
-    export ENCODED_NGROK_AUTHTOKEN=$(echo -n "$NGROK_AUTHTOKEN" | base64)
-    export ENCODED_NGROK_API_KEY=$(echo -n "$NGROK_API_KEY" | base64)
-    ```
-
-    Apply a `Secret` resource with your encoded credentials.
-
-    ```bash
-    kubectl apply -f -<<EOF
-    apiVersion: v1
-    kind: Secret
-    metadata:
-      name: ngrok-operator-credentials
-      namespace: ngrok-operator
-    data:
-      API_KEY: "$ENCODED_NGROK_API_KEY"
-      AUTHTOKEN: "$ENCODED_NGROK_AUTHTOKEN"
-    EOF
+    kubectl create namespace ngrok-operator
+    kubectl create secret generic ngrok-operator-credentials \
+    --namespace ngrok-operator \
+    --from-literal=API_MANAGER_ACCESS_TOKEN=$NGROK_ACCESS_TOKEN \
+    --from-literal=AGENT_ACCESS_TOKEN=$NGROK_ACCESS_TOKEN
     ```
 
     Next, install the Operator and reference the `Secret` resource.
@@ -89,8 +77,8 @@ Find more details on the [pricing page](https://ngrok.com/pricing), or, if you'r
     helm install ngrok-operator ngrok/ngrok-operator \
     --namespace ngrok-operator \
     --create-namespace \
-    --set credentials.secret.name=ngrok-operator-credentials \
-    --set bindings.enabled=true
+    --set ngrok.credentials.secret.name=ngrok-operator-credentials \
+    --set ngrok.features.bindings.enabled=true
     ```
 
         	</Tab>
