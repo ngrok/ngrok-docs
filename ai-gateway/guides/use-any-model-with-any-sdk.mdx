@@ -1,6 +1,6 @@
 ---
 title: Use Any Model with Any SDK
-description: Call any supported model from the OpenAI, Anthropic, or Google Gen AI SDK, and learn what the AI Gateway translates between API formats.
+description: Call any supported model from the OpenAI, Anthropic, Google Gen AI, or AWS SDK, and learn what the AI Gateway translates between API formats.
 ---
 
 Each SDK speaks one API format, and each model serves only some formats.
@@ -8,7 +8,14 @@ When the model you pick doesn't serve your SDK's format, the AI Gateway translat
 Your code, your stream reader, and your tool loop stay the same, and you change only the model.
 
 Translation works with every access key and needs no setup.
-You pay the rates of the model that served the request.
+You pay the rates of the model that served the request, and translation adds no fee.
+
+<Info>
+Translation is a quick way to reach many models from one SDK, but API formats don't match feature for feature.
+When the target format has no place for a field or a tool, the gateway removes it or skips the model, as the rest of this page describes.
+For the best compatibility with a model's features, call it from the SDK for the model's own API format.
+The gateway sends that request to the provider as it is, with no translation.
+</Info>
 
 ## What you'll need
 
@@ -71,7 +78,7 @@ OpenAI models don't serve the Anthropic Messages API, so this request goes throu
     The body is a Messages response, so `message.content` holds a `text` block as it does for a Claude model.
 
     In [app.ngrok.ai](https://app.ngrok.ai), open the request in [Request details](/ai-gateway/observability/index#inspect-a-request-in-app-ngrok-ai).
-    The **Attempts** tab shows that the gateway translated the attempt from Anthropic Messages to the format the OpenAI model serves, and lists the parameters it removed.
+    The **Attempts** tab marks the attempt as translated, shows the API format the gateway translated it to, and lists the parameters the gateway changed.
   </Step>
 </Steps>
 
@@ -80,7 +87,7 @@ Call `client.messages.stream(...)` with the OpenAI model, and you get Messages s
 
 ## Supported API formats
 
-The gateway translates between these formats in both directions:
+The gateway translates between these formats in both directions, for buffered and streamed requests:
 
 | Format | Endpoint | SDKs |
 |--------|----------|------|
@@ -88,19 +95,21 @@ The gateway translates between these formats in both directions:
 | OpenAI Responses | `/v1/responses` | [OpenAI SDK](/ai-gateway/sdks/openai#supported-endpoints) |
 | Anthropic Messages | `/v1/messages` | [Anthropic SDK](/ai-gateway/sdks/anthropic) |
 | Gemini generateContent | `/v1beta/models/{model}:generateContent` | [Google Gen AI SDK](/ai-gateway/sdks/google) |
+| Bedrock Converse | `/model/{model}/converse` and `/model/{model}/converse-stream` | [AWS SDK](/ai-gateway/providers/bedrock) |
 
 Translation reaches every model in the [model catalog](/ai-gateway/reference/model-catalog) that serves one of these formats.
 It also reaches [models you run yourself](/ai-gateway/guides/use-a-model-you-run-yourself), through the API format you set on the custom provider.
 
 In the [List Models API](/ai-gateway/api-reference/models/list), `supported_api_formats` lists the formats a provider serves for a model directly.
-The response also shows which other formats reach the model through translation.
+`translated_api_formats` lists the other formats that reach the model through translation.
 
 ## How the gateway picks a format
 
 The gateway decides for each model when it tries that model:
 
 1. If a provider of the model serves your SDK's format, the gateway sends the request as it is, with no translation.
-2. If no provider does, the gateway uses the first format the model serves, in this order: Anthropic Messages, Gemini generateContent, OpenAI Chat Completions, then OpenAI Responses.
+2. If no provider does, the gateway tries the formats the model serves in this order: Anthropic Messages, Gemini generateContent, OpenAI Chat Completions, OpenAI Responses, then Bedrock Converse.
+   It moves to the next format only when it can't translate the request into the one before.
 
 A provider's own format comes first because a compatibility endpoint can drop features such as reasoning signatures and cache hints.
 You can't choose the format yourself.
@@ -130,7 +139,8 @@ The gateway translates these parts of a request:
 
 - System prompts and instructions.
 - Text messages and multi-turn conversations.
-- Images, as a URL or as base64 data.
+- Images.
+  Gemini and Converse models take only base64 image data, not an image URL.
 - Function tools, tool calls, and tool results.
 - Web search, code execution, and remote MCP servers, as [hosted tools](#hosted-tools) describes.
 - The settings in the table that follows.
@@ -138,67 +148,81 @@ The gateway translates these parts of a request:
 It translates these parts of a response:
 
 - Text, tool calls, and reasoning.
-- Web search citations, and the code and results of code execution.
+- Web search sources, and the code and results of code execution.
 - Streaming events.
 - Token usage.
 - Stop reasons, such as end of turn, max tokens, and tool use.
 - Provider errors.
-  The status code, error type, and retry fields stay the same, so your SDK retries as it does for a native request.
+  The gateway returns the status code and error type your SDK expects for that failure, and keeps the retry hints, so your SDK retries as it does for a native request.
 
 This table shows the name of each translated setting in each format.
 A dash means the format has no such setting, so the gateway removes it.
 
-| Setting | Chat Completions | Responses | Messages | generateContent |
-|---------|------------------|-----------|----------|-----------------|
-| Max output tokens | `max_completion_tokens` or `max_tokens` | `max_output_tokens` | `max_tokens` | `generationConfig.maxOutputTokens` |
-| Temperature | `temperature` | `temperature` | `temperature` | `generationConfig.temperature` |
-| Top P | `top_p` | `top_p` | `top_p` | `generationConfig.topP` |
-| Top K | — | — | `top_k` | `generationConfig.topK` |
-| Stop sequences | `stop` | — | `stop_sequences` | `generationConfig.stopSequences` |
-| Seed | `seed` | — | — | `generationConfig.seed` |
-| JSON output | `response_format` | `text.format` | `output_config.format` | `generationConfig.responseMimeType` and `responseJsonSchema` |
-| Tools | `tools` | `tools` | `tools` | `tools[].functionDeclarations` |
-| Tool choice | `tool_choice` | `tool_choice` | `tool_choice` | `toolConfig.functionCallingConfig` |
-| Parallel tool calls | `parallel_tool_calls` | `parallel_tool_calls` | `tool_choice.disable_parallel_tool_use` | — |
-| Reasoning effort | `reasoning_effort` | `reasoning.effort` | `output_config.effort` | `generationConfig.thinkingConfig.thinkingLevel` |
-| Thinking budget | — | — | `thinking.budget_tokens` | `generationConfig.thinkingConfig.thinkingBudget` |
+| Setting | Chat Completions | Responses | Messages | generateContent | Converse |
+|---------|------------------|-----------|----------|-----------------|----------|
+| Max output tokens | `max_completion_tokens` or `max_tokens` | `max_output_tokens` | `max_tokens` | `generationConfig.maxOutputTokens` | `inferenceConfig.maxTokens` |
+| Temperature | `temperature` | `temperature` | `temperature` | `generationConfig.temperature` | `inferenceConfig.temperature` |
+| Top P | `top_p` | `top_p` | `top_p` | `generationConfig.topP` | `inferenceConfig.topP` |
+| Top K | — | — | `top_k` | `generationConfig.topK` | — |
+| Stop sequences | `stop` | — | `stop_sequences` | `generationConfig.stopSequences` | `inferenceConfig.stopSequences` |
+| Seed | `seed` | — | — | `generationConfig.seed` | — |
+| JSON output | `response_format` | `text.format` | `output_config.format` | `generationConfig.responseMimeType` and `responseJsonSchema` | Not translated |
+| Tools | `tools` | `tools` | `tools` | `tools[].functionDeclarations` | `toolConfig.tools` |
+| Tool choice | `tool_choice` | `tool_choice` | `tool_choice` | `toolConfig.functionCallingConfig` | `toolConfig.toolChoice` |
+| Parallel tool calls | `parallel_tool_calls` | `parallel_tool_calls` | `tool_choice.disable_parallel_tool_use` | — | — |
+| Reasoning effort | `reasoning_effort` | `reasoning.effort` | `output_config.effort` | `generationConfig.thinkingConfig.thinkingLevel` | — |
+| Thinking budget | — | — | `thinking.budget_tokens` | `generationConfig.thinkingConfig.thinkingBudget` | — |
+
+The gateway doesn't translate JSON output to or from Converse yet, so a request that asks for JSON output skips Converse models.
 
 ### Hosted tools
 
 [Hosted tools](/ai-gateway/concepts/hosted-tools) run on the provider's servers.
 The gateway translates these hosted tools:
 
-| Tool | Chat Completions | Responses | Messages | generateContent |
-|------|------------------|-----------|----------|-----------------|
-| Web search | The provider's own search option | `web_search`, `web_search_preview` | `web_search_20250305`, `web_search_20260209` | `google_search` |
-| Code execution | — | `code_interpreter` | `code_execution` | `code_execution` |
-| Remote MCP servers | — | `mcp` | `mcp_servers` with the `mcp_toolset` tool | — |
+| Tool | Chat Completions | Responses | Messages | generateContent | Converse |
+|------|------------------|-----------|----------|-----------------|----------|
+| Web search | Some providers, as the rules below describe | `web_search`, `web_search_preview` | `web_search_20250305` and later versions | `google_search` | — |
+| Code execution | — | `code_interpreter` | `code_execution_20250522`, from Messages only | `code_execution` | — |
+| Remote MCP servers | — | `mcp` | `mcp_servers` with the `mcp_toolset` tool | — | — |
 
 A dash means the format has no such tool, so the gateway skips a model that serves only that format.
 
 These rules apply to translated hosted tools:
 
-- **Web search on Chat Completions models**: The gateway sends the search in the form each provider takes, such as `web_search_options` for OpenAI search models and `browser_search` for Groq.
-- **Citations**: Search citations come back in your format, in buffered and streamed responses.
-- **Search options**: Hints such as `user_location` and `search_context_size` reach the target when it has a matching field.
-  Otherwise the gateway removes them.
-- **Code execution**: Your SDK gets the code the model ran and its result as typed items, not as text.
-- **MCP approval**: The Messages API has no approval step.
-  The gateway never sends an MCP tool that needs your approval to a model through the Messages API.
+- **Web search on Chat Completions models**: Chat Completions has no standard search tool, so only some providers can search.
+  The gateway sends the search as `web_search_options` to OpenAI search models, as `browser_search` to Groq, and as a `web_search` tool to Z.ai.
+  For Moonshot, the gateway runs Moonshot's search call for the model and bills both calls as one request.
+  The gateway skips Chat Completions models from other providers.
+- **Search options**: `user_location` and `search_context_size` reach OpenAI models.
+  For other targets, the gateway removes them.
+  Allowed and blocked domain lists don't translate to Chat Completions or Gemini models, so the gateway skips those models.
+- **Search results**: A Messages client gets the sources of a search from another format as a list at the end of the text, not as citation blocks.
+  Other clients get citations in their own format, in buffered and streamed responses.
+- **Code execution**: Code tools translate only between formats whose tool runs Python.
+  Responses and Gemini models reach each other, and a Messages request with `code_execution_20250522` reaches either.
+  Claude models run code through Bash, so a translated request with a code tool never reaches a Claude model.
+  Your SDK gets the code the model ran and its result as typed items, not as text.
+  Files a code run makes, such as charts, don't come back when your format has no place for them.
+- **Remote MCP servers**: MCP translates between Responses and Messages, for Claude models that Anthropic serves directly.
+  Set `require_approval` to `never`, because the Messages API has no approval step.
+  The gateway skips a Messages model when an MCP tool needs your approval.
 - **Conversation history**: When you send earlier search results and citations back on the next turn, a model from another provider gets them as plain text.
 - **Billing**: Hosted tools bill at the rate of the tool the provider ran, not the tool your SDK named.
 
-Other hosted tools, such as file search and image generation, don't translate.
+Other hosted tools, such as file search, image generation, URL context, Bash, the text editor, and web fetch, don't translate.
 
 ## Removed and changed parameters
 
 The gateway removes or changes a parameter when the target format or model can't take it as you sent it.
-It lists every removed or changed parameter in the `Ngrok-AIG-Removed-Params` [response header](/ai-gateway/how-it-works#response-headers).
+It lists each parameter it removed or changed in the `Ngrok-AIG-Removed-Params` [response header](/ai-gateway/how-it-works#response-headers).
+The header doesn't list a value the gateway adds, such as `max_tokens` for a Messages model.
 
 Fields that only one format defines don't translate.
 For example, `frequency_penalty`, `logit_bias`, `metadata`, `service_tier`, and Gemini `safetySettings` reach only a model that serves your SDK's format.
+For other models, the gateway removes them.
 
-These rules change a value instead of removing it:
+These rules add or change a value:
 
 - **Max tokens on Messages models**: The Messages API requires `max_tokens`.
   If your request doesn't set a limit, the gateway sends the model's maximum output tokens.
@@ -206,15 +230,25 @@ These rules change a value instead of removing it:
   Set your own limit if you need responses to stop at the same length on every model.
 - **Temperature on Messages models**: The gateway lowers a temperature above 1 to 1.
   If you send both `temperature` and `top_p`, the gateway removes `top_p`.
+  Claude models refuse `temperature` while thinking is on, so the gateway removes it when your request sets a thinking budget.
+- **Thinking budget on Messages models**: Messages counts thinking inside `max_tokens`.
+  When your budget is larger than the output limit, the gateway lowers the budget so the model still has room to answer.
 - **Reasoning effort**: The gateway lowers an effort level the target doesn't have, such as `max`, to `high`.
-- **Minimum output tokens on Responses models**: The gateway raises a `max_output_tokens` below 16 to 16.
+- **Responses models**: The gateway raises a `max_output_tokens` below 16 to 16.
+  It also sends `store: false`, because your SDK can't read a stored response back.
+- **Tool schemas**: The gateway removes `strict` for formats that have no strict mode, so the model can return arguments that don't match your schema exactly.
+  It removes Gemini's `propertyOrdering` for other formats.
+- **Image detail**: Only Chat Completions and Responses take an image `detail` setting.
+  Other models get the image at their default detail.
 
 Reasoning settings translate in these ways:
 
-- A reasoning effort reaches every model that can reason.
-  For a model that takes only a thinking budget, such as Gemini 2.5, the gateway converts the effort to a budget and lists the parameter in the header.
+- A reasoning effort reaches every model that can reason, except Converse models.
+- Claude Haiku 4.5, Claude Sonnet 4.5, Claude Opus 4.5, and Claude Opus 4.1 take a thinking budget, not an effort.
+  For these models, the gateway turns on thinking with a budget for your effort level: 1,024 tokens for `minimal` and `low`, 4,096 for `medium`, 16,384 for `high`, and 32,000 for `xhigh` and `max`.
+  A budget only approximates an effort, so the gateway lists the effort in the header.
 - A thinking budget reaches Claude and Gemini models.
-  OpenAI models take no budget, so the gateway removes it for an OpenAI model.
+  OpenAI and Converse models take no budget, so the gateway removes it.
 - Reasoning blocks from an earlier turn go back only to the format that produced them, because a provider rejects another provider's reasoning signature.
   The gateway removes them for any other format.
 
@@ -230,15 +264,22 @@ The gateway skips a model, without calling it, when it can't translate the reque
 
 - The request has file, document, audio, or video input.
   Only text and images translate.
-- The request has a hosted tool that the target format doesn't have, or that doesn't translate, such as file search.
+- The request has an image URL, and the target is a Gemini or Converse model.
+  Send the image as base64 data instead.
+- The request has a hosted tool that the target format doesn't have, or that doesn't translate.
   See [hosted tools](#hosted-tools).
-- The request has web search and function tools together, and the model is a Gemini 2.x model, which can't combine them.
-- The request has an MCP tool that needs your approval, and the target is Messages.
-- The request points to state the provider stores, such as `previous_response_id`, `conversation`, or `background` in the Responses API.
-- The request asks for more than one choice, such as `n` greater than 1 in Chat Completions.
+- The request has web search with function tools or JSON output, and the target is a Gemini 2.x or earlier model.
+- The request has code execution with function tools, JSON output, or `tool_choice`, and the target is a Gemini model.
+- The request points to state the provider stores, such as `previous_response_id`, `conversation`, `prompt`, or `background: true` in the Responses API.
+  Send the full conversation instead.
+- The request asks for more than one answer, such as `n` or `candidateCount` greater than 1.
 - The request uses the legacy Chat Completions `functions` or `function_call` fields.
-- The last message is an assistant message that the model should continue, and the target is Chat Completions or Responses.
-- The request asks for JSON output with no schema, and the target is Messages.
+  Use `tools` and `tool_choice` instead.
+- The last message is an assistant message that the model should continue.
+- The request asks for JSON output with no schema, or with a schema `description`, and the target is Messages.
+- The request has a Gemini `responseSchema`.
+  Send the same schema as JSON Schema in `responseJsonSchema` to reach other models.
+- The request has a Converse `guardrailConfig`, `outputConfig`, `promptVariables`, or `cachePoint`.
 - A [Firewall](/ai-gateway/concepts/firewall) policy applies to the request, because Firewall can't check a translated response yet.
 
 If every model in the request is skipped, the gateway returns [`ERR_NGROK_27228`](/ai-gateway/reference/error-codes#err_ngrok_27228) with the reason for each model.
