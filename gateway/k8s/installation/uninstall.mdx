@@ -4,11 +4,11 @@ sidebarTitle: Uninstall
 description: How to uninstall the ngrok Kubernetes Operator, clean up resources, and understand what happens during the process.
 ---
 
-The `ngrok-operator` helm chart uses [finalizers](/gateway/k8s/guides/finalizers) on its custom resources to ensure proper cleanup of ngrok API resources before deletion. The chart includes a `pre-delete` helm hook that automates removing these finalizers and optionally deleting resources during uninstall.
+The `ngrok-operator` Helm chart uses [finalizers](/gateway/k8s/guides/finalizers) on its custom resources to ensure proper cleanup of ngrok API resources before deletion. The chart includes a `pre-delete` helm hook that automates removing these finalizers and optionally deleting resources during uninstall.
 
 ## Quick uninstall (preserves ngrok account resources)
 
-By default, uninstalling the operator **preserves** resources in your ngrok account such as CloudEndpoints and Domains. This prevents an uninstall from taking down cloud infrastructure that may be supporting a production site.
+By default, uninstalling the operator **preserves** resources in your ngrok account such as Cloud Endpoints and domains. This prevents an uninstall from taking down cloud infrastructure that may be supporting a production site.
 
 ```bash
 helm uninstall ngrok-operator -n ngrok-operator
@@ -16,21 +16,21 @@ helm uninstall ngrok-operator -n ngrok-operator
 
 When you run this command, a `pre-delete` helm hook job automatically:
 
-1. Signals the operator to stop reconciling resources
-2. Patches every custom resource to remove its finalizer
-3. Allows the helm uninstall to proceed, tearing down the operator deployment (and CRDs, if they were bundled with the operator release)
+1. Deletes the release's `KubernetesOperator` resource (and the legacy `ngrok.k8s.ngrok.com` one first, if it still exists), which signals the operator to stop reconciling and drain the resources it manages
+2. Waits while the operator removes the finalizer from every resource it manages
+3. Allows the helm uninstall to proceed, tearing down the operator deployment and, if bundled, the CRDs (except the [six kept `ngrok.com` CRDs](#crds-left-behind-after-uninstall))
 
 Your ngrok API resources remain in your account and can be managed through the [ngrok dashboard](https://dashboard.ngrok.com) or API.
 
 ## Cleaning up ngrok account resources
 
-If you want to also **delete** ngrok API resources, such as CloudEndpoints and Domains, from your account during uninstall, first upgrade your release to set the `drainPolicy` to `Delete`:
+If you want to also **delete** ngrok API resources, such as CloudEndpoints and Domains, from your account during uninstall, first upgrade your release to set `ngrok.features.cleanup.drainPolicy` to `Delete`:
 
 ```bash
 helm upgrade ngrok-operator ngrok/ngrok-operator \
   --namespace=ngrok-operator \
   --reuse-values \
-  --set drainPolicy="Delete"
+  --set ngrok.features.cleanup.drainPolicy=Delete
 ```
 
 Now when you run `helm uninstall ngrok-operator -n ngrok-operator`, the `pre-delete` hook job will:
@@ -61,16 +61,17 @@ The ngrok-operator uses [finalizers](/gateway/k8s/guides/finalizers) on its cust
 When you `helm uninstall`, the chart's `pre-delete` hook job handles these finalizers so you don't have to. What happens depends on two factors:
 
 1. **How CRDs were installed:** bundled with the operator chart (default) or separately via the `ngrok-crds` chart
-2. **The `drainPolicy` value:** `Retain` (default) or `Delete`
+2. **The `ngrok.features.cleanup.drainPolicy` value:** `Retain` (default) or `Delete`
 
 ### CRDs bundled with operator (default)
 
-When CRDs are part of the same helm release, uninstalling the operator also uninstalls the CRDs, which forces all custom resources into deletion.
+When CRDs are part of the same helm release, uninstalling the operator also uninstalls the CRDs, which forces their custom resources into deletion.
+Six of the `ngrok.com` CRDs are the exception: Helm keeps them and their custom resources (see [CRDs left behind](#crds-left-behind-after-uninstall)).
 
 | drainPolicy | Behavior |
 |---|---|
-| `Retain` (default) | Hook removes all finalizers. Helm then deletes CRDs, forcing CR deletion. ngrok API resources are **preserved**. |
-| `Delete` | Hook deletes each CR and waits for cleanup. Helm then deletes CRDs. ngrok API resources are **deleted**. |
+| `Retain` (default) | Hook removes all finalizers. Helm then deletes the CRDs it doesn't keep, forcing deletion of their CRs. ngrok API resources are **preserved**. |
+| `Delete` | Hook deletes each CR and waits for cleanup. Helm then deletes the CRDs it doesn't keep. ngrok API resources are **deleted**. |
 
 ### CRDs installed separately
 
@@ -86,9 +87,32 @@ With separate CRDs and `drainPolicy=Retain`, the remaining CRs are left without 
 - Delete namespaces containing those resources without them getting stuck
 - Uninstall the CRDs separately whenever you're ready
 
+### CRDs left behind after uninstall
+
+These six `ngrok.com` CRDs carry `helm.sh/resource-policy: keep` so a `helm rollback` can't delete their objects. As a result, `helm uninstall` leaves them, and their objects, in place, whether the Operator chart or `ngrok-crds` installed them:
+
+- `agentendpoints.ngrok.com`
+- `cloudendpoints.ngrok.com`
+- `domains.ngrok.com`
+- `ippolicies.ngrok.com`
+- `kubernetesoperators.ngrok.com`
+- `trafficpolicies.ngrok.com`
+
+Reinstalling the release that installed them, under the same release name and namespace, adopts them.
+If you don't plan to reinstall, delete them yourself once the uninstall has drained.
+Deleting a CRD deletes every object in it, including your own `TrafficPolicy` resources and any other release's objects. Back up first.
+
+```bash
+kubectl get agentendpoints.ngrok.com,cloudendpoints.ngrok.com,domains.ngrok.com,ippolicies.ngrok.com,kubernetesoperators.ngrok.com,trafficpolicies.ngrok.com -A
+
+kubectl delete crd agentendpoints.ngrok.com cloudendpoints.ngrok.com domains.ngrok.com \
+  ippolicies.ngrok.com kubernetesoperators.ngrok.com trafficpolicies.ngrok.com
+```
+
 ## Separate CRD installation
 
 Instead of bundling CRDs with the operator, you can install them separately. This is **strongly recommended** for production and **required** for [multiple installations](/gateway/k8s/guides/multiple-installs).
+The commands expect your access token in `NGROK_ACCESS_TOKEN` (see [Install](/gateway/k8s/installation/helm)).
 
 ```bash
 helm repo add ngrok https://charts.ngrok.com
@@ -99,8 +123,7 @@ helm install ngrok-crds ngrok/ngrok-crds
 helm install ngrok-operator ngrok/ngrok-operator \
   --namespace=ngrok-operator \
   --create-namespace \
-  --set credentials.apiKey=$NGROK_API_KEY \
-  --set credentials.authtoken=$NGROK_AUTHTOKEN \
+  --set ngrok.credentials.accessToken=$NGROK_ACCESS_TOKEN \
   --set installCRDs=false
 ```
 
@@ -109,6 +132,8 @@ When you're ready to remove the CRDs (after uninstalling all operators that depe
 ```bash
 helm uninstall ngrok-crds
 ```
+
+This leaves the six kept `ngrok.com` CRDs in place. See [CRDs left behind](#crds-left-behind-after-uninstall) to remove them.
 
 ## Multiple installations
 
@@ -126,7 +151,7 @@ When uninstalling one of multiple operators:
 
 ### Cleaning up account resources with multiple operators
 
-You can `helm upgrade` a specific operator to set `drainPolicy=Delete` before uninstalling it. The cleanup job uses the same `ingress.watchNamespace` filter that the operator uses, so it only deletes resources within that operator's scope.
+You can `helm upgrade` a specific operator to set `ngrok.features.cleanup.drainPolicy=Delete` before uninstalling it. The cleanup job uses the same `ngrok.features.ingress.watchNamespace` filter that the operator uses, so it only deletes resources within that operator's scope.
 
 <Danger title="Overlapping watch scopes are dangerous">
 If you have multiple operators watching the same resources (for example, one scoped to a namespace and another without a namespace filter), uninstalling the unscoped operator with `drainPolicy=Delete` will delete **all** resources it can see across all namespaces.
@@ -139,35 +164,46 @@ If you prefer manual cleanup or have a custom uninstall process, disable the hel
 
 ```yaml
 # values.yaml
-cleanupHook:
-  enabled: false
+ngrok:
+  features:
+    cleanup:
+      enabled: false
 ```
 
 With the cleanup job disabled, you are responsible for removing finalizers and cleaning up resources before uninstalling. See [Manually removing finalizers](/gateway/k8s/guides/finalizers#manually-removing-finalizers) for instructions.
 
 ## Triggering cleanup without Helm
 
-If you are not using a system that supports helm hooks (for example, some GitOps tools), you can trigger the cleanup process manually by deleting the `KubernetesOperator` resource:
+If you are not using a system that supports helm hooks (for example, some GitOps tools), you can trigger the cleanup process manually by deleting the `KubernetesOperator` resource.
+
+Both `KubernetesOperator` kinds use the plural `kubernetesoperators`, so name the group in every `kubectl` command.
+Delete the legacy `ngrok.k8s.ngrok.com` one first, if it exists: while it exists, deleting the `ngrok.com` one is treated as a rollback and skips the drain.
 
 ```bash
-kubectl delete kubernetesoperator <release-name> -n <namespace> --wait=true
+# 1. Remove the legacy KubernetesOperator, if any (clear its finalizer if the delete hangs)
+kubectl delete kubernetesoperators.ngrok.k8s.ngrok.com <release-name> -n <namespace> --ignore-not-found --timeout=60s ||
+  kubectl patch kubernetesoperators.ngrok.k8s.ngrok.com <release-name> -n <namespace> \
+    --type=merge -p '{"metadata":{"finalizers":null}}'
+
+# 2. Trigger the drain
+kubectl delete kubernetesoperators.ngrok.com <release-name> -n <namespace> --wait=true
 ```
 
-This causes the operator to stop reconciling objects and begin draining custom resources, respecting the `drainPolicy` set during installation. Once the `KubernetesOperator` resource is deleted, you can proceed to uninstall the operator and CRDs however you see fit.
+This causes the operator to stop reconciling objects and begin draining custom resources, respecting the `ngrok.features.cleanup.drainPolicy` set during installation. Once the `KubernetesOperator` resource is deleted, you can proceed to uninstall the operator and CRDs however you see fit.
 
 ## Reinstalling after uninstall
 
 After uninstalling, your cluster may be in different states depending on how the install and uninstall were done:
 
 - **Ingress objects**: Still exist but without finalizers and aren't being reconciled
-- **Custom resources**: May be fully deleted, or may still exist without finalizers but with their Status information intact
+- **Custom resources**: May be fully deleted, or may still exist without finalizers but with their Status information intact.
 - **ngrok API resources**: May still exist in your account or may have been deleted (depending on `drainPolicy`)
 
 **If ngrok API resources were cleaned up** (`drainPolicy=Delete`): Reinstalling the operator will recreate them from your existing Kubernetes resources.
 
 **If ngrok API resources were preserved** (`drainPolicy=Retain`):
 - If CRDs were installed separately and CRs still exist in the cluster, reinstalling the operator will re-add finalizers and resume managing them with no duplication.
-- If CRDs were bundled and were deleted (forcing CR deletion), you'll need to reapply your manifests. This may create duplicate resources (for example, a second CloudEndpoint in a pool) if the originals still exist in your ngrok account. Check the [ngrok dashboard](https://dashboard.ngrok.com) and clean up any duplicates.
+- If CRDs were bundled and were deleted (forcing CR deletion), you'll need to reapply the manifests of the deleted resources. This may create duplicate resources (for example, a second CloudEndpoint in a pool) if the originals still exist in your ngrok account. Check the [ngrok dashboard](https://dashboard.ngrok.com) and clean up any duplicates.
 - For `Ingress` objects, the new operator will see them and automatically create the corresponding resources.
 
 ## Troubleshooting
@@ -197,17 +233,18 @@ kubectl logs -n ngrok-operator deploy/ngrok-operator-manager | grep -i "drain\|c
 The `KubernetesOperator` custom resource reports the current state of the drain process in its status:
 
 ```bash
-kubectl get kubernetesoperator <release-name> -n <namespace> -o yaml
+kubectl get kubernetesoperators.ngrok.com <release-name> -n <namespace> -o yaml
 ```
 
 The drain-related status fields are:
 
 | Field | Description |
 |---|---|
-| `drainStatus` | Current state: `pending`, `draining`, `completed`, or `failed` |
-| `drainProgress` | How many resources have been processed versus total (format `X/Y`) |
-| `drainMessage` | Human-readable information about the current drain state |
-| `drainErrors` | List of the most recent errors encountered during drain |
+| `Draining` condition | `True` while the drain is running or retrying (reason `DrainInProgress` or `DrainFailed`), `False` with reason `DrainCompleted` when finished |
+| `drain.drainedResources` | Number of resources drained in the latest attempt |
+| `drain.failedResources` | Number of resources that could not be drained in the latest attempt |
+| `drain.totalResources` | Total number of resources the drain processes |
+| `drain.errors` | List of the most recent errors encountered during drain |
 
 ### Resources stuck in Terminating state
 
@@ -219,7 +256,7 @@ A namespace will not delete if it contains resources with unresolved finalizers.
 
 ### Cleanup job timeout
 
-If the cleanup job is taking too long (for example, waiting for many resources to be deleted from the ngrok API), you can configure the job's timeout in your helm values. If the job times out, you may need to [manually remove finalizers](/gateway/k8s/guides/finalizers#manually-removing-finalizers) from any remaining resources.
+If the cleanup job is taking too long (for example, waiting for many resources to be deleted from the ngrok API), you can configure the job's timeout, in seconds, with the `ngrok.features.cleanup.timeout` helm value (default `300`). If the job times out, you may need to [manually remove finalizers](/gateway/k8s/guides/finalizers#manually-removing-finalizers) from any remaining resources.
 
 ## Decision flowchart
 
@@ -252,10 +289,10 @@ flowchart TD
   M3 --> M11["Safer uninstall order:<br/>1) Uninstall ALL operator releases<br/>with installCRDs=false<br/>2) Uninstall the single release<br/>that installed the CRDs LAST"]
 
   %% Multi-install final states
-  M5 --> FS1["Final state:<br/>CRDs: Preserved<br/>CRs: Preserved (finalizers removed)<br/>ngrok API resources: Preserved"]
+  M5 --> FS1["Final state:<br/>CRDs: Preserved if installed separately<br/>(bundled: follow the uninstall order)<br/>CRs: Preserved (finalizers removed)<br/>ngrok API resources: Preserved"]
   M8 --> FS2["Final state:<br/>CRDs: Preserved<br/>CRs: Deleted (in operator scope)<br/>ngrok API resources: Deleted (in operator scope)"]
   M10 --> FS1
-  M11 --> FS3["Final state (after completing the order):<br/>CRDs: Deleted (when final release removed)<br/>CRs: Deleted (forced by CRD removal)<br/>ngrok API resources: Preserved<br/>(unless you separately used drainPolicy=Delete)"]
+  M11 --> FS3["Final state (after completing the order):<br/>CRDs: Deleted* when final release removed<br/>CRs: Deleted* (forced by CRD removal)<br/>ngrok API resources: Preserved<br/>(unless you separately used drainPolicy=Delete)"]
 
   %% =========================
   %% SINGLE INSTALLATION
@@ -263,7 +300,7 @@ flowchart TD
   B -- "No" --> S1{"Were CRDs installed separately<br/>(ngrok-crds chart)?"}
 
   S1 -- "Yes" --> S2["Uninstalling the operator<br/>will NOT remove CRDs or CRs"]
-  S1 -- "No" --> S3["Uninstalling the operator<br/>WILL remove CRDs and force CR deletion"]
+  S1 -- "No" --> S3["Uninstalling the operator<br/>WILL remove CRDs* and force CR deletion"]
 
   %% Duplicate the ngrok API question per branch
   S2 --> SA{"Do you want to delete<br/>ngrok API resources?"}
@@ -280,6 +317,8 @@ flowchart TD
   SB -- "Keep account resources (default)" --> S5B["Run uninstall (default drainPolicy=Retain)"]
   SB -- "Delete account resources" --> S6B["Upgrade and set drainPolicy=Delete<br/>Then run uninstall"]
 
-  S5B --> FS5["Final state:<br/>CRDs: Deleted<br/>CRs: Deleted (forced by CRD removal)<br/>ngrok API resources: Preserved"]
-  S6B --> FS6["Final state:<br/>CRDs: Deleted<br/>CRs: Deleted<br/>ngrok API resources: Deleted"]
+  S5B --> FS5["Final state:<br/>CRDs: Deleted*<br/>CRs: Deleted* (forced by CRD removal)<br/>ngrok API resources: Preserved"]
+  S6B --> FS6["Final state:<br/>CRDs: Deleted*<br/>CRs: Deleted*<br/>ngrok API resources: Deleted"]
 ```
+
+\* Except the six kept `ngrok.com` CRDs and their objects. See [CRDs left behind](#crds-left-behind-after-uninstall).
