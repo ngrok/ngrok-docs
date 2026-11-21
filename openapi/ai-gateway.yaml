@@ -1700,7 +1700,8 @@ components:
           description: Unique identifier for this access key.
         name:
           type: string
-          description: User-friendly label for this access key.
+          deprecated: true
+          description: Deprecated. Use `description`. Set only on keys created before personal access tokens.
         uri:
           type: string
           description: URI of this AI Gateway Access Key API resource.
@@ -1708,6 +1709,10 @@ components:
           type: string
           format: date-time
           description: Timestamp when the access key was created.
+        expiresAt:
+          type: string
+          format: date-time
+          description: Token expiry timestamp. Absent for keys with no expiry.
         updatedAt:
           type: string
           format: date-time
@@ -1717,7 +1722,8 @@ components:
           description: Human-readable description of this access key.
         metadata:
           type: string
-          description: Arbitrary user-defined metadata for this access key.
+          deprecated: true
+          description: Set only on keys created before personal access tokens.
         createdBy:
           $ref: '#/components/schemas/Ref'
         lastUpdatedBy:
@@ -1725,6 +1731,11 @@ components:
         token:
           type: string
           description: Plaintext access key token. Only returned when the key is first created.
+        scopes:
+          type: array
+          items:
+            type: string
+          description: Scopes of a personal access token access key, including scopes that ngrok.com added. A legacy key has no scopes and can make inference requests.
         keyRedacted:
           type: string
           description: Redacted display form of the access key token.
@@ -1775,10 +1786,23 @@ components:
       type: object
       additionalProperties: false
       properties:
+        scopes:
+          type: array
+          minItems: 1
+          maxItems: 1
+          uniqueItems: true
+          items:
+            type: string
+          description: Request scopes for the new key. Omit for the default request scopes.
+        expiresAt:
+          type: string
+          format: date-time
+          description: Token expiry timestamp. Omit for no expiry.
         name:
           type: string
           maxLength: 255
-          description: User-friendly label for this access key.
+          deprecated: true
+          description: Deprecated. Use `description`. A value that differs from `description` returns a 400.
         description:
           type: string
           maxLength: 255
@@ -1786,7 +1810,8 @@ components:
         metadata:
           type: string
           maxLength: 4096
-          description: Arbitrary user-defined metadata for this access key.
+          deprecated: true
+          description: Deprecated. Keys do not store metadata. A non-empty value returns a 400.
         accessKeyConfigurationId:
           type: string
           description: ID of an access key configuration to link. Omit for allow-all scope.
@@ -1798,7 +1823,8 @@ components:
           type: string
           nullable: true
           maxLength: 255
-          description: User-friendly label for this access key.
+          deprecated: true
+          description: Deprecated. Use `description`. A value that differs from `description` returns a 400.
         description:
           type: string
           nullable: true
@@ -1808,7 +1834,8 @@ components:
           type: string
           nullable: true
           maxLength: 4096
-          description: Arbitrary user-defined metadata for this access key.
+          deprecated: true
+          description: Deprecated. Keys do not store metadata. A non-empty value returns a 400.
         accessKeyConfigurationId:
           type: string
           nullable: true
@@ -1841,11 +1868,16 @@ components:
           description: URI of this AI Gateway API Key API resource.
         name:
           type: string
-          description: User-friendly label for this API key.
+          deprecated: true
+          description: Deprecated. Use `description`. Set only on keys created before personal access tokens.
         createdAt:
           type: string
           format: date-time
           description: Timestamp when the API key was created.
+        expiresAt:
+          type: string
+          format: date-time
+          description: Token expiry timestamp. Absent for keys with no expiry.
         updatedAt:
           type: string
           format: date-time
@@ -1855,7 +1887,8 @@ components:
           description: Human-readable description of this API key.
         metadata:
           type: string
-          description: Arbitrary user-defined metadata for this API key.
+          deprecated: true
+          description: Set only on keys created before personal access tokens.
         createdBy:
           $ref: '#/components/schemas/Ref'
         lastUpdatedBy:
@@ -1863,6 +1896,11 @@ components:
         token:
           type: string
           description: Plaintext API key token. Only returned when the key is first created.
+        scopes:
+          type: array
+          items:
+            type: string
+          description: Scopes of a personal access token admin key. A legacy key has no scopes and reaches every route.
         keyRedacted:
           type: string
           description: Redacted display form of the API key token.
@@ -1894,10 +1932,15 @@ components:
       type: object
       additionalProperties: false
       properties:
+        expiresAt:
+          type: string
+          format: date-time
+          description: Token expiry timestamp. Omit for no expiry.
         name:
           type: string
           maxLength: 255
-          description: User-friendly label for this API key.
+          deprecated: true
+          description: Deprecated. Use `description`. A value that differs from `description` returns a 400.
         description:
           type: string
           maxLength: 255
@@ -1905,16 +1948,30 @@ components:
         metadata:
           type: string
           maxLength: 4096
-          description: Arbitrary user-defined metadata for this API key.
+          deprecated: true
+          description: Deprecated. Keys do not store metadata. A non-empty value returns a 400.
+        scopes:
+          type: array
+          minItems: 1
+          items:
+            type: string
+          description: AI Gateway management scopes of the new key. At least one must manage the gateway. Each scope must be one that your own credential holds. Omit to request every available management scope.
     AIGatewayAPIKeyUpdate:
       type: object
       additionalProperties: false
       properties:
+        scopes:
+          type: array
+          minItems: 1
+          items:
+            type: string
+          description: Management scopes for a personal access token. Legacy keys do not support scope changes.
         name:
           type: string
           nullable: true
           maxLength: 255
-          description: User-friendly label for this API key.
+          deprecated: true
+          description: Deprecated. Use `description`. A value that differs from `description` returns a 400.
         description:
           type: string
           nullable: true
@@ -1924,7 +1981,8 @@ components:
           type: string
           nullable: true
           maxLength: 4096
-          description: Arbitrary user-defined metadata for this API key.
+          deprecated: true
+          description: Deprecated. Keys do not store metadata. A non-empty value returns a 400.
     AIGatewayFirewallRule:
       type: object
       additionalProperties: false
