@@ -32,6 +32,22 @@ For example:
 The catalog includes built-in providers—public AI APIs with known models and routing metadata.
 You can manage them on the [Providers page](https://app.ngrok.ai/providers).
 
+Each provider lists its chat models first.
+Speech, embedding, and music models follow in a separate table that names the API surface each model takes.
+Send those requests to these gateway paths:
+
+| API surface | Path |
+|-------------|------|
+| Embeddings | `/v1/embeddings` |
+| Gemini EmbedContent | `/v1beta/models/{model}:embedContent` |
+| Speech | `/v1/audio/speech` |
+| Gemini GenerateContent | `/v1beta/models/{model}:generateContent` |
+| Interactions | `/v1beta/interactions` |
+| MiniMax T2A | `/v1/t2a_v2` |
+| xAI TTS | `/v1/tts` |
+| DashScope speech | `/api/v1/services/aigc/multimodal-generation/generation` for Qwen3-TTS |
+| DashScope speech | `/api/v1/services/audio/tts/SpeechSynthesizer` for Qwen-Audio |
+
 ### Authentication
 
 Send traffic using an [access key](/ai-gateway/concepts/access-keys).
@@ -58,7 +74,7 @@ This is often called BYOK (bring your own key).
 | **Provider ID** | `openai` |
 | **Base URL** | `https://api.openai.com/v1/` |
 | **Website** | [openai.com](https://openai.com/) |
-| **API surfaces** | Responses, Chat Completions, Decisions, Images |
+| **API surfaces** | Responses, Chat Completions, Decisions, Images, Embeddings |
 | **Provider key required** | No |
 
 [How to use OpenAI →](/ai-gateway/providers/openai)
@@ -104,6 +120,14 @@ This is often called BYOK (bring your own key).
 
 `gpt-image-2`, `gpt-image-2.5-sunburst`, and `gpt-image-2.5-flare` generate and edit images.
 Send them to the Images API at `/v1/images/generations` or `/v1/images/edits`, not to Chat Completions or Responses.
+
+#### OpenAI embedding models
+
+| Model ID | Name | Type | API surface | Needs BYOK? |
+|----------|------|------|-------------|-------------|
+| `text-embedding-3-large` | Text Embedding 3 Large | Embedding | Embeddings | No |
+| `text-embedding-3-small` | Text Embedding 3 Small | Embedding | Embeddings | No |
+| `text-embedding-ada-002` | Text Embedding Ada 002 | Embedding | Embeddings | No |
 
 ---
 
@@ -154,7 +178,7 @@ See [Fable 5.2](/ai-gateway/providers/anthropic#fable-5-2).
 | **Provider ID** | `google` |
 | **Base URL** | `https://generativelanguage.googleapis.com/v1beta/openai/` |
 | **Website** | [aistudio.google.com](https://aistudio.google.com/) |
-| **API surfaces** | Chat Completions, Gemini GenerateContent, Interactions |
+| **API surfaces** | Chat Completions, Gemini GenerateContent, Interactions, Gemini EmbedContent |
 | **Provider key required** | For some models. See **Needs BYOK?** |
 
 [How to use Google →](/ai-gateway/providers/google)
@@ -194,6 +218,19 @@ Newer projects get a 404 stating the model is no longer available to new users.
 The Google project ngrok.ai uses postdates that cutoff, so these models are reachable only with your own key on an older project.
 </Warning>
 
+#### Google speech, embedding, and music models
+
+| Model ID | Name | Type | API surface | Needs BYOK? |
+|----------|------|------|-------------|-------------|
+| `gemini-3.8-flash-lite-tts` | Gemini 3.8 Flash-Lite TTS | Speech | Gemini GenerateContent, Interactions | No |
+| `gemini-3.8-flash-tts` | Gemini 3.8 Flash TTS | Speech | Gemini GenerateContent, Interactions | No |
+| `gemini-embedding-001` | Gemini Embedding | Embedding | Gemini EmbedContent | Yes |
+| `gemini-embedding-2` | Gemini Embedding 2 | Embedding | Gemini EmbedContent | No |
+| `lyria-3-clip-preview` | Lyria 3 Clip Preview | Music | Interactions | No |
+| `lyria-3.5` | Lyria 3.5 | Music | Interactions | No |
+
+Google retires `gemini-embedding-001` on May 14, 2028.
+
 ---
 
 ### DeepSeek
@@ -228,7 +265,7 @@ See [Peak and off-peak pricing](/ai-gateway/providers/deepseek#peak-and-off-peak
 | **Provider ID** | `xai` |
 | **Base URL** | `https://api.x.ai/v1` |
 | **Website** | [x.ai](https://x.ai/) |
-| **API surfaces** | Chat Completions, Responses, Images |
+| **API surfaces** | Chat Completions, Responses, Images, xAI TTS |
 | **Provider key required** | No |
 
 [How to use xAI →](/ai-gateway/providers/xai)
@@ -248,6 +285,12 @@ See [Peak and off-peak pricing](/ai-gateway/providers/deepseek#peak-and-off-peak
 `grok-imagine-image` and `grok-imagine-image-2.0` generate and edit images.
 Send them to the Images API at `/v1/images/generations` or `/v1/images/edits`.
 
+#### xAI speech models
+
+| Model ID | Name | Type | API surface | Needs BYOK? |
+|----------|------|------|-------------|-------------|
+| `grok-tts` | Grok TTS | Speech | xAI TTS | No |
+
 ---
 
 ### Groq
@@ -257,7 +300,7 @@ Send them to the Images API at `/v1/images/generations` or `/v1/images/edits`.
 | **Provider ID** | `groq` |
 | **Base URL** | `https://api.groq.com/openai/v1` |
 | **Website** | [groq.com](https://groq.com/) |
-| **API surfaces** | Chat Completions, Responses |
+| **API surfaces** | Chat Completions, Responses, Speech |
 | **Provider key required** | Yes |
 
 [How to use Groq →](/ai-gateway/providers/groq)
@@ -274,6 +317,13 @@ Groq provides AI inference powered by their custom LPU (Language Processing Unit
   <ModelRow id="meta-llama/llama-prompt-guard-2-86m" name="Llama Prompt Guard 2 86M" context={512} output={512} modalities="text" byok />
 </ModelTable>
 
+#### Groq speech models
+
+| Model ID | Name | Type | API surface | Needs BYOK? |
+|----------|------|------|-------------|-------------|
+| `canopylabs/orpheus-arabic-saudi` | Orpheus Arabic Saudi | Speech | Speech | Yes |
+| `canopylabs/orpheus-v1-english` | Orpheus V1 English | Speech | Speech | Yes |
+
 ---
 
 ### Mistral AI
@@ -283,7 +333,7 @@ Groq provides AI inference powered by their custom LPU (Language Processing Unit
 | **Provider ID** | `mistral` |
 | **Base URL** | `https://api.mistral.ai/v1` |
 | **Website** | [mistral.ai](https://mistral.ai) |
-| **API surfaces** | Chat Completions |
+| **API surfaces** | Chat Completions, Embeddings, Speech |
 | **Provider key required** | Yes |
 
 [How to use Mistral AI →](/ai-gateway/providers/mistral)
@@ -293,6 +343,15 @@ Groq provides AI inference powered by their custom LPU (Language Processing Unit
 <ModelTable>
   <ModelRow id="z-ai/glm-5.3" name="GLM-5.3" context={1000000} output={131072} modalities="text" byok />
 </ModelTable>
+
+#### Mistral AI speech and embedding models
+
+| Model ID | Name | Type | API surface | Needs BYOK? |
+|----------|------|------|-------------|-------------|
+| `voxtral-mini-tts-2603` | Voxtral TTS 26.03 | Speech | Speech | Yes |
+| `voxtral-mini-tts-3-0` | Voxtral TTS 3 | Speech | Speech | Yes |
+| `codestral-embed` | Codestral Embed | Embedding | Embeddings | Yes |
+| `mistral-embed` | Mistral Embed | Embedding | Embeddings | Yes |
 
 ---
 
@@ -413,7 +472,7 @@ It doesn't edit images.
 | **Provider ID** | `qwencloud` |
 | **Base URL** | `https://dashscope-intl.aliyuncs.com/compatible-mode/v1` |
 | **Website** | [qwencloud.com](https://qwencloud.com/) |
-| **API surfaces** | Chat Completions, Messages, Responses |
+| **API surfaces** | Chat Completions, Messages, Responses, Embeddings, DashScope speech |
 | **Provider key required** | No |
 
 [How to use QwenCloud →](/ai-gateway/providers/qwencloud)
@@ -444,6 +503,17 @@ It doesn't edit images.
   <ModelRow id="qwen/qwen3.5-omni-flash" name="Qwen3.5-Omni-Flash" output={65536} modalities="text,image,audio" />
 </ModelTable>
 
+#### QwenCloud speech and embedding models
+
+| Model ID | Name | Type | API surface | Needs BYOK? |
+|----------|------|------|-------------|-------------|
+| `qwen/qwen-audio-3.1-tts-flash` | Qwen-Audio 3.1 TTS Flash | Speech | DashScope speech | Yes |
+| `qwen/qwen-audio-3.1-tts-plus` | Qwen-Audio 3.1 TTS Plus | Speech | DashScope speech | No |
+| `qwen/qwen3-tts-flash` | Qwen3-TTS-Flash | Speech | DashScope speech | No |
+| `qwen/qwen3.7-text-embedding` | Qwen3.7 Text Embedding | Embedding | Embeddings | Yes |
+| `qwen/text-embedding-v3` | Text Embedding V3 | Embedding | Embeddings | No |
+| `qwen/text-embedding-v4` | Text Embedding V4 | Embedding | Embeddings | No |
+
 ---
 
 ### MiniMax
@@ -453,7 +523,7 @@ It doesn't edit images.
 | **Provider ID** | `minimax` |
 | **Base URL** | `https://api.minimax.io/v1` |
 | **Website** | [minimax.io](https://www.minimax.io) |
-| **API surfaces** | Chat Completions, Responses, Messages |
+| **API surfaces** | Chat Completions, Responses, Messages, MiniMax T2A |
 | **Provider key required** | No |
 
 [How to use MiniMax →](/ai-gateway/providers/minimax)
@@ -463,14 +533,14 @@ It doesn't edit images.
 <ModelTable>
   <ModelRow id="minimax-m3.1-flash" name="MiniMax M3.1 Flash" context={1000000} output={524288} modalities="text" />
   <ModelRow id="minimax-m3" name="MiniMax M3" context={1000000} output={524288} modalities="text,image,video" />
-  <ModelRow id="minimax-m2.7" name="MiniMax M2.7" context={204800} output={204800} modalities="text" />
-  <ModelRow id="minimax-m2.7-highspeed" name="MiniMax M2.7 HighSpeed" context={204800} output={204800} modalities="text" />
-  <ModelRow id="minimax-m2.5" name="MiniMax M2.5" context={204800} output={204800} modalities="text" />
-  <ModelRow id="minimax-m2.5-highspeed" name="MiniMax M2.5 HighSpeed" context={204800} output={204800} modalities="text" />
 </ModelTable>
 
-MiniMax retires `minimax-m2.7`, `minimax-m2.7-highspeed`, `minimax-m2.5`, and `minimax-m2.5-highspeed` on November 18, 2026.
-Move requests to `minimax-m3` or `minimax-m3.1-flash` before then.
+#### MiniMax speech models
+
+| Model ID | Name | Type | API surface | Needs BYOK? |
+|----------|------|------|-------------|-------------|
+| `speech-2.8-hd` | Speech 2.8 HD | Speech | MiniMax T2A | No |
+| `speech-2.8-turbo` | Speech 2.8 Turbo | Speech | MiniMax T2A | No |
 
 ---
 
@@ -481,7 +551,7 @@ Move requests to `minimax-m3` or `minimax-m3.1-flash` before then.
 | **Provider ID** | `tokenhub` |
 | **Base URL** | `https://tokenhub-intl.tencentcloudmaas.com/v1` |
 | **Website** | [tencentcloud.com/document/product/1300](https://www.tencentcloud.com/document/product/1300) |
-| **API surfaces** | Chat Completions, Responses, Messages |
+| **API surfaces** | Chat Completions, Responses, Messages, Embeddings |
 | **Provider key required** | No |
 
 [How to use Tencent TokenHub →](/ai-gateway/providers/tokenhub)
@@ -518,9 +588,19 @@ Move requests to `minimax-m3` or `minimax-m3.1-flash` before then.
 TokenHub retires `tencent/hy4-preview` on December 6, 2026, at 16:00 UTC.
 Move requests to `tencent/hy4`.
 
+TokenHub retires `deepseek/deepseek-v4-flash-202605` on December 9, 2026, at 16:00 UTC.
+Move requests to `deepseek/deepseek-flash`.
+
 TokenHub has also deprecated `deepseek/deepseek-v4-flash`.
 It still answers, but `ngrok/auto` no longer picks it.
 Use `deepseek/deepseek-flash` in new code.
+
+#### Tencent TokenHub embedding models
+
+| Model ID | Name | Type | API surface | Needs BYOK? |
+|----------|------|------|-------------|-------------|
+| `tencent/kinfra-text-embedding-0.6b` | Kinfra Text Embedding 0.6B | Embedding | Embeddings | No |
+| `tencent/kinfra-text-embedding-4b` | Kinfra Text Embedding 4B | Embedding | Embeddings | No |
 
 ---
 
@@ -583,7 +663,7 @@ The d1 models are decision models that serve System One requests at `/v1/systemo
 | **Provider ID** | `llmapi` |
 | **Base URL** | `https://api.llmapi.ai/v1` |
 | **Website** | [llmapi.ai](https://llmapi.ai/) |
-| **API surfaces** | Chat Completions, Responses, Messages, Images, System One |
+| **API surfaces** | Chat Completions, Responses, Messages, Images, System One, Embeddings, Speech |
 | **Provider key required** | For some models. See **Needs BYOK?** |
 
 [How to use LLM API →](/ai-gateway/providers/llmapi)
@@ -756,6 +836,34 @@ A model works with credits only when no upstream charges more than the catalog p
 Models with long-prompt price tiers, separate cache-write prices, or image input priced apart from text need your own LLM API key, and that includes every Claude model.
 See [LLM API](/ai-gateway/providers/llmapi) for the request formats each model accepts.
 
+#### LLM API speech and embedding models
+
+| Model ID | Name | Type | API surface | Needs BYOK? |
+|----------|------|------|-------------|-------------|
+| `cartesia/sonic-3` | Cartesia Sonic 3 | Speech | Speech | No |
+| `cartesia/sonic-3-2026-01-12` | Cartesia Sonic 3 (2026-01-12) | Speech | Speech | No |
+| `cartesia/sonic-3.5` | Cartesia Sonic 3.5 | Speech | Speech | No |
+| `deepgram/aura` | Deepgram Aura (Legacy) | Speech | Speech | No |
+| `deepgram/aura-2` | Deepgram Aura 2 | Speech | Speech | No |
+| `elevenlabs/eleven_flash_v2_5` | Eleven Flash v2.5 | Speech | Speech | No |
+| `elevenlabs/eleven_multilingual_v2` | Eleven Multilingual v2 | Speech | Speech | No |
+| `elevenlabs/eleven_v3` | Eleven v3 | Speech | Speech | No |
+| `elevenlabs/eleven_v4` | Eleven v4 | Speech | Speech | No |
+| `elevenlabs/eleven_v4_turbo` | Eleven v4 Turbo | Speech | Speech | No |
+| `google/gemini-2.5-flash-preview-tts` | Gemini 2.5 Flash Preview TTS | Speech | Speech | No |
+| `google/gemini-2.5-pro-preview-tts` | Gemini 2.5 Pro Preview TTS | Speech | Speech | No |
+| `google/gemini-3.1-flash-tts-preview` | Gemini 3.1 Flash TTS (Preview) | Speech | Speech | No |
+| `google/gemini-3.8-flash-lite-tts` | Gemini 3.8 Flash-Lite TTS | Speech | Speech | No |
+| `google/gemini-3.8-flash-tts` | Gemini 3.8 Flash TTS | Speech | Speech | No |
+| `openai/gpt-4o-mini-tts` | GPT-4o Mini TTS | Speech | Speech | No |
+| `amazon/titan-embed-text-v2` | Amazon Titan Embed Text v2 | Embedding | Embeddings | No |
+| `cohere/embed-english-v3` | Cohere Embed English v3 (Bedrock) | Embedding | Embeddings | No |
+| `cohere/embed-multilingual-v3` | Cohere Embed Multilingual v3 (Bedrock) | Embedding | Embeddings | No |
+| `mistral/mistral-embed` | Mistral Embed | Embedding | Embeddings | No |
+| `openai/text-embedding-3-large` | Text Embedding 3 Large | Embedding | Embeddings | No |
+| `openai/text-embedding-3-small` | Text Embedding 3 Small | Embedding | Embeddings | No |
+| `openai/text-embedding-ada-002` | Text Embedding Ada 002 | Embedding | Embeddings | No |
+
 ---
 
 ### Morph
@@ -790,6 +898,117 @@ Other providers also serve many of those models, so add the `morph:` prefix, as 
 </ModelTable>
 
 Morph serves `deepseek/deepseek-v4.1-flash-abliterated` only to accounts it approves, so it needs your own Morph key.
+
+---
+
+### Novita AI
+
+| Field | Value |
+|-------|-------|
+| **Provider ID** | `novita` |
+| **Base URL** | `https://api.novita.ai/openai/v1` |
+| **Website** | [novita.ai](https://novita.ai/) |
+| **API surfaces** | Chat Completions, Responses, Messages |
+| **Provider key required** | For some models. See **Needs BYOK?** |
+
+[How to use Novita AI →](/ai-gateway/providers/novita)
+
+Novita AI serves open-weight models from many labs, including DeepSeek, Qwen, Kimi, GLM, and MiniMax.
+Other providers also serve many of those models, so add the `novita:` prefix, as in `novita:z-ai/glm-5.3`, to keep a request on Novita.
+
+#### Novita AI models
+
+<ModelTable>
+  <ModelRow id="baichuan/baichuan-m2-32b" name="Baichuan M2 32B" context={131072} output={131072} modalities="text" />
+  <ModelRow id="baidu/cobuddy" name="CoBuddy" context={131072} output={65536} modalities="text" />
+  <ModelRow id="deepseek/deepseek-ocr-2" name="DeepSeek OCR 2" context={8192} output={8192} modalities="text,image" />
+  <ModelRow id="deepseek/deepseek-r1-0528" name="DeepSeek R1 0528" context={163840} output={32768} modalities="text" />
+  <ModelRow id="deepseek/deepseek-r1-community" name="DeepSeek R1" context={64000} output={8000} modalities="text" />
+  <ModelRow id="deepseek/deepseek-r1-turbo" name="DeepSeek R1 Turbo" context={64000} output={16000} modalities="text" />
+  <ModelRow id="deepseek/deepseek-v3" name="DeepSeek V3" context={64000} output={16000} modalities="text" />
+  <ModelRow id="deepseek/deepseek-v4-flash-0731" name="DeepSeek V4 Flash 0731" context={1048576} output={393216} modalities="text" />
+  <ModelRow id="deepseek/deepseek-v4-pro" name="DeepSeek V4 Pro" context={1048576} output={393216} modalities="text" />
+  <ModelRow id="deepseek/deepseek-v4-pro-0813" name="DeepSeek V4 Pro 0813" context={1048576} output={393216} modalities="text" />
+  <ModelRow id="deepseek/deepseek-v4.1-flash" name="DeepSeek V4.1 Flash" context={1048576} output={393216} modalities="text,image" />
+  <ModelRow id="deepseek/deepseek-v4.1-flash-1017" name="DeepSeek V4.1 Flash 1017" context={1048576} output={393216} modalities="text,image" />
+  <ModelRow id="google/gemma-3-12b-it" name="Gemma 3 12B" context={131072} output={8192} modalities="text,image" />
+  <ModelRow id="google/gemma-3-27b-it" name="Gemma 3 27B" context={98304} output={16384} modalities="text,image" />
+  <ModelRow id="google/gemma-4-26b-a4b-it" name="Gemma 4 26B A4B" context={262144} output={131072} modalities="text,image" />
+  <ModelRow id="google/gemma-4-31b-it" name="Gemma 4 31B" context={262144} output={131072} modalities="text,image" />
+  <ModelRow id="gryphe/mythomax-l2-13b" name="MythoMax L2 13B" context={4096} output={3200} modalities="text" />
+  <ModelRow id="inclusionai/ling-3.0-flash" name="Ling 3.0 Flash" context={262144} output={32768} modalities="text" />
+  <ModelRow id="inclusionai/ling-3.0-flash-fin" name="Ling 3.0 Flash Fin" context={262144} output={32768} modalities="text" />
+  <ModelRow id="inclusionai/ling-3.0-flash-sante" name="Ling 3.0 Flash Sante" context={262144} output={32768} modalities="text" />
+  <ModelRow id="inclusionai/ling-3.0-flash-vl" name="Ling 3.0 Flash VL" context={262144} output={32768} modalities="text,image,video" />
+  <ModelRow id="inclusionai/ling-3.1-flash" name="Ling 3.1 Flash 1019" context={1000000} output={262144} modalities="text" />
+  <ModelRow id="meta-llama/llama-3.1-8b-instruct" name="Llama 3.1 8B Instruct" context={16384} output={16384} modalities="text" />
+  <ModelRow id="meta-llama/llama-3.3-70b-instruct" name="Llama 3.3 70B Instruct" context={12288} output={12288} modalities="text" />
+  <ModelRow id="meta-llama/llama-4-maverick-17b-128e-instruct-fp8" name="Llama 4 Maverick Instruct" context={1048576} output={8192} modalities="text,image" />
+  <ModelRow id="meta-llama/llama-4-scout-17b-16e-instruct" name="Llama 4 Scout 17B 16E Instruct" context={131072} output={131072} modalities="text,image" />
+  <ModelRow id="microsoft/wizardlm-2-8x22b" name="WizardLM 2 8x22B" context={65535} output={8000} modalities="text" />
+  <ModelRow id="mindai/macaron-v1-tall" name="Macaron V1 Tall" context={262144} output={32768} modalities="text" />
+  <ModelRow id="mindai/macaron-v1-venti" name="Macaron V1 Venti" context={1048576} output={131072} modalities="text" />
+  <ModelRow id="minimax/minimax-m1-80k" name="MiniMax M1" context={1000000} output={40000} modalities="text" />
+  <ModelRow id="minimax/minimax-m2.5" name="MiniMax M2.5" context={204800} output={131100} modalities="text" />
+  <ModelRow id="minimax/minimax-m2.7" name="MiniMax M2.7" context={204800} output={131072} modalities="text" />
+  <ModelRow id="minimax/minimax-m2.7-highspeed" name="MiniMax M2.7 HighSpeed" context={204800} output={131072} modalities="text" />
+  <ModelRow id="minimax/minimax-m3" name="MiniMax M3" context={1000000} output={131072} modalities="text,image,video" byok />
+  <ModelRow id="minimax/minimax-m3.1-flash" name="MiniMax M3.1 Flash" context={1000000} output={524288} modalities="text,image,video" />
+  <ModelRow id="moonshotai/kimi-k2-0905" name="Kimi K2 Instruct 0905" context={262144} output={98304} modalities="text" />
+  <ModelRow id="moonshotai/kimi-k2-instruct" name="Kimi K2 Instruct" context={131072} output={98304} modalities="text" />
+  <ModelRow id="moonshotai/kimi-k2.5" name="Kimi K2.5" context={262144} output={262144} modalities="text,image,video" />
+  <ModelRow id="moonshotai/kimi-k2.6" name="Kimi K2.6" context={262144} output={262144} modalities="text,image,video" />
+  <ModelRow id="moonshotai/kimi-k2.7-code" name="Kimi K2.7 Code" context={262144} output={262144} modalities="text,image,video" />
+  <ModelRow id="moonshotai/kimi-k3" name="Kimi K3" context={1048576} output={1048576} modalities="text,image,video" byok />
+  <ModelRow id="moonshotai/kimi-k3.1-pro" name="Kimi K3.1 Pro" context={1048576} output={1048576} modalities="text,image,video" byok />
+  <ModelRow id="moonshotai/kimi-k3.1-pro-highspeed" name="Kimi K3.1 Pro HighSpeed" context={1048576} output={1048576} modalities="text,image,video" byok />
+  <ModelRow id="nvidia/nemotron-3-nano-30b-a3b" name="NVIDIA Nemotron 3 Nano 30B A3B" context={262144} output={32768} modalities="text" />
+  <ModelRow id="openai/gpt-oss-120b" name="GPT OSS 120B" context={131072} output={32768} modalities="text,image" />
+  <ModelRow id="paddlepaddle/paddleocr-vl" name="PaddleOCR VL" context={16384} output={16384} modalities="text,image" />
+  <ModelRow id="qwen/qwen-mt-plus" name="Qwen MT Plus" context={16384} output={8192} modalities="text" />
+  <ModelRow id="qwen/qwen3-omni-30b-a3b-thinking" name="Qwen3 Omni 30B A3B Thinking" context={65536} output={16384} modalities="text,audio,video,image" byok />
+  <ModelRow id="qwen/qwen3-vl-30b-a3b-instruct" name="Qwen3 VL 30B A3B Instruct" context={131072} output={32768} modalities="text,video,image" />
+  <ModelRow id="qwen/qwen3.5-122b-a10b" name="Qwen3.5 122B A10B" context={262144} output={65536} modalities="text,image,video" />
+  <ModelRow id="qwen/qwen3.5-27b" name="Qwen3.5 27B" context={262144} output={65536} modalities="text,image,video" />
+  <ModelRow id="qwen/qwen3.5-35b-a3b" name="Qwen3.5 35B A3B" context={262144} output={65536} modalities="text,image,video" />
+  <ModelRow id="qwen/qwen3.5-397b-a17b" name="Qwen3.5 397B A17B" context={262144} output={65536} modalities="text,image,video" />
+  <ModelRow id="qwen/qwen3.6-27b" name="Qwen3.6 27B" context={262144} output={65536} modalities="text,image,video" />
+  <ModelRow id="qwen/qwen3.6-35b-a3b" name="Qwen3.6 35B A3B" context={262144} output={65536} modalities="text,image,video" />
+  <ModelRow id="qwen/qwen3.7-max" name="Qwen3.7-Max" context={1000000} output={65536} modalities="text" />
+  <ModelRow id="qwen/qwen3.8-2.4t-a95b" name="Qwen3.8-Open-Source" context={1000000} output={131072} modalities="text" />
+  <ModelRow id="qwen/qwen3.8-27b" name="Qwen3.8 27B" context={1000000} output={131072} modalities="text,image,video" />
+  <ModelRow id="qwen/qwen3.8-flash" name="Qwen3.8-Flash" context={1000000} output={131072} modalities="text,image,video" byok />
+  <ModelRow id="qwen/qwen3.8-max" name="Qwen3.8-Max" context={1000000} output={131072} modalities="text,image,video" byok />
+  <ModelRow id="sao10k/l3-8b-stheno-v3.2" name="Llama 3 8B Stheno V3.2" context={8192} output={32000} modalities="text" />
+  <ModelRow id="stepfun/step-3.7-flash" name="Step 3.7 Flash" context={262144} output={256000} modalities="text,image,video" />
+  <ModelRow id="stepfun/step-5-preview" name="Step 5 Preview" context={1000000} output={64000} modalities="text,image,video" />
+  <ModelRow id="tencent/hy3" name="Hy3" context={262144} output={262144} modalities="text" />
+  <ModelRow id="tencent/hy4" name="Hy4" context={1000000} output={64000} modalities="text,image" byok />
+  <ModelRow id="tencent/hy4-flash" name="Hy4 Flash" context={1000000} output={64000} modalities="text,image" />
+  <ModelRow id="xiaomi/mimo-v2.6-flash" name="MiMo-V2.6-Flash" context={1048576} output={131072} modalities="text,image,video,audio" byok />
+  <ModelRow id="xiaomi/mimo-v2.6-pro" name="MiMo-V2.6-Pro" context={1048576} output={131072} modalities="text,image,video,audio" byok />
+  <ModelRow id="z-ai/autoglm-phone-9b-multilingual" name="AutoGLM Phone 9B Multilingual" context={65536} output={65536} modalities="text,image" />
+  <ModelRow id="z-ai/glm-4.5-air" name="GLM-4.5-Air" context={131072} output={98304} modalities="text" />
+  <ModelRow id="z-ai/glm-4.5v" name="GLM-4.5V" context={65536} output={16384} modalities="text,video,image" />
+  <ModelRow id="z-ai/glm-4.6" name="GLM-4.6" context={204800} output={131072} modalities="text" />
+  <ModelRow id="z-ai/glm-4.6v" name="GLM-4.6V" context={131072} output={32768} modalities="text,video,image" />
+  <ModelRow id="z-ai/glm-4.7" name="GLM-4.7" context={204800} output={131072} modalities="text" />
+  <ModelRow id="z-ai/glm-4.7-flash" name="GLM-4.7-Flash" context={200000} output={128000} modalities="text" />
+  <ModelRow id="z-ai/glm-5" name="GLM-5" context={202800} output={131072} modalities="text" />
+  <ModelRow id="z-ai/glm-5.1" name="GLM-5.1" context={204800} output={131072} modalities="text" />
+  <ModelRow id="z-ai/glm-5.2" name="GLM-5.2" context={1048576} output={131072} modalities="text" />
+  <ModelRow id="z-ai/glm-5.3" name="GLM-5.3" context={1048576} output={131072} modalities="text" />
+  <ModelRow id="z-ai/glm-5.3-flash" name="GLM-5.3-Flash" context={1048576} output={131072} modalities="text,image,video" />
+  <ModelRow id="z-ai/glm-5.3-flashx" name="GLM-5.3-FlashX" context={1048576} output={131072} modalities="text,image,video" />
+</ModelTable>
+
+Every Novita model takes Chat Completions requests.
+Some also take Responses or Messages requests.
+Models with separate cache-write prices, long-prompt price tiers, audio input, or a limited-time price need your own Novita key.
+
+Novita retires 12 models on November 26, 2026, at 16:00 UTC, and names no replacement:
+`z-ai/autoglm-phone-9b-multilingual`, `deepseek/deepseek-ocr-2`, `google/gemma-3-27b-it`, `google/gemma-4-26b-a4b-it`, `google/gemma-4-31b-it`, `openai/gpt-oss-120b`, `sao10k/l3-8b-stheno-v3.2`, `meta-llama/llama-3.1-8b-instruct`, `meta-llama/llama-3.3-70b-instruct`, `minimax/minimax-m1-80k`, `nvidia/nemotron-3-nano-30b-a3b`, and `qwen/qwen3-omni-30b-a3b-thinking`.
+Other providers in the catalog serve some of them.
 
 ---
 
