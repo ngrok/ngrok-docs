@@ -298,6 +298,7 @@ its ID while the agent is offline, so it survives reconnects and restarts.
 | [create](#ngrok-api-agents-create)    | Create a new Agent record with a new ID.                                          |
 | [delete](#ngrok-api-agents-delete)    | Delete an Agent by ID                                          |
 | [get](#ngrok-api-agents-get)    | Get an Agent by ID                                          |
+| [list](#ngrok-api-agents-list)    | List the Agents of the account                                          |
 | [restore](#ngrok-api-agents-restore)    | Restore an Agent record by ID                                          |
 
 ### Flags
@@ -337,7 +338,7 @@ ngrok api agents create [flags]
 
 ## ngrok api agents delete
 
-Delete an Agent by ID. The record is soft-deleted, and the live session of the agent is dropped. An ID outside the caller's account returns 404 ERR_NGROK_AGENT_NOT_FOUND, a retired record 410 ERR_NGROK_AGENT_RETIRED, and a caller who may not delete it 403 ERR_NGROK_AGENT_OWNER_MISMATCH.
+Delete an Agent by ID. The record is soft-deleted. With keep_session=true the agent's live session stays up as a durable: false Agent; otherwise it is dropped. An ID outside the caller's account returns 404 ERR_NGROK_AGENT_NOT_FOUND, a retired record 410 ERR_NGROK_AGENT_RETIRED, and a caller who may not delete it 403 ERR_NGROK_AGENT_OWNER_MISMATCH.
 
 ### Usage
 
@@ -349,6 +350,7 @@ ngrok api agents delete <id> [flags]
 
 | Flag              | Description                             |
 | ----------------- | --------------------------------------- |
+|  `--keep-session` | true keeps the agent's live session up and linked to the soft-deleted record; it is listed as a durable: false Agent. Absent or false disconnects it. Any other value returns 400. |
 |  `--api-key` | API key to use |
 |  `--config` | path to config files; they are merged if multiple |
 |  `--log` | path to log file, 'stdout', 'stderr' or 'false' |
@@ -370,6 +372,30 @@ ngrok api agents get <id> [flags]
 
 | Flag              | Description                             |
 | ----------------- | --------------------------------------- |
+|  `--api-key` | API key to use |
+|  `--config` | path to config files; they are merged if multiple |
+|  `--log` | path to log file, 'stdout', 'stderr' or 'false' |
+|  `--log-format` | log record format: 'term', 'logfmt', 'json' |
+|  `--log-level` | logging level: 'debug', 'info', 'warn', 'error', 'crit' |
+
+
+## ngrok api agents list
+
+List the Agents of the account. A soft-deleted Agent is listed only while it is online; retired Agents are not listed. Where live sessions are listed, connected Agents come first, then a durable: false Agent for each live session that is not linked to a record, then disconnected Agents; otherwise the list is the records only. Each group is newest first. Take before_id from next_page_uri only. A filter is refused for now.
+
+### Usage
+
+```sh
+ngrok api agents list [flags]
+```
+
+### Flags
+
+| Flag              | Description                             |
+| ----------------- | --------------------------------------- |
+|  `--before-id` | Expects a resource ID as its input. Returns earlier entries in the result set, sorted by ID. |
+|  `--filter` | A CEL expression to filter the list results. Supports logical and comparison operators to match on fields such as id, metadata, created_at, and more. See ngrok API Filtering for syntax and field details: https://ngrok.com/docs/api/api-filtering (https://ngrok.com/docs/api/api-filtering). |
+|  `--limit` | Constrains the number of results in the dataset. See the API Overview (https://ngrok.com/docs/api/index#pagination) for details. |
 |  `--api-key` | API key to use |
 |  `--config` | path to config files; they are merged if multiple |
 |  `--log` | path to log file, 'stdout', 'stderr' or 'false' |

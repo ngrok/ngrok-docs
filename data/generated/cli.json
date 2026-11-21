@@ -513,10 +513,15 @@
                   "full_name": "ngrok api agents delete",
                   "short_name": "delete",
                   "short_description": "Delete an Agent by ID",
-                  "long_description": "Delete an Agent by ID. The record is soft-deleted, and the live session of the agent is dropped. An ID outside the caller's account returns 404 ERR_NGROK_AGENT_NOT_FOUND, a retired record 410 ERR_NGROK_AGENT_RETIRED, and a caller who may not delete it 403 ERR_NGROK_AGENT_OWNER_MISMATCH.",
+                  "long_description": "Delete an Agent by ID. The record is soft-deleted. With keep_session=true the agent's live session stays up as a durable: false Agent; otherwise it is dropped. An ID outside the caller's account returns 404 ERR_NGROK_AGENT_NOT_FOUND, a retired record 410 ERR_NGROK_AGENT_RETIRED, and a caller who may not delete it 403 ERR_NGROK_AGENT_OWNER_MISMATCH.",
                   "usage": "ngrok api agents delete \u003cid\u003e [flags]",
                   "docs_link": "#ngrok-api-agents-delete",
                   "flags": [
+                    {
+                      "full_name": "keep-session",
+                      "short_name": "",
+                      "description": "true keeps the agent's live session up and linked to the soft-deleted record; it is listed as a durable: false Agent. Absent or false disconnects it. Any other value returns 400."
+                    },
                     {
                       "full_name": "api-key",
                       "short_name": "",
@@ -553,6 +558,57 @@
                   "usage": "ngrok api agents get \u003cid\u003e [flags]",
                   "docs_link": "#ngrok-api-agents-get",
                   "flags": [
+                    {
+                      "full_name": "api-key",
+                      "short_name": "",
+                      "description": "API key to use"
+                    },
+                    {
+                      "full_name": "config",
+                      "short_name": "",
+                      "description": "path to config files; they are merged if multiple"
+                    },
+                    {
+                      "full_name": "log",
+                      "short_name": "",
+                      "description": "path to log file, 'stdout', 'stderr' or 'false'"
+                    },
+                    {
+                      "full_name": "log-format",
+                      "short_name": "",
+                      "description": "log record format: 'term', 'logfmt', 'json'"
+                    },
+                    {
+                      "full_name": "log-level",
+                      "short_name": "",
+                      "description": "logging level: 'debug', 'info', 'warn', 'error', 'crit'"
+                    }
+                  ],
+                  "sub_commands": null
+                },
+                {
+                  "full_name": "ngrok api agents list",
+                  "short_name": "list",
+                  "short_description": "List the Agents of the account",
+                  "long_description": "List the Agents of the account. A soft-deleted Agent is listed only while it is online; retired Agents are not listed. Where live sessions are listed, connected Agents come first, then a durable: false Agent for each live session that is not linked to a record, then disconnected Agents; otherwise the list is the records only. Each group is newest first. Take before_id from next_page_uri only. A filter is refused for now.",
+                  "usage": "ngrok api agents list [flags]",
+                  "docs_link": "#ngrok-api-agents-list",
+                  "flags": [
+                    {
+                      "full_name": "before-id",
+                      "short_name": "",
+                      "description": "Expects a resource ID as its input. Returns earlier entries in the result set, sorted by ID."
+                    },
+                    {
+                      "full_name": "filter",
+                      "short_name": "",
+                      "description": "A CEL expression to filter the list results. Supports logical and comparison operators to match on fields such as id, metadata, created_at, and more. See ngrok API Filtering for syntax and field details: https://ngrok.com/docs/api/api-filtering (https://ngrok.com/docs/api/api-filtering)."
+                    },
+                    {
+                      "full_name": "limit",
+                      "short_name": "",
+                      "description": "Constrains the number of results in the dataset. See the API Overview (https://ngrok.com/docs/api/index#pagination) for details."
+                    },
                     {
                       "full_name": "api-key",
                       "short_name": "",
