@@ -4,7 +4,7 @@ sidebarTitle: Terminate TLS
 description: Configure TLS termination in Kubernetes to use custom certificates, enforce TLS versions, and enable mutual TLS.
 ---
 
-When using Ingress and Gateway API resources with the ngrok Kubernetes Operator, HTTPS endpoints are created by default, and ngrok automatically terminates TLS for secure traffic handling.
+When you use Ingress and Gateway API resources with the ngrok Kubernetes Operator, the Operator creates HTTPS endpoints by default, and ngrok automatically terminates TLS for secure traffic handling.
 
 By customizing TLS termination settings, you can:
 
@@ -22,7 +22,7 @@ Customizing TLS settings allows you to:
 - Enforce strong encryption standards by restricting which TLS versions are accepted.
 - Enable mutual TLS (mTLS) for client authentication, adding an extra layer of security.
 
-Key Benefits:
+Key benefits:
 
 - **Enhance Security:** Enforce TLS policies that comply with industry best practices.
 - **Use Custom Certificates:** Deploy your own TLS certificates to meet security or compliance requirements.
@@ -69,7 +69,7 @@ The following examples showcase how you can create an endpoint that:
     openssl x509 -req -in client.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out client.crt -days 365 -sha256 -extfile <(printf "extendedKeyUsage = clientAuth")
     ```
 
-    These commands will generate the following files:
+    These commands generate the following files:
     - CA Files:
       - `ca.key`: CA private key
       - `ca.crt`: CA certificate
@@ -78,9 +78,9 @@ The following examples showcase how you can create an endpoint that:
       - `server.csr`: Server certificate signing request
       - `server.crt`: Server certificate
     - Client Files:
-    - `client.key`: Client private key
-    - `client.csr`: Client certificate signing request
-    - `client.crt`: Client certificate (with proper clientAuth extension for mTLS)
+      - `client.key`: Client private key
+      - `client.csr`: Client certificate signing request
+      - `client.crt`: Client certificate (with proper clientAuth extension for mTLS)
   </Step>
 
   <Step title="Create an endpoint with custom TLS termination">
@@ -90,7 +90,7 @@ The following examples showcase how you can create an endpoint that:
     Check out the [terminate TLS Traffic Policy action](/gateway/traffic-policy/actions/terminate-tls/) page for more details about how it functions and the parameters it accepts.
 
     ```yaml
-    apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+    apiVersion: ngrok.com/v1
     kind: AgentEndpoint
     metadata:
       name: example-agent-endpoint
@@ -125,14 +125,14 @@ The following examples showcase how you can create an endpoint that:
     Check out the [terminate TLS Traffic Policy action](/gateway/traffic-policy/actions/terminate-tls/) page for more details about how it functions and the parameters it accepts.
 
     ```yaml
-    apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+    apiVersion: ngrok.com/v1
     kind: CloudEndpoint
     metadata:
       name: example-cloud-endpoint
     spec:
       url: https://example-hostname.ngrok.app
       trafficPolicy:
-        policy:
+        inline:
           on_tcp_connect:
             - actions:
                 - type: terminate-tls
@@ -155,16 +155,16 @@ The following examples showcase how you can create an endpoint that:
     ```
     </Tab>
     <Tab title="Ingress">
-    💡 `Ingress` resources do not natively support advanced TLS termination options, but they can be extended using a Traffic Policy.
+    💡 `Ingress` resources don't natively support advanced TLS termination options, but they can be extended using a Traffic Policy.
 
     Check out the [terminate TLS Traffic Policy action](/gateway/traffic-policy/actions/terminate-tls/) page for more details about how it functions and the parameters it accepts.
 
     <Steps titleSize="h3">
-      <Step title="Create an NgrokTrafficPolicy">
+      <Step title="Create a TrafficPolicy">
 
         ```yaml
-        apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-        kind: NgrokTrafficPolicy
+        apiVersion: ngrok.com/v1
+        kind: TrafficPolicy
         metadata:
           name: example-tp
           namespace: default
@@ -192,14 +192,14 @@ The following examples showcase how you can create an endpoint that:
         ```
       </Step>
 
-      <Step title="Use the NgrokTrafficPolicy on an Ingress">
+      <Step title="Use the TrafficPolicy on an Ingress">
 
         ```yaml
         apiVersion: networking.k8s.io/v1
         kind: Ingress
         metadata:
           annotations:
-            k8s.ngrok.com/traffic-policy: example-tp
+            ngrok.com/traffic-policy: example-tp
           name: example-ingress
           namespace: default
         spec:
@@ -236,7 +236,7 @@ The following examples showcase how you can create an endpoint that:
 
       <Step title="Create a ConfigMap to validate client certificates">
 
-        Create a Kubernetes `ConfigMap` containing the CA so that client certificates can be validated.
+        Create a Kubernetes `ConfigMap` containing the CA so ngrok can validate client certificates.
 
         ```bash
         kubectl create configmap ca-cert-config \
@@ -254,6 +254,14 @@ The following examples showcase how you can create an endpoint that:
           namespace: default
         spec:
           gatewayClassName: ngrok
+          tls:
+            frontend:
+              default:
+                validation:
+                  caCertificateRefs:
+                  - group: ""
+                    kind: ConfigMap
+                    name: ca-cert-config
           listeners:
             - name: example
               hostname: "example-hostname.ngrok.app"
@@ -264,14 +272,10 @@ The following examples showcase how you can create an endpoint that:
                 certificateRefs:
                 - kind: Secret
                   name: server-cert-secret
-                frontendValidation:
-                  caCertificateRefs:
-                  - kind: ConfigMap
-                    name: ca-cert-config
                 options:
-                  "k8s.ngrok.com/terminate-tls.min_version": "1.2"
-                  "k8s.ngrok.com/terminate-tls.max_version": "1.3"
-                  "k8s.ngrok.com/terminate-tls.mutual_tls_verification_strategy": "require-and-verify"
+                  "ngrok.com/terminate-tls.min_version": "1.3"
+                  "ngrok.com/terminate-tls.max_version": "1.3"
+                  "ngrok.com/terminate-tls.mutual_tls_verification_strategy": "require-and-verify"
         ```
       </Step>
 
@@ -313,7 +317,7 @@ The following examples showcase how you can create an endpoint that:
 
 ### Use the client certificates while making requests
 
-Now that mutual TLS is enforced, you will need to include the client certificate when making requests
+Now that mutual TLS is enforced, include the client certificate when you make requests:
 
 ```bash
 curl --cert client.crt --key client.key --cacert ca.crt https://<your hostname>

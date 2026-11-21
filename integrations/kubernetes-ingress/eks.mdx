@@ -111,12 +111,12 @@ Open your reserved domain (for example, `https://NGROK_DOMAIN`) in a browser to 
 With the [Traffic Policy system](/gateway/traffic-policy/) and the [`oauth` action](/gateway/traffic-policy/actions/oauth/), ngrok manages OAuth protection entirely at ngrok.
 ngrok's network authenticates and authorizes all requests before allowing ingress to your endpoint, so you don't need to add any services to your cluster or alter any routes.
 
-To enable the `oauth` action, create a new `NgrokTrafficPolicy` custom resource and apply it to your entire `Ingress` with an annotation.
+To enable the `oauth` action, create a new `TrafficPolicy` custom resource and apply it to your entire `Ingress` with an annotation.
 You can also apply the policy to a specific backend or as the default backend for an `Ingress`.
-See the doc on using the [Operator with Ingresses](/gateway/k8s/guides/using-ingresses/#using-ngroktrafficpolicy-with-ingress).
+See the doc on using the [Operator with Ingresses](/gateway/k8s/guides/using-ingresses/#using-trafficpolicy-with-ingress).
 
 Edit your `ngrok-manifest.yaml` file with the following, leaving the `Service` and `Deployment` as they were.
-Note the new `annotations` field and the `NgrokTrafficPolicy` CR.
+Note the new `annotations` field and the `TrafficPolicy` CR, which must be in the same namespace as the `Ingress`.
 
 ```yaml
 # ...
@@ -128,7 +128,7 @@ metadata:
   name: tinyllama-ingress
   namespace: default
   annotations:
-    k8s.ngrok.com/traffic-policy: oauth
+    ngrok.com/traffic-policy: oauth
 spec:
   ingressClassName: ngrok
   rules:
@@ -144,8 +144,8 @@ spec:
                   number: 80
 ---
 # Traffic Policy configuration for OAuth
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-kind: NgrokTrafficPolicy
+apiVersion: ngrok.com/v1
+kind: TrafficPolicy
 metadata:
   name: oauth
   namespace: default
@@ -168,12 +168,12 @@ When you open your demo app again, ngrok asks you to log in with Google.
 To limit access to just yourself or your colleagues, tighten the policy.
 
 Use [expressions](/gateway/traffic-policy/how-it-works#expressions) and [CEL interpolation](/gateway/traffic-policy/how-it-works#cel-interpolation) to reject OAuth logins that aren't under `example.com`.
-Update the `NgrokTrafficPolicy` portion of your manifest after changing `example.com` to your domain.
+Update the `TrafficPolicy` portion of your manifest after changing `example.com` to your domain.
 
 ```yaml
 # Traffic Policy configuration for OAuth
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-kind: NgrokTrafficPolicy
+apiVersion: ngrok.com/v1
+kind: TrafficPolicy
 metadata:
   name: oauth
   namespace: default

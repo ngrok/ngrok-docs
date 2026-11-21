@@ -24,13 +24,13 @@ Every Operator installation needs to reach these hosts:
 - `api.ngrok.com` on TCP port `443`, so that the Operator can reconcile your Kubernetes resources with the ngrok API.
 - `connect.ngrok-agent.com` on TCP port `443`, so that the Operator can establish its agent session and serve traffic. ngrok uses latency-based DNS and may route you to a regional connect host, so allow the whole `*.ngrok-agent.com` family rather than pinning a single address.
 
-If you only expose inbound services (for example, running the Operator as a webhook gateway), these two hosts plus the image registry below are all you need. The section on endpoint bindings applies only if you turn that feature on.
+If you only expose inbound services (for example, running the Operator as a webhook gateway), these two hosts plus the image registry below are all you need. The sections on endpoint bindings and private endpoints apply only if you turn those features on.
 
 ## Installation and upgrades
 
 You install and upgrade the Operator with Helm, which pulls two container images from Docker Hub:
 
-- `docker.io/ngrok/ngrok-operator`, the image for the Operator's deployments: the API manager, the agent, and, when endpoint bindings are enabled, the bindings forwarder.
+- `docker.io/ngrok/ngrok-operator`, the image for the Operator's deployments: the API manager, the agent, the bindings forwarder when endpoint bindings are enabled, and the private endpoint forwarder when private endpoints are enabled.
 - `docker.io/bitnami/kubectl`, used only by the pre-delete cleanup job when you uninstall.
 
 To pull these, allow Docker Hub's registry and content-delivery hosts on TCP port `443`:
@@ -39,20 +39,29 @@ To pull these, allow Docker Hub's registry and content-delivery hosts on TCP por
 - `auth.docker.io`
 - `production.cloudflare.docker.com`
 
-If your policy is to avoid Docker Hub entirely, mirror both images to a private registry (such as Amazon ECR) and point the `image.registry` and `cleanupHook.image.repository` Helm values at your mirror. In that case you allow your own registry instead of the hosts above.
+If your policy is to avoid Docker Hub entirely, mirror both images to a private registry (such as Amazon ECR) and point the `image.registry` and `components.cleanupHook.image.repository` Helm values at your mirror. In that case you allow your own registry instead of the hosts above.
 
 <Note>
 Bitnami changed how it distributes images on Docker Hub in 2025.
-If you run in an air-gapped or mirrored environment, plan to mirror `bitnami/kubectl` (or set `cleanupHook.image.repository` to a `kubectl` image you control) rather than relying on it being pulled at uninstall time.
+If you run in an air-gapped or mirrored environment, plan to mirror `bitnami/kubectl` (or set `components.cleanupHook.image.repository` to a `kubectl` image you control) rather than relying on it being pulled at uninstall time.
 </Note>
 
 ## Endpoint bindings
 
-[Endpoint bindings](/gateway/k8s/guides/bindings) are disabled by default (`bindings.enabled: false`), so skip this section unless you turn them on. When enabled, the bindings forwarder opens an additional connection to carry that traffic. Allow this host on TCP port `443`:
+[Endpoint bindings](/gateway/k8s/guides/bindings) are disabled by default (`ngrok.features.bindings.enabled: false`), so skip this section unless you turn them on. When enabled, the bindings forwarder opens an additional connection to carry that traffic. Allow this host on TCP port `443`:
 
 - `kubernetes-binding-ingress.ngrok.io`
 
 The forwarder connects to the bound endpoint host your ngrok account returns, which defaults to `kubernetes-binding-ingress.ngrok.io`. If your account uses a different host, allow that one instead.
+
+## Private endpoints (preview)
+
+Private endpoints (preview) are off by default (`ngrok.features.privateEndpoints.enabled: false`). When enabled, the forwarder connects to ngrok's private dial servers. Allow:
+
+- `quic.connect-endpoint.ngrok.com` on UDP port `443`, used for HTTP/3 (QUIC)
+- `h2.connect-endpoint.ngrok.com` on TCP port `443`, used for HTTP/2
+
+By default the forwarder tries both and keeps the first to connect. If you set `ngrok.features.privateEndpoints.privateDialProtocol` to `quic` or `h2`, you only need the matching host.
 
 ## Verify connectivity from the cluster
 

@@ -13,14 +13,15 @@ create an endpoint.
 
 <Steps titleSize="h3">
   <Step title="Install the ngrok Kubernetes Operator">
+    Save your ngrok [access token](https://dashboard.ngrok.com/access-tokens) as the `NGROK_ACCESS_TOKEN` environment variable, then install the Operator:
+
     ```bash
     helm install ngrok-operator ngrok/ngrok-operator \
       --namespace ngrok-operator \
       --create-namespace \
-      --set description="example Operator" \
-      --set bindings.enabled=true \
-      --set credentials.apiKey=$NGROK_API_KEY \
-      --set credentials.authtoken=$NGROK_AUTHTOKEN
+      --set ngrok.description="example Operator" \
+      --set ngrok.features.bindings.enabled=true \
+      --set ngrok.credentials.accessToken=$NGROK_ACCESS_TOKEN
     ```
   </Step>
 
@@ -105,15 +106,15 @@ A Cluster IP service is created in the Operator's namespace.
 apiVersion: v1
 kind: Service
 metadata:
-  name: <endpoint-id> # the endpoint's ID
+  name: <boundendpoint-name> # the name of the BoundEndpoint the Operator creates for the endpoint
   namespace: ngrok-operator
 spec:
   selector:
-    app.kubernetes.io/name: ngrok-operator-forwarder
+    app.kubernetes.io/component: bindings-forwarder
   ports:
     - protocol: TCP
       port: 80 # the endpoint url's port
-      targetPort: <randomly_assigned> # assigned by Operator to target the ngrok-operator-forwarder container
+      targetPort: <randomly_assigned> # assigned by Operator to target the bindings-forwarder pods
 ```
 
 ### External name service
@@ -130,7 +131,7 @@ metadata:
 spec:
   # Point service at the Operator Forwarder
   type: ExternalName
-  externalName: <endpoint-id>.ngrok-operator.svc.cluster.local
+  externalName: <boundendpoint-name>.ngrok-operator.svc.cluster.local
 ```
 
 ## How to update endpoint selectors

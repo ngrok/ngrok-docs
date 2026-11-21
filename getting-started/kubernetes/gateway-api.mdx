@@ -39,7 +39,7 @@ Find more details on the [pricing page](https://ngrok.com/pricing), or, if you'r
     ## Install the Gateway API custom resource definitions
 
     You can select either the [standard or experimental](https://gateway-api.sigs.k8s.io/guides/) set of Gateway API CRDs depending on your preference.
-    Either version will work with the ngrok Kubernetes Operator.
+    Either version works with the ngrok Kubernetes Operator.
 
     <Tabs>
       <Tab title="Standard">
@@ -83,7 +83,7 @@ Find more details on the [pricing page](https://ngrok.com/pricing), or, if you'r
     <K8sSample />
   </Step>
 
-  <Step title="Define your Gateway and HTTPSRoute resources">
+  <Step title="Define your Gateway and HTTPRoute resources">
 
     This manifest exposes the `tinyllama` sample service on `$YOUR_DOMAIN`.
     If you already have a different deployment on your cluster, you'll need to change the `backendRefs` name and port.
@@ -100,7 +100,7 @@ Find more details on the [pricing page](https://ngrok.com/pricing), or, if you'r
         - name: https
           protocol: HTTPS
           port: 443
-          hostname: "$NGROK_DOMAIN"
+          hostname: "$YOUR_DOMAIN"
           allowedRoutes:
             namespaces:
               from: All
@@ -117,7 +117,7 @@ Find more details on the [pricing page](https://ngrok.com/pricing), or, if you'r
           name: ngrok-gateway
           namespace: default
       hostnames:
-        - "$NGROK_DOMAIN"
+        - "$YOUR_DOMAIN"
       rules:
         - matches:
           - path:
@@ -132,7 +132,7 @@ Find more details on the [pricing page](https://ngrok.com/pricing), or, if you'r
 
     The ngrok Kubernetes Operator watches your cluster for `Gateway` and `HTTPRoute` resources that reference the `ngrok` GatewayClass, and immediately provisions a new Agent Endpoint.
 
-    You can now send a request to `$NGROK_DOMAIN` with your browser or `curl`.
+    You can now send a request to `$YOUR_DOMAIN` with your browser or `curl`.
     Your Kubernetes service is now available to anyone on the public internet.
   </Step>
 
@@ -142,13 +142,13 @@ Find more details on the [pricing page](https://ngrok.com/pricing), or, if you'r
 
     First, copy your public IP address via the [`ip4v.ngrok.com` mini-app](https://ipv4.ngrok.com/).
 
-    To add the rule, create a new `NgrokTrafficPolicy` resource and add it to your `Gateway` resource as an annotation.
+    To add the rule, create a new `TrafficPolicy` resource and add it to your `Gateway` resource as an annotation.
     This way, the rule runs on all requests matching any of the hostnames from the listeners on your `Gateway`.
     Be sure to replace `$YOUR_PUBLIC_IP` with the value you just copied.
 
     ```yaml title="gwapi.yaml"
-    apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-    kind: NgrokTrafficPolicy
+    apiVersion: ngrok.com/v1
+    kind: TrafficPolicy
     metadata:
       name: restrict-ips
       namespace: default
@@ -168,14 +168,14 @@ Find more details on the [pricing page](https://ngrok.com/pricing), or, if you'r
       name: ngrok-gateway
       namespace: default
       annotations:
-        k8s.ngrok.com/traffic-policy: restrict-ips
+        ngrok.com/traffic-policy: restrict-ips
     spec:
       gatewayClassName: ngrok
       listeners:
         - name: https
           protocol: HTTPS
           port: 443
-          hostname: "$NGROK_DOMAIN"
+          hostname: "$YOUR_DOMAIN"
           allowedRoutes:
             namespaces:
               from: Same
@@ -192,7 +192,7 @@ Find more details on the [pricing page](https://ngrok.com/pricing), or, if you'r
           name: ngrok-gateway
           namespace: default
       hostnames:
-        - "$NGROK_DOMAIN"
+        - "$YOUR_DOMAIN"
       rules:
         - matches:
           - path:
@@ -205,7 +205,7 @@ Find more details on the [pricing page](https://ngrok.com/pricing), or, if you'r
 
     Re-apply the manifest with `kubectl apply -f gwapi.yaml`.
 
-    You can also add Traffic Policy as an [`ExtensionRef` filter](/gateway/k8s/guides/using-gwapi/#use-ngroktrafficpolicy-on-httproutes) if you want to run certain rules only on a single route.
+    You can also add Traffic Policy as an [`ExtensionRef` filter](/gateway/k8s/guides/using-gwapi/#use-trafficpolicy-on-httproutes) if you want to run certain rules only on a single route.
   </Step>
 
   <Step title="Start sending requests">

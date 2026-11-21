@@ -30,14 +30,14 @@ This is where ngrok's API gateway comes into play with one secure and consistent
   If you don't have one, [sign up](https://dashboard.ngrok.com/signup).
 - Two K8s clusters running on separate VMs (ideally each within a distinct cloud provider).
     - Not running Kubernetes? Try [installing the ngrok agent](/gateway/endpoints/agent-cli-quickstart/) in your cloud infrastructure directly.
-- [An ngrok API Key](https://dashboard.ngrok.com/api-keys/new).
+- [An ngrok access token](https://dashboard.ngrok.com/access-tokens).
   You'll need an account first.
 
 <Steps titleSize="h2">
   <Step title="Install the ngrok operator within each K8s cluster">
 
     The [ngrok Kubernetes Operator](https://ngrok.com/docs/k8s/index#kubernetes-operator) lets you declaratively expose cluster Services through ngrok by reconciling simple manifests into managed, secure endpoints.
-    Before you install the operator, save your ngrok authtoken and API key as environment variables. 
+    Before you install the operator, save your ngrok access token as the `NGROK_ACCESS_TOKEN` environment variable.
 
     To install the operator, run this command from inside each of your Kubernetes clusters that host your backend APIs:  
 
@@ -45,10 +45,11 @@ This is where ngrok's API gateway comes into play with one secure and consistent
     helm install ngrok-operator ngrok/ngrok-operator \
     --namespace ngrok-operator \
     --create-namespace \
-    --set description="acme ngrok operator" \ # set this to "beta ngrok operator" for the other cluster
-    --set credentials.apiKey=$NGROK_API_KEY \ 
-    --set credentials.authtoken=$NGROK_AUTHTOKEN 
+    --set ngrok.description="acme ngrok operator" \
+    --set ngrok.credentials.accessToken=$NGROK_ACCESS_TOKEN
     ```
+
+    In the other cluster, set `ngrok.description` to `"beta ngrok operator"`.
   </Step>
 
   <Step title="Create an internal endpoint for each API">
@@ -65,7 +66,7 @@ This is where ngrok's API gateway comes into play with one secure and consistent
 
     ```yaml title="agentendpoints-eks.yaml"
 # Orders API + Catalog API
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+apiVersion: ngrok.com/v1
 kind: AgentEndpoint
 metadata:
   name: catalog-internal
@@ -78,7 +79,7 @@ spec:
     url: http://catalog-svc.default:80
     
 ---
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+apiVersion: ngrok.com/v1
 kind: AgentEndpoint
 metadata:
   name: orders-internal
@@ -96,7 +97,7 @@ spec:
     <Tab title="GKE">
 ```yaml title="agentendpoints-gke.yaml"
 # agentendpoints-gke.yaml: Inventory API + Webhook API
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+apiVersion: ngrok.com/v1
 kind: AgentEndpoint
 metadata:
   name: inventory-internal
@@ -109,7 +110,7 @@ spec:
     url: http://inventory-svc.default:80
 
 ---
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+apiVersion: ngrok.com/v1
 kind: AgentEndpoint
 metadata:
   name: webhooks-internal

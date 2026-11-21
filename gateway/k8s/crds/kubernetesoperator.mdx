@@ -6,33 +6,39 @@ description: Look up every field of the KubernetesOperator custom resource, whic
 
 ## KubernetesOperator custom resource
 
-### **apiVersion:** `ngrok.k8s.ngrok.com/v1alpha1`
+### **apiVersion:** `ngrok.com/v1`
 
 ### **kind:** `KubernetesOperator`
 
+<Warning title="ngrok.k8s.ngrok.com/v1alpha1 KubernetesOperator is deprecated">
+The Operator now manages an `ngrok.com/v1` `KubernetesOperator` for you; no action is needed.
+Upgrade through both 0.25 and 1.0.
+Use `kubernetesoperators.ngrok.com` in kubectl commands.
+See the [0.25 upgrade guide](https://github.com/ngrok/ngrok-operator/blob/main/docs/upgrading-to-0.25.md).
+</Warning>
+
 The `KubernetesOperator` custom resource handles synchronizing the state of your ngrok Kubernetes Operator instance with the ngrok API.
-A `KubernetesOperator` resource is created automatically when you install the ngrok Operator with Helm and has configuration that matches your installation options
-from Helm so that you can identify it in the ngrok cloud.
+A `KubernetesOperator` resource is created automatically when you install the ngrok Operator with Helm and has configuration that matches your installation options from Helm so that you can identify it in the ngrok cloud.
 
 ## KubernetesOperator structure and types
 
-The following outlines the high level structure and typings of a `KubernetesOperator`
+The following outlines the high level structure and typings of a `KubernetesOperator`:
 
 ```yaml
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+apiVersion: ngrok.com/v1
 kind: KubernetesOperator
 metadata:
   name: <string>
   namespace: <string>
 spec:
-  description: <string>           # optional, default: "Created by the ngrok-operator"
-  metadata: <string>              # optional, default: "{"owned-by":"ngrok-operator"}"
+  description: <string>           # optional, default: "Created by ngrok-operator"
+  metadata: <map[string]string>   # optional, default: {"owned-by": "ngrok-operator"}
   enabledFeatures: <[]string>     # optional
-  region: <string>                # required, default: "global"
+  region: <string>                # optional, default: "global"
   deployment:                     # optional
-    name: <string>                # required
-    namespace: <string>           # required
-    version: <string>             # required
+    name: <string>                # optional
+    namespace: <string>           # optional
+    version: <string>             # optional
   binding:                        # optional
     endpointSelectors: <[]string> # required
     ingressEndpoint: <string>     # optional
@@ -59,10 +65,10 @@ The following sections outline each field of the `KubernetesOperator` custom res
 
 | Field Name                                     | Type              | Required | Default                           | Description                                                                              |
 | ---------------------------------------------- | ----------------- | -------- | --------------------------------- | ---------------------------------------------------------------------------------------- |
-| [`spec.description`](#specdescription)         | `string`          | no       | `"Created by the ngrok-operator"` | Human-readable description for this `KubernetesOperator` to help identify/describe it    |
-| [`spec.metadata`](#specmetadata)               | `string`          | no       | `"{"owned-by":"ngrok-operator"}"` | String of arbitrary data associated with the object in the ngrok API/dashboard           |
+| [`spec.description`](#specdescription)         | `string`          | no       | `"Created by ngrok-operator"`     | Human-readable description for this `KubernetesOperator` to help identify/describe it    |
+| [`spec.metadata`](#specmetadata)               | `map[string]string` | no     | `{"owned-by": "ngrok-operator"}`  | Arbitrary key/value data associated with the object in the ngrok API/dashboard           |
 | [`spec.enabledFeatures`](#specenabledfeatures) | `[]string` (enum) | no       | none                              | List of the features that are enabled for this instance of the ngrok Kubernetes Operator |
-| [`spec.region`](#specregion)                   | `string`          | yes      | `"global"`                        | The ngrok region in which the ingress for this Operator is served                        |
+| [`spec.region`](#specregion)                   | `string`          | no       | `"global"`                        | The ngrok region in which the ingress for this Operator is served                        |
 | [`spec.deployment`](#specdeployment)           | `Object`          | no       | none                              | Deployment information for this instance of the ngrok Kubernetes Operator                |
 | [`spec.binding`](#specbinding)                 | `Object`          | no       | none                              | Configuration of the binding feature for this instance of the ngrok Kubernetes Operator  |
 | [`spec.drain`](#specdrain)                     | `Object`          | no       | none                              | Configuration of the drain behavior during operator uninstall                            |
@@ -75,17 +81,18 @@ Human-readable description of this object that can be used to help identify/desc
 
 **Required:** no
 
-**Default:** `"Created by the ngrok-operator"`
+**Default:** `"Created by ngrok-operator"`
 
 ### `spec.metadata`
 
-String of arbitrary data associated with the object in the ngrok API/dashboard.
+Arbitrary key/value data associated with the object in the ngrok API/dashboard.
+Values must be strings.
 
-**Type:** `string`
+**Type:** `map[string]string`
 
 **Required:** no
 
-**Default:** `"{"owned-by":"ngrok-operator"}"`
+**Default:** `{"owned-by": "ngrok-operator"}`
 
 ### `spec.enabledFeatures`
 
@@ -103,13 +110,11 @@ List of the features that are enabled for this instance of the ngrok Kubernetes 
 
 The ngrok region in which the ingress for this Operator is served.
 
-**Type:** `string (enum)`
+**Type:** `string`
 
 **Required:** no
 
 **Default:** `"global"`
-
-**Allowed Values:** `"au"`, `"eu"`, `"ap"`, `"us"`, `"jp"`, `"in"`, `"sa"`, `"global"`
 
 ### `spec.deployment`
 
@@ -125,43 +130,43 @@ Deployment information for this instance of the ngrok Kubernetes Operator.
 
 | Field Name                                              | Type     | Required | Default | Description                                                                                    |
 | ------------------------------------------------------- | -------- | -------- | ------- | ---------------------------------------------------------------------------------------------- |
-| [`spec.deployment.name`](#specdeploymentname)           | `string` | yes      | none    | The name of the Kubernetes `Deployment` for this intance of the ngrok Kubernetes Operator      |
-| [`spec.deployment.namespace`](#specdeploymentnamespace) | `string` | yes      | none    | The namespace of the Kubernetes `Deployment` for this intance of the ngrok Kubernetes Operator |
-| [`spec.deployment.version`](#specdeploymentversion)     | `string` | yes      | none    | The version of the Kubernetes `Deployment` for this intance of the ngrok Kubernetes Operator   |
+| [`spec.deployment.name`](#specdeploymentname)           | `string` | no       | none    | The name of the Kubernetes `Deployment` for this instance of the ngrok Kubernetes Operator      |
+| [`spec.deployment.namespace`](#specdeploymentnamespace) | `string` | no       | none    | The namespace of the Kubernetes `Deployment` for this instance of the ngrok Kubernetes Operator |
+| [`spec.deployment.version`](#specdeploymentversion)     | `string` | no       | none    | The version of the Kubernetes `Deployment` for this instance of the ngrok Kubernetes Operator   |
 
 ### `spec.deployment.name`
 
-The name of the Kubernetes `Deployment` for this intance of the ngrok Kubernetes Operator
+The name of the Kubernetes `Deployment` for this instance of the ngrok Kubernetes Operator
 
 **Type:** `string`
 
-**Required:** yes
+**Required:** no
 
 **Default:** none
 
 ### `spec.deployment.namespace`
 
-The namespace of the Kubernetes `Deployment` for this intance of the ngrok Kubernetes Operator
+The namespace of the Kubernetes `Deployment` for this instance of the ngrok Kubernetes Operator
 
 **Type:** `string`
 
-**Required:** yes
+**Required:** no
 
 **Default:** none
 
 ### `spec.deployment.version`
 
-The version of the Kubernetes `Deployment` for this intance of the ngrok Kubernetes Operator
+The version of the Kubernetes `Deployment` for this instance of the ngrok Kubernetes Operator
 
 **Type:** `string`
 
-**Required:** yes
+**Required:** no
 
 **Default:** none
 
 ### `spec.binding`
 
-Configuration of the binding feature for this intance of the ngrok Kubernetes Operator
+Configuration of the binding feature for this instance of the ngrok Kubernetes Operator
 
 **Type:** `Object`
 
@@ -173,13 +178,13 @@ Configuration of the binding feature for this intance of the ngrok Kubernetes Op
 
 | Field Name                                                        | Type       | Required | Default | Description                                                                                                          |
 | ----------------------------------------------------------------- | ---------- | -------- | ------- | -------------------------------------------------------------------------------------------------------------------- |
-| [`spec.binding.endpointSelectors`](#specbindingendpointselectors) | `[]string` | yes      | none    | List of CEL expressions that determine which kubernetes-bound Endpoints will be created by the Operator              |
+| [`spec.binding.endpointSelectors`](#specbindingendpointselectors) | `[]string` | yes      | none    | List of CEL expressions that determine which kubernetes-bound Endpoints the Operator creates                         |
 | [`spec.binding.ingressEndpoint`](#specbindingingressendpoint)     | `string`   | no       | none    | The public ingress endpoint for this Kubernetes Operator                                                             |
-| [`spec.binding.tlsSecretName`](#specbindingtlssecretname)         | `string`   | yes      | none    | The name of the Kubernetes Secret that contains the TLS private/public keys to use for the ngrok forwarding endpoint |
+| [`spec.binding.tlsSecretName`](#specbindingtlssecretname)         | `string`   | yes      | `"default-tls"` | The name of the Kubernetes Secret that contains the TLS private/public keys to use for the ngrok forwarding endpoint |
 
 ### `spec.binding.endpointSelectors`
 
-List of cel expression that determine which kubernetes-bound Endpoints will be created by the Operator
+List of CEL expressions that determine which kubernetes-bound Endpoints the Operator creates
 
 **Type:** `[]string`
 
@@ -209,7 +214,8 @@ The name of the Kubernetes Secret that contains the TLS private/public keys to u
 
 ### `spec.drain`
 
-Configuration of the drain behavior during operator uninstall. For more information, see [Uninstalling the Operator](/gateway/k8s/installation/uninstall).
+Configuration of the drain behavior during operator uninstall.
+For more information, see [Uninstalling the Operator](/gateway/k8s/installation/uninstall).
 
 **Type:** `Object`
 
@@ -242,6 +248,13 @@ Determines how ngrok API resources are handled when the operator is uninstalled.
 
 The `KubernetesOperator` resource includes status information that reflects the current state of the operator and its registration with the ngrok API.
 
+### `status.observedGeneration`
+
+The most recent `metadata.generation` the Operator observed.
+When it matches `metadata.generation`, the status reflects the latest spec.
+
+**Type:** `int64`
+
 ### `status.id`
 
 The unique identifier for this Kubernetes Operator in the ngrok API.
@@ -254,33 +267,11 @@ The URI for this Kubernetes Operator in the ngrok API.
 
 **Type:** `string`
 
-### `status.registrationStatus`
-
-The status of the registration of this Kubernetes Operator with the ngrok API.
-
-**Type:** `string (enum)`
-
-**Allowed Values:** `"registered"`, `"error"`, `"pending"`
-
-### `status.registrationErrorCode`
-
-The ngrok error code if registration failed.
-
-**Type:** `string`
-
-**Pattern:** `ERR_NGROK_<number>`
-
-### `status.errorMessage`
-
-A free-form error message if the registration status is `error`.
-
-**Type:** `string`
-
 ### `status.enabledFeatures`
 
-String representation of the features enabled for this Kubernetes Operator.
+The features enabled for this Kubernetes Operator, as reported by the ngrok API.
 
-**Type:** `string`
+**Type:** `[]string`
 
 ### `status.bindingsIngressEndpoint`
 
@@ -288,33 +279,67 @@ The URL that the operator uses to talk to the ngrok network when forwarding traf
 
 **Type:** `string`
 
-### `status.drainStatus`
+### `status.drain`
 
-Indicates the current state of the drain process during uninstall.
+Reports the progress of the drain that deleting this resource triggers.
+For more information, see [Uninstalling the Operator](/gateway/k8s/installation/uninstall).
 
-**Type:** `string (enum)`
+**Type:** `Object`
 
-**Allowed Values:** `"pending"`, `"draining"`, `"completed"`, `"failed"`
+**Fields:**
+- `drainedResources` - The number of resources successfully drained in the latest attempt
+- `failedResources` - The number of resources that could not be drained in the latest attempt
+- `totalResources` - The total number of resources the drain processes
+- `errors` - The most recent errors encountered during drain (up to 20)
 
-### `status.drainMessage`
+### `status.conditions`
 
-Human-readable information about the current drain state.
+Standard Kubernetes conditions that indicate the state of the Kubernetes Operator.
 
-**Type:** `string`
+**Type:** `[]Condition`
 
-### `status.drainProgress`
+#### Condition types
 
-Indicates how many resources have been drained versus total. Format: `X/Y` where X is the number processed (completed + failed) and Y is total.
+##### `Ready`
 
-**Type:** `string`
+Summarizes the overall health of the `KubernetesOperator`.
 
-**Example:** `"5/10"`
+**Reasons:**
 
-### `status.drainErrors`
+| Reason | Status | Meaning |
+|--------|--------|---------|
+| `Registered` | `True` | The operator is registered with the ngrok API and ready |
+| `Pending` | `False` | Waiting to be registered with the ngrok API |
+| `RegistrationFailed` | `False` | Registration with the ngrok API failed |
+| `ConfigurationFailed` | `False` | The operator is registered, but its configuration, such as bindings, failed |
+| `Draining` | `False` | The resource is being deleted and the drain has started |
+| `DrainFailed` | `False` | The drain encountered errors and is retrying |
+| `DrainCompleted` | `False` | The drain finished |
 
-List of the most recent errors encountered during drain.
+##### `Registered`
 
-**Type:** `[]string`
+Reports whether this operator is registered with the ngrok API.
+
+**Reasons:**
+
+| Reason | Status | Meaning |
+|--------|--------|---------|
+| `Registered` | `True` | Registered with the ngrok API |
+| `Pending` | `False` | Waiting to be registered with the ngrok API |
+| `RegistrationFailed` | `False` | Registration with the ngrok API failed |
+| `Deregistered` | `False` | Deregistered from the ngrok API during deletion |
+
+##### `Draining`
+
+Present only while the resource is being deleted.
+
+**Reasons:**
+
+| Reason | Status | Meaning |
+|--------|--------|---------|
+| `DrainInProgress` | `True` | The drain of managed resources is in progress |
+| `DrainFailed` | `True` | The drain encountered errors and is retrying |
+| `DrainCompleted` | `False` | The drain finished |
 
 ## Status examples
 
@@ -324,8 +349,23 @@ List of the most recent errors encountered during drain.
 status:
   id: k8sop_2example123
   uri: /kubernetes_operators/k8sop_2example123
-  registrationStatus: registered
-  enabledFeatures: ingress,gateway,bindings
+  enabledFeatures:
+  - ingress
+  - gateway
+  - bindings
+  conditions:
+  - type: Registered
+    status: "True"
+    reason: Registered
+    message: "Registered with the ngrok API"
+    lastTransitionTime: "2025-10-29T00:39:15Z"
+    observedGeneration: 1
+  - type: Ready
+    status: "True"
+    reason: Registered
+    message: "KubernetesOperator is registered and ready"
+    lastTransitionTime: "2025-10-29T00:39:15Z"
+    observedGeneration: 1
 ```
 
 ### Operator draining during uninstall
@@ -334,37 +374,64 @@ status:
 status:
   id: k8sop_2example123
   uri: /kubernetes_operators/k8sop_2example123
-  registrationStatus: registered
-  drainStatus: draining
-  drainMessage: "Draining resources"
-  drainProgress: "3/10"
+  drain:
+    drainedResources: 3
+    failedResources: 0
+    totalResources: 10
+  conditions:
+  - type: Draining
+    status: "True"
+    reason: DrainInProgress
+    message: "Drain initiated"
+    lastTransitionTime: "2025-10-29T00:39:15Z"
+    observedGeneration: 1
+  - type: Ready
+    status: "False"
+    reason: Draining
+    message: "KubernetesOperator is being deleted"
+    lastTransitionTime: "2025-10-29T00:39:15Z"
+    observedGeneration: 1
 ```
 
-### Drain completed with errors
+### Drain retrying after errors
 
 ```yaml
 status:
   id: k8sop_2example123
   uri: /kubernetes_operators/k8sop_2example123
-  registrationStatus: registered
-  drainStatus: failed
-  drainMessage: "Drain completed with errors"
-  drainProgress: "10/10"
-  drainErrors:
-  - "failed to delete CloudEndpoint my-endpoint: HTTP 500: internal server error"
+  drain:
+    drainedResources: 9
+    failedResources: 1
+    totalResources: 10
+    errors:
+    - "failed to delete CloudEndpoint my-endpoint: HTTP 500: internal server error"
+  conditions:
+  - type: Draining
+    status: "True"
+    reason: DrainFailed
+    message: "Drain encountered 1 errors, will retry"
+    lastTransitionTime: "2025-10-29T00:39:15Z"
+    observedGeneration: 1
+  - type: Ready
+    status: "False"
+    reason: DrainFailed
+    message: "Drain encountered 1 errors, will retry"
+    lastTransitionTime: "2025-10-29T00:39:15Z"
+    observedGeneration: 1
 ```
 
 ## Example KubernetesOperator
 
 ```yaml
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+apiVersion: ngrok.com/v1
 kind: KubernetesOperator
 metadata:
   name: ngrok-operator
   namespace: ngrok-operator
 spec:
   description: Created by ngrok-operator
-  metadata: '{"owned-by":"ngrok-operator"}'
+  metadata:
+    owned-by: ngrok-operator
   binding:
     endpointSelectors:
     - "true"
@@ -373,7 +440,7 @@ spec:
   deployment:
     name: ngrok-operator
     namespace: ngrok-operator
-    version: 0.15.0
+    version: 0.23.0
   enabledFeatures:
   - ingress
   - gateway

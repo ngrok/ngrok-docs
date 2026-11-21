@@ -616,7 +616,7 @@ Auth](/gateway/traffic-policy/actions/basic-auth) Traffic Policy action.
 		metadata:
 		  name: example-ingress
 		  annotations:
-		    k8s.ngrok.com/traffic-policy: example
+		    ngrok.com/traffic-policy: example
 		spec:
 		  ingressClassName: ngrok
 		  rules:
@@ -631,18 +631,19 @@ Auth](/gateway/traffic-policy/actions/basic-auth) Traffic Policy action.
 		                port:
 		                  number: 80
 		---
-		kind: NgrokTrafficPolicy
-		apiVersion: ingress.k8s.ngrok.com/v1alpha1
+		apiVersion: ngrok.com/v1
+		kind: TrafficPolicy
 		metadata:
 		  name: example
-		policy:
-		  on_http_request:
-		    - actions:
-		        - type: basic-auth
-		          config:
-		            credentials:
-		              - username1:password1
-		              - username2:password2
+		spec:
+		  policy:
+		    on_http_request:
+		      - actions:
+		          - type: basic-auth
+		            config:
+		              credentials:
+		                - username1:password1
+		                - username2:password2
 		```
 	</Tab>
 </Tabs>
@@ -807,7 +808,7 @@ your endpoint using Google as the identity provider by using the
 		metadata:
 		  name: example-ingress
 		  annotations:
-		    k8s.ngrok.com/traffic-policy: example
+		    ngrok.com/traffic-policy: example
 		spec:
 		  ingressClassName: ngrok
 		  rules:
@@ -822,16 +823,17 @@ your endpoint using Google as the identity provider by using the
 		                port:
 		                  number: 80
 		---
-		kind: NgrokTrafficPolicy
-		apiVersion: ingress.k8s.ngrok.com/v1alpha1
+		apiVersion: ngrok.com/v1
+		kind: TrafficPolicy
 		metadata:
 		  name: example
-		policy:
-		  on_http_request:
-		    - actions:
-		        - type: oauth
-		          config:
-		            provider: google
+		spec:
+		  policy:
+		    on_http_request:
+		      - actions:
+		          - type: oauth
+		            config:
+		              provider: google
 		```
 	</Tab>
 </Tabs>
@@ -1001,7 +1003,7 @@ case](/gateway/traffic-policy/actions/add-headers/#special-cases) that replaces 
 		metadata:
 		  name: example-ingress
 		  annotations:
-		    k8s.ngrok.com/traffic-policy: example
+		    ngrok.com/traffic-policy: example
 		spec:
 		  ingressClassName: ngrok
 		  rules:
@@ -1016,17 +1018,18 @@ case](/gateway/traffic-policy/actions/add-headers/#special-cases) that replaces 
 		                port:
 		                  number: 80
 		---
-		kind: NgrokTrafficPolicy
-		apiVersion: ingress.k8s.ngrok.com/v1alpha1
+		apiVersion: ngrok.com/v1
+		kind: TrafficPolicy
 		metadata:
 		  name: example
-		policy:
-		  on_http_request:
-		    - actions:
-		        - type: add-headers
-		          config:
-		            headers:
-		              host: localhost
+		spec:
+		  policy:
+		    on_http_request:
+		      - actions:
+		          - type: add-headers
+		            config:
+		              headers:
+		                host: localhost
 		```
 	</Tab>
 </Tabs>
@@ -1153,7 +1156,7 @@ this behavior with the [flags `--upstream-tls-verify` and
 		- [https://docs.rs/ngrok/0.14.0-pre.13/ngrok/config/struct.HttpTunnelBuilder.html#method.listen_and_forward](https://docs.rs/ngrok/0.14.0-pre.13/ngrok/config/struct.HttpTunnelBuilder.html#method.listen_and_forward)
 	</Tab>
 	<Tab title="Kubernetes Controller">
-		Add the `k8s.ngrok.com/app-protocols` label to the **Service** definition
+		Add the `ngrok.com/app-protocols` annotation to the **Service** definition
 		targeted by your ingress backend to instruct the Operator to use
 		`https` when forwarding connections.
 
@@ -1163,7 +1166,7 @@ this behavior with the [flags `--upstream-tls-verify` and
 		metadata:
 		  name: example-service
 		  annotations:
-		    k8s.ngrok.com/app-protocols: '{"example-https-port":"HTTPS"}'
+		    ngrok.com/app-protocols: '{"example-https-port":"HTTPS"}'
 		spec:
 		  ports:
 		    - name: example-https-port

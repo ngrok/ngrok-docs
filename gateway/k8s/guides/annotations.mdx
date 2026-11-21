@@ -7,25 +7,25 @@ description: Look up the ngrok.com annotations you can add to Ingress, Gateway, 
 You can use the following custom annotations with the ngrok Kubernetes Operator to extend the functionality of various resources.
 
 <Note>
-Operator 0.22 (Helm chart 0.24) moved these annotations from the `k8s.ngrok.com/` prefix to `ngrok.com/`.
-The legacy keys, such as `k8s.ngrok.com/traffic-policy`, still work until Operator 1.0, but the Operator emits a `LegacyAnnotation` warning event for each `Ingress`, `Gateway`, or `LoadBalancer` `Service` that uses them.
+Helm chart 0.24 moved these annotations from the `k8s.ngrok.com/` prefix to `ngrok.com/`.
+The legacy keys, such as `k8s.ngrok.com/traffic-policy`, still work until 1.0, but the Operator emits a `LegacyAnnotation` warning event for each `Ingress`, `Gateway`, or `LoadBalancer` `Service` that uses them.
 If a resource sets both keys, the `ngrok.com/` key wins.
-Operator versions before 0.22 only read the `k8s.ngrok.com/` prefix.
+Helm chart versions before 0.24 only read the `k8s.ngrok.com/` prefix.
 </Note>
 
 ## `ngrok.com/traffic-policy`
 
-Allows you to supply an `NgrokTrafficPolicy` to an `Ingress` or `Gateway` resource.
+Allows you to supply a `TrafficPolicy` to an `Ingress`, `Gateway`, or `LoadBalancer` `Service` resource.
 
 For more information about using Traffic Policies with `Ingresses` and Gateway API, see [the using Ingresses page](/gateway/k8s/guides/using-ingresses) and [the using Gateway API page](/gateway/k8s/guides/using-gwapi).
 
-**Usable On:** `Ingress`/`Gateway`
+**Usable On:** `Ingress`/`Gateway`/`LoadBalancer` `Service`
 
 **Example:**
 
 ```yaml
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-kind: NgrokTrafficPolicy
+apiVersion: ngrok.com/v1
+kind: TrafficPolicy
 metadata:
   name: custom-response-example
   namespace: default
@@ -68,14 +68,11 @@ spec:
 ## `ngrok.com/mapping-strategy`
 
 Allows you to control the way that the Operator translates `Ingress`, `Gateway`, and `LoadBalancer` type `Services` into ngrok custom resources.
-These resources are always translated into `CloudEndpoint` and `AgentEndpoint` custom resources.
+These resources are translated into `AgentEndpoint` custom resources and, depending on the strategy, `CloudEndpoint` custom resources.
 
-By default (`"endpoints"`), when a hostname routes to only one upstream service, the Operator creates a single public `AgentEndpoint` for it instead of a `CloudEndpoint` that routes to an internal `AgentEndpoint`.
-With `"endpoints-verbose"`, every hostname gets a `CloudEndpoint` and each unique upstream service gets an internal `AgentEndpoint`, which can cost less when you run more than one agent replica.
+See [Using Ingresses](/gateway/k8s/guides/using-ingresses) and [Using Gateway API](/gateway/k8s/guides/using-gwapi) for the endpoint layout each strategy creates.
 
-For more information about how the Operator translates resources, see [the using Ingresses page](/gateway/k8s/guides/using-ingresses) and [the using Gateway API page](/gateway/k8s/guides/using-gwapi).
-
-**Usable On:** `Ingress`/`Gateway`
+**Usable On:** `Ingress`/`Gateway`/`LoadBalancer` `Service`
 
 **Allowed Values:** `"endpoints"`/`"endpoints-verbose"`
 
@@ -104,12 +101,13 @@ spec:
 
 ## `ngrok.com/pooling-enabled`
 
-Allows you to configure whether pooling should be enabled/disabled when the Operator translates `Ingress` and `Gateway` resources into `CloudEndpoints`.
+Allows you to configure whether pooling should be enabled/disabled when the Operator translates `Ingress`, `Gateway`, and `LoadBalancer` `Service` resources into `CloudEndpoints`.
 By default, translated `CloudEndpoint` resources have `poolingEnabled` set to `false`, but this annotation allows you to enable it.
+`AgentEndpoints` are always pooled, so this annotation only affects `CloudEndpoints`.
 
 For more information about endpoint pooling, see [the pooling page](/gateway/k8s/guides/pooling).
 
-**Usable On:** `Ingress`/`Gateway`
+**Usable On:** `Ingress`/`Gateway`/`LoadBalancer` `Service`
 
 **Allowed Values:** `"true"`/`"false"`
 
@@ -145,12 +143,12 @@ Setting the value to true without surrounding it with quotes doesn't work.
 
 ## `ngrok.com/bindings`
 
-Allows you to specify the binding that should be used when the Operator translates `Ingress` and `Gateway` resources into `CloudEndpoints`.
-By default, the Operator uses a binding of `"public"`, but this annotation allows you to create internal or Kubernetes bound `CloudEndpoints` instead.
+Sets the binding of the endpoint that serves an `Ingress`, `Gateway`, or `LoadBalancer` `Service` (the `AgentEndpoint` with `endpoints`, the `CloudEndpoint` with `endpoints-verbose`).
+By default, the Operator uses a binding of `"public"`, but this annotation allows you to create internal or Kubernetes bound endpoints instead.
 
 For more information about bindings, see [the bindings page](/gateway/k8s/guides/bindings).
 
-**Usable On:** `Ingress`/`Gateway`
+**Usable On:** `Ingress`/`Gateway`/`LoadBalancer` `Service`
 
 **Allowed Values:** `"internal"`/`"public"`/`"kubernetes"`
 
@@ -182,10 +180,10 @@ For more information about bindings, see [the bindings page](/gateway/k8s/guides
 ## `ngrok.com/app-protocols`
 
 Allows you to specify the protocol of ports on your service.
-Accepts a value that is a JSON string which maps the name of the ports on your `Service` to `http` or `https`.
+Accepts a value that is a JSON string which maps the name of the ports on your `Service` to `http`, `https`, `tcp`, or `tls` (case-insensitive).
 This annotation is optional, and when not used or a named port is not included in the annotation's value, the ngrok Kubernetes Operator defaults to using `http` for that port.
 
-**Usable On:** `Service`
+**Usable On:** `Service` referenced as an `Ingress` or Gateway API route backend
 
 **Example:**
 
@@ -212,4 +210,68 @@ spec:
       targetPort: 8080
   selector:
     app: example-app
+```
+
+## `ngrok.com/url`
+
+Sets the public URL of a `LoadBalancer` `Service`: a `tcp://` address you reserved, or a `tls://` URL on your domain.
+Without it, the Operator reserves a TCP address.
+
+For more information, see [the using LoadBalancer Services page](/gateway/k8s/guides/using-loadbalancers).
+
+**Usable On:** `LoadBalancer` `Service`
+
+**Example:**
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: example-service
+  annotations:
+    ngrok.com/url: tls://example.com
+spec:
+  type: LoadBalancer
+  loadBalancerClass: ngrok
+  allocateLoadBalancerNodePorts: false
+  selector:
+    app: example-app
+  ports:
+    - name: tls
+      port: 443
+      protocol: TCP
+      targetPort: 8443
+```
+
+## `ngrok.com/description` and `ngrok.com/metadata`
+
+Set the description and metadata of the endpoints the Operator creates.
+`ngrok.com/metadata` takes a JSON object of strings, merged with the operator-level metadata (the annotation wins on conflicts).
+
+**Usable On:** `Ingress`/`Gateway`
+
+**Example:**
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: example-ingress
+  namespace: default
+  annotations:
+    ngrok.com/description: "Storefront"
+    ngrok.com/metadata: '{"team": "web"}'
+spec:
+  ingressClassName: ngrok
+  rules:
+    - host: example-ingresses.ngrok.app
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: example-service
+                port:
+                  number: 80
 ```
