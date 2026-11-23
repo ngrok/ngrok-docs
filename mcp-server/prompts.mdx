@@ -36,6 +36,7 @@ If the ngrok error page also shows a request ID, paste both.
 	"Which agent version is each device running?",
 	"Which of my TLS certificates expire this month?",
 	"Why does my custom domain show TLS errors?",
+	"Are my event destinations failing to deliver logs?",
 	"I got ERR_NGROK_8012 when I opened my ngrok URL. What's wrong, and how do I fix it?",
 ]} />
 
@@ -44,10 +45,11 @@ If the ngrok error page also shows a request ID, paste both.
 These prompts read [Traffic Inspector](/obs/traffic-inspection), including [TCP connections](/obs/traffic-inspection/tcp-connections).
 How far back your AI agent can look depends on your plan's retention.
 Narrow any prompt to a host, path, status code, method, or client IP, and ask for counts by hour, by day, or by country.
+Say 500 for HTTP 500 only, or 5xx for every server error, and name a time zone when you ask for counts by hour or day.
 
 <PromptList prompts={[
 	"Which of my URLs got the most HTTP traffic?",
-	"Are any of my endpoints on fire? Show me 500s by hour for the last day.",
+	"Are any of my endpoints on fire? Show me 5xx errors by hour for the last 24 hours, in Pacific time.",
 	"Which of my endpoints are throwing 502s or 503s, and why?",
 	"Which countries send me the most traffic?",
 	"Who connects to my TCP endpoint, and how long do they stay?",
@@ -59,6 +61,9 @@ The AI agent writes [Traffic Policy](/gateway/traffic-policy), checks it with th
 The MCP server can't write to your ngrok agent's config file, but a coding agent can edit that file itself.
 Swap in your own paths, limits, and countries, or another [OAuth provider](/gateway/traffic-policy/actions/oauth), such as GitHub or Microsoft.
 See [Traffic Policy actions](/gateway/traffic-policy/actions) for everything a rule can do.
+When you name a path such as `/login`, say whether you mean only that path or every path under `/login/` too.
+An [IP policy](/gateway/traffic-policy/concepts/ip-policies) can apply to several endpoints, so a rule you add to one blocks the IP on all of them.
+To block an IP on one endpoint only, say which endpoint.
 
 <PromptList prompts={[
 	"Write a rule that rate-limits my busiest path to 100 requests a minute.",
@@ -75,11 +80,12 @@ See [Traffic Policy actions](/gateway/traffic-policy/actions) for everything a r
 The AI agent can create and change Cloud Endpoints, reserved domains, TCP addresses, vaults, and secrets.
 Swap in your own domain, and name the service or vault you mean.
 It asks before it deletes anything, and it can confirm that a secret exists but can't read it back.
+A reserved address with no online endpoint may still belong to an ngrok agent that's offline right now, so check each one before you approve a release.
 
 <PromptList prompts={[
 	"Set up api.example.com as a Cloud Endpoint that forwards to my internal service.",
 	"Store my Stripe webhook secret in a vault and verify webhooks with it.",
-	"Release the TCP addresses that no endpoint uses.",
+	"List the TCP addresses that no online endpoint uses, then release the ones I confirm.",
 ]} />
 
 ## Check your account

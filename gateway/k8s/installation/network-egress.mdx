@@ -4,7 +4,6 @@ sidebarTitle: Network Egress
 description: Learn which outbound hostnames and ports the ngrok Kubernetes Operator needs so you can allowlist it through a default-deny egress firewall.
 ---
 
-import EgressFqdns from "/snippets/k8s/_egress-fqdns.mdx";
 
 The ngrok Kubernetes Operator reaches ngrok over a small number of outbound connections. In most clusters this works without any extra configuration, since outbound connections on port `443` are usually allowed by default.
 
@@ -22,7 +21,8 @@ See [ngrok IP addresses](/gateway/domains/ip-addresses) for more detail.
 
 Every Operator installation needs to reach these hosts:
 
-<EgressFqdns />
+- `api.ngrok.com` on TCP port `443`, so that the Operator can reconcile your Kubernetes resources with the ngrok API.
+- `connect.ngrok-agent.com` on TCP port `443`, so that the Operator can establish its agent session and serve traffic. ngrok uses latency-based DNS and may route you to a regional connect host, so allow the whole `*.ngrok-agent.com` family rather than pinning a single address.
 
 If you only expose inbound services (for example, running the Operator as a webhook gateway), these two hosts plus the image registry below are all you need. The section on endpoint bindings applies only if you turn that feature on.
 

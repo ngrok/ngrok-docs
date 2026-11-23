@@ -4,14 +4,17 @@ const fs = require('fs');
 const https = require('https');
 const path = require('path');
 
-const CHANGELOG_URL = 'https://raw.githubusercontent.com/ngrok/ngrok-operator/refs/heads/main/CHANGELOG.md';
+// Git ref of ngrok-operator to read from. The workflow passes the latest
+// stable release tag so unreleased changes on main don't reach the docs.
+const OPERATOR_REF = process.env.OPERATOR_REF || 'main';
+const CHANGELOG_URL = `https://raw.githubusercontent.com/ngrok/ngrok-operator/${OPERATOR_REF}/CHANGELOG.md`;
 const OUTPUT_PATH = path.join(__dirname, '..', '..', 'snippets', 'k8s', '_changelog.mdx');
 
 // The upstream changelog sits at the root of the ngrok-operator repo, so its
 // relative links (docs/upgrading-to-0.24.md) resolve on GitHub but 404 once
 // copied into this repo. Rewrite them to absolute URLs.
-const BLOB_BASE = 'https://github.com/ngrok/ngrok-operator/blob/main';
-const RAW_BASE = 'https://raw.githubusercontent.com/ngrok/ngrok-operator/refs/heads/main';
+const BLOB_BASE = `https://github.com/ngrok/ngrok-operator/blob/${OPERATOR_REF}`;
+const RAW_BASE = `https://raw.githubusercontent.com/ngrok/ngrok-operator/${OPERATOR_REF}`;
 
 function absolutizeLinks(markdown) {
   return markdown.replace(
@@ -50,7 +53,7 @@ function fetchChangelog() {
 
 async function main() {
   try {
-    console.log('Fetching K8s operator changelog...');
+    console.log(`Fetching K8s operator changelog at ${OPERATOR_REF}...`);
     const changelog = await fetchChangelog();
 
     // Ensure the output directory exists

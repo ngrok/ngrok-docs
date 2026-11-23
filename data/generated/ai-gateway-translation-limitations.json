@@ -1,0 +1,382 @@
+{
+  "schema_version": 1,
+  "items": [
+    {
+      "id": "cache-hints-removed",
+      "title": "Cache hints don't reach other APIs",
+      "body_md": "Only Messages takes `cache_control`. When a Messages request reaches a model on another API, the AI Gateway drops each cache hint and lists `cache_control` in the removed parameters. The answer is the same, but the provider doesn't cache your prompt, so a long repeated prompt costs more.\n",
+      "evidence": [
+        {
+          "field": "messages.content.cache_control"
+        }
+      ]
+    },
+    {
+      "id": "converse-cache-points-refused",
+      "title": "Converse cache points keep a request on Converse",
+      "body_md": "A Converse request with a `cachePoint` block only reaches Converse models. Remove the cache point to let the request reach models on other APIs.\n",
+      "evidence": [
+        {
+          "field": "messages.content.cachePoint"
+        }
+      ]
+    },
+    {
+      "id": "messages-max-tokens-added",
+      "title": "Messages requests always get max_tokens",
+      "body_md": "Messages requires `max_tokens`. When your request sets no output limit, the AI Gateway sends the model's maximum output tokens. Set an output limit yourself if you want a long answer to stop at a known length.\n",
+      "evidence": [
+        {
+          "target": "messages",
+          "field": "max_tokens",
+          "outcome": "added"
+        }
+      ]
+    },
+    {
+      "id": "responses-store-added",
+      "title": "Responses requests are sent with store off",
+      "body_md": "A request from another API reaches a Responses model with `store: false`. Your client can't read a stored response back, so the provider doesn't keep one.\n",
+      "evidence": [
+        {
+          "target": "responses",
+          "field": "store",
+          "outcome": "added"
+        }
+      ]
+    },
+    {
+      "id": "messages-temperature-clamped",
+      "title": "Messages caps temperature at 1",
+      "body_md": "Messages takes a temperature from 0 to 1. A higher temperature from another API reaches a Messages model as 1, and the AI Gateway reports it as clamped.\n",
+      "evidence": [
+        {
+          "target": "messages",
+          "field": "temperature"
+        },
+        {
+          "target": "messages",
+          "field": "generationConfig.temperature",
+          "case": "set"
+        }
+      ]
+    },
+    {
+      "id": "messages-temperature-with-thinking",
+      "title": "Messages drops temperature while thinking is on",
+      "body_md": "Claude models refuse `temperature` while extended thinking is on. When your request sets a thinking budget and reaches a Messages model, the AI Gateway drops the temperature and reports it as removed by the model.\n",
+      "evidence": [
+        {
+          "target": "messages",
+          "field": "generationConfig.temperature",
+          "case": "with_thinking"
+        }
+      ]
+    },
+    {
+      "id": "thinking-budget-fits-output-limit",
+      "title": "A thinking budget shrinks to fit the output limit",
+      "body_md": "Messages counts thinking inside `max_tokens`. When your thinking budget is larger than the output limit, the AI Gateway lowers the budget so the model still has room to answer, and reports the change.\n",
+      "evidence": [
+        {
+          "case": "budget_above_limit",
+          "outcome": "clamped"
+        }
+      ]
+    },
+    {
+      "id": "effort-becomes-thinking-budget",
+      "title": "Effort becomes a thinking budget on older Claude models",
+      "body_md": "Claude Haiku 4.5, Sonnet 4.5, Opus 4.5, and Opus 4.1 take a thinking budget, not an effort. When `reasoning_effort`, `reasoning.effort`, or `thinkingLevel` reaches one of these models, the AI Gateway turns on thinking with a budget for that level: 1,024 tokens for minimal and low, 4,096 for medium, 16,384 for high, and 32,000 for xhigh and max. A budget only approximates an effort, so the AI Gateway reports the effort as clamped. Newer Claude models take the effort itself, at the nearest level the model accepts.\n",
+      "evidence": [
+        {
+          "target": "messages",
+          "field": "reasoning_effort",
+          "outcome": "clamped"
+        },
+        {
+          "target": "messages",
+          "field": "reasoning",
+          "outcome": "clamped"
+        },
+        {
+          "target": "messages",
+          "field": "generationConfig.thinkingConfig",
+          "case": "level"
+        },
+        {
+          "target": "messages",
+          "field": "generationConfig.thinkingConfig",
+          "case": "level_include_thoughts"
+        }
+      ]
+    },
+    {
+      "id": "max-effort-clamped",
+      "title": "Max effort becomes high",
+      "body_md": "Only Messages has a `max` effort. Chat Completions, Responses, and generateContent get `high` instead, and the AI Gateway reports the effort as clamped.\n",
+      "evidence": [
+        {
+          "field": "output_config",
+          "case": "effort_max",
+          "outcome": "clamped"
+        }
+      ]
+    },
+    {
+      "id": "responses-minimum-output-limit",
+      "title": "Responses needs an output limit of at least 16",
+      "body_md": "Responses rejects an output limit below 16 tokens. A smaller limit from another API reaches a Responses model as 16.\n",
+      "evidence": [
+        {
+          "case": "below_16",
+          "outcome": "clamped"
+        }
+      ]
+    },
+    {
+      "id": "foreign-reasoning-removed",
+      "title": "Reasoning from another provider is dropped",
+      "body_md": "Providers sign their reasoning and reject a signature from anyone else. When your conversation replays reasoning that one API produced and the request reaches a model on another API, the AI Gateway drops that reasoning and reports `reasoning` as removed. The rest of the turn still reaches the model.\n",
+      "evidence": [
+        {
+          "field": "messages.content.thinking"
+        },
+        {
+          "field": "input.reasoning"
+        },
+        {
+          "field": "contents.parts.thought"
+        },
+        {
+          "field": "messages.content.reasoningContent"
+        }
+      ]
+    },
+    {
+      "id": "tool-schema-keywords-removed",
+      "title": "Some tool schema settings are dropped",
+      "body_md": "Each API reads tool schemas a little differently. The AI Gateway drops `propertyOrdering` from a Gemini schema, because it only orders Gemini's own output. It drops `strict` for APIs that have no strict mode, so the model can return arguments that don't match your schema exactly. Both show up in the removed parameters.\n",
+      "evidence": [
+        {
+          "field": "tools.functionDeclarations.parameters.propertyOrdering"
+        },
+        {
+          "field": "tools.function.strict",
+          "outcome": "removed"
+        }
+      ]
+    },
+    {
+      "id": "image-detail-removed",
+      "title": "Image detail only reaches OpenAI APIs",
+      "body_md": "Only Chat Completions and Responses take an image `detail` setting. Other APIs get the image at their default detail, and the AI Gateway reports `detail` as removed.\n",
+      "evidence": [
+        {
+          "field": "messages.content.image_url.detail",
+          "outcome": "removed"
+        },
+        {
+          "field": "input.content.detail",
+          "outcome": "removed"
+        }
+      ]
+    },
+    {
+      "id": "legacy-functions-refused",
+      "title": "Legacy functions stay on Chat Completions",
+      "body_md": "A Chat Completions request with `functions` or `function_call` only reaches Chat Completions models. Switch to `tools` and `tool_choice` to reach models on other APIs.\n",
+      "evidence": [
+        {
+          "field": "functions"
+        },
+        {
+          "field": "function_call"
+        }
+      ]
+    },
+    {
+      "id": "provider-state-refused",
+      "title": "previous_response_id only reaches Responses",
+      "body_md": "`previous_response_id`, `conversation`, `prompt`, and `background` point to state that a Responses provider stores for your account. No other API can read it, so these requests only reach Responses models. Send the full conversation instead to reach models on other APIs.\n",
+      "evidence": [
+        {
+          "field": "previous_response_id"
+        },
+        {
+          "field": "conversation"
+        },
+        {
+          "field": "prompt"
+        },
+        {
+          "field": "background"
+        }
+      ]
+    },
+    {
+      "id": "converse-only-settings-refused",
+      "title": "Converse guardrails and stored prompts stay on Converse",
+      "body_md": "`guardrailConfig`, `outputConfig.textFormat`, and `promptVariables` have no match on other APIs. Without them, an answer would skip your guardrail or come back in the wrong shape, so these requests only reach Converse models.\n",
+      "evidence": [
+        {
+          "field": "guardrailConfig"
+        },
+        {
+          "field": "outputConfig"
+        },
+        {
+          "field": "promptVariables"
+        }
+      ]
+    },
+    {
+      "id": "one-choice-refused",
+      "title": "Requests for more than one answer stay on their own API",
+      "body_md": "Only Chat Completions and generateContent return several answers to one request. A request with `n` or `candidateCount` above 1 only reaches models on its own API.\n",
+      "evidence": [
+        {
+          "field": "n",
+          "case": "two"
+        },
+        {
+          "field": "generationConfig.candidateCount"
+        }
+      ]
+    },
+    {
+      "id": "structured-output-refused",
+      "title": "JSON output doesn't reach Converse models yet",
+      "body_md": "Converse takes a JSON schema in `outputConfig.textFormat`, but the AI Gateway doesn't translate a schema to or from it yet. A request that asks for JSON output doesn't reach Converse models. Messages takes a JSON schema but not plain JSON mode, so a request for JSON without a schema doesn't reach Messages models either.\n",
+      "evidence": [
+        {
+          "target": "bedrock-converse",
+          "field": "response_format"
+        },
+        {
+          "target": "bedrock-converse",
+          "field": "generationConfig.responseJsonSchema"
+        },
+        {
+          "target": "bedrock-converse",
+          "field": "generationConfig.responseMimeType"
+        },
+        {
+          "target": "bedrock-converse",
+          "field": "output_config",
+          "case": "set"
+        },
+        {
+          "target": "bedrock-converse",
+          "field": "text",
+          "case": "set"
+        },
+        {
+          "target": "messages",
+          "field": "response_format",
+          "case": "json_object"
+        },
+        {
+          "target": "messages",
+          "field": "generationConfig.responseMimeType"
+        }
+      ]
+    },
+    {
+      "id": "web-search-refused",
+      "title": "Web search needs an API that searches",
+      "body_md": "Converse runs no web search, and Chat Completions only searches through providers that offer it. A request that asks for a web search doesn't reach those models, because an answer without the search isn't the answer you asked for.\n",
+      "evidence": [
+        {
+          "field": "web_search_options",
+          "outcome": "refused"
+        },
+        {
+          "field": "tools.googleSearch",
+          "outcome": "refused"
+        },
+        {
+          "field": "tools.web_search",
+          "outcome": "refused"
+        },
+        {
+          "field": "tools.web_search_20250305",
+          "outcome": "refused"
+        }
+      ]
+    },
+    {
+      "id": "code-execution-refused",
+      "title": "Code tools only reach APIs that run Python",
+      "body_md": "The AI Gateway translates a hosted code tool only between APIs whose tool runs Python: Responses and generateContent reach each other, and a Messages request with `code_execution_20250522` reaches either. Chat Completions and Converse run no code, and Claude runs code through Bash, so a request with a code tool doesn't reach those models.\n",
+      "evidence": [
+        {
+          "field": "tools.code_interpreter",
+          "outcome": "refused"
+        },
+        {
+          "field": "tools.codeExecution",
+          "outcome": "refused"
+        },
+        {
+          "field": "tools.code_execution_20250522",
+          "outcome": "refused"
+        }
+      ]
+    },
+    {
+      "id": "hosted-tools-refused",
+      "title": "Other hosted tools stay on their own API",
+      "body_md": "Hosted tools like file search, image generation, URL context, Bash, the text editor, and web fetch run inside one provider. A request with one of them only reaches models on its own API.\n",
+      "evidence": [
+        {
+          "field": "tools.file_search"
+        },
+        {
+          "field": "tools.image_generation"
+        },
+        {
+          "field": "tools.urlContext"
+        },
+        {
+          "field": "tools.bash_20250124"
+        },
+        {
+          "field": "tools.text_editor_20250728"
+        },
+        {
+          "field": "tools.web_fetch_20250910"
+        }
+      ]
+    },
+    {
+      "id": "remote-mcp-responses-and-messages",
+      "title": "Remote MCP servers move only between Responses and Messages",
+      "body_md": "A Responses `mcp` tool and a Messages MCP server (`mcp_servers` with its `mcp_toolset`) translate into each other, and reach no other API. The Responses tool must set `require_approval` to `never`, because Messages has no approval step. A Responses request only reaches Claude models on Anthropic's own API, and a Messages request only reaches OpenAI's own API, because other providers don't call remote MCP servers.\n",
+      "evidence": [
+        {
+          "field": "tools.mcp",
+          "outcome": "refused"
+        },
+        {
+          "field": "mcp_servers",
+          "outcome": "refused"
+        },
+        {
+          "field": "tools.mcp_toolset",
+          "outcome": "refused"
+        }
+      ]
+    },
+    {
+      "id": "openapi-response-schema-refused",
+      "title": "Use responseJsonSchema to reach other APIs",
+      "body_md": "`generationConfig.responseSchema` takes Gemini's OpenAPI schema, which other APIs can't read. A request with it only reaches Gemini models. Send the same schema as JSON Schema in `responseJsonSchema` to reach models on other APIs.\n",
+      "evidence": [
+        {
+          "field": "generationConfig.responseSchema"
+        }
+      ]
+    }
+  ]
+}

@@ -11,20 +11,18 @@ import { ConfigField } from "/snippets/ConfigTable.jsx";
 import { ConfigChildren } from "/snippets/ConfigChildren.jsx";
 
 
-The **JWT Validation** Traffic Policy action enables you to validate JSON Web
-Tokens (JWT) on your endpoints before routing traffic to your upstream service.
+The **JWT Validation** Traffic Policy action enables you to validate JSON Web Tokens (JWT) on your endpoints before routing traffic to your upstream service.
 
-Guides for configuring this action with the following providers are available:
+<Note>
+See [this guide](/integrations/jwt-validation/auth0/) for specific instructions on configuring this action with Auth0.
+</Note>
 
-- [Auth0](/integrations/jwt-validation/auth0/)
-
-A useful tool for working with JWTs is provided at [jwt.io](https://jwt.io).
+You can use [jwt.io](https://jwt.io) to work with JWTs.
 
 
 ## Configuration reference
 
-The [Traffic Policy](/gateway/traffic-policy/) configuration
-reference for this action.
+The [Traffic Policy](/gateway/traffic-policy/) configuration reference for this action.
 
 ### Supported phases
 
@@ -41,11 +39,13 @@ reference for this action.
 
   <Expandable label="child properties">
     <ConfigField title="allow_list" type="array of objects" required={true}>
-      List of allowed issuers. Minimum `1`.
+      List of allowed issuers.
+      Minimum `1`.
 
       <Expandable label="child properties">
         <ConfigField title="allow_list[*].value" type="string" required={true} cel={true}>
-          Issuer URL. This can be found in the <code>iss</code> claim after decoding the JWT or from the <code>/.well-known/openid-configuration</code> endpoint in your Identity Provider.
+          Issuer URL.
+          You can find this in the <code>iss</code> claim after decoding the JWT or from the <code>/.well-known/openid-configuration</code> endpoint in your Identity Provider.
         </ConfigField>
       </Expandable>
     </ConfigField>
@@ -57,11 +57,13 @@ reference for this action.
 
   <Expandable label="child properties">
     <ConfigField title="allow_list" type="array of objects" required={false}>
-      List of allowed audiences. Minimum `1`.
+      List of allowed audiences.
+      Minimum `1`.
 
       <Expandable label="child properties">
         <ConfigField title="allow_list[*].value" type="string" required={false}>
-          Audience claim value. This can be found in the <code>aud</code> claim after decoding the JWT or from the request used to create the token in the first place.
+          Audience claim value.
+          You can find this in the <code>aud</code> claim after decoding the JWT or from the request used to create the token in the first place.
         </ConfigField>
       </Expandable>
     </ConfigField>
@@ -73,7 +75,8 @@ reference for this action.
 
   <Expandable label="child properties">
     <ConfigField title="tokens" type="array of objects" required={true}>
-      List of tokens to validate. Minimum `1`.
+      List of tokens to validate.
+      Minimum `1`.
 
       <Expandable label="child properties">
         <ConfigField title="tokens[*].type" type="enum" required={true}>
@@ -97,19 +100,20 @@ reference for this action.
             <ConfigEnumOption>`body`</ConfigEnumOption>
           </ConfigEnum>
 
-          When choosing `header`, the <code>content-type</code> header must be set to either <code>application/json</code> or <code>application/x-www-form-urlencoded</code>.
+          When choosing `body`, the <code>content-type</code> header must be set to either <code>application/json</code> or <code>application/x-www-form-urlencoded</code>.
           
-          When choosing <code>body</code>, the method must be <code>POST</code>, <code>PUT</code>, or <code>PATCH</code>
+          When choosing <code>body</code>, the method must be <code>POST</code>, <code>PUT</code>, or <code>PATCH</code>.
           
-          Including a token as a URL query parameter is not supported.
+          Including a token as a URL query parameter isn't supported.
         </ConfigField>
 
         <ConfigField title="tokens[*].name" type="string" required={true} cel={true}>
-          Name of the header or body field where the JWT is expected (Example: <code>"Authorization"</code>). This is not case sensitive.
+          Name of the header or body field where the JWT is expected (for example, <code>"Authorization"</code>).
+          This isn't case sensitive.
         </ConfigField>
 
         <ConfigField title="tokens[*].prefix" type="string" cel={true}>
-          Any prefix to strip from the header or body field before parsing the JWT (Example: <code>"Bearer "</code>).
+          Any prefix to strip from the header or body field before parsing the JWT (for example, <code>"Bearer "</code>).
         </ConfigField>
       </Expandable>
     </ConfigField>
@@ -121,7 +125,9 @@ reference for this action.
 
   <Expandable label="child properties">
     <ConfigField title="allowed_algorithms" type="array of strings" required={true}>
-      List of allowed signing algorithms. The value <code>none</code> is not supported here because it is insecure. Minimum `1`.
+      List of allowed signing algorithms.
+      The value <code>none</code> isn't supported here because it's insecure.
+      Minimum `1`.
     </ConfigField>
 
     <ConfigField title="keys" type="array of objects" required={true}>
@@ -143,7 +149,8 @@ reference for this action.
 
           <Expandable label="child properties">
             <ConfigField title="keys[*].sources[*].additional_jkus" type="array of strings" required={true} cel={true}>
-              List of URLs which serve the possible signing keys in JWKS format. These URLs are cached and refreshed roughly every 15 minutes.
+              List of URLs that serve the possible signing keys in JWKS format.
+              ngrok caches these URLs and refreshes them roughly every 15 minutes, or less often when the JWKS response sets a longer `Cache-Control: max-age` or `Expires`.
             </ConfigField>
           </Expandable>
         </ConfigField>
@@ -156,45 +163,36 @@ reference for this action.
 
 ### Request validation
 
-The request is allowed only if it has been correctly signed by the issuer and
-the defined claims match.
+ngrok allows the request only if the issuer correctly signed it and the defined claims match.
 
-For efficient validation of tokens, it is recommended to include the optional
-`kid` claim in your JWTs and JWK payload.
+For efficient token validation, include the optional `kid` claim in your JWTs and JWK payload.
 
-Custom validation can be implemented in Traffic Policies via the
-[`actions.ngrok.jwt_validation.tokens`](#action-result-variables) Action Result Variable and its
-corresponding properties.
+You can implement custom validation in Traffic Policies with the [`actions.ngrok.jwt_validation.tokens`](#action-result-variables) action result variable and its corresponding properties.
 
 ### Multiple issuers
 
-You can specify multiple issuers for JWT validation. A request is
-considered validated if it presents a JWT signed by any of the specified
-issuers.
+You can specify multiple issuers for JWT validation.
+ngrok considers a request valid if it presents a JWT signed by any of the specified issuers.
 
-The issuer **must** exactly match the one provided in the JWT, including
-any trailing slashes (`/`) present in the `iss` claim.
+The issuer **must** exactly match the one provided in the JWT, including any trailing slashes (`/`) present in the `iss` claim.
 
 ### Multiple audience claims
 
 You can optionally specify one or more audience (`aud`) claims for JWT validation.
 
-If present, the `aud` claim **must** contain at least one of the specified audience claims and
-exactly match for validation to succeed.
+If present, the `aud` claim **must** contain at least one of the specified audience claims and exactly match for validation to succeed.
 
 ### Multiple signing keys
 
 You can provide multiple JSON Web Key Set (JWKS) URLs and signing algorithms.
 
-During JWT validation the list of JWKS and algorithms provided will be used in
-an attempt to validate the JWT. The list will be tried in order and is cached
-for performance. The cache is refreshed roughly every 15 minutes.
+During JWT validation, ngrok tries the JWKS and algorithms you provide, in order, to validate the JWT.
+ngrok caches the list for performance and refreshes the cache roughly every 15 minutes, or less often when the JWKS response sets a longer `Cache-Control: max-age` or `Expires`.
 
 ### Multiple tokens
 
-If multiple tokens are defined within the HTTP configuration parameter, all
-tokens **must** be present in the request. If all tokens are not present, a
-`401 Unauthorized` status code will be returned.
+If you define multiple tokens within the HTTP configuration parameter, all tokens **must** be present in the request.
+If any token is missing, ngrok returns a `401 Unauthorized` status code.
 
 ### Non-terminating action
 
@@ -219,38 +217,32 @@ tokens **must** be present in the request. If all tokens are not present, a
     </ConfigField>
 
     <ConfigField title="tokens[i].location" type="string">
-      The part of the HTTP request where the JWT was located (for example,{" "}
-      <code>header</code>, <code>body</code>).
+      The part of the HTTP request where the JWT was located (for example, <code>header</code>, <code>body</code>).
     </ConfigField>
 
     <ConfigField title="tokens[i].location_property" type="string">
-      The specific header or body field that contained the JWT (for example,{" "}
-      <code>"Authorization"</code>).
+      The specific header or body field that contained the JWT (for example, <code>"Authorization"</code>).
     </ConfigField>
 
     <ConfigField title="tokens[i].payload" type="object">
-      The payload portion of the JWT, parsed into a key-value map
-      representing the claims.
+      The payload portion of the JWT, parsed into a key-value map representing the claims.
     </ConfigField>
 
     <ConfigField title="tokens[i].signature" type="string">
-      The signature portion of the JWT, encoded in base64, used for
-      verifying token integrity.
+      The signature portion of the JWT, encoded in base64, used for verifying token integrity.
     </ConfigField>
 
     <ConfigField title="tokens[i].verified" type="boolean">
-      Indicates whether the token passed verification. Returns{" "}
-      <code>true</code> if verified successfully.
+      Indicates whether the token passed verification.
+      Returns <code>true</code> if verified successfully.
     </ConfigField>
   </Expandable>
 </ConfigField>
 
 <ConfigField title="actions.ngrok.jwt_validation.error.code" type="string">
-  A machine-readable code describing an error that occurred during the
-  action's execution.
+  A machine-readable code describing an error that occurred during the action's execution.
 </ConfigField>
 
 <ConfigField title="actions.ngrok.jwt_validation.error.message" type="string">
-  A human-readable message providing details about an error that occurred
-  during the action's execution.
+  A human-readable message providing details about an error that occurred during the action's execution.
 </ConfigField>
