@@ -32,8 +32,8 @@ This guide walks you through enabling mTLS on your ngrok hosted endpoints using 
     Keep in mind:
 
     1. ngrok uses the CA certificate to verify the client certificate.
-    2. Once the CA signs a client certificate, the client certificate is used to grant the client access your endpoints.
-    3. ngrok does not generate CA and client certificates for you when you use mTLS; you must generate them yourself.
+    2. Once the CA signs a client certificate, the client certificate is used to grant the client access to your endpoints.
+    3. ngrok doesn't generate CA and client certificates for you when you use mTLS; you must generate them yourself.
     4. Though your CA certificate must be uploaded and hosted on the ngrok SaaS platform, your client certificates need to be distributed to any client or device that needs access to your endpoints.
 
     ### Generate your own certificates
@@ -42,7 +42,7 @@ This guide walks you through enabling mTLS on your ngrok hosted endpoints using 
     Most organizations have their own certificate management infrastructure, so this step is optional if you already have a CA and client certificates to work with.
     </Note>
 
-    To begin, create a new CA that will be used to sign the client certificate, as shown below.
+    To begin, create a new CA to sign the client certificate, as shown below.
     With this approach you can generate multiple client certificates that are trusted by the CA if needed.
 
     ```bash
@@ -63,13 +63,15 @@ openssl x509 -req -in client.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out c
 ```
 
 These commands result in five new files: `ca.key`, `ca.crt`, `client.key`, `client.csr`, and `client.key`.
-You will use the contents of `ca.crt` in your Traffic Policy to validate requests via `curl`, which, in turn, uses `client.key` and `client.crt`.
+You'll use the contents of `ca.crt` in your Traffic Policy to validate requests via `curl`, which, in turn, uses `client.key` and `client.crt`.
 
   </Step>
 
   <Step title="Create a Traffic Policy">
 
     Using the CA certificate generated in the previous step, you can specify the `mutual_tls_certificate_authorities` field in a Traffic Policy to trust the CA that issued the client certificate.
+    Also set `min_version` to `1.2`.
+    ngrok already rejects TLS 1.0 and 1.1 by default, but setting the minimum explicitly keeps your mTLS endpoint on TLS 1.2 or later regardless of the platform default.
 
     <CodeGroup>
 
@@ -78,6 +80,7 @@ You will use the contents of `ca.crt` in your Traffic Policy to validate request
       - actions:
           - type: terminate-tls
             config:
+              min_version: "1.2"
               mutual_tls_certificate_authorities:
                 - |-
                   -----BEGIN CERTIFICATE-----
@@ -93,6 +96,7 @@ You will use the contents of `ca.crt` in your Traffic Policy to validate request
             {
               "type": "terminate-tls",
               "config": {
+                "min_version": "1.2",
                 "mutual_tls_certificate_authorities": [
                   "-----BEGIN CERTIFICATE-----\n... certificate ...\n-----END CERTIFICATE-----"
                 ]
@@ -106,7 +110,7 @@ You will use the contents of `ca.crt` in your Traffic Policy to validate request
 
     </CodeGroup>
 
-    You may also optionally [upload the CA certificate](https://dashboard.ngrok.com/tls-cert-authorities) in the ngrok dashboard and use its ID in the `mutual_tls_certificate_authorities` array.
+    You can also [upload the CA certificate](https://dashboard.ngrok.com/tls-cert-authorities) in the ngrok dashboard and use its ID in the `mutual_tls_certificate_authorities` array.
   </Step>
 
   <Step title="Start an endpoint with the Traffic Policy">
@@ -118,7 +122,7 @@ You will use the contents of `ca.crt` in your Traffic Policy to validate request
 
   <Step title="Test your endpoint">
 
-    Test out that everything works by making a request to your endpoint using the `--cert` and `--key` flags to specify the client certificate and private key.
+    Test that everything works by making a request to your endpoint using the `--cert` and `--key` flags to specify the client certificate and private key.
 
     ```bash
     curl --cert client.crt --key client.key https://$YOUR_DOMAIN
