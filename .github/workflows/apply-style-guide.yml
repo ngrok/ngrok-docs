@@ -32,7 +32,7 @@ jobs:
       # Pushing with the app token, rather than GITHUB_TOKEN, lets the bot's commit
       # trigger the PR's other checks.
       - name: Generate bot token
-        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v2
+        uses: actions/create-github-app-token@v3.3.0
         id: generate-token
         with:
           app-id: ${{ secrets.NGROK_DOCS_BOT_APP_ID }}
@@ -40,7 +40,7 @@ jobs:
           owner: ${{ github.repository_owner }}
 
       - name: Checkout PR branch
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        uses: actions/checkout@v7.0.1
         with:
           token: ${{ steps.generate-token.outputs.token }}
           ref: ${{ github.head_ref }}
@@ -87,7 +87,7 @@ jobs:
 
       - name: Apply style guide with Claude
         if: steps.changed-files.outputs.has_files == 'true'
-        uses: anthropics/claude-code-action@d70510b174a1244958df0b03166a54912811f3e6 # v1.0.264
+        uses: anthropics/claude-code-action@v1.0.264
         with:
           anthropic_federation_rule_id: ${{ vars.ANTHROPIC_WIF_RULE_ID }}
           anthropic_organization_id: ${{ vars.ANTHROPIC_ORG_ID }}
@@ -113,7 +113,7 @@ jobs:
             - Put each sentence on its own line, as the style guide requires.
             - Convert numbered headings, such as `## 1. Do the first thing` or `## Step 1: Do the first thing`, to `<Steps>` and `<Step>` components, as the style guide requires. This is the one allowed exception to the prose-only rule. Leave numbered Markdown lists as lists.
 
-      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+      - uses: actions/setup-node@v7.1.0
         if: ${{ !cancelled() && steps.changed-files.outputs.has_files == 'true' }}
         with:
           node-version-file: ".nvmrc"
