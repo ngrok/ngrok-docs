@@ -35,6 +35,36 @@ curl https://api.ngrok.ai/access-keys \
 You can create and manage your ngrok.ai API key on the settings page in the dashboard.
 Treat this key like a secret, since it allows you to manage the resources in your account.
 
+## Scopes
+
+Each route needs a scope.
+An API key can call a route only when it has that scope.
+When you create a key, you can grant only the scopes that your own API key has.
+
+Most resources have a `read` scope, to view them, and a `write` scope, to create, change, and delete them.
+
+| Resource | Scopes | What it covers |
+|---|---|---|
+| Access keys | `ai-gateway:access-keys:read`, `ai-gateway:access-keys:write` | Access keys and access key configurations. |
+| API keys | `ai-gateway:api-keys:read`, `ai-gateway:api-keys:write` | ngrok.ai API keys. |
+| Credits | `ai-gateway:credits:read`, `ai-gateway:credits:write` | The credit balance, transactions, and purchases. |
+| Providers | `ai-gateway:providers:read`, `ai-gateway:providers:write` | Providers, provider keys, and the model list. |
+| Settings | `ai-gateway:settings:read`, `ai-gateway:settings:write` | Gateway configuration and firewall policies. |
+| Usage | `ai-gateway:usage:read` | Usage data and request logs. |
+| Virtual models | `ai-gateway:virtual-models:read`, `ai-gateway:virtual-models:write` | Virtual models. |
+
+Access keys use the `ai-gateway:inference:request` scope, which lets the key send model requests to `https://gateway.ngrok.ai` and does not reach this API.
+
+### Missing scopes
+
+When an API key calls a route without the scope it needs, the API returns `403 Forbidden` and names the missing scope:
+
+```text
+You don't have permission to perform this action. Your credentials are missing the 'ai-gateway:access-keys:write' scope.
+```
+
+To fix the error, add the scope to the API key.
+
 ## OpenAPI spec
 
 The API is described by a public OpenAPI 3.0 spec.

@@ -1708,6 +1708,10 @@ components:
           type: string
           format: date-time
           description: Timestamp when the access key was created.
+        expiresAt:
+          type: string
+          format: date-time
+          description: Token expiry timestamp. Absent for keys with no expiry.
         updatedAt:
           type: string
           format: date-time
@@ -1725,6 +1729,11 @@ components:
         token:
           type: string
           description: Plaintext access key token. Only returned when the key is first created.
+        scopes:
+          type: array
+          items:
+            type: string
+          description: Scopes of an access key.
         keyRedacted:
           type: string
           description: Redacted display form of the access key token.
@@ -1775,6 +1784,19 @@ components:
       type: object
       additionalProperties: false
       properties:
+        scopes:
+          type: array
+          minItems: 1
+          maxItems: 1
+          items:
+            type: string
+            enum:
+              - ai-gateway:inference:request
+          description: 'Scopes of the new key. `ai-gateway:inference:request` lets it send model requests.'
+        expiresAt:
+          type: string
+          format: date-time
+          description: Token expiry timestamp. Omit for no expiry.
         name:
           type: string
           maxLength: 255
@@ -1846,6 +1868,10 @@ components:
           type: string
           format: date-time
           description: Timestamp when the API key was created.
+        expiresAt:
+          type: string
+          format: date-time
+          description: Token expiry timestamp. Absent for keys with no expiry.
         updatedAt:
           type: string
           format: date-time
@@ -1863,6 +1889,11 @@ components:
         token:
           type: string
           description: Plaintext API key token. Only returned when the key is first created.
+        scopes:
+          type: array
+          items:
+            type: string
+          description: Scopes of an API key.
         keyRedacted:
           type: string
           description: Redacted display form of the API key token.
@@ -1894,6 +1925,10 @@ components:
       type: object
       additionalProperties: false
       properties:
+        expiresAt:
+          type: string
+          format: date-time
+          description: Token expiry timestamp. Omit for no expiry.
         name:
           type: string
           maxLength: 255
@@ -1906,10 +1941,22 @@ components:
           type: string
           maxLength: 4096
           description: Arbitrary user-defined metadata for this API key.
+        scopes:
+          type: array
+          minItems: 1
+          items:
+            type: string
+          description: AI Gateway management scopes of the new key. At least one must manage the gateway. Each scope must be one that your own credential holds.
     AIGatewayAPIKeyUpdate:
       type: object
       additionalProperties: false
       properties:
+        scopes:
+          type: array
+          minItems: 1
+          items:
+            type: string
+          description: scopes this token can use, for example `["ai-gateway:providers:read"]`. Each must be a scope you can grant.
         name:
           type: string
           nullable: true

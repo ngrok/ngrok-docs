@@ -49,26 +49,37 @@ Create a separate key per application or team so you can revoke one client witho
 
 1. Open [app.ngrok.ai](https://app.ngrok.ai) → **Keys**.
 2. Click **New access key**.
-3. Enter a name and optionally assign a configuration.
+3. Enter a description, choose what the key can call, and optionally set an expiration and assign a configuration.
 4. Copy the token immediately—it's only shown once.
 
 ### Via the AI Gateway API
 
-1. Create an [AI Gateway API key](#credentials-overview).
+1. Create an [AI Gateway API key](#credentials-overview) with the `ai-gateway:access-keys:write` [scope](/ai-gateway/api-reference/overview#scopes).
 2. Send a request to the [Access Keys API](/ai-gateway/api-reference/access-keys/create), authorized with that key:
 
 ```bash
 curl -X POST https://api.ngrok.ai/access-keys \
   -H "Authorization: Bearer $AI_GATEWAY_API_KEY" \
   -H "Content-Type: application/json" \
-  -d '{ "name": "Production web app" }'
+  -d '{ "description": "Production web app", "scopes": ["ai-gateway:inference:request"] }'
 ```
 
 ## Things to know
 
+### Scopes decide what a key can call
+
+An access key needs the `ai-gateway:inference:request` scope to send model requests.
+A request that the key's scopes don't allow is rejected.
+
+### Keys can expire
+
+When you create a key, you can set an expiration time.
+After that time, the gateway rejects the key.
+A key without an expiration time stays valid until you delete it.
+
 ### Your key token is only shown once
 
-When you create a key, the token (starting with `ng-`) is displayed exactly once. If you lose it, delete the key and create a new one.
+When you create a key, the token (starting with `ngrok_pat_`) is displayed exactly once. If you lose it, delete the key and create a new one.
 
 ### Requests require credits
 
