@@ -138,35 +138,35 @@ For the usage, request, capture, and model tools, such as `aigw_list_usage` and 
 
 The tools in this section read and change your AI Gateway setup.
 A change applies to live traffic right away.
-Access key tokens and provider API keys never go through the chat: `aigw_create_access_key`, `aigw_create_provider_key`, and `aigw_rotate_provider_key` send you an AI dashboard link where you finish the step, so they need only a read scope on the token, and the dashboard checks your permissions when you save.
+Access key tokens and provider API keys never go through the chat: `aigw_create_access_key`, `aigw_create_provider_key`, and `aigw_rotate_provider_key` send you an AI dashboard link where you finish the step, so they need only read scopes on the token, and the dashboard checks your permissions when you save.
 
 | Tool | Type | Scopes |
 | --- | --- | --- |
-| `aigw_list_access_configs`<br />Lists access configs, which limit the providers and models a key may use. | Read-only | `ai-gateway:access-keys:read` |
-| `aigw_get_access_config`<br />Shows one access config. | Read-only | `ai-gateway:access-keys:read` |
-| `aigw_create_access_config`<br />Creates an access config. | Changes | `ai-gateway:access-keys:write` |
-| `aigw_update_access_config`<br />Updates an access config, which changes what every key that uses it may do. | Destructive | `ai-gateway:access-keys:write` |
+| `aigw_list_access_configs`<br />Lists access configs, which limit the providers and models a key may use. | Read-only | `ai-gateway:access-key-configurations:read` |
+| `aigw_get_access_config`<br />Shows one access config. | Read-only | `ai-gateway:access-key-configurations:read` |
+| `aigw_create_access_config`<br />Creates an access config. | Changes | `ai-gateway:access-key-configurations:write` |
+| `aigw_update_access_config`<br />Updates an access config, which changes what every key that uses it may do. | Destructive | `ai-gateway:access-key-configurations:write` |
 | `aigw_list_access_keys`<br />Lists access keys, never their tokens. | Read-only | `ai-gateway:access-keys:read` |
 | `aigw_get_access_key`<br />Shows one access key, never its token. | Read-only | `ai-gateway:access-keys:read` |
-| `aigw_create_access_key`<br />Sends you an AI dashboard link to create an access key. | Changes | `ai-gateway:access-keys:read` |
+| `aigw_create_access_key`<br />Sends you an AI dashboard link to create an access key. | Changes | `ai-gateway:access-keys:read`, `ai-gateway:access-key-configurations:read` |
 | `aigw_update_access_key`<br />Updates an access key. | Changes | `ai-gateway:access-keys:write` |
 | `aigw_list_providers`<br />Lists custom providers. | Read-only | `ai-gateway:providers:read` |
 | `aigw_get_provider`<br />Shows one custom provider. | Read-only | `ai-gateway:providers:read` |
 | `aigw_create_provider`<br />Creates a custom provider. | Changes | `ai-gateway:providers:write` |
 | `aigw_update_provider`<br />Updates a custom provider. | Destructive | `ai-gateway:providers:write` |
-| `aigw_list_provider_keys`<br />Lists provider keys, never their values. | Read-only | `ai-gateway:providers:read` |
-| `aigw_get_provider_key`<br />Shows one provider key, never its value. | Read-only | `ai-gateway:providers:read` |
-| `aigw_create_provider_key`<br />Sends you an AI dashboard link to add a provider key. | Changes | `ai-gateway:providers:read` |
-| `aigw_rotate_provider_key`<br />Sends you an AI dashboard link to replace a provider key's value. | Changes | `ai-gateway:providers:read` |
-| `aigw_update_provider_key`<br />Updates a provider key. | Changes | `ai-gateway:providers:write` |
+| `aigw_list_provider_keys`<br />Lists provider keys, never their values. | Read-only | `ai-gateway:provider-keys:read` |
+| `aigw_get_provider_key`<br />Shows one provider key, never its value. | Read-only | `ai-gateway:provider-keys:read` |
+| `aigw_create_provider_key`<br />Sends you an AI dashboard link to add a provider key. | Changes | `ai-gateway:providers:read`, `ai-gateway:provider-keys:read` |
+| `aigw_rotate_provider_key`<br />Sends you an AI dashboard link to replace a provider key's value. | Changes | `ai-gateway:providers:read`, `ai-gateway:provider-keys:read` |
+| `aigw_update_provider_key`<br />Updates a provider key. | Changes | `ai-gateway:provider-keys:write` |
 | `aigw_list_virtual_models`<br />Lists virtual models. | Read-only | `ai-gateway:virtual-models:read` |
 | `aigw_get_virtual_model`<br />Shows one virtual model and its target models. | Read-only | `ai-gateway:virtual-models:read` |
 | `aigw_create_virtual_model`<br />Creates a virtual model. | Changes | `ai-gateway:virtual-models:write` |
 | `aigw_update_virtual_model`<br />Updates a virtual model. | Destructive | `ai-gateway:virtual-models:write` |
-| `aigw_list_firewall_policies`<br />Lists firewall policies. | Read-only | `ai-gateway:settings:read` |
-| `aigw_get_firewall_policy`<br />Shows one firewall policy. | Read-only | `ai-gateway:settings:read` |
-| `aigw_create_firewall_policy`<br />Creates a firewall policy. | Changes | `ai-gateway:settings:write` |
-| `aigw_update_firewall_policy`<br />Updates a firewall policy. | Destructive | `ai-gateway:settings:write` |
+| `aigw_list_firewall_policies`<br />Lists firewall policies. | Read-only | `ai-gateway:firewall-policies:read` |
+| `aigw_get_firewall_policy`<br />Shows one firewall policy. | Read-only | `ai-gateway:firewall-policies:read` |
+| `aigw_create_firewall_policy`<br />Creates a firewall policy. | Changes | `ai-gateway:firewall-policies:write` |
+| `aigw_update_firewall_policy`<br />Updates a firewall policy. | Destructive | `ai-gateway:firewall-policies:write` |
 | `aigw_get_gateway_config`<br />Shows the account-wide AI Gateway settings. | Read-only | `ai-gateway:settings:read` |
 | `aigw_update_gateway_config`<br />Updates the account-wide AI Gateway settings. | Destructive | `ai-gateway:settings:write` |
 | `aigw_add_credits`<br />Gives you the AI dashboard billing page. It buys nothing. | Read-only | — |
@@ -210,14 +210,20 @@ A tool runs only when the token has every scope the tool lists.
 | `ngrok:limits:read` | `platform_get_limits` |
 | `ai-gateway:usage:read` | `aigw_usage_overview`, `aigw_list_usage`, and with `ai-gateway:captures:read`: `aigw_get_request`, `aigw_get_request_attempts`, `aigw_get_capture` |
 | `ai-gateway:captures:read` | With `ai-gateway:usage:read`: `aigw_get_request`, `aigw_get_request_attempts`, `aigw_get_capture` |
-| `ai-gateway:providers:read` | `aigw_list_models`, `aigw_get_model`, `aigw_list_providers`, `aigw_get_provider`, `aigw_list_provider_keys`, `aigw_get_provider_key`, `aigw_create_provider_key`, `aigw_rotate_provider_key` |
-| `ai-gateway:providers:write` | `aigw_create_provider`, `aigw_update_provider`, `aigw_update_provider_key` |
-| `ai-gateway:access-keys:read` | `aigw_list_access_configs`, `aigw_get_access_config`, `aigw_list_access_keys`, `aigw_get_access_key`, `aigw_create_access_key` |
-| `ai-gateway:access-keys:write` | `aigw_create_access_config`, `aigw_update_access_config`, `aigw_update_access_key` |
+| `ai-gateway:providers:read` | `aigw_list_models`, `aigw_get_model`, `aigw_list_providers`, `aigw_get_provider`, and with `ai-gateway:provider-keys:read`: `aigw_create_provider_key`, `aigw_rotate_provider_key` |
+| `ai-gateway:providers:write` | `aigw_create_provider`, `aigw_update_provider` |
+| `ai-gateway:provider-keys:read` | `aigw_list_provider_keys`, `aigw_get_provider_key`, and with `ai-gateway:providers:read`: `aigw_create_provider_key`, `aigw_rotate_provider_key` |
+| `ai-gateway:provider-keys:write` | `aigw_update_provider_key` |
+| `ai-gateway:access-keys:read` | `aigw_list_access_keys`, `aigw_get_access_key`, and with `ai-gateway:access-key-configurations:read`: `aigw_create_access_key` |
+| `ai-gateway:access-keys:write` | `aigw_update_access_key` |
+| `ai-gateway:access-key-configurations:read` | `aigw_list_access_configs`, `aigw_get_access_config`, and with `ai-gateway:access-keys:read`: `aigw_create_access_key` |
+| `ai-gateway:access-key-configurations:write` | `aigw_create_access_config`, `aigw_update_access_config` |
 | `ai-gateway:virtual-models:read` | `aigw_list_virtual_models`, `aigw_get_virtual_model` |
 | `ai-gateway:virtual-models:write` | `aigw_create_virtual_model`, `aigw_update_virtual_model` |
-| `ai-gateway:settings:read` | `aigw_list_firewall_policies`, `aigw_get_firewall_policy`, `aigw_get_gateway_config` |
-| `ai-gateway:settings:write` | `aigw_create_firewall_policy`, `aigw_update_firewall_policy`, `aigw_update_gateway_config` |
+| `ai-gateway:firewall-policies:read` | `aigw_list_firewall_policies`, `aigw_get_firewall_policy` |
+| `ai-gateway:firewall-policies:write` | `aigw_create_firewall_policy`, `aigw_update_firewall_policy` |
+| `ai-gateway:settings:read` | `aigw_get_gateway_config` |
+| `ai-gateway:settings:write` | `aigw_update_gateway_config` |
 
 Some tools need no scope of their own, such as `platform_whoami`, `gw_validate_traffic_policy`, and the docs tools.
 `get_resource` and `delete_resource` need none either, but the ngrok API checks the token's scopes for the type of object they read or delete.
