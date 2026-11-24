@@ -1,0 +1,116 @@
+---
+title: What Data Can ngrok See?
+sidebarTitle: What Data ngrok Can See
+description: Learn which parts of your traffic ngrok can read, what it stores about your requests and connections, and how to keep it from reading or storing them.
+---
+
+ngrok can read your traffic when its cloud service terminates TLS, which every HTTPS endpoint does by default.
+When `ngrok http 8080` gives you an `https://` URL, ngrok decrypts each request on the way through, applies your rules, and stores a metadata record of it in Traffic Inspector.
+When the agent or your upstream service terminates TLS instead, ngrok forwards encrypted bytes it can't read.
+
+This guide is for developers and security teams who want to know exactly what ngrok can read in their traffic, what it keeps, and which settings change that.
+For account and billing data, see the [privacy policy](https://ngrok.com/privacy) and the [Trust Center](https://trust.ngrok.com/).
+If a vendor asked you to install ngrok, also read [Why your vendor uses ngrok](/gateway/site-to-site-connectivity/end-customers), because your vendor controls these settings for you.
+
+## What ngrok can read in your traffic
+
+An endpoint's protocol and its [Traffic Policy](/gateway/traffic-policy/) decide where TLS terminates.
+See [TLS termination](/gateway/domains/tls-termination/) for how to configure each option.
+
+| Endpoint                                   | Where TLS terminates                  | Can ngrok read the traffic? |
+| ------------------------------------------ | ------------------------------------- | --------------------------- |
+| HTTP (`http://`)                           | Nowhere: the client sends plain text  | Yes, and so can anyone on the network path between the client and ngrok. |
+| HTTPS (`https://`), the default for `ngrok http` | ngrok's cloud service           | Yes. |
+| TLS or TCP with the [`terminate-tls`](/gateway/traffic-policy/actions/terminate-tls) action | ngrok's cloud service | Yes. |
+| TLS with [termination at the agent](/gateway/agent/agent-tls-termination/) | The ngrok agent on your machine | No. |
+| TLS or TCP with TLS at your upstream service | Your upstream service              | No. |
+| TCP carrying an unencrypted protocol       | Nowhere                               | Yes, because the protocol itself isn't encrypted. |
+
+When ngrok's cloud service terminates TLS, it decrypts the traffic to apply your Traffic Policy, such as [OAuth](/gateway/traffic-policy/actions/oauth/), [webhook verification](/gateway/traffic-policy/actions/verify-webhook/), or header changes.
+It then re-encrypts the traffic before it sends it to your agent.
+Reading traffic to route it isn't the same as storing it.
+The sections below list what ngrok stores.
+
+When TLS terminates at the agent or your upstream service, the traffic is end-to-end encrypted.
+ngrok still sees connection metadata it needs to route and report on the connection, such as the client IP address, the hostname the client asked for, when the connection opened and closed, and how many bytes moved in each direction.
+In exchange, ngrok can't apply actions that need the decrypted request, such as OAuth or header rewrites, on these endpoints.
+
+The connection between the agent and ngrok's cloud service always uses TLS, whatever endpoint type you use.
+
+## What ngrok stores about your traffic
+
+### Traffic Inspector
+
+[Traffic Inspector](/obs/traffic-inspection/) in the dashboard stores records of the HTTP requests and TCP connections to every endpoint on your account.
+You can't turn it off, but its records expire after 24 hours on Free, 72 hours on Hobbyist and Pay-as-you-go, or up to 90 days with the [retention add-on](https://ngrok.com/pricing).
+
+For [HTTP requests](/obs/traffic-inspection/http-requests#what-traffic-inspector-stores), it stores metadata by default, not contents:
+
+- The method, host, and path, without the query string.
+- The names of query parameters and headers, but not their values, except for a few headers such as `User-Agent` and `Content-Type`.
+- The authorization scheme, such as `Bearer`, but not the credentials.
+- The size of the request and response bodies, but not the bodies.
+- The response status code.
+- The client IP address and its geolocation.
+- The user's identity, such as their name and email address, when an OAuth action authenticated the request.
+
+For [TCP and TLS connections](/obs/traffic-inspection/tcp-connections), it stores connection metadata only, such as the client IP, endpoint, duration, and bytes in and out.
+When ngrok doesn't terminate TLS, the only TLS detail it records is the client's JA4 fingerprint.
+
+### Full capture mode
+
+[Full capture mode](/obs/traffic-inspection/http-requests#full-capture-mode) is an opt-in account setting that an account admin turns on.
+With it on, Traffic Inspector also stores the full URL with query values, every header value, and the request and response bodies, truncated at 10 KB per body and 1 KB per header value.
+ngrok doesn't redact any of these values, so full capture can store passwords, tokens, and personal data that pass through your endpoints.
+
+Full capture only applies to HTTP traffic that ngrok can read, so it never captures end-to-end encrypted traffic.
+
+### Log exports
+
+[Log exports](/obs/events/) send traffic events to a destination you configure, such as Datadog or an S3 bucket.
+You choose the fields in each export, and some HTTP fields, such as `http.request.headers` and `http.request.url.query`, can carry secrets.
+After ngrok delivers an event, your destination's retention rules apply to it.
+
+### The agent's local inspector
+
+The ngrok CLI serves a [web inspection interface](/gateway/agent/web-inspection-interface) at `http://localhost:4040` with full request and response details.
+That interface runs on your own machine, and anyone who can reach it there can read the requests.
+To turn it off, set [`web_addr: false`](/gateway/agent/config/v3/#web-addr) in your agent configuration.
+
+## What ngrok sees when you share localhost
+
+Say you run this command to share an app on port 8080:
+
+```bash
+ngrok http 8080
+```
+
+The agent creates an HTTPS endpoint, so ngrok's cloud service terminates TLS:
+
+- ngrok can read each request and response while it routes them.
+- Traffic Inspector stores request metadata, such as the path and the client IP, for your account's retention period.
+  It doesn't store bodies, header values, or query values unless an admin turned on full capture mode.
+- The local inspector at `http://localhost:4040` shows full requests and responses on your machine.
+
+To keep ngrok from reading the traffic, serve your app over TLS and forward an end-to-end encrypted TLS endpoint instead, as shown in [Zero-knowledge TLS at the agent](/gateway/agent/agent-tls-termination/).
+You give up features that need the decrypted request, such as OAuth and Traffic Inspector's HTTP view.
+
+## How to limit what ngrok sees and stores
+
+To keep sensitive data away from ngrok:
+
+- Terminate TLS at the [agent](/gateway/agent/agent-tls-termination/) or your upstream service so traffic stays end-to-end encrypted.
+- Use `https://` endpoints instead of `http://` so traffic is encrypted between the client and ngrok.
+- Keep full capture mode off, or turn it off in the **Observability** section of your [account settings](https://dashboard.ngrok.com/settings#observability).
+- Leave headers, query strings, and other fields that carry secrets out of your log exports.
+- Set `web_addr: false` to turn off the local inspector on machines other people can reach.
+- Route traffic through one [point of presence](/gateway/points-of-presence/) if you have data residency requirements.
+- Turn on [HIPAA compliance](/gateway/security-dev-productivity/hipaa-compliance) for regulated data, which blocks public HTTP endpoints, ignores full capture, and stops traffic events.
+
+## Related resources
+
+- [TLS termination](/gateway/domains/tls-termination/)
+- [Traffic Inspector](/obs/traffic-inspection/)
+- [ngrok events](/obs/events/)
+- [HIPAA compliance](/gateway/security-dev-productivity/hipaa-compliance)
+- [Data at ngrok: A primer](https://ngrok.com/blog/data-at-ngrok)
