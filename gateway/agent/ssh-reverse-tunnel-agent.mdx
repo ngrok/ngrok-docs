@@ -17,10 +17,10 @@ A **reverse SSH tunnel** uses SSH's `-R` flag to expose a service running on you
 ngrok supports this pattern directly:
 SSH reverse tunneling (`ssh -R`) is an alternative mechanism to deliver services via ngrok without running an [ngrok agent](/gateway/agent/) or [SDK](/agent-sdks/).
 
-The SSH reverse tunnel agent should not be confused with creating remote access to an SSH server via ngrok.
-If you want to use ngrok to create access to your own SSH server for remote access, please refer to the [using ngrok with ssh](/gateway/ssh-rdp/) documentation.
+The SSH reverse tunnel agent shouldn't be confused with creating remote access to an SSH server via ngrok.
+If you want to use ngrok to create access to your own SSH server for remote access, see the [using ngrok with ssh](/gateway/ssh-rdp/) documentation.
 
-You should only ngrok via SSH if you really can't use an Agent or SDK.
+Only use ngrok via SSH if you really can't use an agent or SDK.
 The SSH reverse tunnel agent has [many functional limitations compared to the ngrok agent](#differences).
 
 ## Example usage
@@ -59,7 +59,7 @@ The SSH reverse tunnel agent has [many functional limitations compared to the ng
 
 ### Explicit region selection
 
-Normally you will connect to ngrok's closest point of presence via the [Global Load Balancer](/gateway/domains/global-load-balancer/), but you can also explicitly choose a region.
+Normally, you connect to ngrok's closest point of presence via the [Global Load Balancer](/gateway/domains/global-load-balancer/), but you can also explicitly choose a region.
 
 ```bash
 ssh -R 443:localhost:80 v2@connect.eu.ngrok-agent.com http
@@ -68,7 +68,7 @@ ssh -R 443:localhost:80 v2@connect.eu.ngrok-agent.com http
 ## Authentication
 
 Instead of an ngrok authtoken, when you use ngrok via the SSH reverse tunnel agent, it uses a public key for authentication.
-You'll first need to upload yours to the [SSH Public Keys page on your ngrok dashboard](https://dashboard.ngrok.com/ssh-keys).
+First, upload yours to the [SSH Public Keys page on your ngrok dashboard](https://dashboard.ngrok.com/ssh-keys).
 
 Copy your default SSH public key with:
 
@@ -103,7 +103,7 @@ cat ~/.ssh/id_ed25519.pub
 
 ## ngrok's SSH public key fingerprints
 
-Public key fingerprints can be used to validate a connection to the ngrok point of presence you're connecting through.
+You can use public key fingerprints to validate a connection to the ngrok point of presence you're connecting through.
 These are the RSA public key fingerprints:
 
 - connect.ap.ngrok-agent.com: `SHA256:K/3UwSeIg0JVf9uLVfl4QLEY11tyON/d+QmLfIU0fmk`
@@ -118,8 +118,8 @@ These are the RSA public key fingerprints:
 ## Command syntax
 
 ngrok does its best to honor the syntax of `ssh -R`.
-You may wish to consult `man ssh`, and the section devoted to the `-R` option for additional details.
-ngrok uses additional command line options to implement features that are not otherwise available via the `-R` syntax.
+For more details, see `man ssh` and its section on the `-R` option.
+ngrok uses additional command line options to implement features that aren't otherwise available via the `-R` syntax.
 
 Consider the following command:
 
@@ -142,26 +142,27 @@ ssh -R \
 In this example:
 
 - Remote Name: `app.example.com`.
-  ngrok will listen on the domain 'app.example.com'.
+  ngrok listens on the domain 'app.example.com'.
   You may omit this value.
   If you do, HTTP and TLS endpoints use your account's [dev domain](/gateway/domains/#dev-domains), and TCP endpoints get a random address and port.
   Free accounts created before September 23, 2025, and some paid plans, get a random hostname for HTTP and TLS endpoints instead.
-- Remote Port: `443`. ngrok will listen for HTTPS traffic on port 443.
+- Remote Port: `443`.
+  ngrok listens for HTTPS traffic on port 443.
   The only valid values for HTTP endpoints are 80 and 443.
-  For TLS endpoints it must be 443.
-  You may `0` and ngrok will simply choose the appropriate port for you.
+  For TLS endpoints, it must be 443.
+  You can use `0`, and ngrok chooses the appropriate port for you.
 - Local Name: `127.0.0.1`.
-  This is the local hostname or IP address that traffic will be sent to.
+  This is the local hostname or IP address that ngrok sends traffic to.
   It's most commonly `localhost`.
 - Local Port: `8080`.
-  This is the local port that traffic will be sent to.
+  This is the local port that ngrok sends traffic to.
 - User: `v2`.
   ngrok uses the user portion of the command to version the command options.
   You may omit this value.
   If you do, ngrok will use the latest version.
 - Command: `http`.
-  This the type of endpoint to create.
-  ngrok accepts either `http`, `tls` or `tcp`.
+  This is the type of endpoint to create.
+  ngrok accepts either `http`, `tls`, or `tcp`.
   This value is required.
 - Flags: `--traffic-policy-url https://example.com/policy.yml`.
   This applies the [Traffic Policy](/gateway/traffic-policy/) hosted at that URL to the endpoint.
@@ -172,17 +173,17 @@ In this example:
 ngrok uses the user portion of the SSH command to version the CLI syntax.
 The latest version is `v2`.
 
-## Differences from the Agent
+## Differences from the agent
 
-When you use ngrok via SSH reverse tunnel, you will need to [upload an SSH public key](#authentication) to authenticate with instead of using an ngrok authtoken like the agent.
+When you use ngrok via SSH reverse tunnel, you [upload an SSH public key](#authentication) to authenticate instead of using an ngrok authtoken like the agent.
 
-Additionally, you'll find that using ngrok via SSH has many functional limitations compared to the experience with the agent.
+Using ngrok via SSH also has many functional limitations compared to the experience with the agent.
 An incomplete list of differences from the ngrok agent includes:
 
 - Your endpoints won't automatically reconnect if there is a network interruption
 - There is no equivalent to the agent's [traffic inspection interface](/gateway/agent/web-inspection-interface/)
 - You can't create endpoints for multiple services with the same command
-- You can't [forward to upstream https services](/gateway/endpoints/http/#https-forwarding)
+- You can't [forward to upstream HTTPS services](/gateway/endpoints/http/#https-forwarding)
 - You can't create multiple endpoints over the same connection
 - You can't [serve file system directories](/gateway/endpoints/http/#serving-file-directories) with the `file://` protocol
 - You can't terminate TLS at the agent when using [end-to-end encryption](/gateway/domains/tls-termination/#end-to-end-encryption)
