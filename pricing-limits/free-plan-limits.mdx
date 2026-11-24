@@ -59,9 +59,9 @@ To deter [phishing attacks](https://en.wikipedia.org/wiki/Phishing), ngrok shows
 - It tells visitors the site is served by ngrok.
 - When the visitor clicks **Visit** to continue, a cookie suppresses the interstitial for that domain for 7 days.
 
-<Note>
-This does not impact users serving APIs or accessing ngrok endpoints programmatically.
-</Note>
+ngrok shows the interstitial only for `GET` requests that send a browser `User-Agent` header.
+Webhooks, `curl`, and other non-browser clients don't see it, and neither do WebSocket connections, even ones a browser opens.
+`GET` requests from browser JavaScript, such as `fetch` calls to an API, do see it unless they send the `ngrok-skip-browser-warning` header.
 
 You can remove the interstitial by upgrading to [any paid plan](https://ngrok.com/pricing?ref=docs-interstitial-removal) or using one of the following methods.
 
@@ -69,6 +69,7 @@ You can remove the interstitial by upgrading to [any paid plan](https://ngrok.co
 
 From the client accessing the ngrok endpoint, add a header value of `ngrok-skip-browser-warning` and set it to any value.
 These requests will bypass the interstitial.
+For cross-origin requests from a browser, your app must also list `ngrok-skip-browser-warning` in its `Access-Control-Allow-Headers` CORS response.
 
   <Tabs>
     <Tab title="Axios">
