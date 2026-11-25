@@ -338,7 +338,7 @@ ngrok api agents create [flags]
 
 ## ngrok api agents delete
 
-Delete an Agent by ID. The record is soft-deleted. With keep_session=true the agent's live session stays up as a durable: false Agent; otherwise it is dropped. An ID outside the caller's account returns 404 ERR_NGROK_AGENT_NOT_FOUND, a retired record 410 ERR_NGROK_AGENT_RETIRED, and a caller who may not delete it 403 ERR_NGROK_AGENT_OWNER_MISMATCH.
+Delete an Agent by ID. The record is soft-deleted. With keep_session=true the agent's live session stays up as a durable: false Agent; otherwise it is dropped. An ID outside the caller's account returns 404 ERR_NGROK_AGENT_NOT_FOUND, a retired record 410 ERR_NGROK_AGENT_RETIRED (no record is retired yet), and a caller who may not delete it 403 ERR_NGROK_AGENT_OWNER_MISMATCH.
 
 ### Usage
 
@@ -360,7 +360,7 @@ ngrok api agents delete <id> [flags]
 
 ## ngrok api agents get
 
-Get an Agent by ID. A soft-deleted record returns with deleted_at set. An ID outside the caller's account returns 404 ERR_NGROK_AGENT_NOT_FOUND, and a retired record 410 ERR_NGROK_AGENT_RETIRED. The account is checked first, so a retired ID in another account is 404.
+Get an Agent by ID. A soft-deleted record returns with deleted_at set. An ID outside the caller's account returns 404 ERR_NGROK_AGENT_NOT_FOUND, and a retired record 410 ERR_NGROK_AGENT_RETIRED (no record is retired yet). The account is checked first, so a retired ID in another account is 404.
 
 ### Usage
 
@@ -381,7 +381,7 @@ ngrok api agents get <id> [flags]
 
 ## ngrok api agents list
 
-List the Agents of the account. A soft-deleted Agent is listed only while it is online; retired Agents are not listed. Where live sessions are listed, connected Agents come first, then a durable: false Agent for each live session that is not linked to a record, then disconnected Agents; otherwise the list is the records only. Each group is newest first. Take before_id from next_page_uri only. A filter is refused for now.
+List the Agents of the account. A soft-deleted Agent is listed only while it is online; retired Agents are not listed. Where live sessions are listed, online Agents come first: connected Agents and a durable: false Agent for each live session that is not linked to a record, the most recent started_at first; then disconnected Agents, the most recent last_seen first (created_at for one that never connected); otherwise the list is the records only, newest first. Take before_id from next_page_uri only. A filter is refused for now.
 
 ### Usage
 
@@ -393,7 +393,7 @@ ngrok api agents list [flags]
 
 | Flag              | Description                             |
 | ----------------- | --------------------------------------- |
-|  `--before-id` | Expects a resource ID as its input. Returns earlier entries in the result set, sorted by ID. |
+|  `--before-id` | An opaque value taken from next_page_uri. It is not an Agent ID, and clients must not build one. |
 |  `--filter` | A CEL expression to filter the list results. Supports logical and comparison operators to match on fields such as id, metadata, created_at, and more. See ngrok API Filtering for syntax and field details: https://ngrok.com/docs/api/api-filtering (https://ngrok.com/docs/api/api-filtering). |
 |  `--limit` | Constrains the number of results in the dataset. See the API Overview (https://ngrok.com/docs/api/index#pagination) for details. |
 |  `--api-key` | API key to use |
@@ -405,7 +405,7 @@ ngrok api agents list [flags]
 
 ## ngrok api agents restore
 
-Restore an Agent record by ID. A restore makes a soft-deleted record live again. It never creates a record, and it never changes the owner. Errors, by error_code: an ID outside the caller's account returns 404 ERR_NGROK_AGENT_NOT_FOUND, a retired record 410 ERR_NGROK_AGENT_RETIRED, and a caller who may not restore it 403 ERR_NGROK_AGENT_OWNER_MISMATCH. The account is checked first, so a retired ID in another account is 404.
+Restore an Agent record by ID. A restore makes a soft-deleted record live again. It never creates a record, and it never changes the owner. Errors, by error_code: an ID outside the caller's account returns 404 ERR_NGROK_AGENT_NOT_FOUND, a retired record 410 ERR_NGROK_AGENT_RETIRED (no record is retired yet), and a caller who may not restore it 403 ERR_NGROK_AGENT_OWNER_MISMATCH. The account is checked first, so a retired ID in another account is 404.
 
 ### Usage
 

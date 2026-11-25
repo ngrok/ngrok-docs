@@ -513,7 +513,7 @@
                   "full_name": "ngrok api agents delete",
                   "short_name": "delete",
                   "short_description": "Delete an Agent by ID",
-                  "long_description": "Delete an Agent by ID. The record is soft-deleted. With keep_session=true the agent's live session stays up as a durable: false Agent; otherwise it is dropped. An ID outside the caller's account returns 404 ERR_NGROK_AGENT_NOT_FOUND, a retired record 410 ERR_NGROK_AGENT_RETIRED, and a caller who may not delete it 403 ERR_NGROK_AGENT_OWNER_MISMATCH.",
+                  "long_description": "Delete an Agent by ID. The record is soft-deleted. With keep_session=true the agent's live session stays up as a durable: false Agent; otherwise it is dropped. An ID outside the caller's account returns 404 ERR_NGROK_AGENT_NOT_FOUND, a retired record 410 ERR_NGROK_AGENT_RETIRED (no record is retired yet), and a caller who may not delete it 403 ERR_NGROK_AGENT_OWNER_MISMATCH.",
                   "usage": "ngrok api agents delete \u003cid\u003e [flags]",
                   "docs_link": "#ngrok-api-agents-delete",
                   "flags": [
@@ -554,7 +554,7 @@
                   "full_name": "ngrok api agents get",
                   "short_name": "get",
                   "short_description": "Get an Agent by ID",
-                  "long_description": "Get an Agent by ID. A soft-deleted record returns with deleted_at set. An ID outside the caller's account returns 404 ERR_NGROK_AGENT_NOT_FOUND, and a retired record 410 ERR_NGROK_AGENT_RETIRED. The account is checked first, so a retired ID in another account is 404.",
+                  "long_description": "Get an Agent by ID. A soft-deleted record returns with deleted_at set. An ID outside the caller's account returns 404 ERR_NGROK_AGENT_NOT_FOUND, and a retired record 410 ERR_NGROK_AGENT_RETIRED (no record is retired yet). The account is checked first, so a retired ID in another account is 404.",
                   "usage": "ngrok api agents get \u003cid\u003e [flags]",
                   "docs_link": "#ngrok-api-agents-get",
                   "flags": [
@@ -590,14 +590,14 @@
                   "full_name": "ngrok api agents list",
                   "short_name": "list",
                   "short_description": "List the Agents of the account",
-                  "long_description": "List the Agents of the account. A soft-deleted Agent is listed only while it is online; retired Agents are not listed. Where live sessions are listed, connected Agents come first, then a durable: false Agent for each live session that is not linked to a record, then disconnected Agents; otherwise the list is the records only. Each group is newest first. Take before_id from next_page_uri only. A filter is refused for now.",
+                  "long_description": "List the Agents of the account. A soft-deleted Agent is listed only while it is online; retired Agents are not listed. Where live sessions are listed, online Agents come first: connected Agents and a durable: false Agent for each live session that is not linked to a record, the most recent started_at first; then disconnected Agents, the most recent last_seen first (created_at for one that never connected); otherwise the list is the records only, newest first. Take before_id from next_page_uri only. A filter is refused for now.",
                   "usage": "ngrok api agents list [flags]",
                   "docs_link": "#ngrok-api-agents-list",
                   "flags": [
                     {
                       "full_name": "before-id",
                       "short_name": "",
-                      "description": "Expects a resource ID as its input. Returns earlier entries in the result set, sorted by ID."
+                      "description": "An opaque value taken from next_page_uri. It is not an Agent ID, and clients must not build one."
                     },
                     {
                       "full_name": "filter",
@@ -641,7 +641,7 @@
                   "full_name": "ngrok api agents restore",
                   "short_name": "restore",
                   "short_description": "Restore an Agent record by ID",
-                  "long_description": "Restore an Agent record by ID. A restore makes a soft-deleted record live again. It never creates a record, and it never changes the owner. Errors, by error_code: an ID outside the caller's account returns 404 ERR_NGROK_AGENT_NOT_FOUND, a retired record 410 ERR_NGROK_AGENT_RETIRED, and a caller who may not restore it 403 ERR_NGROK_AGENT_OWNER_MISMATCH. The account is checked first, so a retired ID in another account is 404.",
+                  "long_description": "Restore an Agent record by ID. A restore makes a soft-deleted record live again. It never creates a record, and it never changes the owner. Errors, by error_code: an ID outside the caller's account returns 404 ERR_NGROK_AGENT_NOT_FOUND, a retired record 410 ERR_NGROK_AGENT_RETIRED (no record is retired yet), and a caller who may not restore it 403 ERR_NGROK_AGENT_OWNER_MISMATCH. The account is checked first, so a retired ID in another account is 404.",
                   "usage": "ngrok api agents restore \u003cid\u003e [flags]",
                   "docs_link": "#ngrok-api-agents-restore",
                   "flags": [
