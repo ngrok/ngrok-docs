@@ -32,12 +32,12 @@ Each of these controllers uses the same basic workflow to manage its resources.
 
 ## Deployments
 
-The ngrok Kubernetes Operator comes with two primary `Deployments` and one third optional `Deployment`
+The ngrok Kubernetes Operator comes with two primary `Deployments` and two optional `Deployments`
 
 ### The manager deployment
 
 The manager deployment is primarily responsible for synchronizing the state of your resources with the ngrok API.
-It will perform actions such as creating/updating/deleting Cloud Endpoints, Domains, etc. as needed.
+It will perform actions such as creating/updating/deleting Cloud Endpoints, domains, and so on as needed.
 It also has the responsibility of watching `Ingress` and Gateway API resources and translating them into ngrok native custom resources.
 
 It runs Controllers that watch and manage the following resources
@@ -47,19 +47,20 @@ It runs Controllers that watch and manage the following resources
 - `Namespace`
 - `Secret`
 - `Domain`
-- `NgrokTrafficPolicy`
+- `TrafficPolicy`
 - `KubernetesOperator`
 - `CloudEndpoint`
 - `IPPolicy`
-- `BoundEndpoint` (only enabled if the bindings feature is enabled )
+- `BoundEndpoint` (only enabled if the bindings feature is enabled)
+- `PrivateEndpoint` (only enabled if the private endpoints preview feature is enabled)
 - `GatewayClass` (only enabled when Gateway API CRDs are detected)
 - `Gateway` (only enabled when Gateway API CRDs are detected)
 - `HTTPRoute` (only enabled when Gateway API CRDs are detected)
+- `TCPRoute` (only enabled when Gateway API CRDs are detected)
+- `TLSRoute` (only enabled when Gateway API CRDs are detected)
 - `ReferenceGrant` (only enabled when Gateway API CRDs are detected)
-- `TCPEdge` (deprecated, will be removed soon)
-- `TLSEdge` (deprecated, will be removed soon)
-- `HTTPSEdge` (deprecated, will be removed soon)
-- `NgrokModuleSet` (deprecated, will be removed soon)
+
+The custom resources use the `ngrok.com/v1` API group, except `BoundEndpoint` (`bindings.k8s.ngrok.com/v1alpha1`). Deprecated group versions are still read; see the [0.25 upgrade guide](https://github.com/ngrok/ngrok-operator/blob/main/docs/upgrading-to-0.25.md).
 
 ### The Agent deployment
 
@@ -68,10 +69,15 @@ It starts controllers to watch the following resources related to upstream servi
 
 - `AgentEndpoint`
 - `Secret`
-- `Tunnel`
 
 ### The bindings forwarder deployment
 
 The bindings forwarder deployment is responsible for forwarding requests to and from Kubernetes bound endpoints that are projected into the cluster as `Service` resources.
 It starts a controller that watches `BoundEndpoint` resources to know what it needs to forward and where it needs to forward to/from.
 For more information about bindings, see [the bindings guide](/gateway/k8s/guides/bindings)
+
+### The private endpoint forwarder deployment
+
+The private endpoint forwarder deployment is a preview feature, and only runs when `ngrok.features.privateEndpoints.enabled` is `true`.
+It makes ngrok private endpoints (`*.ngrok.direct`) reachable from pods in your cluster by URL, forwarding their traffic to ngrok over a private dial connection.
+It starts a controller that watches `PrivateEndpoint` resources.

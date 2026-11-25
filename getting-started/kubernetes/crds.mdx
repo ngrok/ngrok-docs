@@ -66,7 +66,7 @@ Find more details on the [pricing page](https://ngrok.com/pricing), or, if you'r
       <Tab title="AgentEndpoint">
 
     ```yaml title="ngrok-crds.yaml"
-    apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+    apiVersion: ngrok.com/v1
     kind: AgentEndpoint
     metadata:
       name: tinyllama-endpoint
@@ -80,21 +80,21 @@ Find more details on the [pricing page](https://ngrok.com/pricing), or, if you'r
       <Tab title="CloudEndpoint + AgentEndpoint">
 
     ```yaml title="ngrok-crds.yaml"
-    apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+    apiVersion: ngrok.com/v1
     kind: CloudEndpoint
     metadata:
       name: tinyllama-cloud-endpoint
     spec:
-      url: $YOUR_DOMAIN
-    trafficPolicy:
-      policy:
-        on_http_request:
-          - actions:
-            - type: forward-internal
-              config:
-                url: http://tinyllama.internal
+      url: https://$YOUR_DOMAIN
+      trafficPolicy:
+        inline:
+          on_http_request:
+            - actions:
+              - type: forward-internal
+                config:
+                  url: http://tinyllama.internal
     ---
-    apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+    apiVersion: ngrok.com/v1
     kind: AgentEndpoint
     metadata:
       name: tinyllama-endpoint
@@ -107,11 +107,11 @@ Find more details on the [pricing page](https://ngrok.com/pricing), or, if you'r
       </Tab>
     </Tabs>
 
-    Apply the manifest with `kubectl -n ngrok-operator apply -f ngrok-crds.yaml`.
+    Apply the manifest with `kubectl apply -f ngrok-crds.yaml`.
 
     The ngrok Kubernetes Operator watches your cluster for `AgentEndpoint` and `CloudEndpoint` resources you create, and provisions a new Agent Endpoint to forward traffic into your Service.
 
-    You can now send a request to `$NGROK_DOMAIN` with your browser or `curl`.
+    You can now send a request to `$YOUR_DOMAIN` with your browser or `curl`.
     Your Kubernetes service is now available to anyone on the public internet.
   </Step>
 
@@ -127,7 +127,7 @@ Find more details on the [pricing page](https://ngrok.com/pricing), or, if you'r
     Add a `trafficPolicy.inline` field followed by the Traffic Policy rule itself.
 
     ```yaml title="ngrok-crds.yaml"
-    apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+    apiVersion: ngrok.com/v1
     kind: AgentEndpoint
     metadata:
       name: tinyllama-endpoint
@@ -149,17 +149,17 @@ Find more details on the [pricing page](https://ngrok.com/pricing), or, if you'r
       </Tab>
       <Tab title="CloudEndpoint + AgentEndpoint">
 
-    Insert the new rule above your existing `forward-internal` action to require authentication before forwarding traffic to your internal Agent Endpoint.
+    Insert the new rule above your existing `forward-internal` action to restrict access by IP before forwarding traffic to your internal Agent Endpoint.
 
     ```yaml title="ngrok-crds.yaml"
-    apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+    apiVersion: ngrok.com/v1
     kind: CloudEndpoint
     metadata:
       name: tinyllama-cloud-endpoint
     spec:
-      url: $YOUR_DOMAIN
+      url: https://$YOUR_DOMAIN
       trafficPolicy:
-        policy:
+        inline:
           on_http_request:
             - actions:
                 - type: restrict-ips
@@ -172,7 +172,7 @@ Find more details on the [pricing page](https://ngrok.com/pricing), or, if you'r
                 config:
                   url: http://tinyllama.internal
     ---
-    apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+    apiVersion: ngrok.com/v1
     kind: AgentEndpoint
     metadata:
       name: tinyllama-endpoint
@@ -210,7 +210,3 @@ For more ways to filter and manage traffic:
 - All [available actions](/gateway/traffic-policy/actions/)
 
 Finally, explore the [Traffic Inspector in your dashboard](https://dashboard.ngrok.com/traffic-inspector) for real-time observability of traffic flowing through your endpoint.
-
-```
-
-```

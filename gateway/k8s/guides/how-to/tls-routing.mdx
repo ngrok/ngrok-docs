@@ -30,7 +30,7 @@ See the [TLS Endpoints page](/gateway/endpoints/tls/) for more details on how ng
 <Tabs>
 <Tab title="AgentEndpoint">
 ```yaml
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+apiVersion: ngrok.com/v1
 kind: AgentEndpoint
 metadata:
   name: example-service
@@ -46,7 +46,7 @@ spec:
 <Steps titleSize="h3">
   <Step title="Create an AgentEndpoint for your upstream Service">
     ```yaml
-    apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+    apiVersion: ngrok.com/v1
     kind: AgentEndpoint
     metadata:
       name: example-service
@@ -61,15 +61,15 @@ spec:
   <Step title="Create a CloudEndpoint that routes to the AgentEndpoint">
 
     ```yaml
-    apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+    apiVersion: ngrok.com/v1
     kind: CloudEndpoint
     metadata:
       name: example-cloud-endpoint
     spec:
       url: tls://example-hostname.ngrok.app:8443
       trafficPolicy:
-        policy:
-          on_http_request:
+        inline:
+          on_tcp_connect:
           - actions:
             - type: forward-internal
               config:
@@ -106,6 +106,8 @@ For these reasons, TCP and TLS routing is often more easily configurable using t
         - name: p9000
           port: 9000
           protocol: TLS
+          tls:
+            mode: Passthrough
     ```
   </Step>
 

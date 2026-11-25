@@ -9,7 +9,7 @@ import { Link } from "/snippets/Link.jsx";
 
 
 Kubernetes has the concept of [Custom Resource Definitions](https://kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/) (CRDs) which allow you to define your own custom resources.
-This document will cover the CRDs you might use to achieve your goals with the ngrok Kubernetes Operator.
+This document covers the CRDs you might use to achieve your goals with the ngrok Kubernetes Operator.
 
 ## ngrok Kubernetes CRDs
 
@@ -42,7 +42,7 @@ This document will cover the CRDs you might use to achieve your goals with the n
     <Link to={`/gateway/k8s/crds/ngroktrafficpolicy/`}>
         <div className="ngrok--card hover:bg-card-hover">
             <div className="ngrok--card-heading">
-                <h3 className="text-md sm:text-base">NgrokTrafficPolicy</h3>
+                <h3 className="text-md sm:text-base">TrafficPolicy</h3>
             </div>
             <p className="flex-grow text-md sm:text-sm">
                 Configuration language that offers you the flexibility to filter, match, manage, and orchestrate traffic to your endpoints.
@@ -103,7 +103,8 @@ This document will cover the CRDs you might use to achieve your goals with the n
 
 ## Resource status and conditions
 
-The ngrok Kubernetes Operator uses standard Kubernetes conditions to report the state of resources. Each resource includes a `status.conditions` array that provides visibility into the current state and any issues that may need attention.
+The ngrok Kubernetes Operator uses standard Kubernetes conditions to report the state of resources.
+Each resource includes a `status.conditions` array that provides visibility into the current state and any issues that may need attention.
 
 ### Common condition types
 
@@ -115,34 +116,40 @@ The following table summarizes the condition types available across different CR
 | | `DomainCreated` | Domain reservation status |
 | | `CertificateReady` | TLS certificate status |
 | | `DNSConfigured` | DNS configuration status |
-| | `Progressing` | Domain provisioning in progress |
 | **IPPolicy** | `Ready` | Overall policy readiness |
 | | `IPPolicyCreated` | Policy creation status |
-| | `RulesConfigured` | Rules configuration status |
+| | `IPPolicyRulesConfigured` | Rules configuration status |
 | **CloudEndpoint** | `Ready` | Overall endpoint readiness |
 | | `CloudEndpointCreated` | Endpoint creation status |
+| | `TrafficPolicyApplied` | Traffic Policy application status |
 | | `DomainReady` | Associated domain status |
 | **AgentEndpoint** | `Ready` | Overall endpoint readiness |
 | | `EndpointCreated` | Endpoint creation status |
-| | `TrafficPolicyApplied` | Traffic policy application status |
+| | `TrafficPolicyApplied` | Traffic Policy application status |
 | | `DomainReady` | Associated domain status |
 | **BoundEndpoint** | `Ready` | Overall bound endpoint readiness |
 | | `ServicesCreated` | Target and upstream services creation status |
 | | `ConnectivityVerified` | Upstream connectivity verification status |
+| **TrafficPolicy** | `Ready` | Overall policy readiness |
+| | `Valid` | Policy parse status |
+| **KubernetesOperator** | `Ready` | Overall Operator readiness |
+| | `Registered` | Registration with the ngrok API |
+| | `Draining` | Drain progress, present only while the resource is being deleted |
 
 ### Checking resource status
 
-You can use kubectl to check the status of your resources:
+You can use kubectl to check the status of your resources.
+Several kinds exist in two API groups, so use fully qualified names such as `domains.ngrok.com` (or `boundendpoints.bindings.k8s.ngrok.com`):
 
 ```bash
 # Check if a resource is ready
-kubectl get <resource-type> <name> -o jsonpath='{.status.conditions[?(@.type=="Ready")]}'
+kubectl get <plural>.ngrok.com <name> -o jsonpath='{.status.conditions[?(@.type=="Ready")]}'
 
 # Wait for a resource to become ready
-kubectl wait --for=condition=Ready <resource-type>/<name> --timeout=60s
+kubectl wait --for=condition=Ready <plural>.ngrok.com/<name> --timeout=60s
 
 # List all resources with ready status
-kubectl get <resource-type> -A -o custom-columns=\
+kubectl get <plural>.ngrok.com -A -o custom-columns=\
 NAME:.metadata.name,\
 NAMESPACE:.metadata.namespace,\
 READY:.status.conditions[?(@.type==\'Ready\')].status,\
