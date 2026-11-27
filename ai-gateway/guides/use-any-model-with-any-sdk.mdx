@@ -3,6 +3,10 @@ title: Use Any Model with Any SDK
 description: Call any supported model from the OpenAI, Anthropic, Google Gen AI, or AWS SDK, and learn what the AI Gateway translates between API formats.
 ---
 
+You can keep using the OpenAI SDK and route its requests through the AI Gateway to models from other providers, such as Anthropic's Claude models.
+Set the SDK's base URL to `https://gateway.ngrok.ai/v1` and its API key to an [access key](/ai-gateway/concepts/access-keys), then change only the `model`, such as `anthropic:claude-sonnet-4-6`.
+The same works from the Anthropic, Google Gen AI, and AWS SDKs.
+
 Each SDK speaks one API format, and each model serves only some formats.
 When the model you pick doesn't serve your SDK's format, the AI Gateway translates the request if it can, calls the model in a format it serves, and translates the response back.
 Your code, your stream reader, and your tool loop stay the same, and you change only the model.
@@ -286,7 +290,7 @@ The gateway skips a model, without calling it, when it can't translate the reque
 - The request has a Converse `guardrailConfig`, `outputConfig`, `promptVariables`, or `cachePoint`.
 - A [Firewall](/ai-gateway/concepts/firewall) policy applies to the request, because Firewall can't check a translated response yet.
 
-If every model in the request is skipped, the gateway returns [`ERR_NGROK_27228`](/ai-gateway/reference/error-codes#err_ngrok_27228) with the reason for each model.
+If the gateway skips every model in the request, it returns [`ERR_NGROK_27228`](/ai-gateway/reference/error-codes#err_ngrok_27228) with the reason for each model.
 To fix it, remove the field the message names, or pick a model that serves your SDK's format.
 
 ## Next steps
